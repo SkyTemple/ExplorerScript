@@ -24,6 +24,7 @@
 from typing import List, Dict
 
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
+from explorerscript.ssb_converting.decompiler.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineType, SsbCoroutine, SsbRoutineInfo, SsbOpParam, \
     SsbOperation, NUMBER_OF_SPACES_PER_INDENT
 
@@ -40,9 +41,36 @@ class SsbDecompiler:
     def convert(self) -> str:
         self._output = ""
         self._indent = 0
+
+        # TODO: Ability to run without any filtering in pipeline except for labels
+        # TODO: Compare execution graphs before and after modify of pipeline
+
+        # Step 1: Build labels
         resolver = OpsLabelJumpToResolver(self._routine_ops)
         self._routine_ops = list(resolver)
-        self._labels = {label.id: label for label in resolver.labels.values()}
+
+        # Step 2: Build and optimize execution graph
+        grapher = SsbGraphMinimizer(self._routine_ops)
+        control_flow_before_minimize = grapher.get_control_flow()
+        # Remove redundant labels (see D01P11A/um2402.ssb)
+        grapher.optimize_paths()
+        # Build groups from performer/object/actor pairs, switch+cases, switch groups, branch-groups
+        # get rid of as many label references (jumps) as possible
+        grapher.group_objs()
+        grapher.group_switch_cases()
+        grapher.group_switches()
+        grapher.group_branches()
+        # Process loops
+        grapher.build_loops()
+        # Remove all labels that are no longer needed, because they are only referenced from one place or implicit
+        # control flow
+        grapher.remove_label_markers()
+
+        # We can now just go through the graph and build the result.
+
+        # Of course our changes must not affect the actual control flow
+        assert control_flow_before_minimize == grapher.get_control_flow()
+
         for r_id, (r_info, r_ops) in enumerate(zip(self._routine_infos, self._routine_ops)):
             self._write_routine_header(r_id, r_info)
             with _Blk(self):

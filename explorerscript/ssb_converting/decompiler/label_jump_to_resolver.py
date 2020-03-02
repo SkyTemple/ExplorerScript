@@ -35,11 +35,11 @@ class OpsLabelJumpToResolver:
         # A mapping of labels: {mem_location: label_name}
         self.labels: Dict[int, SsbLabel] = {}
         self.routines = []
-        for rtn in routines:
+        for routine_id, rtn in enumerate(routines):
             new_rtn_ops = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
-                new_rtn_ops.append(process_op_for_jump(op, self.labels))
+                new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id))
 
     def __iter__(self):
         rtn_iterator = iter(self.routines)
