@@ -29,6 +29,8 @@ from typing import Dict, Union, List
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParamConstant
 
+OP_JUMP = 'Jump'
+
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
 OPS_WITH_JUMP_TO_MEM_OFFSET = {
     'Branch': 2,
@@ -55,7 +57,7 @@ OPS_WITH_JUMP_TO_MEM_OFFSET = {
     'CaseValue': 2,
     'CaseVariable': 2,
     # Special case; this OpCode ALWAYS jumps:
-    'Jump': 0,
+    OP_JUMP: 0,
 }
 
 
@@ -72,7 +74,7 @@ OP_HOLD = 'Hold'
 # (usually by jumping somewhere else and NOT "automatically" returining.)
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
 OPS_THAT_END_CONTROL_FLOW = [
-    'Jump', 'Return', 'End', OP_HOLD
+    OP_JUMP, 'Return', 'End', OP_HOLD
 ]
 
 class SsbLabel(SsbOperation):

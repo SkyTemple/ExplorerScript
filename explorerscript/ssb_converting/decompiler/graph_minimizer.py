@@ -20,15 +20,16 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-
+import sys
 import warnings
 from enum import Enum, auto
 from typing import List, Union, Set, Dict, Tuple
 
-from igraph import Graph, IN
+from igraph import Graph, IN, OUT
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
+    OP_JUMP
 
 
 class ControlFlowToken(Enum):
@@ -37,6 +38,7 @@ class ControlFlowToken(Enum):
 
 
 ControlFlowItem = Union[SsbOperation, ControlFlowToken]
+sys.setrecursionlimit(10000)
 
 
 class SsbGraphMinimizer:
@@ -51,10 +53,20 @@ class SsbGraphMinimizer:
             # Map of label id -> id of opcode in routine
             label_indices: Dict[int, int] = {}
             for i, op in enumerate(rtn):
-                g.add_vertex(i, label=f"<{i}>{op.op_code.name}", op=op)
+                v = g.add_vertex(i, label=f"<{i}>{op.op_code.name}", op=op, style='solid', shape='ellipse')
                 if isinstance(op, SsbLabel):
                     label_indices[op.id] = i
+                    v['style'] = 'filled'
+                    v['fillcolor'] = '#B446E3'
+                    v['shape'] = 'rectangle'
+                elif isinstance(op, SsbLabelJump):
+                    v['style'] = 'filled'
+                    v['fillcolor'] = '#38BCFF'
             self._get_edges(g, rtn, rtn_id, label_indices)
+
+    def count_labels(self):
+        # TODO
+        return 0
 
     def get_control_flow(self) -> List[List[List[ControlFlowItem]]]:  # for each routine: for each run: list of cfi
         """
@@ -63,19 +75,43 @@ class SsbGraphMinimizer:
 
         Return is a list of op_codes and some special tokens (see enum ControlFlowToken).
         """
-        for i, graph in enumerate(self._graphs):
-            with open(f'/home/marco/austausch/dev/skytemple/files/skytemple_files/script/ssb/dbg/dbg_output/graphs/{i}.dot', 'w') as f:
-                graph.write_dot(f)
-            unconnected_vertices = []
-            for v in graph.vs:
-                if len(list(v.all_edges())) < 1 and v['name'] != 0:
-                    unconnected_vertices.append(v['label'])
-            if len(unconnected_vertices) > 0:
-                warnings.warn(f"Routine {i} has unconnected ops: {unconnected_vertices}")
         exit(1)
 
     def optimize_paths(self):
-        pass
+        """Perform some general optimizations."""
+        for g in self._graphs:
+            vs_to_delete = []
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and v['op'].root.op_code.name == OP_JUMP:
+                    # IS JUMP.
+                    ins = g.incident(v, IN)
+                    if len(ins) == 1:
+                        iv = g.es[ins[0]].source_vertex
+                        if isinstance(iv['op'], SsbLabel):
+                            # IS JUMP AND BEFORE IS LABEL:
+                            vs_to_delete += self._optimize_paths__jump_after_label(g, jump=v, label=iv)
+            g.delete_vertices(vs_to_delete)
+
+    def _optimize_paths__jump_after_label(self, g, jump, label):
+        """
+        Remove all connections to labels that just jump to another label,
+        with direct connections to that label.
+        """
+        outs = g.incident(jump, OUT)
+        assert len(outs) == 1
+        ov = g.es[outs[0]].target_vertex
+        if isinstance(ov['op'], SsbLabel):
+            # The jump target is just another label, redirect previous label to this one.
+            ins = g.incident(label, IN)
+            for in_edge_id in ins:
+                old_in_edge = g.es[in_edge_id]
+                attr = old_in_edge.attributes()
+                iv = old_in_edge.source
+                # Create a new edge between the target label and the old entry point
+                g.add_edge(iv, ov, **attr)
+            g.delete_edges(ins)
+            return [jump.index, label.index]
+        return []
 
     def group_objs(self):
         pass
