@@ -82,15 +82,15 @@ OPS_THAT_END_CONTROL_FLOW = [
 ]
 
 
-class SsbLabelMarker:
+class LabelMarker:
     pass
 
 
-class SsbLabelJumpMarker:
+class LabelJumpMarker:
     pass
 
 
-class SsbIfStart(SsbLabelJumpMarker):
+class IfStart(LabelJumpMarker):
     def __init__(self, if_id: int):
         self.if_id = if_id
 
@@ -98,7 +98,21 @@ class SsbIfStart(SsbLabelJumpMarker):
         return f"IF({self.if_id})"
 
 
-class SsbIfEnd(SsbLabelMarker):
+class MultiIfStart(IfStart):
+    def __init__(self, if_id: int, start_ifs):
+        super().__init__(if_id)
+        self.original_ssb_ifs_ops: List[SsbOperation] = start_ifs
+
+    def __str__(self):
+        return f"MIF({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
+
+    def add_if(self, ssb_if: SsbOperation):
+        """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of ifs."""
+        # The if_id is no longer applicable for this ssb_if:
+        self.original_ssb_ifs_ops.append(ssb_if)
+
+
+class IfEnd(LabelMarker):
     def __init__(self, if_id: int):
         self.if_id = if_id
 
@@ -117,9 +131,9 @@ class SsbLabel(SsbOperation):
         # Whether or not this label is referenced from another routine
         self.referenced_from_other_routine = False
         # Markers for this label (type of label)
-        self.markers: List[SsbLabelMarker] = []
+        self.markers: List[LabelMarker] = []
 
-    def add_marker(self, m: SsbLabelMarker):
+    def add_marker(self, m: LabelMarker):
         self.markers.append(m)
 
 
@@ -131,10 +145,23 @@ class SsbLabelJump(SsbOperation):
         self.root = root
         self.label = label
         # Markers for this jump (type of jump)
-        self.markers: List[SsbLabelJumpMarker] = []
+        self.markers: List[LabelJumpMarker] = []
 
-    def add_marker(self, m: SsbLabelJumpMarker):
+    def add_marker(self, m: LabelJumpMarker):
+        if len(self.markers) > 0:
+            raise ValueError("Jumps can currently only have one or zero markers.")
         self.markers.append(m)
+
+    def remove_marker(self):
+        """Remove the first (and only) marker if exists."""
+        if len(self.markers) > 0:
+            del self.markers[0]
+
+    def get_marker(self):
+        """Returns the first (and only) marker if exists, otherwise None."""
+        if len(self.markers) > 0:
+            return self.markers[0]
+        return None
 
 
 def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], routine_id: int) -> SsbOperation:

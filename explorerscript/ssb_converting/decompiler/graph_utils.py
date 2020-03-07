@@ -25,6 +25,8 @@ from typing import Tuple, List, Union, Dict
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
+
 
 def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     edges: List[Edge] = [g.es[e] for e in g.incident(vertex, OUT)]
@@ -34,68 +36,79 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
-def find_first_common_next_vertex_in_edges(
-        g,
-        v1: Vertex, v2: Vertex,
-        v1_in_edge: int = None, v2_in_edge: int = None,
-        visited1: Dict[int, Edge] = None, visited2: Dict[int, Edge] = None, recursion_check: List[Tuple[int, int]] = None
-) -> Tuple[Union[Edge, None], Union[Edge, None]]:
-    # TODO: Rewrite to support:
-    # ... proper recursion for splitting paths
-    # ... arbitrary amount of vertices
-    if v1_in_edge is None:
-        v1_in_edge = g.incident(v1, IN)[0]
-    if v2_in_edge is None:
-        v2_in_edge = g.incident(v2, IN)[0]
-    if visited1 is None:
-        visited1 = {}
-    else:
-        visited1 = visited1.copy()
-    if visited2 is None:
-        visited2 = {}
-    else:
-        visited2 = visited2.copy()
-    if recursion_check is None:
-        recursion_check = []
+def find_first_common_next_vertex_in_edges(g, es: List[Edge], vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
+    """
+    Finds the first vertex (actually list of edges that lead to it for each edge in es)
+    which is reachable by all edges in es.
 
-    if (v1.index, v2.index) in recursion_check:
-        return None, None
-    recursion_check.append((v1.index, v2.index))
+    It's made sure that ALL paths that are started from these starting points lead to there,
+    this means for splitting-sub-paths it's also checked that they have a common end vertex and the
+    search is continued from there.
 
-    visited1[v1.index] = v1_in_edge
-    visited2[v2.index] = v2_in_edge
+    If no common vertex is found, returns None.
+    """
+    assert len(es) > 1
+    result = _find_first_common_next_vertex_in_edges__impl(g, es, [], vs_to_not_visit)
+    return result
 
-    inc1 = [g.es[e] for e in g.incident(v1, OUT)]
-    inc2 = [g.es[e] for e in g.incident(v2, OUT)]
 
-    intersection = set(visited1.keys()).intersection(visited2.keys())
-    if len(intersection) > 0:
-        end_vertex = intersection.pop()
-        return g.es[visited1[end_vertex]], g.es[visited2[end_vertex]]
+def _find_first_common_next_vertex_in_edges__impl(
+        g, es: List[Union[Edge, None]], map_of_visited: [List[Dict[int, int]]], vs_to_not_visit: List[int] = None
+) -> Union[None, List[Edge]]:
+    """
+    :param g: Graph
+    :param es: List of edges. An edge can be None, if the end of this part of the tree was reached
+    :param map_of_visited: For each e in es: Dict of visited vertices -> the edges that lead to them
+    :return:
+    """
 
-    # Not found yet, try recursively to continue down the path.
-    for new_e1 in inc1:
-        new_v1 = new_e1.target_vertex
+    if not vs_to_not_visit:
+        vs_to_not_visit = []
 
-        return_candidate = find_first_common_next_vertex_in_edges(
-            g, new_v1, v2, new_e1.index, v2_in_edge, visited1, visited2, recursion_check
-        )
+    # If all incoming edges are None, we didn't find anything :(
+    while not all(e is None for e in es):
+        # Add current edges to list of visited
+        for i, e in enumerate(es):
+            if e is not None:
+                if len(map_of_visited) <= i:
+                    map_of_visited.append({})
+                map_of_visited[i][e.target] = e.index
 
-        if return_candidate != (None, None):
-            return return_candidate
+        # Check if the end vertex was found
+        intersection_result = set(map_of_visited[0].keys())
+        for s in map_of_visited[1:]:
+            intersection_result.intersection_update(s)
+        if len(intersection_result) > 0:
+            end_vertex = intersection_result.pop()
+            return [g.es[s[end_vertex]] for s in map_of_visited]
 
-    for new_e2 in inc2:
-        new_v2 = new_e2.target_vertex
+        # Not found... too bad! Try to go through the path and find it
+        # Get next edge for all paths
+        new_es = []
+        for i, e in enumerate(es):
+            if e is None:
+                new_es.append(None)
+                continue
+            v = e.target_vertex
+            if v.index in vs_to_not_visit:
+                # Potential endless recursion situation. Abort.
+                new_es.append(None)
+                continue
+            v_es = v.out_edges()
+            if len(v_es) == 0:
+                new_es.append(None)
+            elif len(v_es) == 1:
+                new_es.append(v_es[0])
+            else:
+                # Recursively find the next new common vertex
+                list_of_visited_vs_on_branch = vs_to_not_visit + list(map_of_visited[i].keys())
+                new_common_vertex_edges = find_first_common_next_vertex_in_edges(g, v_es, list_of_visited_vs_on_branch)
+                if new_common_vertex_edges is None:
+                    new_es.append(None)
+                else:
+                    new_es.append(new_common_vertex_edges[0])
 
-        return_candidate = find_first_common_next_vertex_in_edges(
-            g, v1, new_v2, v1_in_edge, new_e2.index, visited1, visited2, recursion_check
-        )
-
-        if return_candidate != (None, None):
-            return return_candidate
-
-    # Negative end condition: One if the paths ends
-    return None, None
+        es = new_es
 
 
 def is_loop(g: Graph, v: Vertex, e: Edge):
@@ -118,3 +131,12 @@ def is_loop(g: Graph, v: Vertex, e: Edge):
     g.add_edge(e_orig_source, e_orig_target, **e_orig_attr)
 
     return not has_any_loops
+
+
+def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
+    for v in g.vs:
+        if isinstance(v['op'], SsbLabel):
+            for i, marker in enumerate(v['op'].markers):
+                if cb(marker):
+                    return v, i
+    return None, None
