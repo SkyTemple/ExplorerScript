@@ -52,13 +52,14 @@ class SsbDecompiler:
         # Step 2: Build and optimize execution graph
         grapher = SsbGraphMinimizer(self._routine_ops)
         control_flow_before_minimize = grapher.get_control_flow()
-        # Remove redundant labels (see D01P11A/um2402.ssb)
+        # Remove redundant labels
         grapher.optimize_paths()
         # Build groups from performer/object/actor pairs, switch+cases, switch groups, branch-groups
         # get rid of as many label references (jumps) as possible
         grapher.group_objs()
         grapher.group_switch_cases()
         grapher.group_switches()
+        grapher.build_branches()
         grapher.group_branches()
         # Process loops
         grapher.build_loops()

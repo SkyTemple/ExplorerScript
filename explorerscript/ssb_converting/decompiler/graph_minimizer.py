@@ -27,13 +27,14 @@ from typing import List, Union, Set, Dict, Tuple
 
 from igraph import Graph, IN, OUT
 
+from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
-    OP_JUMP
+    OP_JUMP, OPS_BRANCH, SsbIfStart, SsbIfEnd
 
 
 class ControlFlowToken(Enum):
-    # Building the control flow was aborted, because after reaching the previous node the flow loops
+    # Building the control flow was aborted, because after reaching the node before this token the flow loops
     LOOP = auto()
 
 
@@ -53,15 +54,10 @@ class SsbGraphMinimizer:
             # Map of label id -> id of opcode in routine
             label_indices: Dict[int, int] = {}
             for i, op in enumerate(rtn):
-                v = g.add_vertex(i, label=f"<{i}>{op.op_code.name}", op=op, style='solid', shape='ellipse')
+                v = g.add_vertex(i, label=None, op=op, style='solid', shape='ellipse')
                 if isinstance(op, SsbLabel):
                     label_indices[op.id] = i
-                    v['style'] = 'filled'
-                    v['fillcolor'] = '#B446E3'
-                    v['shape'] = 'rectangle'
-                elif isinstance(op, SsbLabelJump):
-                    v['style'] = 'filled'
-                    v['fillcolor'] = '#38BCFF'
+                self._update_vertex_style(v)
             self._get_edges(g, rtn, rtn_id, label_indices)
 
     def count_labels(self):
@@ -75,7 +71,8 @@ class SsbGraphMinimizer:
 
         Return is a list of op_codes and some special tokens (see enum ControlFlowToken).
         """
-        exit(1)
+        # TODO
+        return None
 
     def optimize_paths(self):
         """Perform some general optimizations."""
@@ -96,6 +93,8 @@ class SsbGraphMinimizer:
         """
         Remove all connections to labels that just jump to another label,
         with direct connections to that label.
+        Example to check: D01P11A/um2402.ssb
+        - RULE: [Any, Label1, Jump[in=1,out=1], Label2] -> [Any, Label2]
         """
         outs = g.incident(jump, OUT)
         assert len(outs) == 1
@@ -122,8 +121,62 @@ class SsbGraphMinimizer:
     def group_switches(self):
         pass
 
+    def build_branches(self):
+        """
+        Marks "ifs" in the graph, based on Branch* opcodes.
+        Examples to check:
+        - unionall 73 for if-only,
+        - 10 for else-only,
+        - 274 for if-else w tail,
+        - 90 for if-else w tail [2] and if-only [3]
+        - complex: 89
+        """
+        for i, g in enumerate(self._graphs):
+            vs_to_delete = []
+            current_if_id = -1
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and v['op'].root.op_code.name in OPS_BRANCH.keys():
+                    current_if_id += 1
+                    # IS A BRANCH OPCODE
+                    v['op'].add_marker(SsbIfStart(current_if_id))
+                    self._update_vertex_style(v)
+                    else_edge, if_edge = find_lowest_and_highest_out_edge(g, v, 'flow_level')
+                    assert else_edge != if_edge
+                    else_edge['is_else'] = True
+                    self._update_edge_style(else_edge)
+
+                    # Common end label
+                    e_on_if_bef_end, e_on_else_bef_end = find_first_common_next_vertex_in_edges(g, else_edge.target_vertex, if_edge.target_vertex)
+                    if e_on_if_bef_end is not None:
+                        end_vertex = e_on_if_bef_end.target_vertex
+                        v_on_if_bef_end = e_on_if_bef_end.source_vertex
+                        v_on_else_bef_end = e_on_else_bef_end.source_vertex
+                        if not isinstance(end_vertex['op'], SsbLabel):
+                            # There's no real end, but a loop. TODO: This could lead to real problems...
+                            continue
+                        end_vertex['op'].add_marker(SsbIfEnd(current_if_id))
+                        self._update_vertex_style(end_vertex)
+
+                        # Remove the jumps before the common end label (if they exist), we don't need them anymore.
+                        if isinstance(v_on_if_bef_end['op'], SsbLabelJump) and v_on_if_bef_end['op'].root.op_code.name == OP_JUMP:
+                            vs_to_delete.append(v_on_if_bef_end.index)
+                            e_before_jump_on_if = g.es[g.incident(v_on_if_bef_end, IN)[0]]
+                            self._reconnect(g, e_before_jump_on_if.source, e_before_jump_on_if, end_vertex)
+
+                        if isinstance(v_on_else_bef_end['op'], SsbLabelJump) and v_on_else_bef_end['op'].root.op_code.name == OP_JUMP:
+                            vs_to_delete.append(v_on_else_bef_end.index)
+                            e_before_jump_on_else = g.es[g.incident(v_on_else_bef_end, IN)[0]]
+                            self._reconnect(g, e_before_jump_on_else.source, e_before_jump_on_else, end_vertex)
+
+            g.delete_vertices(vs_to_delete)
+
     def group_branches(self):
-        pass
+        """
+        Groups branches right next to each other in the else-path, that have the same if-path together (if x or y)
+        Examples to check:
+        - unionall 86 2+3
+        :return:
+        """
 
     def build_loops(self):
         pass
@@ -145,7 +198,14 @@ class SsbGraphMinimizer:
         # Not applicable for one-instruction routines.
         while op_code_idx > 1:
             if len(list(g.incident(op_code_idx, IN))) < 1:
-                g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=0)
+                e = g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=None, is_else=False, op=None, loop=False)
+                self._update_edge_style(e)
+                v_op = g.vs[op_code_idx]['op']
+                # Don't forget the labels
+                if isinstance(v_op, SsbLabelJump) and v_op.label.routine_id == rtn_id and v_op.root.op_code.name != OP_JUMP:
+                    is_loop = label_indices[v_op.label.id] < op_code_idx and len(g.incident(label_indices[v_op.label.id], IN)) > 0
+                    g.add_edge(op_code_idx, label_indices[v_op.label.id], flow_level=1, label=None, is_else=False, op=None, loop=is_loop)
+                    self._update_edge_style(e)
                 op_code_idx -= 1
             else:
                 break
@@ -157,7 +217,10 @@ class SsbGraphMinimizer:
             return  # Loop
         already_visited.add(op_i)
         for flow_level, nxt in self._get_edges__get_next_for(rtn, rtn_id, flow_level, label_indices, op_i):
-            g.add_edge(op_i, nxt, flow_level=flow_level, label=flow_level)
+            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, op=None, loop=False)
+            if is_loop(g, g.vs[op_i], e):
+                e['loop'] = True
+            self._update_edge_style(e)
             self._get_edges__add_edge(g, rtn, rtn_id, label_indices, nxt, already_visited, flow_level)
 
     def _get_edges__get_next_for(self, rtn: List[SsbOperation], rtn_id: int, flow_level: int,
@@ -188,3 +251,52 @@ class SsbGraphMinimizer:
                 next_ops.append((flow_level, op_i + 1))
 
         return next_ops
+
+    @classmethod
+    def _reconnect(cls, g, old_vertex, old_vertex_edge_to_remove, new_vertex_to_connect):
+        attr = old_vertex_edge_to_remove.attributes()
+        g.delete_edges(old_vertex_edge_to_remove)
+        e = g.add_edge(old_vertex, new_vertex_to_connect, **attr)
+        cls._update_edge_style(e)
+
+    @staticmethod
+    def _update_vertex_style(v):
+        v['label'] = f"<{v['name']}>{v['op'].op_code.name}"
+        if isinstance(v['op'], SsbLabel):
+            v['style'] = 'striped'
+            v['fillcolor'] = '#B446E3'
+            v['shape'] = 'rectangle'
+            if len(v['op'].markers) > 0:
+                marker_str = ""
+                v['fillcolor'] = ''
+                for marker in v['op'].markers:
+                    if isinstance(marker, SsbIfEnd):
+                        v['fillcolor'] += '#A85400:'
+                    marker_str += str(marker) + ";"
+                marker_str = marker_str[:-1]
+                v['fillcolor'] = v['fillcolor'][:-1]
+                v['label'] += f" ({marker_str})"
+        elif isinstance(v['op'], SsbLabelJump):
+            v['style'] = 'filled'  # TODO: wedged not working...?
+            v['fillcolor'] = '#38BCFF'
+            v['shape'] = 'ellipse'
+            if len(v['op'].markers) > 0:
+                marker_str = ""
+                v['fillcolor'] = ''
+                for marker in v['op'].markers:
+                    if isinstance(marker, SsbIfStart):
+                        v['fillcolor'] += '#E36A00:'
+                    marker_str += str(marker) + ";"
+                marker_str = marker_str[:-1]
+                v['fillcolor'] = v['fillcolor'][:-1]
+                v['label'] += f" ({marker_str})"
+
+    @staticmethod
+    def _update_edge_style(e):
+        e['color'] = 'black'
+        e['label'] = str(e['flow_level'])
+        if e['is_else']:
+            e['label'] += ' <Else>'
+        if e['loop']:
+            e['color'] = 'red'
+            e['label'] += ' <Loop>'

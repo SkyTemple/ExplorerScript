@@ -31,8 +31,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode
 
 OP_JUMP = 'Jump'
 
-# A list of ops with jumps to memory offsets, values are the parameter index containing the jump
-OPS_WITH_JUMP_TO_MEM_OFFSET = {
+OPS_BRANCH = {
     'Branch': 2,
     'BranchBit': 2,
     'BranchDebug': 1,
@@ -48,6 +47,10 @@ OPS_WITH_JUMP_TO_MEM_OFFSET = {
     'BranchValue': 3,
     'BranchVariable': 3,
     'BranchVariation': 1,
+}
+
+# A list of ops with jumps to memory offsets, values are the parameter index containing the jump
+OPS_WITH_JUMP_TO_MEM_OFFSET = {
     #'Call': 0,  TODO: Check
     #'CancelRecoverCommon': 0,  TODO: Check
     'Case': 1,
@@ -59,6 +62,7 @@ OPS_WITH_JUMP_TO_MEM_OFFSET = {
     # Special case; this OpCode ALWAYS jumps:
     OP_JUMP: 0,
 }
+OPS_WITH_JUMP_TO_MEM_OFFSET.update(OPS_BRANCH)
 
 
 # THEORY:
@@ -77,6 +81,31 @@ OPS_THAT_END_CONTROL_FLOW = [
     OP_JUMP, 'Return', 'End', OP_HOLD
 ]
 
+
+class SsbLabelMarker:
+    pass
+
+
+class SsbLabelJumpMarker:
+    pass
+
+
+class SsbIfStart(SsbLabelJumpMarker):
+    def __init__(self, if_id: int):
+        self.if_id = if_id
+
+    def __str__(self):
+        return f"IF({self.if_id})"
+
+
+class SsbIfEnd(SsbLabelMarker):
+    def __init__(self, if_id: int):
+        self.if_id = if_id
+
+    def __str__(self):
+        return f"IF({self.if_id})"
+
+
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
     def __init__(self, id: int, routine_id: int):
@@ -87,6 +116,11 @@ class SsbLabel(SsbOperation):
         self.routine_id = routine_id
         # Whether or not this label is referenced from another routine
         self.referenced_from_other_routine = False
+        # Markers for this label (type of label)
+        self.markers: List[SsbLabelMarker] = []
+
+    def add_marker(self, m: SsbLabelMarker):
+        self.markers.append(m)
 
 
 class SsbLabelJump(SsbOperation):
@@ -96,6 +130,11 @@ class SsbLabelJump(SsbOperation):
         super().__init__(root.offset, SsbOpCode(-1, f'ES_JUMP<{root.op_code.name}>'), [label.id])
         self.root = root
         self.label = label
+        # Markers for this jump (type of jump)
+        self.markers: List[SsbLabelJumpMarker] = []
+
+    def add_marker(self, m: SsbLabelJumpMarker):
+        self.markers.append(m)
 
 
 def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], routine_id: int) -> SsbOperation:
