@@ -49,13 +49,26 @@ OPS_BRANCH = {
     'BranchVariation': 1,
 }
 
+OPS_SWITCH_CASE_MAP = {
+    'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
+    'message_SwitchTalk': ['CaseText'],
+    'message_SwitchMonologue': ['CaseText'],
+    'Switch': ['Case', 'CaseValue', 'CaseVariable'],
+    'SwitchSector': ['Case'],
+    'ProcessSpecial': ['CaseValue', 'Case'],
+    'SwitchScenario': ['CaseScenario'],
+    'SwitchRandom': ['Case', 'CaseValue'],
+    'SwitchScenarioLevel': ['Case', 'CaseValue'],
+    'SwitchDungeonMode': ['Case']
+}
+
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
 OPS_WITH_JUMP_TO_MEM_OFFSET = {
     #'Call': 0,  TODO: Check
     #'CancelRecoverCommon': 0,  TODO: Check
     'Case': 1,
     'CaseMenu': 1,
-    #'CaseMenu2': 1,  TODO: Check
+    'CaseMenu2': 1,
     'CaseScenario': 2,
     'CaseValue': 2,
     'CaseVariable': 2,
@@ -80,6 +93,10 @@ OP_HOLD = 'Hold'
 OPS_THAT_END_CONTROL_FLOW = [
     OP_JUMP, 'Return', 'End', OP_HOLD
 ]
+
+
+# The next OP after these will be executed in the context of an actor/object/performer
+OPS_CTX = ['lives', 'object', 'performer']
 
 
 class LabelMarker:
@@ -112,12 +129,28 @@ class MultiIfStart(IfStart):
         self.original_ssb_ifs_ops.append(ssb_if)
 
 
+class SwitchStart(LabelJumpMarker):
+    def __init__(self, switch_id: int):
+        self.switch_id = switch_id
+
+    def __str__(self):
+        return f"SWITCH({self.switch_id})"
+
+
 class IfEnd(LabelMarker):
     def __init__(self, if_id: int):
         self.if_id = if_id
 
     def __str__(self):
         return f"IF({self.if_id})"
+
+
+class SwitchEnd(LabelMarker):
+    def __init__(self, switch_id: int):
+        self.switch_id = switch_id
+
+    def __str__(self):
+        return f"SWITCH({self.switch_id})"
 
 
 class SsbLabel(SsbOperation):
@@ -139,10 +172,15 @@ class SsbLabel(SsbOperation):
 
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
-    def __init__(self, root: SsbOperation, label: SsbLabel):
+    def __init__(self, root: SsbOperation, label: Union[SsbLabel, None]):
+        if label is not None:
+            label_id = label.id
+        else:
+            label_id = -1
         #                                                                             Params only for debugging
-        super().__init__(root.offset, SsbOpCode(-1, f'ES_JUMP<{root.op_code.name}>'), [label.id])
+        super().__init__(root.offset, SsbOpCode(-1, f'ES_JUMP<{root.op_code.name}>'), [label_id])
         self.root = root
+        # May be None, if so the connected edges determine the different jumps
         self.label = label
         # Markers for this jump (type of jump)
         self.markers: List[LabelJumpMarker] = []
