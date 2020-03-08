@@ -56,6 +56,7 @@ OPS_SWITCH_CASE_MAP = {
     'Switch': ['Case', 'CaseValue', 'CaseVariable'],
     'SwitchSector': ['Case'],
     'ProcessSpecial': ['CaseValue', 'Case'],
+    'message_Menu': ['CaseValue', 'Case'],
     'SwitchScenario': ['CaseScenario'],
     'SwitchRandom': ['Case', 'CaseValue'],
     'SwitchScenarioLevel': ['Case', 'CaseValue'],
@@ -152,6 +153,22 @@ class MultiSwitchStart(SwitchStart):
         return len(self.original_ssb_switch_ops)
 
 
+class ForeverContinue(LabelJumpMarker):
+    def __init__(self, loop_id: int):
+        self.loop_id = loop_id
+
+    def __str__(self):
+        return f"LOOP_CONTINUE({self.loop_id})"
+
+
+class ForeverBreak(LabelJumpMarker):
+    def __init__(self, loop_id: int):
+        self.loop_id = loop_id
+
+    def __str__(self):
+        return f"LOOP_BREAK({self.loop_id})"
+
+
 class IfEnd(LabelMarker):
     def __init__(self, if_id: int):
         self.if_id = if_id
@@ -171,6 +188,14 @@ class SwitchEnd(LabelMarker):
 class SwitchFalltrough(LabelMarker):
     def __str__(self):
         return f"FALL"
+
+
+class ForeverStart(LabelMarker):
+    def __init__(self, loop_id: int):
+        self.loop_id = loop_id
+
+    def __str__(self):
+        return f"LOOP({self.loop_id})"
 
 
 class SsbLabel(SsbOperation):

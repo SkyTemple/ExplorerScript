@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
-    MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough
+    MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart
 
 
 class ControlFlowToken(Enum):
@@ -483,16 +483,201 @@ class SsbGraphMinimizer:
                             pfm_in_edges = possible_fallthrough_marker.in_edges()
                             if len(pfm_in_edges) == 2:
                                 edge = next(pfme for pfme in pfm_in_edges if pfme != e)
-                                e_others = reverse_find_edge(edge, lambda e: e['switch_ops'] is not None and e.source == v.index)
+                                e_others = reverse_find_edge(edge, lambda e: e['switch_ops'] is not None)
                                 for e_other in e_others:
-                                    if list_of_edges[i - 1] == e_other:
+                                    if list_of_edges[i - 1] == e_other and e_other.source == v.index:
                                         possible_fallthrough_marker['op'].add_marker(SwitchFalltrough())
+                                        # These falltrough situations may lead to wrong loop markings:
                                         self._update_vertex_style(possible_fallthrough_marker)
                                         break
 
     def build_loops(self):
-        # TODO
-        pass
+        """
+        Build loop like structures, with beginnings, loopings points (continues) and breaking points.
+        Valid loops don't contain any half-started ifs/switches or subloops. They all either end with proper
+        end markers or by continuing or breaking on every sub-branch.
+        Uses BFS to also allow nested loops.
+        """
+        for i, g in enumerate(self._graphs):
+            loop_id = -1
+            vs_to_delete = set()
+            if len(g.vs) < 1:
+                continue
+            for v in g.bfsiter(g.vs[0]):
+                loop_edges = [e for e in v.in_edges() if e['loop']]
+                if len(loop_edges) > 0:
+                    # To this node jumps a loop. Check if we can build a proper forever-loop.
+                    can_build, break_points, continue_points, redundant_jumps = self._build_loops__try_loop(v)
+                    if can_build:
+                        es_to_delete = set()
+                        print(f">>>> FOUND LOOP IN {i}")
+                        loop_id += 1
+                        v['op'].add_marker(ForeverStart(loop_id))
+                        self._update_vertex_style(v)
+                        for loop_edge in break_points:
+                            break_point = loop_edge.source_vertex
+                            break_target = loop_edge.target_vertex
+                            if break_point['op'].get_marker():
+                                # TODO: Not done! To get the actual break points, find common next vertex
+                                #       of all break points and then apply breakpoint status to all jumps before that.
+                                #       (if there's only one just use that one)
+                                #       If any of the jumps already has a marker or there is none, add a new one and mark it instead.
+                                #       If no common end vertex can be found, fail for now.
+                                # Already has a marker, add a new opcode in between
+                                loop_edge_flow_level = loop_edge['flow_level']
+                                actual_break_point = g.add_vertex(label=None, op=SsbLabelJump(break_point['op'], None), style='solid', shape='ellipse')
+                                actual_break_point['op'].remove_marker()
+                                actual_break_point['op'].add_marker(ForeverBreak(loop_id))
+                                es_to_delete.add(loop_edge)
+                                e = self._reconnect(g, break_point, loop_edge, actual_break_point, True)
+                                e = g.add_edge(actual_break_point, break_target, flow_level=loop_edge_flow_level, label=None, is_else=False, switch_ops=None, loop=e['loop'])
+                                self._update_edge_style(e)
+                                self._update_vertex_style(actual_break_point)
+                            else:
+                                # Doesn't have a marker yet, mark as break
+                                break_point['op'].add_marker(ForeverBreak(loop_id))
+                                self._update_vertex_style(break_point)
+                        for loop_edge in continue_points:
+                            continue_point = loop_edge.source_vertex
+                            if continue_point['op'].get_marker():
+                                # Already has a marker, add a new opcode in between
+                                loop_edge_flow_level = loop_edge['flow_level']
+                                actual_continue_point = g.add_vertex(label=None, op=SsbLabelJump(continue_point['op'], None), style='solid', shape='ellipse')
+                                actual_continue_point['op'].remove_marker()
+                                actual_continue_point['op'].add_marker(ForeverContinue(loop_id))
+                                es_to_delete.add(loop_edge)
+                                e = self._reconnect(g, continue_point, loop_edge, actual_continue_point, True)
+                                e['loop'] = False
+                                e = g.add_edge(actual_continue_point, v, flow_level=loop_edge_flow_level, label=None, is_else=False, switch_ops=None, loop=True)
+                                self._update_edge_style(e)
+                                self._update_vertex_style(actual_continue_point)
+                            else:
+                                # Doesn't have a marker yet, mark as break
+                                continue_point['op'].add_marker(ForeverContinue(loop_id))
+                                self._update_vertex_style(continue_point)
+                        for loop_edge in redundant_jumps:
+                            redundant_jump = loop_edge.source_vertex
+                            if len(redundant_jump.out_edges()) == 1 and redundant_jump['op'].get_marker() is None:
+                                assert len(redundant_jump.in_edges()) == 1
+                                before = redundant_jump.in_edges()[0].source_vertex
+                                es_to_delete.add(loop_edge)
+                                self._reconnect(g, before, loop_edge, v, True)
+                                vs_to_delete.add(redundant_jump)
+                        g.delete_edges(es_to_delete)
+
+            g.delete_vertices(vs_to_delete)
+
+    def _build_loops__try_loop(self, start: Vertex) -> Tuple[bool, Union[List[Edge], None], Union[List[Edge], None], Union[List[Edge], None]]:
+        """
+        Try to find a loopable section of the graph starting at v.
+        If found, the second entry of the returned tuple contains breaking points and the third all required continue
+        markers. The fourth contains a list of vertices that implicitly continue, they are redundant jumps and can
+        be removed.
+        """
+        # Allow loops when all sub-structures are closed (either continue/implicit or break). Allow breaks
+        # for ifs, if the other branch is also a break or a continue: and for switch if break is in else-path
+        # and all other paths either end on break or continue. Ignore closed ifs and switches.
+        # Print like this:
+        #  - If | Break in if, either continue/break in else:
+        #      forever:
+        #        if x:
+        #          break
+        #        else:
+        #          continue/break
+        #        <NOTHING HERE>
+        #  - If | Break in else, continue in if:
+        #      forever:
+        #        if x:
+        #          ...
+        #          continue
+        #        break
+        #  - Switch with break in default, all other continue [note that the break comes then AFTER the switch]:
+        #      forever:
+        #        switch:
+        #          case A:
+        #            continue
+        #          case B:
+        #            continue
+        #        break
+
+        # Continues are implicit if:
+        # For if:
+        #  - If does not have an end and all branches of the if continue
+        # For switch:
+        #  - Switch does not have an end and all branches of the switch continue
+        # For regular control flow:
+        #  - Always
+
+        continues = []
+        breaks = []
+        redundant = []
+
+        already_visited_vertices = set()
+
+        possible, _, had_to_break_but_didnt = self._build_loops__recursion(
+            start, start, already_visited_vertices, continues, breaks, redundant
+        )
+        if possible and not had_to_break_but_didnt:
+            return True, breaks, continues, redundant
+        return False, None, None, None
+
+    def _build_loops__recursion(
+            self, start: Vertex, v: Vertex, already_visited_vertices, continues, breaks, redundant
+    ) -> Tuple[bool, bool, bool]:
+        # TODO: Rewrite non-recursively.
+        must_break_before = False
+        already_visited_vertices.add(v)
+        out_edges = v.out_edges()
+        edges_continue = [False for _ in out_edges]
+        an_edge_breaks = False
+        possible_continues = []
+        if len(out_edges) == 0:
+            # This is a dead-end. There must be a break before this
+            return True, False, True
+        for i, out_edge in enumerate(out_edges):
+            if out_edge['loop']:
+                # This path will loop again. What to do?
+                if out_edge.target_vertex == start:
+                    # CONTINUE / IMPLICIT
+                    edges_continue[i] = True
+                    possible_continues.append(out_edge)
+                elif isinstance(out_edge.target_vertex['op'], SsbLabel) and any(isinstance(m, ForeverStart) for m in out_edge.target_vertex['op'].markers):
+                    # Crossing into another loop. Must be a break before.
+                    return True, False, True
+                elif out_edge.target_vertex in already_visited_vertices:
+                    # Subloop loop point, ignore. Counts as a continue.
+                    edges_continue[i] = True
+                    continue
+                else:
+                    # Impossible looping jump outside the main loop, can't continue from here, there
+                    # must be a break before.
+                    return True, False, True
+            else:
+                # Proceed normally in the loop
+                possible, all_will_continue_or_break, must_break_before = self._build_loops__recursion(
+                    start, out_edge.target_vertex, already_visited_vertices, continues, breaks, redundant
+                )
+                if not possible:
+                    return False, False, False
+                if all_will_continue_or_break:
+                    edges_continue[i] = True
+        # Get break edge if all other edges are continues
+        if any(edges_continue):
+            for i, out_edge in enumerate(out_edges):
+                if not edges_continue[i]:
+                    # Check if this is a switch but we are not on the else branch (impossible)
+                    if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), SwitchStart):
+                        if not out_edge['is_else']:
+                            return False, False, False
+                    breaks.append(out_edge)
+                    an_edge_breaks = True
+                    must_break_before = False
+        if an_edge_breaks or (isinstance(v['op'], SsbLabelJump) and v['op'].get_marker() is None):
+            redundant += possible_continues
+        else:
+            continues += possible_continues
+
+        return True, any(edges_continue), must_break_before
 
     def remove_label_markers(self):
         for i, g in enumerate(self._graphs):
@@ -628,6 +813,8 @@ class SsbGraphMinimizer:
                         v['fillcolor'] += '#005F26:'
                     elif isinstance(marker, SwitchFalltrough):
                         v['fillcolor'] += '#8ABC82:'
+                    elif isinstance(marker, ForeverStart):
+                        v['fillcolor'] += '#00366D:'
                     marker_str += str(marker) + ";"
                 marker_str = marker_str[:-1]
                 v['fillcolor'] = v['fillcolor'][:-1]
@@ -648,6 +835,10 @@ class SsbGraphMinimizer:
                         v['fillcolor'] += '#00BC5A:'
                     elif isinstance(marker, SwitchStart):
                         v['fillcolor'] += '#00BC3F:'
+                    elif isinstance(marker, ForeverContinue):
+                        v['fillcolor'] += '#0C00BC:'
+                    elif isinstance(marker, ForeverBreak):
+                        v['fillcolor'] += '#6694FF:'
                     marker_str += str(marker) + ";"
                 marker_str = marker_str[:-1]
                 v['fillcolor'] = v['fillcolor'][:-1]
