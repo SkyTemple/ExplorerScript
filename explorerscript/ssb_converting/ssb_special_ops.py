@@ -125,7 +125,6 @@ class MultiIfStart(IfStart):
 
     def add_if(self, ssb_if: SsbOperation):
         """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of ifs."""
-        # The if_id is no longer applicable for this ssb_if:
         self.original_ssb_ifs_ops.append(ssb_if)
 
 
@@ -135,6 +134,19 @@ class SwitchStart(LabelJumpMarker):
 
     def __str__(self):
         return f"SWITCH({self.switch_id})"
+
+
+class MultiSwitchStart(SwitchStart):
+    def __init__(self, if_id: int, start_switches):
+        super().__init__(if_id)
+        self.original_ssb_switch_ops: List[SsbOperation] = start_switches
+
+    def __str__(self):
+        return f"MSWITCH({self.switch_id})"
+
+    def add_switch(self, ssb_switch: SsbOperation):
+        """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of switches."""
+        self.original_ssb_switch_ops.append(ssb_switch)
 
 
 class IfEnd(LabelMarker):

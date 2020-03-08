@@ -30,7 +30,8 @@ from igraph import Graph, IN, OUT
 from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
-    OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd
+    OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
+    MultiSwitchStart
 
 
 class ControlFlowToken(Enum):
@@ -131,7 +132,7 @@ class SsbGraphMinimizer:
         - complex: 89
         """
         for i, g in enumerate(self._graphs):
-            vs_to_delete = []
+            vs_to_delete = set()
             current_if_id = -1
             for v in g.vs:
                 if isinstance(v['op'], SsbLabelJump) and v['op'].root.op_code.name in OPS_BRANCH.keys():
@@ -160,7 +161,7 @@ class SsbGraphMinimizer:
 
                         # Remove the jumps before the common end label (if they exist), we don't need them anymore.
                         if isinstance(v_on_if_bef_end['op'], SsbLabelJump) and v_on_if_bef_end['op'].root.op_code.name == OP_JUMP:
-                            vs_to_delete.append(v_on_if_bef_end.index)
+                            vs_to_delete.add(v_on_if_bef_end.index)
                             e_before_jump_on_if = g.es[g.incident(v_on_if_bef_end, IN)[0]]
                             self._reconnect(g, e_before_jump_on_if.source, e_before_jump_on_if, end_vertex)
 
@@ -172,7 +173,7 @@ class SsbGraphMinimizer:
                             continue
 
                         if isinstance(v_on_else_bef_end['op'], SsbLabelJump) and v_on_else_bef_end['op'].root.op_code.name == OP_JUMP:
-                            vs_to_delete.append(v_on_else_bef_end.index)
+                            vs_to_delete.add(v_on_else_bef_end.index)
                             e_before_jump_on_else = g.es[g.incident(v_on_else_bef_end, IN)[0]]
                             self._reconnect(g, e_before_jump_on_else.source, e_before_jump_on_else, end_vertex)
 
@@ -187,9 +188,9 @@ class SsbGraphMinimizer:
         Must be run after build_branches.
         """
         for i, g in enumerate(self._graphs):
-            vs_to_delete = []
+            vs_to_delete = set()
             for v in g.vs:
-                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), IfStart):
+                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), IfStart) and v not in vs_to_delete:
                     # IS IF
                     else_edge = [e for e in v.out_edges() if e['is_else']][0]
                     if_edge = [e for e in v.out_edges() if not e['is_else']][0]
@@ -208,7 +209,7 @@ class SsbGraphMinimizer:
                         original_op_v.root = None
                         original_op_v.op_code.name = 'ES_MULTI_IF'
                         # v_at_else:                    Delete
-                        vs_to_delete.append(v_at_else)
+                        vs_to_delete.add(v_at_else)
                         # v:                            Reconnect with else of v_at_else
                         v_at_else__else_edge = [e for e in v_at_else.out_edges() if e['is_else']][0]
                         self._reconnect(g, v, else_edge, v_at_else__else_edge.target_vertex)
@@ -223,12 +224,13 @@ class SsbGraphMinimizer:
                         self._update_vertex_style(v)
                         # Repeat for maybe other connected ifs:
                         else_edge = [e for e in v.out_edges() if e['is_else']][0]
+                        if_edge = [e for e in v.out_edges() if not e['is_else']][0]
                         v_at_else = else_edge.target_vertex
                         while self._group_branches__is_if_group_possible(if_edge, v_at_else):
                             original_op_v_at_else = v_at_else['op']
                             v_at_else_if_id = original_op_v_at_else.get_marker().if_id
                             # v_at_else:                    Delete
-                            vs_to_delete.append(v_at_else)
+                            vs_to_delete.add(v_at_else)
                             # v:                            Reconnect with else of v_at_else
                             v_at_else__else_edge = [e for e in v_at_else.out_edges() if e['is_else']][0]
                             self._reconnect(g, v, else_edge, v_at_else__else_edge.target_vertex)
@@ -243,6 +245,7 @@ class SsbGraphMinimizer:
                                 self._update_vertex_style(end)
                             self._update_vertex_style(v)
                             else_edge = [e for e in v.out_edges() if e['is_else']][0]
+                            if_edge = [e for e in v.out_edges() if not e['is_else']][0]
                             v_at_else = else_edge.target_vertex
 
             g.delete_vertices(vs_to_delete)
@@ -256,10 +259,10 @@ class SsbGraphMinimizer:
 
     def build_and_group_switch_cases(self):
         for i, g in enumerate(self._graphs):
-            vs_to_delete = []
+            vs_to_delete = set()
             current_switch_id = -1
             for v in g.vs:
-                if v['op'].op_code.name in OPS_SWITCH_CASE_MAP.keys():
+                if v['op'].op_code.name in OPS_SWITCH_CASE_MAP.keys() and v not in vs_to_delete:
                     current_switch_id += 1
                     # SWITCH
                     # -- FIRST: FINDING THE START POINTS
@@ -292,7 +295,7 @@ class SsbGraphMinimizer:
                         else:
                             else_edge_target_vertex = None
                             g.delete_edges(case_edge.index)
-                        vs_to_delete.append(next_vertex)
+                        vs_to_delete.add(next_vertex)
                         next_vertex = else_edge_target_vertex
                     # Else edge:
                     if next_vertex is not None:
@@ -331,20 +334,109 @@ class SsbGraphMinimizer:
 
                             # Remove the jumps before the common end label (if they exist), we don't need them anymore.
                             if isinstance(e['op'], SsbLabelJump) and e['op'].root.op_code.name == OP_JUMP:
-                                vs_to_delete.append(e.index)
+                                vs_to_delete.add(e.index)
                                 e_before_jump = g.es[g.incident(e, IN)[0]]
                                 self._reconnect(g, e_before_jump.source, e_before_jump, end_vertex)
 
             g.delete_vertices(vs_to_delete)
 
     def group_switches(self):
-        pass
+        """
+        Groups switches right next to each other in the else-path (multi switch)
+        Examples to check:
+        - unionall 11
+
+        Must be run after build_and_group_switch_cases.
+        """
+        for i, g in enumerate(self._graphs):
+            vs_to_delete = set()
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), SwitchStart) and v not in vs_to_delete:
+                    # IS SWITCH
+                    else_edge_candidates = [e for e in v.out_edges() if e['is_else']]
+                    if len(else_edge_candidates) < 1:
+                        continue
+                    else_edge = else_edge_candidates[0]
+                    v_at_else = else_edge.target_vertex
+                    if self._group_branches__is_switch_group_possible(g, v, v_at_else):
+                        # Build a switch-group
+                        original_op_v = v['op']
+                        original_op_v_at_else = v_at_else['op']
+                        v_switch_id = original_op_v.get_marker().switch_id
+                        # v op:                         Turn into SsbMultiSwitchStart
+                        #                               and add original v op and v_at_else op to original_ssb_switches
+                        original_op_v.remove_marker()
+                        original_op_v.add_marker(MultiSwitchStart(v_switch_id, [original_op_v.root, original_op_v_at_else.root]))
+                        # Obfuscate original opcode name and remove root, to clarify that this is a special case
+                        original_op_v.root = None
+                        original_op_v.op_code.name = 'ES_MULTI_SWITCH'
+                        # v_at_else:                    Delete
+                        vs_to_delete.add(v_at_else)
+                        # v:                            Mark all native switch cases as belonging to switch index 0
+                        for e in v.out_edges():
+                            if e != else_edge:
+                                e['switch_index'] = 0
+                                self._update_edge_style(e)
+                        for e in v_at_else.out_edges():
+                            # v:                            Reconnect with else of v_at_else
+                            if e['is_else']:
+                                self._reconnect(g, v, else_edge, e.target_vertex)
+                            # v:                            Add all of the other switch cases:
+                            else:
+                                new_e = self._reconnect(g, v, e, e.target_vertex, True)
+                                new_e['switch_index'] = 1
+                                self._update_edge_style(new_e)
+                        self._update_vertex_style(v)
+                        # Repeat for maybe other connected switches:
+                        else_edge = [e for e in v.out_edges() if e['is_else']][0]
+                        v_at_else = else_edge.target_vertex
+                        switch_index = 1
+                        while self._group_branches__is_switch_group_possible(g, v, v_at_else):
+                            switch_index += 1
+                            original_op_v_at_else = v_at_else['op']
+                            # v_at_else:                    Delete
+                            vs_to_delete.add(v_at_else)
+                            for e in v_at_else.out_edges():
+                                # v:                            Reconnect with else of v_at_else
+                                if e['is_else']:
+                                    self._reconnect(g, v, else_edge, e.target_vertex)
+                                # v:                            Add all of the other switch cases:
+                                else:
+                                    new_e = self._reconnect(g, v, e, e.target_vertex, True)
+                                    new_e['switch_index'] = switch_index
+                                    self._update_edge_style(new_e)
+                            # v op:                         Add v_at_else op to original_ssb_switches
+                            v['op'].get_marker().add_switch(original_op_v_at_else.root)
+                            self._update_vertex_style(v)
+                            else_edge = [e for e in v.out_edges() if e['is_else']][0]
+                            v_at_else = else_edge.target_vertex
+
+            g.delete_vertices(vs_to_delete)
+
+    def _group_branches__is_switch_group_possible(self, g, base_switch: Vertex, v_to_check: Vertex):
+        if isinstance(v_to_check['op'], SsbLabelJump) and isinstance(v_to_check['op'].get_marker(), SwitchStart):
+            # Both switches need to have the same end
+            a_end, _ = find_first_label_vertex_with_marker_that_matches_condition(
+                g, lambda m: isinstance(m, SwitchEnd) and m.switch_id == base_switch['op'].get_marker().switch_id
+            )
+            b_end, b_marker_idx = find_first_label_vertex_with_marker_that_matches_condition(
+                g, lambda m: isinstance(m, SwitchEnd) and m.switch_id == v_to_check['op'].get_marker().switch_id
+            )
+            if a_end == b_end and a_end is not None:
+                # To save some time, also already remove the end marker for v_to_check:
+                del b_end['op'].markers[b_marker_idx]
+                self._update_vertex_style(b_end)
+                return True
+        return False
+
+    def group_switch_cases(self):
+        """Group cases of a switch or multi switch that jump to the same point"""
 
     def build_loops(self):
         pass
 
     def remove_label_markers(self):
-        # TODO: Don't get to remove labels for redundant jumps (+ the redundant jumps) as well
+        # TODO: Don't forget to remove labels for redundant jumps (+ the redundant jumps) as well
         pass
 
     def _get_edges(self, g: Graph, rtn: List[SsbOperation], rtn_id: int, label_indices: Dict[int, int]):
@@ -361,13 +453,13 @@ class SsbGraphMinimizer:
         # Not applicable for one-instruction routines.
         while op_code_idx > 1:
             if len(list(g.incident(op_code_idx, IN))) < 1:
-                e = g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=None, is_else=False, op=None, loop=False, iter_index=-1)
+                e = g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=None, is_else=False, op=None, loop=False, iter_index=-1, switch_index=None)
                 self._update_edge_style(e)
                 v_op = g.vs[op_code_idx]['op']
                 # Don't forget the labels
                 if isinstance(v_op, SsbLabelJump) and v_op.label.routine_id == rtn_id and v_op.root.op_code.name != OP_JUMP:
                     is_loop = label_indices[v_op.label.id] < op_code_idx and len(g.incident(label_indices[v_op.label.id], IN)) > 0
-                    g.add_edge(op_code_idx, label_indices[v_op.label.id], flow_level=1, label=None, is_else=False, op=None, loop=is_loop, iter_index=-1)
+                    g.add_edge(op_code_idx, label_indices[v_op.label.id], flow_level=1, label=None, is_else=False, op=None, loop=is_loop, iter_index=-1, switch_index=None)
                     self._update_edge_style(e)
                 op_code_idx -= 1
             else:
@@ -380,7 +472,7 @@ class SsbGraphMinimizer:
             return  # Loop
         already_visited.add(op_i)
         for flow_level, nxt in self._get_edges__get_next_for(rtn, rtn_id, flow_level, label_indices, op_i):
-            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, op=None, loop=False, iter_index=-1)
+            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, op=None, loop=False, iter_index=-1, switch_index=None)
             if is_loop(g, g.vs[op_i], e):
                 e['loop'] = True
             self._update_edge_style(e)
@@ -426,6 +518,7 @@ class SsbGraphMinimizer:
             g.delete_edges(old_vertex_edge_to_remove)
         e = g.add_edge(old_vertex, new_vertex_to_connect, **attr)
         cls._update_edge_style(e)
+        return e
 
     @staticmethod
     def _update_vertex_style(v):
@@ -458,6 +551,8 @@ class SsbGraphMinimizer:
                         v['fillcolor'] += '#E3BF00:'
                     elif isinstance(marker, IfStart):
                         v['fillcolor'] += '#E36A00:'
+                    elif isinstance(marker, MultiSwitchStart):
+                        v['fillcolor'] += '#00BC5A:'
                     elif isinstance(marker, SwitchStart):
                         v['fillcolor'] += '#00BC3F:'
                     marker_str += str(marker) + ";"
@@ -477,5 +572,7 @@ class SsbGraphMinimizer:
         if e['loop']:
             e['color'] = 'red'
             e['label'] += ' <Loop>'
+        if e['switch_index'] is not None:
+            e['label'] += f" [Switch {e['switch_index']}]"
         if e['op'] is not None:
-            e['label'] += f" [{e['op'].op_code.name}]"
+            e['label'] += f"\n[{e['op'].op_code.name}]"

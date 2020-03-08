@@ -61,6 +61,7 @@ class SsbDecompiler:
         grapher.group_branches()
         grapher.build_and_group_switch_cases()
         grapher.group_switches()
+        grapher.group_switch_cases()
         # Process loops
         grapher.build_loops()
         # Remove all labels that are no longer needed, because they are only referenced from one place or implicit
