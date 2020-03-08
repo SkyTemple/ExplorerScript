@@ -427,6 +427,25 @@ class SsbGraphMinimizer:
 
     def group_switch_cases(self):
         """Group cases of a switch or multi switch that jump to the same point"""
+        for i, g in enumerate(self._graphs):
+            es_to_delete = set()
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), SwitchStart):
+                    # SWITCH. Let's see what cases can be combined
+                    case_targets = {}
+                    for e in v.out_edges():
+                        if not e['is_else']:
+                            if e.target not in case_targets:
+                                case_targets[e.target] = []
+                            case_targets[e.target].append(e)
+                    for e_group in case_targets.values():
+                        first_e = e_group.pop()
+                        for rest_e in e_group:
+                            es_to_delete.add(rest_e)
+                            first_e['switch_ops'] += rest_e['switch_ops']
+                        self._update_edge_style(first_e)
+
+            g.delete_edges(es_to_delete)
 
     def build_loops(self):
         pass
