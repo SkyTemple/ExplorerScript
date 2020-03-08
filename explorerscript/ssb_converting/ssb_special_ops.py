@@ -214,6 +214,13 @@ class SsbLabelJump(SsbOperation):
         return None
 
 
+class SwitchCaseOperation:
+    """ For marking the edge of a switch. """
+    def __init__(self, switch_index: int, index: int, op: SsbOperation):
+        self.switch_index = switch_index
+        self.index = index
+        self.op = op
+
 def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], routine_id: int) -> SsbOperation:
     """
     Processes the operation.

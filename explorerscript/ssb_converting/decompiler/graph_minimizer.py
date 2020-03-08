@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
-    MultiSwitchStart
+    MultiSwitchStart, SwitchCaseOperation
 
 
 class ControlFlowToken(Enum):
@@ -283,8 +283,7 @@ class SsbGraphMinimizer:
                         else_edge, case_edge = find_lowest_and_highest_out_edge(g, next_vertex, 'flow_level')
                         if else_edge == case_edge:
                             else_edge = None
-                        case_edge['op'] = next_vertex['op']
-                        case_edge['iter_index'] = case_i
+                        case_edge['switch_ops'] = [SwitchCaseOperation(0, case_i, next_vertex['op'].root)]
                         self._update_edge_style(case_edge)
                         # Connect switch with case_edge
                         self._reconnect(g, v, case_edge, case_edge.target_vertex, True)
@@ -333,9 +332,9 @@ class SsbGraphMinimizer:
                                 continue
 
                             # Remove the jumps before the common end label (if they exist), we don't need them anymore.
-                            if isinstance(e['op'], SsbLabelJump) and e['op'].root.op_code.name == OP_JUMP:
-                                vs_to_delete.add(e.index)
-                                e_before_jump = g.es[g.incident(e, IN)[0]]
+                            if isinstance(e.source_vertex['op'], SsbLabelJump) and e.source_vertex['op'].root.op_code.name == OP_JUMP:
+                                vs_to_delete.add(e.source_vertex.index)
+                                e_before_jump = g.es[g.incident(e.source_vertex, IN)[0]]
                                 self._reconnect(g, e_before_jump.source, e_before_jump, end_vertex)
 
             g.delete_vertices(vs_to_delete)
@@ -372,11 +371,6 @@ class SsbGraphMinimizer:
                         original_op_v.op_code.name = 'ES_MULTI_SWITCH'
                         # v_at_else:                    Delete
                         vs_to_delete.add(v_at_else)
-                        # v:                            Mark all native switch cases as belonging to switch index 0
-                        for e in v.out_edges():
-                            if e != else_edge:
-                                e['switch_index'] = 0
-                                self._update_edge_style(e)
                         for e in v_at_else.out_edges():
                             # v:                            Reconnect with else of v_at_else
                             if e['is_else']:
@@ -384,7 +378,8 @@ class SsbGraphMinimizer:
                             # v:                            Add all of the other switch cases:
                             else:
                                 new_e = self._reconnect(g, v, e, e.target_vertex, True)
-                                new_e['switch_index'] = 1
+                                for op in new_e['switch_ops']:
+                                    op.switch_index = 1
                                 self._update_edge_style(new_e)
                         self._update_vertex_style(v)
                         # Repeat for maybe other connected switches:
@@ -403,7 +398,8 @@ class SsbGraphMinimizer:
                                 # v:                            Add all of the other switch cases:
                                 else:
                                     new_e = self._reconnect(g, v, e, e.target_vertex, True)
-                                    new_e['switch_index'] = switch_index
+                                    for op in new_e['switch_ops']:
+                                        op.switch_index = switch_index
                                     self._update_edge_style(new_e)
                             # v op:                         Add v_at_else op to original_ssb_switches
                             v['op'].get_marker().add_switch(original_op_v_at_else.root)
@@ -453,13 +449,13 @@ class SsbGraphMinimizer:
         # Not applicable for one-instruction routines.
         while op_code_idx > 1:
             if len(list(g.incident(op_code_idx, IN))) < 1:
-                e = g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=None, is_else=False, op=None, loop=False, iter_index=-1, switch_index=None)
+                e = g.add_edge(op_code_idx - 1, op_code_idx, flow_level=0, label=None, is_else=False, switch_ops=None, loop=False)
                 self._update_edge_style(e)
                 v_op = g.vs[op_code_idx]['op']
                 # Don't forget the labels
                 if isinstance(v_op, SsbLabelJump) and v_op.label.routine_id == rtn_id and v_op.root.op_code.name != OP_JUMP:
                     is_loop = label_indices[v_op.label.id] < op_code_idx and len(g.incident(label_indices[v_op.label.id], IN)) > 0
-                    g.add_edge(op_code_idx, label_indices[v_op.label.id], flow_level=1, label=None, is_else=False, op=None, loop=is_loop, iter_index=-1, switch_index=None)
+                    g.add_edge(op_code_idx, label_indices[v_op.label.id], flow_level=1, label=None, is_else=False, switch_ops=None, loop=is_loop)
                     self._update_edge_style(e)
                 op_code_idx -= 1
             else:
@@ -472,7 +468,7 @@ class SsbGraphMinimizer:
             return  # Loop
         already_visited.add(op_i)
         for flow_level, nxt in self._get_edges__get_next_for(rtn, rtn_id, flow_level, label_indices, op_i):
-            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, op=None, loop=False, iter_index=-1, switch_index=None)
+            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, switch_ops=None, loop=False)
             if is_loop(g, g.vs[op_i], e):
                 e['loop'] = True
             self._update_edge_style(e)
@@ -563,16 +559,12 @@ class SsbGraphMinimizer:
     @staticmethod
     def _update_edge_style(e):
         e['color'] = 'black'
-        e['label'] = ''
-        if e['iter_index'] > -1:
-            e['label'] += f"{e['iter_index']}:: "
-        e['label'] += str(e['flow_level'])
+        e['label'] = str(e['flow_level'])
         if e['is_else']:
             e['label'] += ' <Else>'
         if e['loop']:
             e['color'] = 'red'
             e['label'] += ' <Loop>'
-        if e['switch_index'] is not None:
-            e['label'] += f" [Switch {e['switch_index']}]"
-        if e['op'] is not None:
-            e['label'] += f"\n[{e['op'].op_code.name}]"
+        if e['switch_ops'] is not None:
+            for op in e['switch_ops']:
+                e['label'] += f"\n[{op.switch_index}:{op.index}:{op.op.op_code.name}]"
