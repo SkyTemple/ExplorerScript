@@ -448,11 +448,41 @@ class SsbGraphMinimizer:
             g.delete_edges(es_to_delete)
 
     def build_loops(self):
+        # TODO
         pass
 
     def remove_label_markers(self):
-        # TODO: Don't forget to remove labels for redundant jumps (+ the redundant jumps) as well
-        pass
+        for i, g in enumerate(self._graphs):
+            vs_to_delete = set()
+            # First, let's delete all redundant jumps (actual OP_JUMPs)
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and v['op'].root is not None and v['op'].root.op_code.name == OP_JUMP:
+                    in_edges = v.in_edges()
+                    out_edges = v.out_edges()
+                    if len(in_edges) != 0:
+                        assert len(in_edges) == 1 and len(out_edges) == 1
+                        v_before = in_edges[0].source_vertex
+                        v_after = out_edges[0].target_vertex
+                        e = self._reconnect(g, v_before, in_edges[0], v_after, True)
+                        e['flow_level'] = e['flow_level'] + 1
+                        self._update_edge_style(e)
+                    vs_to_delete.add(v)
+            g.delete_vertices(vs_to_delete)
+            vs_to_delete = set()
+            # Then delete all redundant labels (only one in edge)
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabel):
+                    in_edges = v.in_edges()
+                    out_edges = v.out_edges()
+                    if len(in_edges) == 0:
+                        vs_to_delete.add(v)
+                    elif len(in_edges) == 1:
+                        assert len(out_edges) == 1
+                        v_before = in_edges[0].source_vertex
+                        v_after = out_edges[0].target_vertex
+                        self._reconnect(g, v_before, in_edges[0], v_after, True)
+                        vs_to_delete.add(v)
+            g.delete_vertices(vs_to_delete)
 
     def _get_edges(self, g: Graph, rtn: List[SsbOperation], rtn_id: int, label_indices: Dict[int, int]):
         """
