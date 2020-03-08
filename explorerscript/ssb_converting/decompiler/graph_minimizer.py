@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
-    MultiSwitchStart, SwitchCaseOperation
+    MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough
 
 
 class ControlFlowToken(Enum):
@@ -298,15 +298,16 @@ class SsbGraphMinimizer:
                         next_vertex = else_edge_target_vertex
                     # Else edge:
                     if next_vertex is not None:
-                        if not v.out_edges()[0].target_vertex == next_vertex:
-                            g.delete_edges(v.out_edges()[0])
+                        v_else_edge = next(e for e in v.out_edges() if e['switch_ops'] is None)
+                        if not v_else_edge.target_vertex == next_vertex:
+                            g.delete_edges(v_else_edge)
                             # Connect v with the end of the case chain
                             e = g.add_edge(v, next_vertex, **current_flow_attributes)
                             e['is_else'] = True
                             self._update_edge_style(e)
                         else:
-                            v.out_edges()[0]['is_else'] = True
-                            self._update_edge_style(v.out_edges()[0])
+                            v_else_edge['is_else'] = True
+                            self._update_edge_style(v_else_edge)
 
                     # -- SECOND: FINDING THE END POINTS
                     # Common end label
@@ -323,6 +324,7 @@ class SsbGraphMinimizer:
                         self._update_vertex_style(end_vertex)
 
                         already_updated_switch_end_in_edges = []
+                        es_to_delete = []
                         for e in result:
                             if e in already_updated_switch_end_in_edges:
                                 # The common path of the branches happens after the first actual stop, possibly
@@ -335,7 +337,9 @@ class SsbGraphMinimizer:
                             if isinstance(e.source_vertex['op'], SsbLabelJump) and e.source_vertex['op'].root.op_code.name == OP_JUMP:
                                 vs_to_delete.add(e.source_vertex.index)
                                 e_before_jump = g.es[g.incident(e.source_vertex, IN)[0]]
-                                self._reconnect(g, e_before_jump.source, e_before_jump, end_vertex)
+                                es_to_delete.append(e_before_jump)
+                                self._reconnect(g, e_before_jump.source, e_before_jump, end_vertex, True)
+                        g.delete_edges(es_to_delete)
 
             g.delete_vertices(vs_to_delete)
 
@@ -374,7 +378,7 @@ class SsbGraphMinimizer:
                         for e in v_at_else.out_edges():
                             # v:                            Reconnect with else of v_at_else
                             if e['is_else']:
-                                self._reconnect(g, v, else_edge, e.target_vertex)
+                                self._reconnect(g, v, else_edge, e.target_vertex, True)
                             # v:                            Add all of the other switch cases:
                             else:
                                 new_e = self._reconnect(g, v, e, e.target_vertex, True)
@@ -383,6 +387,7 @@ class SsbGraphMinimizer:
                                 self._update_edge_style(new_e)
                         self._update_vertex_style(v)
                         # Repeat for maybe other connected switches:
+                        g.delete_edges(else_edge)
                         else_edge = [e for e in v.out_edges() if e['is_else']][0]
                         v_at_else = else_edge.target_vertex
                         switch_index = 1
@@ -394,7 +399,7 @@ class SsbGraphMinimizer:
                             for e in v_at_else.out_edges():
                                 # v:                            Reconnect with else of v_at_else
                                 if e['is_else']:
-                                    self._reconnect(g, v, else_edge, e.target_vertex)
+                                    self._reconnect(g, v, else_edge, e.target_vertex, True)
                                 # v:                            Add all of the other switch cases:
                                 else:
                                     new_e = self._reconnect(g, v, e, e.target_vertex, True)
@@ -404,6 +409,7 @@ class SsbGraphMinimizer:
                             # v op:                         Add v_at_else op to original_ssb_switches
                             v['op'].get_marker().add_switch(original_op_v_at_else.root)
                             self._update_vertex_style(v)
+                            g.delete_edges(else_edge)
                             else_edge = [e for e in v.out_edges() if e['is_else']][0]
                             v_at_else = else_edge.target_vertex
 
@@ -434,18 +440,55 @@ class SsbGraphMinimizer:
                     # SWITCH. Let's see what cases can be combined
                     case_targets = {}
                     for e in v.out_edges():
-                        if not e['is_else']:
-                            if e.target not in case_targets:
-                                case_targets[e.target] = []
-                            case_targets[e.target].append(e)
+                        if e.target not in case_targets:
+                            case_targets[e.target] = []
+                        case_targets[e.target].append(e)
                     for e_group in case_targets.values():
-                        first_e = e_group.pop()
+                        try:
+                            first_e_idx = next(i_first_n_else for i_first_n_else, e in enumerate(e_group) if not e['is_else'])
+                        except StopIteration:
+                            # group only has an else
+                            continue
+                        first_e = e_group.pop(first_e_idx)
                         for rest_e in e_group:
                             es_to_delete.add(rest_e)
-                            first_e['switch_ops'] += rest_e['switch_ops']
+                            if rest_e['is_else']:
+                                first_e['is_else'] = True
+                            else:
+                                first_e['switch_ops'] += rest_e['switch_ops']
                         self._update_edge_style(first_e)
 
             g.delete_edges(es_to_delete)
+
+    def build_switch_fallthroughs(self):
+        """
+        Mark switch fallthroughs (ends of case branches lead to next case branch or default).
+        Examples:
+            - unionall 67 (1 and 15)
+        """
+        for i, g in enumerate(self._graphs):
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), SwitchStart):
+                    es_already_processed = set()
+                    if len(v.out_edges()) < 2:
+                        continue
+                    list_of_edges = [i[0] for i in iterate_switch_edges(v)]
+                    for i, e in enumerate(list_of_edges):
+                        if e in es_already_processed:
+                            continue
+                        es_already_processed.add(e)
+                        possible_fallthrough_marker = e.target_vertex
+                        if isinstance(possible_fallthrough_marker['op'], SsbLabel):
+                            # Get incoming edges and trace back if one is from the previous switch case.
+                            pfm_in_edges = possible_fallthrough_marker.in_edges()
+                            if len(pfm_in_edges) == 2:
+                                edge = next(pfme for pfme in pfm_in_edges if pfme != e)
+                                e_others = reverse_find_edge(edge, lambda e: e['switch_ops'] is not None and e.source == v.index)
+                                for e_other in e_others:
+                                    if list_of_edges[i - 1] == e_other:
+                                        possible_fallthrough_marker['op'].add_marker(SwitchFalltrough())
+                                        self._update_vertex_style(possible_fallthrough_marker)
+                                        break
 
     def build_loops(self):
         # TODO
@@ -454,7 +497,7 @@ class SsbGraphMinimizer:
     def remove_label_markers(self):
         for i, g in enumerate(self._graphs):
             vs_to_delete = set()
-            # First, let's delete all redundant jumps (actual OP_JUMPs)
+            # First, let's delete all redundant jumps (actual OP_JUMPs that jump to opcodes with only one in edge)
             for v in g.vs:
                 if isinstance(v['op'], SsbLabelJump) and v['op'].root is not None and v['op'].root.op_code.name == OP_JUMP:
                     in_edges = v.in_edges()
@@ -463,6 +506,9 @@ class SsbGraphMinimizer:
                         assert len(in_edges) == 1 and len(out_edges) == 1
                         v_before = in_edges[0].source_vertex
                         v_after = out_edges[0].target_vertex
+                        if len(v_after.in_edges()) > 1:
+                            # The jump target has multiple entry points, keep the jump
+                            continue
                         e = self._reconnect(g, v_before, in_edges[0], v_after, True)
                         e['flow_level'] = e['flow_level'] + 1
                         self._update_edge_style(e)
@@ -580,6 +626,8 @@ class SsbGraphMinimizer:
                         v['fillcolor'] += '#A85400:'
                     elif isinstance(marker, SwitchEnd):
                         v['fillcolor'] += '#005F26:'
+                    elif isinstance(marker, SwitchFalltrough):
+                        v['fillcolor'] += '#8ABC82:'
                     marker_str += str(marker) + ";"
                 marker_str = marker_str[:-1]
                 v['fillcolor'] = v['fillcolor'][:-1]

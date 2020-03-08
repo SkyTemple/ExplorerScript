@@ -21,11 +21,11 @@
 #  SOFTWARE.
 #
 import itertools
-from typing import Tuple, List, Union, Dict
+from typing import Tuple, List, Union, Dict, Set
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, MultiSwitchStart, SwitchCaseOperation
 
 
 def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
@@ -140,3 +140,73 @@ def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
                 if cb(marker):
                     return v, i
     return None, None
+
+
+def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation]]:
+    """
+    Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
+
+    Yields edges in the order that would be evaluated by the game (multi-switch cases are grouped however, as
+    long as they are in order):
+    - [switch_id,index] -> [edge]
+    - 0,1|1,0 -> a
+    - 0,2 -> b
+    - 1,2 -> c
+    - 0,3|1,1 -> b
+
+    This is the same order as printed in ExplorerScript.
+
+    Edges can be yielded multiple times. This can happen when there are gaps in the indices:
+    - 0,0|0,1|0,2 -> a
+    - 0,3 -> b
+    - 0,4|0,5 -> a
+
+    Returns tuples of edges and applicable operations.
+    """
+    case_edges = v.out_edges()
+    number_of_switches_in_switch = 1 if not isinstance(v['op'].get_marker(), MultiSwitchStart) else v['op'].get_marker().number_of_switches()
+    map_switches_ops_edges = []
+    for i in range(0, number_of_switches_in_switch):
+        map_ops_edges = {}
+        for e in case_edges:
+            if e['switch_ops'] is not None:
+                for op in e['switch_ops']:
+                    if op.switch_index == i:
+                        map_ops_edges[op.index] = e
+        map_ops_edges = [map_ops_edges[k] for k in sorted(map_ops_edges)]
+        map_switches_ops_edges.append(map_ops_edges)
+
+    cursors = [0 for _ in range(0, number_of_switches_in_switch)]
+    first_cursor_not_at_end = 0
+    next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
+    ops_for_edge = []
+    while first_cursor_not_at_end < len(cursors):
+        if map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]] != next_edge:
+            yield next_edge, ops_for_edge
+            next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
+            ops_for_edge = []
+        for i in range(first_cursor_not_at_end, len(cursors)):
+            while cursors[i] < len(map_switches_ops_edges[i]) and map_switches_ops_edges[i][cursors[i]] == next_edge:
+                ops_for_edge.append(next(op for op in next_edge['switch_ops'] if op.switch_index == i and op.index == cursors[i]))
+                cursors[i] += 1
+        while first_cursor_not_at_end < len(cursors) and cursors[first_cursor_not_at_end] >= len(map_switches_ops_edges[first_cursor_not_at_end]):
+            first_cursor_not_at_end += 1
+    yield next_edge, ops_for_edge
+
+
+def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:
+    """
+    Returns all edges that match the condition, that can be reached by traversing backwards.
+    If found, the search is ended at that edge.
+    Returns empty list if not found.
+    """
+    if cb(e):
+        return [e]
+    if loop_check is None:
+        loop_check = set()
+    found = []
+    if e.source not in loop_check:
+        loop_check.add(e.source)
+        for ie in e.source_vertex.in_edges():
+            found += reverse_find_edge(ie, cb, loop_check)
+    return found

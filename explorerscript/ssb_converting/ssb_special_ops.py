@@ -148,6 +148,9 @@ class MultiSwitchStart(SwitchStart):
         """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of switches."""
         self.original_ssb_switch_ops.append(ssb_switch)
 
+    def number_of_switches(self):
+        return len(self.original_ssb_switch_ops)
+
 
 class IfEnd(LabelMarker):
     def __init__(self, if_id: int):
@@ -163,6 +166,11 @@ class SwitchEnd(LabelMarker):
 
     def __str__(self):
         return f"SWITCH({self.switch_id})"
+
+
+class SwitchFalltrough(LabelMarker):
+    def __str__(self):
+        return f"FALL"
 
 
 class SsbLabel(SsbOperation):
@@ -220,6 +228,10 @@ class SwitchCaseOperation:
         self.switch_index = switch_index
         self.index = index
         self.op = op
+
+    def __str__(self):
+        return f"{self.switch_index}:{self.index} :: {self.op}"
+
 
 def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], routine_id: int) -> SsbOperation:
     """
