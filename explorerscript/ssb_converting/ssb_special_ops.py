@@ -198,6 +198,14 @@ class ForeverStart(LabelMarker):
         return f"LOOP({self.loop_id})"
 
 
+class ForeverEnd(LabelMarker):
+    def __init__(self, loop_id: int):
+        self.loop_id = loop_id
+
+    def __str__(self):
+        return f"END_LOOP({self.loop_id})"
+
+
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
     def __init__(self, id: int, routine_id: int):

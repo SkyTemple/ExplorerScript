@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.decompiler.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
-    MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart
+    MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart, ForeverEnd
 
 
 class ControlFlowToken(Enum):
@@ -515,10 +515,14 @@ class SsbGraphMinimizer:
                         # If any of the jumps already has a marker or there is none, add a new one and mark it instead.
                         # If no common end vertex can be found, fail for now.
                         # See unionall 85.
+                        # TODO: Why is unionall/85 node 24 not a break?
                         if len(break_points) > 1:
                             # we can allow open branches, because we know all other branches will either also break
                             # or loop
                             break_points = find_first_common_next_vertex_in_edges(g, break_points, allow_open_branches=True)
+                            # Mark break points end vertex as end of loop
+                            break_points[0].target_vertex['op'].add_marker(ForeverEnd(loop_id))
+                            self._update_vertex_style(break_points[0].target_vertex)
                         if not break_points:
                             warnings.warn(f"Found a loop with irregular breaks in graph {i}, "
                                           f"can not build a proper forever-loop.")
@@ -823,6 +827,8 @@ class SsbGraphMinimizer:
                         v['fillcolor'] += '#8ABC82:'
                     elif isinstance(marker, ForeverStart):
                         v['fillcolor'] += '#00366D:'
+                    elif isinstance(marker, ForeverEnd):
+                        v['fillcolor'] += '#00616D:'
                     marker_str += str(marker) + ";"
                 marker_str = marker_str[:-1]
                 v['fillcolor'] = v['fillcolor'][:-1]

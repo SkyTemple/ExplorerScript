@@ -36,7 +36,7 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
-def find_first_common_next_vertex_in_edges(g, es: List[Edge], allow_open_branches = False, vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
+def find_first_common_next_vertex_in_edges(g, es: List[Edge], allow_open_branches=False, vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
@@ -47,6 +47,7 @@ def find_first_common_next_vertex_in_edges(g, es: List[Edge], allow_open_branche
 
     If no common vertex is found, returns None.
     """
+    # TODO: Performance with (not allow_open_branches).
     assert len(es) > 1
     result = _find_first_common_next_vertex_in_edges__impl(g, [{e} for e in es], [], allow_open_branches, vs_to_not_visit)
     return result
