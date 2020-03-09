@@ -509,8 +509,21 @@ class SsbGraphMinimizer:
                     # To this node jumps a loop. Check if we can build a proper forever-loop.
                     can_build, break_points, continue_points, redundant_jumps = self._build_loops__try_loop(v)
                     if can_build:
+                        # Not done! To get the actual break points, find common next vertex
+                        # of all break points and then apply breakpoint status to all jumps before that.
+                        # (if there's only one just use that one)
+                        # If any of the jumps already has a marker or there is none, add a new one and mark it instead.
+                        # If no common end vertex can be found, fail for now.
+                        # See unionall 85.
+                        if len(break_points) > 1:
+                            # we can allow open branches, because we know all other branches will either also break
+                            # or loop
+                            break_points = find_first_common_next_vertex_in_edges(g, break_points, allow_open_branches=True)
+                        if not break_points:
+                            warnings.warn(f"Found a loop with irregular breaks in graph {i}, "
+                                          f"can not build a proper forever-loop.")
+                            continue
                         es_to_delete = set()
-                        print(f">>>> FOUND LOOP IN {i}")
                         loop_id += 1
                         v['op'].add_marker(ForeverStart(loop_id))
                         self._update_vertex_style(v)
@@ -518,11 +531,6 @@ class SsbGraphMinimizer:
                             break_point = loop_edge.source_vertex
                             break_target = loop_edge.target_vertex
                             if break_point['op'].get_marker():
-                                # TODO: Not done! To get the actual break points, find common next vertex
-                                #       of all break points and then apply breakpoint status to all jumps before that.
-                                #       (if there's only one just use that one)
-                                #       If any of the jumps already has a marker or there is none, add a new one and mark it instead.
-                                #       If no common end vertex can be found, fail for now.
                                 # Already has a marker, add a new opcode in between
                                 loop_edge_flow_level = loop_edge['flow_level']
                                 actual_break_point = g.add_vertex(label=None, op=SsbLabelJump(break_point['op'], None), style='solid', shape='ellipse')

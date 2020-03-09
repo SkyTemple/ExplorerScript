@@ -36,7 +36,7 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
-def find_first_common_next_vertex_in_edges(g, es: List[Edge], vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
+def find_first_common_next_vertex_in_edges(g, es: List[Edge], allow_open_branches = False, vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
@@ -48,12 +48,13 @@ def find_first_common_next_vertex_in_edges(g, es: List[Edge], vs_to_not_visit: L
     If no common vertex is found, returns None.
     """
     assert len(es) > 1
-    result = _find_first_common_next_vertex_in_edges__impl(g, es, [], vs_to_not_visit)
+    result = _find_first_common_next_vertex_in_edges__impl(g, [{e} for e in es], [], allow_open_branches, vs_to_not_visit)
     return result
 
 
 def _find_first_common_next_vertex_in_edges__impl(
-        g, es: List[Union[Edge, None]], map_of_visited: [List[Dict[int, int]]], vs_to_not_visit: List[int] = None
+        g, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
+        allow_open_branches: bool, vs_to_not_visit: List[int] = None
 ) -> Union[None, List[Edge]]:
     """
     :param g: Graph
@@ -66,13 +67,14 @@ def _find_first_common_next_vertex_in_edges__impl(
         vs_to_not_visit = []
 
     # If all incoming edges are None, we didn't find anything :(
-    while not all(e is None for e in es):
+    while not all(e == {None} for e in es):
         # Add current edges to list of visited
-        for i, e in enumerate(es):
-            if e is not None:
-                if len(map_of_visited) <= i:
-                    map_of_visited.append({})
-                map_of_visited[i][e.target] = e.index
+        for i, e_set in enumerate(es):
+            for e in e_set:
+                if e is not None:
+                    if len(map_of_visited) <= i:
+                        map_of_visited.append({})
+                    map_of_visited[i][e.target] = e.index
 
         # Check if the end vertex was found
         intersection_result = set(map_of_visited[0].keys())
@@ -84,29 +86,39 @@ def _find_first_common_next_vertex_in_edges__impl(
 
         # Not found... too bad! Try to go through the path and find it
         # Get next edge for all paths
-        new_es = []
-        for i, e in enumerate(es):
-            if e is None:
-                new_es.append(None)
-                continue
-            v = e.target_vertex
-            if v.index in vs_to_not_visit:
-                # Potential endless recursion situation. Abort.
-                new_es.append(None)
-                continue
-            v_es = v.out_edges()
-            if len(v_es) == 0:
-                new_es.append(None)
-            elif len(v_es) == 1:
-                new_es.append(v_es[0])
-            else:
-                # Recursively find the next new common vertex
-                list_of_visited_vs_on_branch = vs_to_not_visit + list(map_of_visited[i].keys())
-                new_common_vertex_edges = find_first_common_next_vertex_in_edges(g, v_es, list_of_visited_vs_on_branch)
-                if new_common_vertex_edges is None:
-                    new_es.append(None)
+        new_es: List[Set[Union[Edge, None]]] = []
+        for i, e_set in enumerate(es):
+            new_es_entry = set()
+            new_es.append(new_es_entry)
+            for e in e_set:
+                if e is None:
+                    new_es_entry.add(None)
+                    continue
+                v = e.target_vertex
+                if v.index in vs_to_not_visit:
+                    # Potential endless recursion situation. Abort.
+                    new_es_entry.add(None)
+                    continue
+                v_es = v.out_edges()
+                if len(v_es) == 0:
+                    new_es_entry.add(None)
+                elif len(v_es) == 1:
+                    new_es_entry.add(v_es[0])
                 else:
-                    new_es.append(new_common_vertex_edges[0])
+                    if allow_open_branches:
+                        # Open branches are allowed, just add this edge to the new es.
+                        vs_to_not_visit.append(v.index)
+                        new_es_entry.update(v_es)
+                    else:
+                        # Recursively find the next new common vertex
+                        list_of_visited_vs_on_branch = vs_to_not_visit + list(map_of_visited[i].keys())
+                        new_common_vertex_edges = find_first_common_next_vertex_in_edges(
+                            g, v_es, allow_open_branches, list_of_visited_vs_on_branch
+                        )
+                        if new_common_vertex_edges is None:
+                            new_es_entry.add(None)
+                        else:
+                            new_es_entry.add(new_common_vertex_edges[0])
 
         es = new_es
 
