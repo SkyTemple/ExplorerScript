@@ -20,10 +20,13 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import functools
 import itertools
-from typing import Tuple, List, Union, Dict, Set
+import operator
+from typing import Tuple, List, Union, Dict, Set, Optional
 
-from igraph import IN, Edge, OUT, Vertex, Graph
+from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
+from llist import dllist
 
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, MultiSwitchStart, SwitchCaseOperation
 
@@ -36,26 +39,36 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
-def find_first_common_next_vertex_in_edges(g, es: List[Edge], allow_open_branches=False, vs_to_not_visit: List[int] = None) -> Union[None, List[Edge]]:
+def find_first_common_next_vertex_in_edges(
+        g, es: List[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: List[int] = None
+) -> Union[None, List[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
 
-    It's made sure that ALL paths that are started from these starting points lead to there,
-    this means for splitting-sub-paths it's also checked that they have a common end vertex and the
-    search is continued from there.
+    If allow_open_branches is False:
+        It's made sure that ALL paths that are started from these starting points lead to there,
+        this means for splitting-sub-paths it's also checked that they have a common end vertex and the
+        search is continued from there.
+
+    If allow_loops is False:
+        If a vertex is visited twice (loop detected), aborts this branch.
+    Else:
+        If a vertex is visited 100 times (possibly infinite loop detected!), aborts this branch
 
     If no common vertex is found, returns None.
     """
     # TODO: Performance with (not allow_open_branches).
     assert len(es) > 1
-    result = _find_first_common_next_vertex_in_edges__impl(g, [{e} for e in es], [], allow_open_branches, vs_to_not_visit)
+    result = _find_first_common_next_vertex_in_edges__impl(
+        g, [{e} for e in es], [], allow_open_branches, allow_loops, vs_to_not_visit
+    )
     return result
 
 
 def _find_first_common_next_vertex_in_edges__impl(
         g, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
-        allow_open_branches: bool, vs_to_not_visit: List[int] = None
+        allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: List[int] = None
 ) -> Union[None, List[Edge]]:
     """
     :param g: Graph
@@ -97,9 +110,10 @@ def _find_first_common_next_vertex_in_edges__impl(
                     continue
                 v = e.target_vertex
                 if v.index in vs_to_not_visit:
-                    # Potential endless recursion situation. Abort.
-                    new_es_entry.add(None)
-                    continue
+                    if not allow_loops or vs_to_not_visit.count(v.index) > 100:
+                        # Potential endless recursion situation. Abort.
+                        new_es_entry.add(None)
+                        continue
                 v_es = v.out_edges()
                 if len(v_es) == 0:
                     new_es_entry.add(None)
@@ -114,7 +128,7 @@ def _find_first_common_next_vertex_in_edges__impl(
                         # Recursively find the next new common vertex
                         list_of_visited_vs_on_branch = vs_to_not_visit + list(map_of_visited[i].keys())
                         new_common_vertex_edges = find_first_common_next_vertex_in_edges(
-                            g, v_es, allow_open_branches, list_of_visited_vs_on_branch
+                            g, v_es, allow_open_branches, allow_loops, list_of_visited_vs_on_branch
                         )
                         if new_common_vertex_edges is None:
                             new_es_entry.add(None)
@@ -223,3 +237,47 @@ def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:
         for ie in e.source_vertex.in_edges():
             found += reverse_find_edge(ie, cb, loop_check)
     return found
+
+
+def get_out_edges_of_subgraph(
+        g: Graph, start: Vertex, to: List[Union[Vertex, int]],
+        path_filter=lambda e, v: True
+) -> Optional[Set[int]]:
+    """
+    Create a subgraph of the given list of vertices and then find all edges out of this sub-graph and return them
+    Removes parts of the subgraph for all vertices for which path_filter returns False. The filter get's the
+    in edge and the vertex as parameters.
+    """
+    ps = []
+    for v in to:
+        p = g.get_all_simple_paths(start, v)
+        assert len(p) > 0
+        keep = [True for _ in range(0, len(p))]
+        for i, sub_p in enumerate(p):
+            for vidx in range(0, len(sub_p)):
+                if vidx != 0 and not path_filter(g.es[g.get_eid(sub_p[vidx - 1], sub_p[vidx])], g.vs[sub_p[vidx]]):
+                    keep[i] = False
+        ps += [p for i, p in enumerate(p) if keep[i]]
+    vertices = set(functools.reduce(operator.iconcat, ps, []))
+    if len(vertices) == 0:
+        # All paths have been filtered out
+        return None
+    # Add all out vertices of the vertices above
+    for v in vertices.copy():
+        for e in g.vs[v].out_edges():
+            vertices.add(e.target)
+    edges = set(functools.reduce(operator.iconcat, [g.get_eids(path=path) for path in ps], []))
+    # Also delete possivle loop edges from to to start.
+    for v in to:
+        for e in g.vs[v].out_edges():
+            if e.target == start.index:
+                edges.add(e.index)
+    # Remove all vertices not in subgraph and remove all edges in the original graph = only out edges of this subg.
+    es = set(e.index for e in g.es)
+    #new_g.delete_edges(edges)
+    es = es - edges
+    #new_g.delete_vertices(set(v.index for v in g.vs) - vertices)
+    for e in es.copy():
+        if g.es[e].source not in vertices or g.es[e].target not in vertices:
+            es.remove(e)
+    return es

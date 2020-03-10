@@ -1,1 +1,2 @@
 python-igraph==0.8.0
+llist==0.6
