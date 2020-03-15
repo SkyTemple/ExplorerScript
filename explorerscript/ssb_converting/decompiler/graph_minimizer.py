@@ -342,7 +342,7 @@ class SsbGraphMinimizer:
                                 warnings.warn("Switch-Branches ended via the same edge...")
                                 find_first_common_next_vertex_in_edges__clear_cache()
                                 continue
-
+                            already_updated_switch_end_in_edges.append(e)
                             # Remove the jumps before the common end label (if they exist), we don't need them anymore.
                             if isinstance(e.source_vertex['op'], SsbLabelJump) and \
                                     e.source_vertex['op'].root is not None and \
@@ -870,3 +870,6 @@ class SsbGraphMinimizer:
         if e['switch_ops'] is not None:
             for op in e['switch_ops']:
                 e['label'] += f"\n[{op.switch_index}:{op.index}:{op.op.op_code.name}]"
+
+    def get_graphs(self) -> List[Graph]:
+        return self._graphs

@@ -29,6 +29,7 @@ from typing import Tuple, List, Union, Dict, Set, Optional
 from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
 from llist import dllist
 
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, MultiSwitchStart, SwitchCaseOperation
 
 
@@ -331,6 +332,11 @@ def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
 
 
 def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation]]:
+    """See iterate_switch_edges_using_edges_and_op."""
+    return iterate_switch_edges_using_edges_and_op(v.out_edges(), v['op'])
+
+
+def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabelJump) -> Tuple[Edge, List[SwitchCaseOperation]]:
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 
@@ -351,8 +357,7 @@ def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation]]:
 
     Returns tuples of edges and applicable operations.
     """
-    case_edges = v.out_edges()
-    number_of_switches_in_switch = 1 if not isinstance(v['op'].get_marker(), MultiSwitchStart) else v['op'].get_marker().number_of_switches()
+    number_of_switches_in_switch = 1 if not isinstance(op.get_marker(), MultiSwitchStart) else op.get_marker().number_of_switches()
     map_switches_ops_edges = []
     for i in range(0, number_of_switches_in_switch):
         map_ops_edges = {}
