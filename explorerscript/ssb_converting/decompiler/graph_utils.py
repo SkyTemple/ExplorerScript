@@ -282,10 +282,26 @@ def find_end_label_in_edges(
 
     return in_edges
 
+
+def has_path_not_using_any_loop_edges(v1, v2) -> bool:
+    """ Check if there are paths between v1 and v2 using only edges with the attribute "loop"=True. """
+    edges = v1.out_edges()
+    vs_already_visited = {v1}
+    while len(edges) > 0:
+        edge = edges.pop()
+        if edge.target_vertex in vs_already_visited:
+            continue
+        if edge.target_vertex == v2:
+            return True
+        vs_already_visited.add(edge.target_vertex)
+        if not edge['loop']:
+            edges += edge.target_vertex.out_edges()
+    return False
+
+
 def is_loop(g: Graph, v: Vertex, e: Edge):
     """ Check if a vertex can reach itself again using the provided edge (check if the edge creates a loop)"""
-    lists_of_path_with_edge = e.target_vertex.get_shortest_paths(v)
-    if all(len(path_with_edge) < 1 for path_with_edge in lists_of_path_with_edge):
+    if not has_path_not_using_any_loop_edges(e.target_vertex, v):
         return False
 
     # Simulate deletion of edge and check if still loops
@@ -294,10 +310,11 @@ def is_loop(g: Graph, v: Vertex, e: Edge):
     e_orig_attr = e.attributes()
     g.delete_edges(e)
 
-    path_list = []
+    has_any_loops = False
     for e in v.out_edges():
-        path_list += e.target_vertex.get_shortest_paths(v)
-    has_any_loops = any(len(p) > 0 for p in path_list)
+        if has_path_not_using_any_loop_edges(e.target_vertex, v):
+            has_any_loops = True
+            break
 
     g.add_edge(e_orig_source, e_orig_target, **e_orig_attr)
 
