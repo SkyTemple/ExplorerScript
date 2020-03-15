@@ -23,6 +23,7 @@
 import functools
 import itertools
 import operator
+from collections import Counter
 from typing import Tuple, List, Union, Dict, Set, Optional
 
 from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
@@ -39,12 +40,22 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
+find_first_common_next_vertex_in_edges_cache = {}
+
+
+def find_first_common_next_vertex_in_edges__clear_cache():
+    global find_first_common_next_vertex_in_edges_cache
+    find_first_common_next_vertex_in_edges_cache = {}
+
+
 def find_first_common_next_vertex_in_edges(
         g, es: List[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: List[int] = None
 ) -> Union[None, List[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
+
+    es must contain at least two edges.
 
     If allow_open_branches is False:
         It's made sure that ALL paths that are started from these starting points lead to there,
@@ -59,10 +70,16 @@ def find_first_common_next_vertex_in_edges(
     If no common vertex is found, returns None.
     """
     # TODO: Performance with (not allow_open_branches).
+    es_ids = ','.join(sorted([str(e.index) for e in es]))
+    if id(g) not in find_first_common_next_vertex_in_edges_cache:
+        find_first_common_next_vertex_in_edges_cache[id(g)] = {}
+    if es_ids in find_first_common_next_vertex_in_edges_cache[id(g)]:
+        return find_first_common_next_vertex_in_edges_cache[id(g)][es_ids]
     assert len(es) > 1
     result = _find_first_common_next_vertex_in_edges__impl(
         g, [{e} for e in es], [], allow_open_branches, allow_loops, vs_to_not_visit
     )
+    find_first_common_next_vertex_in_edges_cache[id(g)][es_ids] = result
     return result
 
 
@@ -84,11 +101,19 @@ def _find_first_common_next_vertex_in_edges__impl(
     while not all(e == {None} for e in es):
         # Add current edges to list of visited
         for i, e_set in enumerate(es):
+            should_remove = set()
             for e in e_set:
                 if e is not None:
                     if len(map_of_visited) <= i:
                         map_of_visited.append({})
+                    if e.target in map_of_visited[i]:
+                        # We already visited this before on this path...
+                        should_remove.add(e)
                     map_of_visited[i][e.target] = e.index
+            for e in should_remove:
+                e_set.remove(e)
+            if len(e_set) == 0:
+                es[i] = {None}
 
         # Check if the end vertex was found
         intersection_result = set(map_of_visited[0].keys())
@@ -128,7 +153,7 @@ def _find_first_common_next_vertex_in_edges__impl(
                         # Recursively find the next new common vertex
                         list_of_visited_vs_on_branch = vs_to_not_visit + list(map_of_visited[i].keys())
                         new_common_vertex_edges = find_first_common_next_vertex_in_edges(
-                            g, v_es, allow_open_branches, allow_loops, list_of_visited_vs_on_branch
+                           g, v_es, allow_open_branches, allow_loops, list_of_visited_vs_on_branch
                         )
                         if new_common_vertex_edges is None:
                             new_es_entry.add(None)
@@ -137,6 +162,125 @@ def _find_first_common_next_vertex_in_edges__impl(
 
         es = new_es
 
+
+def find_end_label_in_edges(
+        g, es: List[Edge]
+) -> Union[None, List[Optional[Edge]]]:
+    """
+    Finds the first vertex with SsbLabel op (actually list of edges that lead to it for each edge in es)
+    which is reachable by some edges in es. We search for the ONE vertex joining most of the paths,
+    if multiple paths are joined by different vertices, this currently still only returns the one that joins
+    the most.
+
+    es must contain at least two edges.
+
+    If allow_open_branches is False:
+        It's made sure that ALL paths that are started from these starting points lead to there,
+        this means for splitting-sub-paths it's also checked that they have an end label and all the labels
+        that are between this end label and the splitting path are removed, because using them
+        would leave branches open
+
+    This is similar to find_first_common_next_vertex_in_edges, but...:
+        - It's faster [edit: lol no]
+        - It doesn't support loops
+        - It only works with SsbLabels
+        - It allows some edges not to end on the common label
+        - allow_open_branches=False is not supported.
+
+    If no common vertex is found returns None. The returned list contains one in-edge for each original out-edge
+    in es. If from this edge the point is not reachable, it may contain None for it.
+
+    If an end label is found, but it's path later crosses with any of the other paths created by the edges in es,
+    it's not a valid end label (None is returned).
+    """
+    # TODO: Doesn't reaaaly work yet, also doesn't stop at loops yet and is too slow.
+    vertices_visitied_by_paths_for_e_in_es = []
+    labels_visitied_by_paths_for_e_in_es = []
+    for e in es:
+        vs = set(v.index for v in g.bfsiter(e.target))
+
+        # This below is WAY to slow. We instead now check, after building the branch and switch labels, if they
+        # are even possible and remove all invalidly if/switch ends.
+
+        # # Check if all branches are closed in paths. Remove all vertices in between from vs:
+        # if not allow_open_branches:
+        #     # While traversing the list of paths, we don't need to check vertices twice
+        #     already_checked = set()
+        #     for p in paths:
+        #         for v in p:
+        #             if v not in already_checked and v in vs:
+        #                 already_checked.add(v)
+        #                 out_edges = g.vs[v].out_edges()
+        #                 if len(out_edges) > 1:
+        #                     sub_common_end_edges = find_end_label_in_edges(g, out_edges)
+        #                     if sub_common_end_edges is None:
+        #                         # Remove the entire rest of the paths from here, nothing from v (including v) can be
+        #                         # valid
+        #                         for sp in paths:
+        #                             if v in sp:
+        #                                 idx_of_v = sp.index(v)
+        #                                 for vib in sp[idx_of_v+1:]:
+        #                                     if vib in vs:
+        #                                         vs.remove(vib)
+        #                         break
+        #                     else:
+        #                         sub_common_vertex = next(e.target for e in sub_common_end_edges if e is not None)
+        #                         for sp in paths:
+        #                             # This gets all elements in this path between v and sub_common_vertex (not inclusive)
+        #                             if v in sp and sub_common_vertex in sp:
+        #                                 vertices_in_between = sp[(sp.reverse(), len(sp) - sp.index(v), sp.reverse())[1]: sp.index(sub_common_vertex)]
+        #                                 for vib in vertices_in_between:
+        #                                     if vib in vs:
+        #                                         vs.remove(vib)
+
+        vertices_visitied_by_paths_for_e_in_es.append(vs)
+        labels_visitied_by_paths_for_e_in_es.append(set([v for v in vs if isinstance(g.vs[v]['op'], SsbLabel)]))
+
+    counter = Counter(labels_visitied_by_paths_for_e_in_es[0])
+    for v in labels_visitied_by_paths_for_e_in_es[1:]:
+        counter.update(v)
+
+    if len(counter) == 0:
+        # No common end
+        return None
+
+    # TODO: Check  D01P11A/enter02.ssb/0
+
+    common_v, common_v_count = counter.most_common()[0]
+    if common_v_count < 2:
+        # No common end
+        return None
+
+    vs_visited_by_common_v = set(functools.reduce(operator.iconcat, g.get_all_simple_paths(common_v, None)))
+    vs_visited_by_common_v.remove(common_v)
+    # Check if this crosses another path
+    for orig_vs in vertices_visitied_by_paths_for_e_in_es:
+        # Only check for those paths that DON'T contain the common vertex, because for the others
+        # we will obviously have all the vertices of the rest of the paths
+        if common_v not in orig_vs and len(orig_vs.intersection(vs_visited_by_common_v)) > 0:
+            # It crosses another path :(
+            # TODO: Maybe we can return the second most common then?
+            return None
+
+    # collect original path in edges to this vertex
+    in_edges = []
+    for i, in_e in enumerate(es):
+        if in_e.target == common_v:
+            in_edges.append(in_e)
+            continue
+        paths_e = g.get_all_simple_paths(in_e.target, common_v)
+        if len(paths_e) == 0:
+            in_edges.append(None)
+        for path in paths_e:
+            v_idx_in_vs_e = path.index(common_v)
+            if v_idx_in_vs_e == 0:
+                in_vertex = es[i].source
+            else:
+                in_vertex = path[v_idx_in_vs_e - 1]
+            in_edges.append(g.es[g.get_eid(in_vertex, common_v)])
+            break
+
+    return in_edges
 
 def is_loop(g: Graph, v: Vertex, e: Edge):
     """ Check if a vertex can reach itself again using the provided edge (check if the edge creates a loop)"""
@@ -248,30 +392,23 @@ def get_out_edges_of_subgraph(
     Removes parts of the subgraph for all vertices for which path_filter returns False. The filter get's the
     in edge and the vertex as parameters.
     """
-    ps = []
+    vertices = set()
     for v in to:
-        p = g.get_all_simple_paths(start, v)
-        assert len(p) > 0
-        keep = [True for _ in range(0, len(p))]
-        for i, sub_p in enumerate(p):
-            for vidx in range(0, len(sub_p)):
-                if vidx != 0 and not path_filter(g.es[g.get_eid(sub_p[vidx - 1], sub_p[vidx])], g.vs[sub_p[vidx]]):
-                    keep[i] = False
-        ps += [p for i, p in enumerate(p) if keep[i]]
-    vertices = set(functools.reduce(operator.iconcat, ps, []))
+        vertices.update(get_all_vertices_between(g, start.index, (v.index if isinstance(v, Vertex) else v), path_filter))  #g.get_all_simple_paths(start, v)
     if len(vertices) == 0:
         # All paths have been filtered out
         return None
+    edges = set(g.get_eid(v1, v2, error=False, directed=False) for v1, v2 in itertools.combinations(vertices, 2))
+    if -1 in edges:
+        edges.remove(-1)
     # Add all out vertices of the vertices above
     for v in vertices.copy():
         for e in g.vs[v].out_edges():
             vertices.add(e.target)
-    edges = set(functools.reduce(operator.iconcat, [g.get_eids(path=path) for path in ps], []))
-    # Also delete possivle loop edges from to to start.
-    for v in to:
-        for e in g.vs[v].out_edges():
-            if e.target == start.index:
-                edges.add(e.index)
+    # Make sure we didn't re-add something we shouldn't be collecting all eids
+    for e in edges.copy():
+        if g.es[e].target_vertex != start and not path_filter(g.es[e], g.es[e].target_vertex):
+            edges.remove(e)
     # Remove all vertices not in subgraph and remove all edges in the original graph = only out edges of this subg.
     es = set(e.index for e in g.es)
     #new_g.delete_edges(edges)
@@ -281,3 +418,27 @@ def get_out_edges_of_subgraph(
         if g.es[e].source not in vertices or g.es[e].target not in vertices:
             es.remove(e)
     return es
+
+
+def get_all_vertices_between(g, start, target, path_filter=lambda e, v: True):
+    paths_to_go_through = []
+    for e in g.vs[start].out_edges():
+        paths_to_go_through.append((e, {start}))
+    vs_on_the_way_to_target = set()
+    vs_already_visited = set()
+    while len(paths_to_go_through) > 0:
+        e, vs_on_path = paths_to_go_through.pop()
+        v = e.target_vertex
+        if path_filter(e, v):
+            if v.index == target:
+                vs_on_the_way_to_target.add(v.index)
+                vs_on_the_way_to_target.update(vs_on_path)
+            elif v.index in vs_already_visited:
+                if v.index in vs_on_the_way_to_target:
+                    vs_on_the_way_to_target.update(vs_on_path)
+            else:
+                vs_already_visited.add(v.index)
+                vs_on_path.add(v.index)
+                for e in v.out_edges():
+                    paths_to_go_through.append((e, vs_on_path.copy()))
+    return vs_on_the_way_to_target

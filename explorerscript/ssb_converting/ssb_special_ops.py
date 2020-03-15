@@ -223,6 +223,13 @@ class SsbLabel(SsbOperation):
         self.markers.append(m)
 
 
+class SsbForeignLabel(SsbOperation):
+    """A reference to a label in another routine"""
+    def __init__(self, label: SsbLabel):
+        #                                                              Params only for debugging
+        super().__init__(-1, SsbOpCode(-1, f'ES_FOREIGN<{label.id}>'), [label.id])
+        self.label = label
+
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
     def __init__(self, root: SsbOperation, label: Union[SsbLabel, None]):

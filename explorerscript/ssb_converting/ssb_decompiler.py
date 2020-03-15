@@ -54,9 +54,8 @@ class SsbDecompiler:
         control_flow_before_minimize = grapher.get_control_flow()
         # Remove redundant labels
         grapher.optimize_paths()
-        # Build groups from performer/object/actor pairs, switch+cases, switch groups, branch-groups
+        # Build groups switch+cases, switch groups, branch-groups
         # get rid of as many label references (jumps) as possible
-        grapher.group_objs()
         grapher.build_branches()
         grapher.group_branches()
         grapher.build_and_group_switch_cases()
