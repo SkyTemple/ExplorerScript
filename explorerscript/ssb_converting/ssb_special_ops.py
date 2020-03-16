@@ -115,9 +115,10 @@ class LabelJumpMarker:
 class IfStart(LabelJumpMarker):
     def __init__(self, if_id: int):
         self.if_id = if_id
+        self.is_not = False
 
     def __str__(self):
-        return f"IF({self.if_id})"
+        return f"IF{' NOT' if self.is_not else ''}({self.if_id})"
 
 
 class MultiIfStart(IfStart):

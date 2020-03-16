@@ -186,6 +186,31 @@ class SsbGraphMinimizer:
 
             g.delete_vertices(vs_to_delete)
 
+    def invert_branches(self):
+        """
+        Invert if-start marker (mark them as not and switch the else/if branches), if the if-branch is
+        currently empty.
+
+        Must be run after build_branches.
+        """
+        for i, g in enumerate(self._graphs):
+            vs_to_delete = set()
+            for v in g.vs:
+                if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), IfStart) and v not in vs_to_delete:
+                    # IS IF
+                    if_id = v['op'].get_marker().if_id
+                    else_edge = [e for e in v.out_edges() if e['is_else']][0]
+                    if_edge = [e for e in v.out_edges() if not e['is_else']][0]
+                    v_at_if = if_edge.target_vertex
+                    if isinstance(v_at_if['op'], SsbLabel) and any(isinstance(m, IfEnd) and m.if_id == if_id for m in v_at_if['op'].markers):
+                        # Else ends directly at end of if-branch. Swap!
+                        else_edge['is_else'] = False
+                        if_edge['is_else'] = True
+                        v['op'].get_marker().is_not = True
+                        self._update_edge_style(else_edge)
+                        self._update_edge_style(if_edge)
+                        self._update_vertex_style(v)
+
     def group_branches(self):
         """
         Groups branches right next to each other in the else-path, that have the same if-path together (if x or y)
@@ -202,25 +227,30 @@ class SsbGraphMinimizer:
                     else_edge = [e for e in v.out_edges() if e['is_else']][0]
                     if_edge = [e for e in v.out_edges() if not e['is_else']][0]
                     v_at_else = else_edge.target_vertex
-                    if self._group_branches__is_if_group_possible(if_edge, v_at_else):
+                    first_run = True
+                    while self._group_branches__is_if_group_possible(if_edge, v_at_else):
                         # Build an if-group
                         original_op_v = v['op']
                         original_op_v_at_else = v_at_else['op']
                         v_if_id = original_op_v.get_marker().if_id
                         v_at_else_if_id = original_op_v_at_else.get_marker().if_id
-                        # v op:                         Turn into SsbMultiIfStart
-                        #                               and add original v op and v_at_else op to original_ssb_ifs
-                        original_op_v.remove_marker()
-                        original_op_v.add_marker(MultiIfStart(v_if_id, [original_op_v.root, original_op_v_at_else.root]))
-                        # Obfuscate original opcode name and remove root, to clarify that this is a special case
-                        original_op_v.root = None
-                        original_op_v.op_code.name = 'ES_MULTI_IF'
+                        if first_run:
+                            # v op:                         Turn into SsbMultiIfStart
+                            #                               and add original v op and v_at_else op to original_ssb_ifs
+                            original_op_v.remove_marker()
+                            original_op_v.add_marker(MultiIfStart(v_if_id, [original_op_v.root, original_op_v_at_else.root]))
+                            # Obfuscate original opcode name and remove root, to clarify that this is a special case
+                            original_op_v.root = None
+                            original_op_v.op_code.name = 'ES_OR_MULTI_IF'
+                            first_run = False
+                        else:
+                            # v op:                         Add v_at_else op to original_ssb_ifs
+                            v['op'].get_marker().add_if(original_op_v_at_else.root)
                         # v_at_else:                    Delete
                         vs_to_delete.add(v_at_else)
                         # v:                            Reconnect with else of v_at_else
                         v_at_else__else_edge = [e for e in v_at_else.out_edges() if e['is_else']][0]
                         self._reconnect(g, v, else_edge, v_at_else__else_edge.target_vertex)
-                        # v op:                         Add original
                         # SsbEndIf for v_at_else:       Remove if id of v_at_else
                         end, marker_idx = find_first_label_vertex_with_marker_that_matches_condition(
                             g, lambda m: isinstance(m, IfEnd) and m.if_id == v_at_else_if_id
@@ -233,27 +263,6 @@ class SsbGraphMinimizer:
                         else_edge = [e for e in v.out_edges() if e['is_else']][0]
                         if_edge = [e for e in v.out_edges() if not e['is_else']][0]
                         v_at_else = else_edge.target_vertex
-                        while self._group_branches__is_if_group_possible(if_edge, v_at_else):
-                            original_op_v_at_else = v_at_else['op']
-                            v_at_else_if_id = original_op_v_at_else.get_marker().if_id
-                            # v_at_else:                    Delete
-                            vs_to_delete.add(v_at_else)
-                            # v:                            Reconnect with else of v_at_else
-                            v_at_else__else_edge = [e for e in v_at_else.out_edges() if e['is_else']][0]
-                            self._reconnect(g, v, else_edge, v_at_else__else_edge.target_vertex)
-                            # v op:                         Add v_at_else op to original_ssb_ifs
-                            v['op'].get_marker().add_if(original_op_v_at_else.root)
-                            # SsbEndIf for v_at_else:  Remove if id of v_at_else
-                            end, marker_idx = find_first_label_vertex_with_marker_that_matches_condition(
-                                g, lambda m: isinstance(m, IfEnd) and m.if_id == v_at_else_if_id
-                            )
-                            if end:
-                                del end['op'].markers[marker_idx]
-                                self._update_vertex_style(end)
-                            self._update_vertex_style(v)
-                            else_edge = [e for e in v.out_edges() if e['is_else']][0]
-                            if_edge = [e for e in v.out_edges() if not e['is_else']][0]
-                            v_at_else = else_edge.target_vertex
 
             g.delete_vertices(vs_to_delete)
 

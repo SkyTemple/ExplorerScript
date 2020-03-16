@@ -101,6 +101,7 @@ class SsbDecompiler:
         # Build groups switch+cases, switch groups, branch-groups
         # get rid of as many label references (jumps) as possible
         grapher.build_branches()
+        grapher.invert_branches()
         grapher.group_branches()
         grapher.build_and_group_switch_cases()
         grapher.group_switches()
