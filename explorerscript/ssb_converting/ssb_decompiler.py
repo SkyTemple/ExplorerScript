@@ -430,6 +430,7 @@ class SsbDecompiler:
         elif len(exits) > 1:
             for e, switch_case_ops in iterate_switch_edges_using_edges_and_op(exits, op):
                 with _Blk(self):
+                    # TODO: default missing!
                     for sco in switch_case_ops:
                         ops_written += 1
                         if multi:

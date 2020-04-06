@@ -51,16 +51,21 @@ OPS_BRANCH = {
 
 OPS_SWITCH_CASE_MAP = {
     'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
-    'message_SwitchTalk': ['CaseText'],
-    'message_SwitchMonologue': ['CaseText'],
-    'Switch': ['Case', 'CaseValue', 'CaseVariable'],
-    'SwitchSector': ['Case'],
-    'ProcessSpecial': ['CaseValue', 'Case'],
-    'message_Menu': ['CaseValue', 'Case'],
-    'SwitchScenario': ['CaseScenario'],
-    'SwitchRandom': ['Case', 'CaseValue'],
-    'SwitchScenarioLevel': ['Case', 'CaseValue'],
-    'SwitchDungeonMode': ['Case']
+    'message_SwitchMenu2': ['CaseMenu', 'CaseMenu2'],
+    'Switch': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'SwitchSector': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'ProcessSpecial': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'message_Menu': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'SwitchScenario': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'SwitchRandom': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'SwitchScenarioLevel': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'SwitchDungeonMode': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
+}
+
+# TODO!!!
+OPS_SWITCH_TEXT_CASE_MAP = {
+    'message_SwitchTalk': ['CaseText', 'DefaultText'],
+    'message_SwitchMonologue': ['CaseText', 'DefaultText'],
 }
 
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
