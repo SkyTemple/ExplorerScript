@@ -34,10 +34,12 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineType, SsbCoro
 
 
 # Special markings for decompiler
+from explorerscript.ssb_converting.util import Blk
+
 ENDED_ON_FALLTHROUGH = 'EOFALL'
 
 
-class SsbDecompiler:
+class ExplorerScriptSsbDecompiler:
 
     def __init__(self, routine_infos: List[SsbRoutineInfo], routine_ops: List[List[SsbOperation]], named_coroutines: List[SsbCoroutine]):
         self._routine_infos = routine_infos
@@ -120,7 +122,7 @@ class SsbDecompiler:
 
         for r_id, (r_info, r_graph) in enumerate(zip(self._routine_infos, grapher.get_graphs())):
             self._write_routine_header(r_id, r_info)
-            with _Blk(self):
+            with Blk(self):
                 if len(r_graph.vs) == 0:
                     # TODO
                     #raise ValueError(f"Empty routines are currently not supported ({r_id}, {r_info})")
@@ -215,7 +217,7 @@ class SsbDecompiler:
             else:
                 raise ValueError(f"After a label there must be exactly 0 or 1 immediate opcode.")
             if should_start_block:
-                with _Blk(self):
+                with Blk(self):
                     ops_written += 1
                     r = self._handle_vertex(next_vertex, previous_op=op, **kwargs)
             else:
@@ -287,7 +289,7 @@ class SsbDecompiler:
 
         assert len(exits) == 1, "After a lives/object/performer op, there must be exactly one op following."
         # Read the context opcode.
-        with _Blk(self):
+        with Blk(self):
             len_of_blk, exits_after_ctx, extra_tpl = self._handle_op__simple_op__simple(
                 exits[0].target_vertex['op'], exits=exits[0].target_vertex.out_edges(),
                 previous_op=op, single_op=True, **kwargs
@@ -382,12 +384,12 @@ class SsbDecompiler:
         if_edge = [e for e in exits if not e['is_else']][0]
         if else_edge == if_edge:
             # Great if!
-            with _Blk(self):
+            with Blk(self):
                 self._write_pass()
                 r = self._handle_vertex(else_edge.target_vertex, open_ifs=open_ifs_orig, previous_op=op, **kwargs)
             return 2 + r[0], r[1], r[2]
         else:
-            with _Blk(self):
+            with Blk(self):
                 count_if, if_end, _ = self._handle_vertex(if_edge.target_vertex, open_ifs=open_ifs.copy(), previous_op=op, **kwargs)
                 if count_if == 0:
                     self._write_pass()
@@ -396,7 +398,7 @@ class SsbDecompiler:
             if not (isinstance(else_edge.target_vertex['op'], SsbLabel) and any(isinstance(mx, IfEnd) and m.if_id == mx.if_id for mx in else_edge.target_vertex['op'].markers)):
                 else_ends_on_common_vtx = False
                 self._write_stmnt(f"else:")
-                with _Blk(self):
+                with Blk(self):
                     count_else, else_end, _ = self._handle_vertex(else_edge.target_vertex, open_ifs=open_ifs.copy(), previous_op=op, **kwargs)
                     if count_else == 0:
                         self._write_pass()
@@ -422,14 +424,14 @@ class SsbDecompiler:
         switch_end_vertices = set()
         if len(exits) == 1:
             # Not a real switch:
-            with _Blk(self):
+            with Blk(self):
                 ops_written += 1
                 self._write_pass()
             r = self._handle_vertex(exits[0].target_vertex, open_switches=open_switches_orig, previous_op=op, **kwargs)
             return ops_written + r[0], r[1], r[2]
         elif len(exits) > 1:
             for e, switch_case_ops in iterate_switch_edges_using_edges_and_op(exits, op):
-                with _Blk(self):
+                with Blk(self):
                     # TODO: default missing!
                     for sco in switch_case_ops:
                         ops_written += 1
@@ -437,7 +439,7 @@ class SsbDecompiler:
                             self._write_stmnt(f"case {sco.switch_index}, {self._case_header_for(sco.op)}:")
                         else:
                             self._write_stmnt(f"case {self._case_header_for(sco.op)}:")
-                    with _Blk(self):
+                    with Blk(self):
                         if isinstance(e.target_vertex['op'], SsbLabelJump) and any(isinstance(mx, SwitchEnd) and mx.switch_id == m.switch_id for mx in e.target_vertex['op'].markers):
                             # cool case.
                             self._write_pass()
@@ -547,14 +549,3 @@ class SsbDecompiler:
         # todo
         return "todo"
 
-
-# noinspection PyProtectedMember
-class _Blk(object):
-    def __init__(self, reader):
-        self.reader = reader
-
-    def __enter__(self):
-        self.reader._indent += 1
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.reader._indent -= 1

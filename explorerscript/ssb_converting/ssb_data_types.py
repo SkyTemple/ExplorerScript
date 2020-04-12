@@ -39,6 +39,7 @@ class SsbRoutineType(Enum):
     OBJECT = 4
     PERFORMER = 5
     COROUTINE = 9
+    INVALID = -1
 
 
 class SsbNamedId:
@@ -74,15 +75,30 @@ class SsbWarning(UserWarning):
 
 
 class SsbRoutineInfo:
-    def __init__(self, type: SsbRoutineType, linked_to: int):
-        self.type = type
+    def __init__(self, type: SsbRoutineType, linked_to: int, linked_to_name: str = None):
+        self.type: SsbRoutineType = type
         self.linked_to = linked_to
+        self.linked_to_name = linked_to_name
+
+    @property
+    def linked_to_repr(self) -> str:
+        if self.linked_to_name:
+            return self.linked_to_name
+        return str(self.linked_to)
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return f"{self.__class__.__name__}<{self.type}({self.linked_to})>"
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.type == other.type and self.linked_to == other.linked_to
+
+    def __hash__(self):
+        return hash((self.type,  self.linked_to, self.linked_to_name))
 
 
 class SsbOpParamConstant:
@@ -121,12 +137,11 @@ class SsbOpParamLanguageString:
         return string
 
 
-SsbOpParam = TypeVar('SsbOpParam', int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString)
-ListOfSsbOpParam = Union[List[SsbOpParam], OrderedDictType[str, SsbOpParam]]
+SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString]
 
 
 class SsbOperation:
-    def __init__(self, offset: int, op_code: SsbOpCode, params: ListOfSsbOpParam):
+    def __init__(self, offset: int, op_code: SsbOpCode, params: List[SsbOpParam]):
         self.offset = offset
         self.op_code = op_code
         self.params = params
@@ -136,6 +151,11 @@ class SsbOperation:
 
     def __str__(self):
         return f"{self.__class__.__name__}<{str({k:v for k,v in self.__dict__.items()})}>"
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.offset == other.offset and self.op_code == other.op_code and self.params == other.params
 
 
 NUMBER_OF_SPACES_PER_INDENT = 4
