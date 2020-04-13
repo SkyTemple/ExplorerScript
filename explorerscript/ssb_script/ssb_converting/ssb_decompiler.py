@@ -56,7 +56,6 @@ class SsbScriptSsbDecompiler:
         self._routine_ops = list(resolver)
 
         for r_id, (r_info, r_ops) in enumerate(zip(self._routine_infos, self._routine_ops)):
-            self._source_map_builder.routine(r_id)
             self._write_routine_header(r_id, r_info)
             with Blk(self):
                 if len(r_ops) == 0:

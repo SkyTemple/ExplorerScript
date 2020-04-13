@@ -29,6 +29,8 @@ class SourceMap:
     Takes a routine id and opcode index and returns the line in the source code, that this
     operation is at.
 
+    The mapped addresses are the addresses relative to the first routine opcode address.
+
     Can be created in the following ways:
     - When loading SSB:
       - For SSBScript:
@@ -38,36 +40,27 @@ class SourceMap:
         - From an existing source map file.
     - When compiling SSBScript or ExplorerScript the source map is also generated.
     """
-    def __init__(self, mappings: Dict[int, Dict[int, Tuple[int, int]]]):
+    def __init__(self, mappings: Dict[int, Tuple[int, int]]):
         """Init from a dictionary of mappings
         (keys are routine ids, values are dict of line numbers + column for opcodes)"""
         self._mappings = mappings
 
-    def get_position(self, routine_id: int, op_offset: int) -> Tuple[int, int]:
-        if routine_id in self._mappings:
-            if op_offset in routine_id:
-                return self._mappings[routine_id][op_offset]
-            return None
-        raise ValueError(f"Unknown routine {routine_id}")
+    def get_position(self, op_offset: int) -> Tuple[int, int]:
+        if op_offset in self._mappings:
+            return self._mappings[op_offset]
 
     def __iter__(self):
-        for routine_id, routine in self._mappings.items():
-            for opcode_offset, (line_number, column) in routine.items():
-                yield routine_id, opcode_offset, line_number, column
+        for opcode_offset, (line_number, column) in self._mappings.items():
+            yield opcode_offset, line_number, column
 
 
 class SourceMapBuilder:
     # TODO: Column
     def __init__(self):
         self._mappings = {}
-        self._active_routine = None
-
-    def routine(self, i):
-        self._active_routine = i
-        self._mappings[self._active_routine] = {}
 
     def add_opcode(self, op_offset, line_number, column):
-        self._mappings[self._active_routine][op_offset] = (line_number, column)
+        self._mappings[op_offset] = (line_number, column)
 
     def build(self):
         return SourceMap(self._mappings)
