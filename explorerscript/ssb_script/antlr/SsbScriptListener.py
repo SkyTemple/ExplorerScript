@@ -116,6 +116,24 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SsbScriptParser#position_marker.
+    def enterPosition_marker(self, ctx:SsbScriptParser.Position_markerContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#position_marker.
+    def exitPosition_marker(self, ctx:SsbScriptParser.Position_markerContext):
+        pass
+
+
+    # Enter a parse tree produced by SsbScriptParser#position_marker_arg.
+    def enterPosition_marker_arg(self, ctx:SsbScriptParser.Position_marker_argContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#position_marker_arg.
+    def exitPosition_marker_arg(self, ctx:SsbScriptParser.Position_marker_argContext):
+        pass
+
+
     # Enter a parse tree produced by SsbScriptParser#jump_marker.
     def enterJump_marker(self, ctx:SsbScriptParser.Jump_markerContext):
         pass

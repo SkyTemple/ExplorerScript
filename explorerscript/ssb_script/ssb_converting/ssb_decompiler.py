@@ -22,10 +22,10 @@
 #
 from typing import List, Dict, Tuple
 
-from explorerscript.source_map import SourceMapBuilder, SourceMap
+from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbCoroutine, SsbRoutineType, \
-    SsbOpParam, NUMBER_OF_SPACES_PER_INDENT
+    SsbOpParam, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
 from explorerscript.ssb_converting.util import Blk
 
@@ -94,13 +94,23 @@ class SsbScriptSsbDecompiler:
         if isinstance(op.params, dict):
             orig_params = real_op.params.values()
 
+        # Build parameter string
         params = ", ".join(
             [self._single_param_to_string(param) for param in orig_params]
         )
+        # Add label marker to parameter string, if needed
         if isinstance(op, SsbLabelJump):
             if len(orig_params) > 0:
                 params += ", "
             params += f"@label_{op.label.id}"
+        # Build position mark source maps
+        for i, param in enumerate(orig_params):
+            if isinstance(param, SsbOpParamPositionMarker):
+                self._source_map_builder.add_position_mark(SourceMapPositionMark(
+                    line_number=self._line_number, opcode_idx_in_line=0, argument_idx=i,
+                    name=param.name,
+                    x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative, y_relative=param.y_relative
+                ))
         self._source_map_builder.add_opcode(op.offset, self._line_number, self._indent)
         self._write_stmnt(f"{real_op.op_code.name}({params});")
 

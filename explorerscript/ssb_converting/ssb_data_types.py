@@ -137,7 +137,30 @@ class SsbOpParamLanguageString:
         return string
 
 
-SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString]
+class SsbOpParamPositionMarker:
+    """Actually a tuple of four SSB binary parameters encoded as one positon marker"""
+    def __init__(self, name: str, x_offset: int, y_offset: int, x_relative: int, y_relative: int):
+        self.name = name
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+        self.x_relative = x_relative
+        self.y_relative = y_relative
+
+    def __str__(self):
+        x_offset_marker = ''
+        if self.x_offset == 2 or self.x_offset == 3:
+            x_offset_marker = '+'
+        elif self.x_offset >= 4:
+            x_offset_marker = '++'
+        y_offset_marker = ''
+        if self.y_offset == 2 or self.y_offset == 3:
+            y_offset_marker = '+'
+        elif self.y_offset >= 4:
+            y_offset_marker = '++'
+        return f'Position<\'{self.name}\', {self.x_relative}{x_offset_marker}, {self.y_relative}{y_offset_marker}>'
+
+
+SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker]
 
 
 class SsbOperation:

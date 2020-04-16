@@ -46,7 +46,10 @@ func_suite: OPEN_BRACE (stmt+ | func_alias) CLOSE_BRACE;
 func_alias: ALIAS PREVIOUS ';';
 
 arglist: pos_argument (',' pos_argument)*  (',')?;
-pos_argument: integer_like | string | jump_marker;
+pos_argument: integer_like | string | position_marker | jump_marker;
+
+position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' position_marker_arg CLOSE_SHARP;
+position_marker_arg: INTEGER PLUS? PLUS?;
 
 jump_marker: AT IDENTIFIER;
 label: DOLLAR IDENTIFIER;
@@ -77,6 +80,7 @@ FOR_OBJECT: 'for_object';
 FOR_PERFORMER: 'for_performer';
 ALIAS: 'alias';
 PREVIOUS: 'previous';
+POSITION: 'Position';
 
 IDENTIFIER
  : [a-zA-Z_][0-9a-zA-Z_]*
@@ -90,20 +94,20 @@ INTEGER
  ;
 
 DECIMAL_INTEGER
- : NON_ZERO_DIGIT DIGIT*
- | '0'+
+ : '-'? NON_ZERO_DIGIT DIGIT*
+ | '-'? '0'+
  ;
 
 OCT_INTEGER
- : '0' [oO] OCT_DIGIT+
+ : '-'? '0' [oO] OCT_DIGIT+
  ;
 
 HEX_INTEGER
- : '0' [xX] HEX_DIGIT+
+ : '-'? '0' [xX] HEX_DIGIT+
  ;
 
 BIN_INTEGER
- : '0' [bB] BIN_DIGIT+
+ : '-'? '0' [bB] BIN_DIGIT+
  ;
 
 OPEN_PAREN : '(';
@@ -111,10 +115,13 @@ CLOSE_PAREN : ')';
 COMMA : ',';
 COLON : ':';
 ASSIGN : '=';
+PLUS : '+';
 AT : '@';
 DOLLAR : '$';
 OPEN_BRACE : '{';
 CLOSE_BRACE : '}';
+OPEN_SHARP : '<';
+CLOSE_SHARP : '>';
 
 SKIP_
  : ( SPACES | LINE_JOINING ) -> skip

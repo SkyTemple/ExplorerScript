@@ -24,7 +24,7 @@ from enum import Enum, auto
 from typing import Optional, List, Union, Dict
 
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, SsbOpParam, \
-    SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant
+    SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 from explorerscript.ssb_script.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.ssb_script.antlr.SsbScriptParser import SsbScriptParser
@@ -37,6 +37,7 @@ class ListenerArgType(Enum):
     STRING_LITERAL = auto()
     LANGUAGE_STRING = auto()
     JUMP = auto()
+    POSITION_MARKER = auto()
 
 
 class SsbScriptCompilerListener(SsbScriptListener):
@@ -54,6 +55,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._argument_value: Union[int, str, Dict[str, str]] = -1
 
         self._collected_lang_string: Dict[str, str] = {}
+        self._collected_pos_marker: Optional[SsbOpParamPositionMarker] = None
 
         self._collected_labels: Dict[str, SsbLabel] = {}
         self._label_increment_id = -1
@@ -148,8 +150,37 @@ class SsbScriptCompilerListener(SsbScriptListener):
             self._collected_params.append(self._argument_value)
         elif self._argument_type == ListenerArgType.CONSTANT:
             self._collected_params.append(SsbOpParamConstant(self._argument_value))
+        elif self._argument_type == ListenerArgType.POSITION_MARKER:
+            self._collected_params.append(self._collected_pos_marker)
 
-    def exitInteger_like(self, ctx:SsbScriptParser.Integer_likeContext):
+    def enterPosition_marker(self, ctx: SsbScriptParser.Position_markerContext):
+        if self._is_processing_argument:
+            self._collected_pos_marker = SsbOpParamPositionMarker('NOT SET', -1, -1, -1, -1)
+
+    def exitPosition_marker(self, ctx: SsbScriptParser.Position_markerContext):
+        if self._is_processing_argument:
+            self._collected_pos_marker.name = self._string_literal(ctx.STRING_LITERAL())
+
+    def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext):
+        if self._is_processing_argument:
+            self._argument_type = ListenerArgType.POSITION_MARKER
+            relative = int(str(ctx.INTEGER()))
+            offset_marks = ctx.PLUS()
+            offset = 0
+            if len(offset_marks) == 1:
+                offset = 2
+            elif len(offset_marks) == 2:
+                offset = 4
+            if self._collected_pos_marker.x_offset == -1:
+                # We collected the x argument
+                self._collected_pos_marker.x_offset = offset
+                self._collected_pos_marker.x_relative = relative
+            else:
+                # We collected the y argument
+                self._collected_pos_marker.y_offset = offset
+                self._collected_pos_marker.y_relative = relative
+
+    def exitInteger_like(self, ctx: SsbScriptParser.Integer_likeContext):
         if self._is_processing_argument:
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
