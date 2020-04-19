@@ -41,6 +41,20 @@ class SsbRoutineType(Enum):
     COROUTINE = 9
     INVALID = -1
 
+    @staticmethod
+    def create_for_index(idx: int):
+        if idx == 1:
+            return SsbRoutineType.GENERIC
+        if idx == 3:
+            return SsbRoutineType.ACTOR
+        if idx == 4:
+            return SsbRoutineType.OBJECT
+        if idx == 5:
+            return SsbRoutineType.PERFORMER
+        if idx == 9:
+            return SsbRoutineType.COROUTINE
+        return SsbRoutineType.INVALID
+
 
 class SsbNamedId:
     def __init__(self, id: int, name: str):
