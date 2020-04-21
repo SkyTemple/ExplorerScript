@@ -23,6 +23,7 @@
 from enum import Enum, auto
 from typing import Optional, List, Union, Dict
 
+from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, SsbOpParam, \
     SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
@@ -49,10 +50,15 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self.named_coroutines: List[str] = []
         # A dict that assigns all collected labels their next opcode id.
         self.label_offsets: Dict[int, int] = {}
+        # Source map
+        self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 
         self._is_processing_argument = False
         self._argument_type: ListenerArgType = ListenerArgType.INVALID
         self._argument_value: Union[int, str, Dict[str, str]] = -1
+
+        self._last_op_line = -1
+        self._op_idx_in_current_line = 0
 
         self._collected_lang_string: Dict[str, str] = {}
         self._collected_pos_marker: Optional[SsbOpParamPositionMarker] = None
@@ -124,6 +130,28 @@ class SsbScriptCompilerListener(SsbScriptListener):
         while len(self._labels_before_op) > 0:
             label_before_op = self._labels_before_op.pop()
             self.label_offsets[label_before_op.id] = self._total_number_collected_ops
+
+        # Add to source map
+        self.source_map_builder.add_opcode(
+            # Antlr line ids are 1-indexed.
+            self._total_number_collected_ops, ctx.start.line - 1, ctx.start.column
+        )
+
+        # Add position marker to source map
+        if ctx.start.line != self._last_op_line:
+            self._last_op_line = ctx.start.line
+            self._op_idx_in_current_line = 0
+        else:
+            self._op_idx_in_current_line += 1
+        for i, arg in enumerate(collected_params):
+            if isinstance(arg, SsbOpParamPositionMarker):
+                self.source_map_builder.add_position_mark(SourceMapPositionMark(
+                    # Antlr line ids are 1-indexed.
+                    ctx.start.line - 1, self._op_idx_in_current_line, i,
+                    arg.name, arg.x_offset, arg.y_offset, arg.x_relative, arg.y_relative
+                ))
+
+        self._collected_pos_marker_for_current_op = []
 
     def enterPos_argument(self, ctx: SsbScriptParser.Pos_argumentContext):
         self._is_processing_argument = True

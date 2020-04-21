@@ -25,6 +25,7 @@ from typing import List, Optional
 from antlr4 import InputStream, CommonTokenStream
 
 from explorerscript.parse_error import ParseError
+from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
 from explorerscript.ssb_script.antlr.SsbScriptLexer import SsbScriptLexer
@@ -57,9 +58,12 @@ class SsbCompiler:
         # will contain it's name as string.
         self.named_coroutines: Optional[List[str]] = None
 
+        # Source map for the compiled ssb routine ops.
+        self.source_map: Optional[SourceMap] = None
+
     def compile(self, ssb_script_src: str):
         """
-        After compiling, the components are present in this object's fields.
+        After compiling, the components are present in this object's attributes.
 
         :raises: ParseError: On parsing errors
         """
@@ -89,5 +93,6 @@ class SsbCompiler:
         self.routine_ops = OpsLabelJumpToRemover(compiler_listener.routine_ops, compiler_listener.label_offsets).routines
         self.routine_infos = compiler_listener.routine_infos
         self.named_coroutines = compiler_listener.named_coroutines
+        self.source_map = compiler_listener.source_map_builder.build()
 
         # Done!

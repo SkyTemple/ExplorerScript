@@ -67,6 +67,18 @@ class SourceMapPositionMark:
                f'"{self.name}" @{self.line_number}:{self.opcode_idx_in_line}:{self.argument_idx} - ' \
                f'{self.x_relative}:{self.x_offset}, {self.y_relative}:{self.y_offset}>)'
 
+    def __eq__(self, other):
+        if not isinstance(other, SourceMapPositionMark):
+            return False
+        return self.line_number == other.line_number and \
+                self.opcode_idx_in_line == other.opcode_idx_in_line and \
+                self.argument_idx == other.argument_idx and \
+                self.name == other.name and \
+                self.x_offset == other.x_offset and \
+                self.y_offset == other.y_offset and \
+                self.x_relative == other.x_relative and \
+                self.y_relative == other.y_relative
+
 
 class SourceMap:
     """
@@ -100,6 +112,11 @@ class SourceMap:
     def __iter__(self):
         for opcode_offset, (line_number, column) in self._mappings.items():
             yield opcode_offset, line_number, column
+
+    def __eq__(self, other):
+        if not isinstance(other, SourceMap):
+            return False
+        return self._mappings == other._mappings and self.position_marks == other.position_marks
 
 
 class SourceMapBuilder:

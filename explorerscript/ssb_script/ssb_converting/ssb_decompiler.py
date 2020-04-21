@@ -111,7 +111,7 @@ class SsbScriptSsbDecompiler:
                     name=param.name,
                     x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative, y_relative=param.y_relative
                 ))
-        self._source_map_builder.add_opcode(op.offset, self._line_number, self._indent)
+        self._source_map_builder.add_opcode(op.offset, self._line_number, self._indent * NUMBER_OF_SPACES_PER_INDENT)
         self._write_stmnt(f"{real_op.op_code.name}({params});")
 
     def _single_param_to_string(self, param: SsbOpParam):
