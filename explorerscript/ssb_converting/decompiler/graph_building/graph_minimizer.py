@@ -36,7 +36,6 @@
 import sys
 import warnings
 
-from explorerscript.ssb_converting.decompiler.graph_building.graph_control_flow_builder import ControlFlowItem, GraphControlFlowBuilder
 from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
@@ -73,25 +72,6 @@ class SsbGraphMinimizer:
                 if isinstance(v['op'], SsbLabel) and len(v['op'].markers) == 0:
                     count += 1
         return count
-
-    def get_control_flow(self) -> List[List[List[ControlFlowItem]]]:  # for each routine: for each flow: list of cfi
-        """
-        TODO: Remove
-
-        Traverses the current graphs for each routine and returns possible control flows.
-        Returns all possible control flows through a routine.
-
-        The ssb operations in the list are the raw operations (not from ssb_special_ops). As such labels are also not
-        included.
-
-        This method can be used to check if the graph minimizing methods change the control flow (they shouldn't!)
-
-        Return is a list of op_codes and some special tokens (see enum ControlFlowToken).
-        """
-        routine_cfs = []
-        for g in self._graphs:
-            routine_cfs.append(GraphControlFlowBuilder(g).get_flow())
-        return routine_cfs
 
     def optimize_paths(self):
         """Perform some general optimizations. To be run before any of the other graph changing methods."""
