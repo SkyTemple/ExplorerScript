@@ -20,6 +20,19 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+
+#  MIT License
+#
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#
+#
 import functools
 import itertools
 import operator
@@ -347,6 +360,7 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     - 0,2 -> b
     - 1,2 -> c
     - 0,3|1,1 -> b
+    - -1,-1 -> d  [default; the list of switch case operations is empty]
 
     This is the same order as printed in ExplorerScript.
 
@@ -354,6 +368,8 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     - 0,0|0,1|0,2 -> a
     - 0,3 -> b
     - 0,4|0,5 -> a
+
+    The default case is always last and always returned extra. It's list of switch case operations is empty.
 
     Returns tuples of edges and applicable operations.
     """
@@ -385,6 +401,11 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
         while first_cursor_not_at_end < len(cursors) and cursors[first_cursor_not_at_end] >= len(map_switches_ops_edges[first_cursor_not_at_end]):
             first_cursor_not_at_end += 1
     yield next_edge, ops_for_edge
+
+    # Also take care of the default case
+    else_edge_candidates = [e for e in case_edges if e['is_else']]
+    if len(else_edge_candidates) > 0:
+        yield else_edge_candidates[0], []
 
 
 def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:

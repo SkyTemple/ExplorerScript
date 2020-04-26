@@ -98,7 +98,7 @@ OP_END = 'End'
 # (usually by jumping somewhere else and NOT "automatically" returining.)
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
 OPS_THAT_END_CONTROL_FLOW = [
-    OP_JUMP, OP_RETURN, OP_END, OP_HOLD
+    OP_JUMP, OP_RETURN, OP_END, OP_HOLD, 'JumpCommon', 'Destroy'
 ]
 
 
@@ -127,16 +127,18 @@ class IfStart(LabelJumpMarker):
 
 
 class MultiIfStart(IfStart):
-    def __init__(self, if_id: int, start_ifs):
+    def __init__(self, if_id: int, start_ifs, ifs_are_not):
         super().__init__(if_id)
         self.original_ssb_ifs_ops: List[SsbOperation] = start_ifs
+        self.original_ssb_ifs_is_not: List[bool] = ifs_are_not
 
     def __str__(self):
         return f"MIF({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
 
-    def add_if(self, ssb_if: SsbOperation):
+    def add_if(self, ssb_if: SsbOperation, is_not: bool):
         """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of ifs."""
         self.original_ssb_ifs_ops.append(ssb_if)
+        self.original_ssb_ifs_is_not.append(is_not)
 
 
 class SwitchStart(LabelJumpMarker):
@@ -228,6 +230,8 @@ class SsbLabel(SsbOperation):
         self.referenced_from_other_routine = False
         # Markers for this label (type of label)
         self.markers: List[LabelMarker] = []
+        # Used by the decompiler internally
+        self.output_already_written = False
 
     def add_marker(self, m: LabelMarker):
         self.markers.append(m)
@@ -243,6 +247,7 @@ class SsbForeignLabel(SsbOperation):
         #                                                              Params only for debugging
         super().__init__(-1, SsbOpCode(-1, f'ES_FOREIGN<{label.id}>'), [label.id])
         self.label = label
+
 
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""

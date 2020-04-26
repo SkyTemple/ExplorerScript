@@ -41,13 +41,13 @@ class SsbScriptSsbDecompiler:
         self._routine_ops = routine_ops
         self._named_coroutines: Dict[int, str] = {x.id: x.name for x in named_coroutines}
         self._output = ""
-        self._indent = 0
+        self.indent = 0
         self._line_number = 1
         self._source_map_builder: SourceMapBuilder = None
 
     def convert(self) -> Tuple[str, SourceMap]:
         self._output = ""
-        self._indent = 0
+        self.indent = 0
         self._line_number = 1
         self._source_map_builder = SourceMapBuilder()
 
@@ -59,10 +59,10 @@ class SsbScriptSsbDecompiler:
             self._write_routine_header(r_id, r_info)
             with Blk(self):
                 if len(r_ops) == 0:
-                    self._write_stmnt("alias previous;")
+                    self.write_stmnt("alias previous;")
                 for op in r_ops:
                     if isinstance(op, SsbLabel):
-                        self._write_stmnt(f"$label_{op.id};")
+                        self.write_stmnt(f"$label_{op.id};")
                     else:
                         self._read_op(op)
             self._write_line()
@@ -71,17 +71,17 @@ class SsbScriptSsbDecompiler:
     def _write_routine_header(self, r_id, r_info):
         if r_info.type == SsbRoutineType.COROUTINE:
             if r_id in self._named_coroutines:
-                self._write_stmnt(f"coro {self._named_coroutines[r_id]}")
+                self.write_stmnt(f"coro {self._named_coroutines[r_id]}")
             else:
                 raise ValueError(f"Unknown coroutine for: {r_id}, {r_info}")
         elif r_info.type == SsbRoutineType.ACTOR:
-            self._write_stmnt(f"def {r_id} for_actor({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for_actor({r_info.linked_to_repr})")
         elif r_info.type == SsbRoutineType.OBJECT:
-            self._write_stmnt(f"def {r_id} for_object({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for_object({r_info.linked_to_repr})")
         elif r_info.type == SsbRoutineType.PERFORMER:
-            self._write_stmnt(f"def {r_id} for_performer({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for_performer({r_info.linked_to_repr})")
         elif r_info.type == SsbRoutineType.GENERIC:
-            self._write_stmnt(f"def {r_id}")
+            self.write_stmnt(f"def {r_id}")
         else:
             raise ValueError(f"Unknown routine type for: {r_id}, {r_info}")
 
@@ -111,15 +111,15 @@ class SsbScriptSsbDecompiler:
                     name=param.name,
                     x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative, y_relative=param.y_relative
                 ))
-        self._source_map_builder.add_opcode(op.offset, self._line_number, self._indent * NUMBER_OF_SPACES_PER_INDENT)
-        self._write_stmnt(f"{real_op.op_code.name}({params});")
+        self._source_map_builder.add_opcode(op.offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
+        self.write_stmnt(f"{real_op.op_code.name}({params});")
 
     def _single_param_to_string(self, param: SsbOpParam):
         if hasattr(param, 'indent'):
-            param.indent = self._indent
+            param.indent = self.indent
         return str(param)
 
-    def _write_stmnt(self, stmnt, line=True):
+    def write_stmnt(self, stmnt, line=True):
         """Write a simple single line statement"""
         if line:
             self._write_line()
@@ -129,4 +129,4 @@ class SsbScriptSsbDecompiler:
     def _write_line(self):
         self._line_number += 1
         self._output += "\n"
-        self._output += " " * (self._indent * NUMBER_OF_SPACES_PER_INDENT)
+        self._output += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)

@@ -20,20 +20,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from igraph import Vertex
+
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump
 
 
-class Blk:
-    """Utility context manager for managing indents."""
-    def __init__(self, reader, braces=True):
-        self.reader = reader
-        self.braces = braces
+class JumpWriteHandler(AbstractWriteHandler):
+    """Handles writing regular label jump."""
 
-    def __enter__(self):
-        self.reader.indent += 1
-        if self.braces:
-            self.reader.write_stmnt(' {', False)
+    def __init__(self, start_vertex: Vertex, decompiler, parent):
+        super().__init__(start_vertex, decompiler, parent)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.reader.indent -= 1
-        if self.braces:
-            self.reader.write_stmnt('}', True)
+    def write_content(self):
+        """Delegates to the handlers in .label_jump"""
+        op: SsbLabelJump = self.start_vertex['op']
+        # TODO: Writing this source map entry may be confusing, if no jump is written next (by the label handler)...
+        self.decompiler.source_map_add_opcode(op.offset)
+        # Nothing to do, this is dealt with, when processing the label after this
+        # either we print a jump there, or we just proceed.
+        exits = self.start_vertex.out_edges()
+        assert len(exits) == 1, "A jump must have exactly one point to jump to"
+        return exits[0].target_vertex

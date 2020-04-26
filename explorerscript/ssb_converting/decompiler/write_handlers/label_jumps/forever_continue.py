@@ -21,19 +21,24 @@
 #  SOFTWARE.
 #
 
+from igraph import Vertex
 
-class Blk:
-    """Utility context manager for managing indents."""
-    def __init__(self, reader, braces=True):
-        self.reader = reader
-        self.braces = braces
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 
-    def __enter__(self):
-        self.reader.indent += 1
-        if self.braces:
-            self.reader.write_stmnt(' {', False)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.reader.indent -= 1
-        if self.braces:
-            self.reader.write_stmnt('}', True)
+class ForeverContinueWriteHandler(AbstractWriteHandler):
+    """Handles writing loop continue statements."""
+
+    def __init__(self, start_vertex: Vertex, decompiler, parent):
+        super().__init__(start_vertex, decompiler, parent)
+
+    def write_content(self):
+        """Print a continue (if not implicit) and end"""
+        if not self._continue_is_implicit():
+            self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
+            self.decompiler.write_stmnt("continue;  // may be redundant")
+        return None
+
+    def _continue_is_implicit(self):
+        # TODO: Not implemented, is probably not really possible, unless we do a multi-pass solution.
+        return False

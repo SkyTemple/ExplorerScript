@@ -22,7 +22,7 @@
 #  SOFTWARE.
 #
 from enum import Enum
-from typing import Dict, TypeVar, Union, List, OrderedDict as OrderedDictType
+from typing import Dict, TypeVar, Union, List, OrderedDict as OrderedDictType, NamedTuple
 
 
 def escape_quotes(string):
@@ -193,6 +193,37 @@ class SsbOperation:
         if not isinstance(other, self.__class__):
             return False
         return self.offset == other.offset and self.op_code == other.op_code and self.params == other.params
+
+
+class SsbOperator(Enum):
+    """Operator parameter used in Branch and Switch operations."""
+    FALSE = 0, 'FALSE'
+    TRUE = 1, 'TRUE'
+    EQ = 2, '=='
+    GT = 3, '>'
+    LT = 4, '<'
+    GE = 5, '>='
+    LE = 6, '<='
+    NOT = 7, '!='
+    AND = 8, '&'
+    XOR = 9, '^'
+    BIT_SET = 10, '&<<'
+
+    def __new__(cls, *args, **kwargs):
+        obj = object.__new__(cls)
+        obj._value_ = args[0]
+        return obj
+
+    # ignore the first param since it's already set by __new__
+    def __init__(self, _: str, notation: str = None):
+        self._notation_ = notation
+
+    def __str__(self):
+        return self.value
+
+    @property
+    def notation(self):
+        return self._notation_
 
 
 NUMBER_OF_SPACES_PER_INDENT = 4

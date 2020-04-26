@@ -20,27 +20,30 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+
+#  MIT License
+#
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#
+#
 import sys
 import warnings
-from enum import Enum, auto
-from typing import List, Union, Set, Dict, Tuple, Optional
 
-from igraph import Graph, IN, OUT
-
-from explorerscript.ssb_converting.decompiler.graph_utils import *
+from explorerscript.ssb_converting.decompiler.graph_building.graph_control_flow_builder import ControlFlowItem, GraphControlFlowBuilder
+from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
     MultiSwitchStart, SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart, ForeverEnd, \
     SsbForeignLabel
 
-
-class ControlFlowToken(Enum):
-    # Building the control flow was aborted, because after reaching the node before this token the flow loops
-    LOOP = auto()
-
-
-ControlFlowItem = Union[SsbOperation, ControlFlowToken]
 sys.setrecursionlimit(10000)
 
 
@@ -71,8 +74,10 @@ class SsbGraphMinimizer:
                     count += 1
         return count
 
-    def get_control_flow(self) -> List[List[List[ControlFlowItem]]]:  # for each routine: for each run: list of cfi
+    def get_control_flow(self) -> List[List[List[ControlFlowItem]]]:  # for each routine: for each flow: list of cfi
         """
+        TODO: Remove
+
         Traverses the current graphs for each routine and returns possible control flows.
         Returns all possible control flows through a routine.
 
@@ -83,8 +88,10 @@ class SsbGraphMinimizer:
 
         Return is a list of op_codes and some special tokens (see enum ControlFlowToken).
         """
-        # TODO
-        return None
+        routine_cfs = []
+        for g in self._graphs:
+            routine_cfs.append(GraphControlFlowBuilder(g).get_flow())
+        return routine_cfs
 
     def optimize_paths(self):
         """Perform some general optimizations. To be run before any of the other graph changing methods."""
@@ -234,18 +241,23 @@ class SsbGraphMinimizer:
                         original_op_v_at_else = v_at_else['op']
                         v_if_id = original_op_v.get_marker().if_id
                         v_at_else_if_id = original_op_v_at_else.get_marker().if_id
+                        original_op_v_is_not = original_op_v.get_marker().is_not
+                        original_op_v_at_else_is_not = original_op_v_at_else.get_marker().is_not
                         if first_run:
                             # v op:                         Turn into SsbMultiIfStart
                             #                               and add original v op and v_at_else op to original_ssb_ifs
                             original_op_v.remove_marker()
-                            original_op_v.add_marker(MultiIfStart(v_if_id, [original_op_v.root, original_op_v_at_else.root]))
+                            original_op_v.add_marker(MultiIfStart(v_if_id,
+                                                                  [original_op_v.root, original_op_v_at_else.root],
+                                                                  [original_op_v_is_not, original_op_v_at_else_is_not])
+                                                     )
                             # Obfuscate original opcode name and remove root, to clarify that this is a special case
                             original_op_v.root = None
                             original_op_v.op_code.name = 'ES_OR_MULTI_IF'
                             first_run = False
                         else:
                             # v op:                         Add v_at_else op to original_ssb_ifs
-                            v['op'].get_marker().add_if(original_op_v_at_else.root)
+                            v['op'].get_marker().add_if(original_op_v_at_else.root, original_op_v_at_else_is_not)
                         # v_at_else:                    Delete
                         vs_to_delete.add(v_at_else)
                         # v:                            Reconnect with else of v_at_else
@@ -504,6 +516,13 @@ class SsbGraphMinimizer:
                         es_already_processed.add(e)
                         possible_fallthrough_marker = e.target_vertex
                         if isinstance(possible_fallthrough_marker['op'], SsbLabel):
+                            # If this label already has a switch end marker for this switch, it's
+                            # obviously no fallthrough situation...
+                            if any([
+                                isinstance(m, SwitchEnd) and m.switch_id == v['op'].get_marker().switch_id
+                                for m in possible_fallthrough_marker['op'].markers
+                            ]):
+                                continue
                             # Get incoming edges and trace back if one is from the previous switch case.
                             pfm_in_edges = possible_fallthrough_marker.in_edges()
                             if len(pfm_in_edges) == 2:

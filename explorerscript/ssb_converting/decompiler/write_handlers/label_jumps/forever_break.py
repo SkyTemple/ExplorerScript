@@ -21,19 +21,19 @@
 #  SOFTWARE.
 #
 
+from igraph import Vertex
 
-class Blk:
-    """Utility context manager for managing indents."""
-    def __init__(self, reader, braces=True):
-        self.reader = reader
-        self.braces = braces
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 
-    def __enter__(self):
-        self.reader.indent += 1
-        if self.braces:
-            self.reader.write_stmnt(' {', False)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.reader.indent -= 1
-        if self.braces:
-            self.reader.write_stmnt('}', True)
+class ForeverBreakWriteHandler(AbstractWriteHandler):
+    """Handles writing loop breaks."""
+
+    def __init__(self, start_vertex: Vertex, decompiler, parent):
+        super().__init__(start_vertex, decompiler, parent)
+
+    def write_content(self):
+        """Print a break and end"""
+        self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
+        self.decompiler.write_stmnt("break_forever;")
+        return None

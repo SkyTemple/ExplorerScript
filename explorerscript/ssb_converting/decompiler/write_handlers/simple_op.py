@@ -1,0 +1,60 @@
+#  MIT License
+#
+#  Copyright (c) 2020 Parakoopa
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in all
+#  copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  SOFTWARE.
+#
+from typing import Optional, Dict, Type
+
+from igraph import Vertex
+
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.ctx import CtxSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.keyword import KeywordSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, OPS_CTX, OP_JUMP, OP_RETURN, \
+    OP_END, OP_HOLD
+
+
+class SimpleOperationWriteHandler(AbstractWriteHandler):
+    """Handles writing regular operations and a few special cases."""
+
+    _ssb_operations_special_cases_handlers: Dict[Optional[str], Type[AbstractWriteHandler]] = {
+        None: SimpleSimpleOpWriteHandler
+    }
+    for x in [OP_JUMP, OP_RETURN, OP_END, OP_HOLD]:
+        _ssb_operations_special_cases_handlers[x] = KeywordSimpleOpWriteHandler
+    for x in OPS_CTX:
+        _ssb_operations_special_cases_handlers[x] = CtxSimpleOpWriteHandler
+
+    def __init__(self, start_vertex: Vertex, decompiler, parent):
+        super().__init__(start_vertex, decompiler, parent)
+
+    def write_content(self):
+        """Delegate to specific simple op handler"""
+        return self.get_real_handler()(self.start_vertex, self.decompiler, self).write_content()
+
+    def get_real_handler(self) -> Type[AbstractWriteHandler]:
+        op: SsbOperation = self.start_vertex['op']
+        handler = self._ssb_operations_special_cases_handlers[None]
+        for h_types, h in self._ssb_operations_special_cases_handlers.items():
+            if op.op_code.name == h_types:
+                handler = h
+        return handler

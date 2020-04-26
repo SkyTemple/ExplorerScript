@@ -20,20 +20,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from igraph import Vertex
+
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.ssb_special_ops import SsbForeignLabel
 
 
-class Blk:
-    """Utility context manager for managing indents."""
-    def __init__(self, reader, braces=True):
-        self.reader = reader
-        self.braces = braces
+class ForeignLabelWriteHandler(AbstractWriteHandler):
+    """Handles writing foreign labels (references to labels in other routines)."""
+    def __init__(self, start_vertex: Vertex, decompiler, parent, vertex_that_started_block: Vertex, is_first_vertex_of_block: bool):
+        super().__init__(start_vertex, decompiler, parent)
+        self.vertex_that_started_block = vertex_that_started_block
+        self.is_first_vertex_of_block = is_first_vertex_of_block
 
-    def __enter__(self):
-        self.reader.indent += 1
-        if self.braces:
-            self.reader.write_stmnt(' {', False)
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.reader.indent -= 1
-        if self.braces:
-            self.reader.write_stmnt('}', True)
+    def write_content(self):
+        op: SsbForeignLabel = self.start_vertex['op']
+        exits = self.start_vertex.out_edges()
+        assert len(exits) == 0
+        # See note in LabelWriteHandler.
+        previous_vertex_op = self.vertex_that_started_block['op'] if self.is_first_vertex_of_block else None
+        # We definitely need to print that
+        self.decompiler.write_label_jump(op.label.id, previous_vertex_op)
+        return None
