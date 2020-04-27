@@ -65,10 +65,14 @@ OPS_SWITCH_CASE_MAP = {
     'main_EnterAdventure': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
 }
 
-# TODO!!!
+OP_MESSAGE_SWITCH_TALK = 'message_SwitchTalk'
+OP_MESSAGE_SWITCH_MONOLOGUE = 'message_SwitchMonologue'
+OP_CASE_TEXT = 'CaseText'
+OP_DEFAULT_TEXT = 'DefaultText'
+OPS_SWITCH_TEXT_CASE_CASES_LIST = [OP_CASE_TEXT, OP_DEFAULT_TEXT]
 OPS_SWITCH_TEXT_CASE_MAP = {
-    'message_SwitchTalk': ['CaseText', 'DefaultText'],
-    'message_SwitchMonologue': ['CaseText', 'DefaultText'],
+    OP_MESSAGE_SWITCH_TALK: OPS_SWITCH_TEXT_CASE_CASES_LIST,
+    OP_MESSAGE_SWITCH_MONOLOGUE: OPS_SWITCH_TEXT_CASE_CASES_LIST,
 }
 
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
