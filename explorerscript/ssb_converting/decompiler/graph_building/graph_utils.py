@@ -344,12 +344,12 @@ def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
     return None, None
 
 
-def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation]]:
+def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation], bool]:
     """See iterate_switch_edges_using_edges_and_op."""
     return iterate_switch_edges_using_edges_and_op(v.out_edges(), v['op'])
 
 
-def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabelJump) -> Tuple[Edge, List[SwitchCaseOperation]]:
+def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabelJump) -> Tuple[Edge, List[SwitchCaseOperation], bool]:
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 
@@ -360,7 +360,6 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     - 0,2 -> b
     - 1,2 -> c
     - 0,3|1,1 -> b
-    - -1,-1 -> d  [default; the list of switch case operations is empty]
 
     This is the same order as printed in ExplorerScript.
 
@@ -369,9 +368,7 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     - 0,3 -> b
     - 0,4|0,5 -> a
 
-    The default case is always last and always returned extra. It's list of switch case operations is empty.
-
-    Returns tuples of edges and applicable operations.
+    Returns tuples of edges, applicable operations and whether or not this edge is also the default edge.
     """
     number_of_switches_in_switch = 1 if not isinstance(op.get_marker(), MultiSwitchStart) else op.get_marker().number_of_switches()
     map_switches_ops_edges = []
@@ -391,7 +388,7 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     ops_for_edge = []
     while first_cursor_not_at_end < len(cursors):
         if map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]] != next_edge:
-            yield next_edge, ops_for_edge
+            yield next_edge, ops_for_edge, next_edge['is_else']
             next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
             ops_for_edge = []
         for i in range(first_cursor_not_at_end, len(cursors)):
@@ -400,12 +397,12 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
                 cursors[i] += 1
         while first_cursor_not_at_end < len(cursors) and cursors[first_cursor_not_at_end] >= len(map_switches_ops_edges[first_cursor_not_at_end]):
             first_cursor_not_at_end += 1
-    yield next_edge, ops_for_edge
+    yield next_edge, ops_for_edge, next_edge['is_else']
 
-    # Also take care of the default case
+    # Also take care of the default case if there are no extra switch ops for it
     else_edge_candidates = [e for e in case_edges if e['is_else']]
-    if len(else_edge_candidates) > 0:
-        yield else_edge_candidates[0], []
+    if len(else_edge_candidates) > 0 and else_edge_candidates[0]['switch_ops'] is None:
+        yield else_edge_candidates[0], [], True
 
 
 def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:

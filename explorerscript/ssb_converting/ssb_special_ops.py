@@ -25,7 +25,9 @@ TODO: These are only valid for Sky-style ssb.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Optional
+
+from igraph import Graph, Vertex
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParamConstant
 
@@ -230,15 +232,33 @@ class SsbLabel(SsbOperation):
         self.referenced_from_other_routine = False
         # Markers for this label (type of label)
         self.markers: List[LabelMarker] = []
-        # Used by the decompiler internally
-        self.output_already_written = False
 
     def add_marker(self, m: LabelMarker):
         self.markers.append(m)
 
-    def needs_to_be_printed(self):
-        # TODO!
-        return True
+    def needs_to_be_printed(self, number_in_vs: int, graph: Graph):
+        """If the number of incoming vertices is bigger than max_in_vs, then we need to print this label"""
+        max_in_vs = 1
+        for m in self.markers:
+            if isinstance(m, IfEnd):
+                max_in_vs += 1  # Each if adds one else branch.
+            if isinstance(m, SwitchEnd):
+                start: Vertex = self._find_switch_start_vertex(graph, m.switch_id)
+                if not start:
+                    raise ValueError(f"Start for switch {m.switch_id} not found.")
+                max_in_vs += len(start.out_edges()) - 1
+        return number_in_vs > max_in_vs
+
+    @staticmethod
+    def _find_switch_start_vertex(graph: Graph, switch_id: int) -> Optional[Vertex]:
+        for v in graph.vs:
+            if 'op' not in v.attributes():
+                continue
+            if isinstance(v['op'], SsbLabelJump):
+                for m in v['op'].markers:
+                    if isinstance(m, SwitchStart) and m.switch_id == switch_id:
+                        return v
+        return None
 
 
 class SsbForeignLabel(SsbOperation):

@@ -104,17 +104,17 @@ class ExplorerScriptSsbDecompiler:
         # Depending on what the previous operation was, this has to be printed differently
         if not isinstance(previous_op, SsbLabelJump):
             # We need a jump now. We didn't have one but now we will.
-            self.write_stmnt(f"jump {{ @label_{label_id} }};")
+            self.write_stmnt(f"jump @label_{label_id};")
         elif previous_op.get_marker() is None:
             # Normal jump, just print that
-            self.write_stmnt(f"jump {{ @label_{label_id} }};")
+            self.write_stmnt(f"jump @label_{label_id};")
         elif isinstance(previous_op.get_marker(), ForeverContinue) or isinstance(previous_op.get_marker(), ForeverBreak):
             # Loop continue/break
             # Do nothing
             pass
         else:
             # Jump as part of a control structure
-            self.write_stmnt(f"@label_{label_id};")
+            self.write_stmnt(f"jump @label_{label_id};")
 
     def source_map_add_opcode(self, op_offset):
         """Has to be called BEFORE writing the opcode."""

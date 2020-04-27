@@ -67,20 +67,20 @@ class SwitchWriteHandler(AbstractWriteHandler):
         elif len(exits) > 1:
             list_of_switch_cases = list(iterate_switch_edges_using_edges_and_op(exits, op))
             # Build a list of all edges that will be visited multiple times, make sure to generate a label for them
-            for e, _ in list_of_switch_cases:
+            for e, _, __ in list_of_switch_cases:
                 if e in already_printed_edges:
                     edges_that_will_be_visited_multiple_times.add(e)
                 already_printed_edges.add(e)
             already_printed_edges = set()  # reuse
             with Blk(self.decompiler):
-                for e, switch_case_ops in list_of_switch_cases:
+                for e, switch_case_ops, is_default in list_of_switch_cases:
                     for sco in switch_case_ops:
                         if multi:
                             self.decompiler.source_map_add_opcode(sco.op.offset)
                             self.decompiler.write_stmnt(f"case {sco.switch_index}, {self._case_header_for(sco.op)}:")
                         else:
                             self.decompiler.write_stmnt(f"case {self._case_header_for(sco.op)}:")
-                    if len(switch_case_ops) == 0:
+                    if is_default:
                         self.decompiler.write_stmnt("default:")
                     with Blk(self.decompiler, False):
                         # If this will be visited multiple times, we need a label
@@ -88,8 +88,9 @@ class SwitchWriteHandler(AbstractWriteHandler):
                             self.decompiler.write_stmnt(f"$switch{m.switch_id}_{e.index};")
                         if e in already_printed_edges:
                             # Write the label jump instead
-                            self.decompiler.write_label_jump(f"@switch{m.switch_id}_{e.index};")
+                            self.decompiler.write_stmnt(f"jump @switch{m.switch_id}_{e.index};")
                         else:
+                            already_printed_edges.add(e)
                             # Print a switch case branch
                             handler = BlockWriteHandler(
                                 e.target_vertex, self.decompiler, self, self.start_vertex,
@@ -118,7 +119,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if isinstance(next_handler, LabelWriteHandler):
             lwh = next_handler
 
-            if len(lwh.ended_switches) > 1:
+            if len(lwh.ended_switches) > 0:
                 if self.start_vertex['op'].get_marker().switch_id in lwh.ended_switches:
                     return False
                 #else:

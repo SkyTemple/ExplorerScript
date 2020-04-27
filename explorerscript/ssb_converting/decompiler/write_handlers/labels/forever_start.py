@@ -59,7 +59,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         if isinstance(next_handler, LabelWriteHandler):
             lwh = next_handler
 
-            if len(lwh.ended_loops) > 1:
+            if len(lwh.ended_loops) > 0:
                 if self.m.loop_id in lwh.ended_loops:
                     return False
         return True

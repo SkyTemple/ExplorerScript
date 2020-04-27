@@ -42,7 +42,6 @@ class IfWriteHandler(AbstractWriteHandler):
     def write_content(self):
         op: SsbLabelJump = self.start_vertex['op']
         m: IfStart = op.get_marker()
-        # TODO: Detection of if ends for multi ifs, see EVENT_HA_YU_SHU_DO
         if isinstance(m, MultiIfStart):
             list_of_clauses = [self._if_header_for(s, is_not) for s, is_not in zip(m.original_ssb_ifs_ops, m.original_ssb_ifs_is_not)]
         else:
@@ -100,7 +99,7 @@ class IfWriteHandler(AbstractWriteHandler):
         if isinstance(next_handler, LabelWriteHandler):
             lwh = next_handler
 
-            if len(lwh.ended_ifs) > 1:
+            if len(lwh.ended_ifs) > 0:
                 if self.start_vertex['op'].get_marker().if_id in lwh.ended_ifs:
                     return False
                 #else:

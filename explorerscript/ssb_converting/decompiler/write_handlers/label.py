@@ -65,12 +65,13 @@ class LabelWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         op: SsbLabel = self.start_vertex['op']
+        needs_to_be_printed = op.needs_to_be_printed(len(self.start_vertex.in_edges()), self.start_vertex.graph)
 
         # EXCEPTION for Switch Fallthrough.
         # If this is a switch fallthrough and NOT the first vertex of this branch,
         # then we have to stop here, we continue printing this in the following switch branch.
         if self.switch_fell_through and not self.is_first_vertex_of_block:
-            if op.needs_to_be_printed() and op.id not in self.decompiler.labels_already_printed:
+            if needs_to_be_printed and op.id not in self.decompiler.labels_already_printed:
                 self._write_label(op)
             self.ended_on_jump = True
             return None
@@ -84,7 +85,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             self.decompiler.write_label_jump(op.id, previous_vertex_op)
             self.ended_on_jump = True
             return None
-        elif op.needs_to_be_printed():
+        elif needs_to_be_printed:
             # Print the label
             self._write_label(op)
 
