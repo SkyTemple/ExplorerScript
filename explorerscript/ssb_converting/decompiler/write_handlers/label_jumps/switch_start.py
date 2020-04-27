@@ -134,7 +134,8 @@ class SwitchWriteHandler(AbstractWriteHandler):
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name in [
             'message_SwitchMenu', 'message_SwitchMenu2', 'SwitchDirection', 'SwitchDirectionLives',
-            'SwitchDirectionLives2', 'SwitchDirectionMark', 'SwitchLives', 'SwitchValue', 'SwitchVariable'
+            'SwitchDirectionLives2', 'SwitchDirectionMark', 'SwitchLives', 'SwitchValue', 'SwitchVariable',
+            'main_EnterAdventure'
         ]:
             return f'{op.op_code.name}({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'message_Menu':

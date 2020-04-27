@@ -695,6 +695,10 @@ class SsbGraphMinimizer:
                         if len(v_after.in_edges()) > 1:
                             # The jump target has multiple entry points, keep the jump
                             continue
+                        if isinstance(v_after['op'], SsbLabel) and len(v_after['op'].markers) > 0:
+                            # The jump target is a special label, we really shouldn't remove it
+                            # (may be a loop start for example)
+                            continue
                         e = self._reconnect(g, v_before, in_edges[0], v_after, True)
                         e['flow_level'] = e['flow_level'] + 1
                         self._update_edge_style(e)
@@ -710,6 +714,10 @@ class SsbGraphMinimizer:
                         vs_to_delete.add(v)
                     elif len(in_edges) == 1:
                         assert len(out_edges) == 1
+                        if isinstance(v['op'], SsbLabel) and len(v['op'].markers) > 0:
+                            # The label is a special label, we really shouldn't remove it
+                            # (may be a loop start for example)
+                            continue
                         v_before = in_edges[0].source_vertex
                         v_after = out_edges[0].target_vertex
                         self._reconnect(g, v_before, in_edges[0], v_after, True)

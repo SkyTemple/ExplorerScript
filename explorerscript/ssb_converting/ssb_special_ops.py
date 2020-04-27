@@ -61,7 +61,8 @@ OPS_SWITCH_CASE_MAP = {
     'SwitchScenario': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
     'SwitchRandom': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
     'SwitchScenarioLevel': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchDungeonMode': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
+    'SwitchDungeonMode': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
+    'main_EnterAdventure': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
 }
 
 # TODO!!!
