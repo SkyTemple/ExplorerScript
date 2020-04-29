@@ -226,4 +226,45 @@ class SsbOperator(Enum):
         return self._notation_
 
 
+class SsbCalcOperator(Enum):
+    """Operator parameter used in flag_Calc* operations."""
+    ASSIGN = 0, '='
+    MINUS = 1, '-='
+    PLUS = 2, '+='
+    MULTIPLY = 3, '*='
+    DIVIDE = 4, '/='
+
+    def __new__(cls, *args, **kwargs):
+        obj = object.__new__(cls)
+        obj._value_ = args[0]
+        return obj
+
+    # ignore the first param since it's already set by __new__
+    def __init__(self, _: str, notation: str = None):
+        self._notation_ = notation
+
+    def __str__(self):
+        return self.value
+
+    @property
+    def notation(self):
+        return self._notation_
+
+
+class DungeonModeConstants:
+    def __init__(self, open_constant: str, request_constant: str, close_constant: str):
+        self.open_constant = open_constant
+        self.request_constant = request_constant
+        self.close_constant = close_constant
+
+    def get_explorerscript_flag_set_for(self, idx: int):
+        if idx == 1:
+            return self.open_constant
+        if idx == 2:
+            return self.request_constant
+        if idx == 3:
+            return f'{self.open_constant} & {self.request_constant}'
+        return self.close_constant
+
+
 NUMBER_OF_SPACES_PER_INDENT = 4

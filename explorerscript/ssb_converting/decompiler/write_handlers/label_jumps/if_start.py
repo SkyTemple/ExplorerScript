@@ -103,15 +103,13 @@ class IfWriteHandler(AbstractWriteHandler):
             #    raise ValueError("An invalid switch or loop was ended while waiting for an if end.")
         return True
 
-    @classmethod
-    def _if_header_for(cls, op: SsbOperation, is_not):
+    def _if_header_for(self, op: SsbOperation, is_not):
         if is_not:
             # Remove double nots (see RESCUE_DEBUG)
-            return f'not {cls._if_header_for_impl(op)}'.lstrip('not not ')
-        return cls._if_header_for_impl(op)
+            return f'not {self._if_header_for_impl(op)}'.lstrip('not not ')
+        return self._if_header_for_impl(op)
 
-    @staticmethod
-    def _if_header_for_impl(op: SsbOperation):
+    def _if_header_for_impl(self, op: SsbOperation):
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name == 'Branch':
             return f'{op.params[0]} {SsbOperator.EQ.notation} {op.params[1]}'
@@ -130,7 +128,8 @@ class IfWriteHandler(AbstractWriteHandler):
         if op.op_code.name == 'BranchExecuteSub':
             return f'BranchExecuteSub({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchPerformance':
-            return f'BranchPerformance({", ".join([str(x) for x in op.params])})'
+            n = 'not ' if op.params[1] < 1 else ''
+            return f'{n}{self.decompiler.performance_progress_list_var_name}[{op.params[0]}]'
         if op.op_code.name == 'BranchScenarioNow':
             return f'scn({op.params[0]})[== {op.params[1]}, == {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioNowAfter':

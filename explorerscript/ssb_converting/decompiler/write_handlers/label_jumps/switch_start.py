@@ -163,9 +163,9 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if op.op_code.name == 'CaseMenu':
             if hasattr(op.params[0], 'indent'):
                 op.params[0].indent = self.decompiler.indent
-            return f'menu {op.params[0]}'
+            return f'menu({op.params[0]})'
         if op.op_code.name == 'CaseMenu2':
-            return f'CaseMenu2({", ".join([str(x) for x in op.params])})'
+            return f'menu2({op.params[0]})'
         if op.op_code.name == 'CaseScenario':
             # TODO: This will convert them into CaseValues. Might cause issues.
             return f'{SsbOperator(op.params[0]).notation} {op.params[1]}'

@@ -28,7 +28,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.routine import Rout
 from explorerscript.ssb_converting.ssb_special_ops import *
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbRoutineInfo, SsbOpParam, \
-    SsbOperation, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker
+    SsbOperation, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker, DungeonModeConstants
 
 
 class ExplorerScriptSsbDecompiler:
@@ -38,7 +38,18 @@ class ExplorerScriptSsbDecompiler:
     see skytemple_files.script.ssb.model.Ssb.to_explorerscript.
     """
 
-    def __init__(self, routine_infos: List[SsbRoutineInfo], routine_ops: List[List[SsbOperation]], named_coroutines: List[SsbCoroutine]):
+    def __init__(self, routine_infos: List[SsbRoutineInfo],
+                 routine_ops: List[List[SsbOperation]],
+                 named_coroutines: List[SsbCoroutine], performance_progress_list_var_name: str,
+                 dungeon_mode_constants: DungeonModeConstants
+                 ):
+        """
+        performance_progress_list_var_name is the name of the constant for the variable
+        PERFORMANCE_PROGRESS_LIST, it's converted into special opcodes!
+
+        dungeon_mode_constants must be an instance of DungeonModeConstants, used for
+        flag_SetDungeonMode (dungeon_mode(X) = ...).
+        """
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
         self.named_coroutines: Dict[int, str] = {x.id: x.name for x in named_coroutines}
@@ -47,6 +58,8 @@ class ExplorerScriptSsbDecompiler:
         self._line_number = 1
         self.labels_already_printed = []
         self.smb: SourceMapBuilder = None
+        self.performance_progress_list_var_name = performance_progress_list_var_name
+        self.dungeon_mode_constants = dungeon_mode_constants
 
     def convert(self) -> Tuple[str, SourceMap]:
         self._output = ""

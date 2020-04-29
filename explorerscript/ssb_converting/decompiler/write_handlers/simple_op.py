@@ -26,6 +26,7 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.ctx import CtxSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.flag import FlagSimpleOpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.keyword import KeywordSimpleOpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import \
     MesageSwitchSimpleOpWriteHandler
@@ -34,7 +35,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, OPS_CTX, OP_JUMP, OP_RETURN, \
-    OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST
+    OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST, OPS_FLAG_ALL
 
 
 class SimpleOperationWriteHandler(AbstractWriteHandler):
@@ -51,6 +52,8 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
         _ssb_operations_special_cases_handlers[x] = MesageSwitchSimpleOpWriteHandler
     for x in OPS_SWITCH_TEXT_CASE_CASES_LIST:
         _ssb_operations_special_cases_handlers[x] = MesageSwitchCasesSimpleOpWriteHandler
+    for x in OPS_FLAG_ALL:
+        _ssb_operations_special_cases_handlers[x] = FlagSimpleOpWriteHandler
 
     def __init__(self, start_vertex: Vertex, decompiler, parent):
         super().__init__(start_vertex, decompiler, parent)

@@ -120,6 +120,28 @@ OPS_CTX_PERFORMER = 'performer'
 OPS_CTX = [OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER]
 
 
+OPS_FLAG__CALC_BIT                  = 'flag_CalcBit'
+OPS_FLAG__CALC_VALUE                = 'flag_CalcValue'
+OPS_FLAG__CALC_VARIABLE             = 'flag_CalcVariable'
+OPS_FLAG__CALC_CLEAR                = 'flag_Clear'
+OPS_FLAG__CALC_INITIAL              = 'flag_Initial'
+OPS_FLAG__CALC_SET                  = 'flag_Set'
+OPS_FLAG__CALC_RESET_DUNGEON_RESULT = 'flag_ResetDungeonResult'
+OPS_FLAG__CALC_RESET_SCENARIO       = 'flag_ResetScenario'
+OPS_FLAG__CALC_SET_ADVENTURE_LOG    = 'flag_SetAdventureLog'
+OPS_FLAG__CALC_SET_DUNGEON_MODE     = 'flag_SetDungeonMode'
+#OPS_FLAG__SET_DUNGEON_RESULT       = 'flag_SetDungeonResult'
+OPS_FLAG__CALC_SET_PERFORMANCE      = 'flag_SetPerformance'
+OPS_FLAG__CALC_SET_SCENARIO         = 'flag_SetScenario'
+
+OPS_FLAG_ALL = [
+    OPS_FLAG__CALC_BIT, OPS_FLAG__CALC_VALUE, OPS_FLAG__CALC_VARIABLE, OPS_FLAG__CALC_CLEAR,
+    OPS_FLAG__CALC_INITIAL, OPS_FLAG__CALC_SET, OPS_FLAG__CALC_RESET_DUNGEON_RESULT, OPS_FLAG__CALC_RESET_SCENARIO,
+    OPS_FLAG__CALC_SET_ADVENTURE_LOG, OPS_FLAG__CALC_SET_DUNGEON_MODE, OPS_FLAG__CALC_SET_PERFORMANCE, 
+    OPS_FLAG__CALC_SET_SCENARIO
+]
+
+
 class LabelMarker:
     pass
 
