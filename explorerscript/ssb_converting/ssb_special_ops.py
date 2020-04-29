@@ -51,18 +51,22 @@ OPS_BRANCH = {
     'BranchVariation': 1,
 }
 
+OPS_REGULAR_CASES = ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
 OPS_SWITCH_CASE_MAP = {
     'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
     'message_SwitchMenu2': ['CaseMenu', 'CaseMenu2'],
-    'Switch': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchSector': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'ProcessSpecial': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'message_Menu': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchScenario': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchRandom': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchScenarioLevel': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'SwitchDungeonMode': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario'],
-    'main_EnterAdventure': ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
+    'Switch': OPS_REGULAR_CASES,
+    'SwitchSector': OPS_REGULAR_CASES,
+    'ProcessSpecial': OPS_REGULAR_CASES,
+    'message_Menu': OPS_REGULAR_CASES,
+    'SwitchScenario': OPS_REGULAR_CASES,
+    'SwitchRandom': OPS_REGULAR_CASES,
+    'SwitchScenarioLevel': OPS_REGULAR_CASES,
+    'SwitchDungeonMode': OPS_REGULAR_CASES,
+    'main_EnterAdventure': OPS_REGULAR_CASES,
+    'main_EnterRescueUser': OPS_REGULAR_CASES,
+    'main_EnterTraining': OPS_REGULAR_CASES,
+    'main_EnterTraining2': OPS_REGULAR_CASES
 }
 
 OP_MESSAGE_SWITCH_TALK = 'message_SwitchTalk'

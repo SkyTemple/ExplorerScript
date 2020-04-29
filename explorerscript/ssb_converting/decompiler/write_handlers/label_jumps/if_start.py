@@ -50,7 +50,7 @@ class IfWriteHandler(AbstractWriteHandler):
         exits = self.start_vertex.out_edges()
 
         self.decompiler.source_map_add_opcode(op.offset)
-        self.decompiler.write_stmnt(f"if ({' or '.join(list_of_clauses)})")
+        self.decompiler.write_stmnt(f"if ( {' or '.join(list_of_clauses)} )")
         else_edge = [e for e in exits if e['is_else']][0]
         if_edge = [e for e in exits if not e['is_else']][0]
 
@@ -138,15 +138,15 @@ class IfWriteHandler(AbstractWriteHandler):
         if op.op_code.name == 'BranchPerformance':
             return f'BranchPerformance({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchScenarioNow':
-            return f'scn {op.params[0]}[== {op.params[1]}, == {op.params[2]}]'
+            return f'scn({op.params[0]}[== {op.params[1]}, == {op.params[2]}])'
         if op.op_code.name == 'BranchScenarioNowAfter':
-            return f'scn {op.params[0]}[== {op.params[1]}, >= {op.params[2]}]'
+            return f'scn({op.params[0]}[== {op.params[1]}, >= {op.params[2]}])'
         if op.op_code.name == 'BranchScenarioNowBefore':
-            return f'scn {op.params[0]}[== {op.params[1]}, <= {op.params[2]}]'
+            return f'scn({op.params[0]}[== {op.params[1]}, <= {op.params[2]}])'
         if op.op_code.name == 'BranchScenarioAfter':
-            return f'scn {op.params[0]}[== {op.params[1]}, > {op.params[2]}]'
+            return f'scn({op.params[0]}[== {op.params[1]}, > {op.params[2]}])'
         if op.op_code.name == 'BranchScenarioBefore':
-            return f'scn {op.params[0]}[== {op.params[1]}, < {op.params[2]}]'
+            return f'scn({op.params[0]}[== {op.params[1]}, < {op.params[2]}])'
         if op.op_code.name == 'BranchSum':
             return f'BranchSum({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchValue':

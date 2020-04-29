@@ -48,11 +48,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
         self.decompiler.source_map_add_opcode(op.offset)
         if multi:
             self.decompiler.write_stmnt(
-                f"multi switch ({', '.join([self._switch_header_for(s) for s in m.original_ssb_switch_ops])}):"
+                f"multi switch ( {', '.join([self._switch_header_for(s) for s in m.original_ssb_switch_ops])} )"
             )
         else:
             self.decompiler.write_stmnt(
-                f"switch ({self._switch_header_for(op.root)})"
+                f"switch ( {self._switch_header_for(op.root)} )"
             )
 
         exits = self.start_vertex.out_edges()
@@ -135,7 +135,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if op.op_code.name in [
             'message_SwitchMenu', 'message_SwitchMenu2', 'SwitchDirection', 'SwitchDirectionLives',
             'SwitchDirectionLives2', 'SwitchDirectionMark', 'SwitchLives', 'SwitchValue', 'SwitchVariable',
-            'main_EnterAdventure'
+            'main_EnterAdventure', 'main_EnterRescueUser', 'main_EnterTraining', 'main_EnterTraining2'
         ]:
             return f'{op.op_code.name}({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'message_Menu':
@@ -147,9 +147,9 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if op.op_code.name == 'SwitchRandom':
             return f'random({op.params[0]})'
         if op.op_code.name == 'SwitchScenario':
-            return f'scn({op.params[0]})[0])'
+            return f'scn({op.params[0]})[0]'
         if op.op_code.name == 'SwitchScenarioLevel':
-            return f'scn({op.params[0]})[1])'
+            return f'scn({op.params[0]})[1]'
         if op.op_code.name == 'SwitchSector':
             return f'sector()'
         if op.op_code.name == 'Switch':
