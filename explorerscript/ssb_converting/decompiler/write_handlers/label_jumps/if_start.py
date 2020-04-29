@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 
-from igraph import Vertex
+from igraph import Vertex, Edge
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
@@ -42,17 +42,7 @@ class IfWriteHandler(AbstractWriteHandler):
     def write_content(self):
         op: SsbLabelJump = self.start_vertex['op']
         m: IfStart = op.get_marker()
-        if isinstance(m, MultiIfStart):
-            list_of_clauses = [self._if_header_for(s, is_not) for s, is_not in zip(m.original_ssb_ifs_ops, m.original_ssb_ifs_is_not)]
-        else:
-            list_of_clauses = [self._if_header_for(op.root, op.get_marker().is_not)]
-
-        exits = self.start_vertex.out_edges()
-
-        self.decompiler.source_map_add_opcode(op.offset)
-        self.decompiler.write_stmnt(f"if ( {' or '.join(list_of_clauses)} )")
-        else_edge = [e for e in exits if e['is_else']][0]
-        if_edge = [e for e in exits if not e['is_else']][0]
+        if_edge, else_edge = self._write_if_header('if', op, self.start_vertex)
 
         if else_edge == if_edge:
             # Great if!
@@ -70,19 +60,23 @@ class IfWriteHandler(AbstractWriteHandler):
             else_ends_on_common_vtx = True
             v_after_else_branch = None
             if not (isinstance(else_edge.target_vertex['op'], SsbLabel) and any(isinstance(mx, IfEnd) and m.if_id == mx.if_id for mx in else_edge.target_vertex['op'].markers)):
-                else_ends_on_common_vtx = False
-                self.decompiler.write_stmnt(" else", False)
-                with Blk(self.decompiler):
-                    # Handle else-branch
-                    else_branch_handler = BlockWriteHandler(
-                        else_edge.target_vertex, self.decompiler, self, self.start_vertex,
-                        check_end_block=self.check_end_block
-                    )
-                    v_after_else_branch = else_branch_handler.write_content()
+                # Handle all else-ifs that might be in between
+                # TODO: does this actually work correctly for the common-end detection...? It think this works?
+                else_edge = self._build_else_if_chain(else_edge)
+                if else_edge is not None:
+                    else_ends_on_common_vtx = False
+                    self.decompiler.write_stmnt(" else", False)
+                    with Blk(self.decompiler):
+                        # Handle else-branch
+                        else_branch_handler = BlockWriteHandler(
+                            else_edge.target_vertex, self.decompiler, self, self.start_vertex,
+                            check_end_block=self.check_end_block
+                        )
+                        v_after_else_branch = else_branch_handler.write_content()
 
             # Those must be the same, either None or a common vertex
             # ... or either of them must end on a jump, then it's also okay if one of them is None but the other not.
-            assert else_ends_on_common_vtx or \
+            assert not else_edge or else_ends_on_common_vtx or \
                    if_branch_handler.last_handler_in_block.ended_on_jump or \
                    else_branch_handler.last_handler_in_block.ended_on_jump or \
                    v_after_if_branch == v_after_else_branch, f"Invalid if-structure for if {m.if_id}"
@@ -138,15 +132,15 @@ class IfWriteHandler(AbstractWriteHandler):
         if op.op_code.name == 'BranchPerformance':
             return f'BranchPerformance({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchScenarioNow':
-            return f'scn({op.params[0]}[== {op.params[1]}, == {op.params[2]}])'
+            return f'scn({op.params[0]})[== {op.params[1]}, == {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioNowAfter':
-            return f'scn({op.params[0]}[== {op.params[1]}, >= {op.params[2]}])'
+            return f'scn({op.params[0]})[== {op.params[1]}, >= {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioNowBefore':
-            return f'scn({op.params[0]}[== {op.params[1]}, <= {op.params[2]}])'
+            return f'scn({op.params[0]})[== {op.params[1]}, <= {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioAfter':
-            return f'scn({op.params[0]}[== {op.params[1]}, > {op.params[2]}])'
+            return f'scn({op.params[0]})[== {op.params[1]}, > {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioBefore':
-            return f'scn({op.params[0]}[== {op.params[1]}, < {op.params[2]}])'
+            return f'scn({op.params[0]})[== {op.params[1]}, < {op.params[2]}]'
         if op.op_code.name == 'BranchSum':
             return f'BranchSum({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchValue':
@@ -159,3 +153,49 @@ class IfWriteHandler(AbstractWriteHandler):
             else:
                 return 'not variation'
         raise ValueError(f"Unknown if-operation {op.op_code.name}")
+
+    def _build_else_if_chain(self, in_edge: Edge):
+        """Starting from the in_edge try to build as many elseif constructs as possible."""
+        op: SsbOperation = in_edge.target_vertex['op']
+        while isinstance(op, SsbLabelJump) and isinstance(op.get_marker(), IfStart):
+            m: IfStart = op.get_marker()
+            if_edge, else_edge = self._write_if_header('elseif', op, in_edge.target_vertex, False)
+
+            if else_edge == if_edge:
+                # Great if!
+                with Blk(self.decompiler):
+                    pass
+                return None
+            else:
+                with Blk(self.decompiler):
+                    # Handle elseif-branch
+                    BlockWriteHandler(
+                        if_edge.target_vertex, self.decompiler, self, self.start_vertex,
+                        check_end_block=self.check_end_block
+                    ).write_content()
+                if not (isinstance(else_edge.target_vertex['op'], SsbLabel) and any(isinstance(mx, IfEnd) and m.if_id == mx.if_id for mx in else_edge.target_vertex['op'].markers)):
+                    assert in_edge != else_edge  # ???
+                    in_edge = else_edge
+                    op = in_edge.target_vertex['op']
+                else:
+                    return None
+        return in_edge
+
+    def _write_if_header(self, header_str, op, v, include_newline_in_header=True):
+        m: IfStart = op.get_marker()
+        if isinstance(m, MultiIfStart):
+            list_of_clauses = [self._if_header_for(s, is_not) for s, is_not in zip(m.original_ssb_ifs_ops, m.original_ssb_ifs_is_not)]
+        else:
+            list_of_clauses = [self._if_header_for(op.root, op.get_marker().is_not)]
+
+        exits = v.out_edges()
+
+        self.decompiler.source_map_add_opcode(op.offset)
+        opt_space = ' ' if not include_newline_in_header else ''
+        self.decompiler.write_stmnt(
+            f"{opt_space}{header_str} ( {' or '.join(list_of_clauses)} )",
+            include_newline_in_header
+        )
+        else_edge = [e for e in exits if e['is_else']][0]
+        if_edge = [e for e in exits if not e['is_else']][0]
+        return if_edge, else_edge
