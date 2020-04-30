@@ -192,7 +192,7 @@ class IfWriteHandler(AbstractWriteHandler):
         self.decompiler.source_map_add_opcode(op.offset)
         opt_space = ' ' if not include_newline_in_header else ''
         self.decompiler.write_stmnt(
-            f"{opt_space}{header_str} ( {' or '.join(list_of_clauses)} )",
+            f"{opt_space}{header_str} ( {' || '.join(list_of_clauses)} )",
             include_newline_in_header
         )
         else_edge = [e for e in exits if e['is_else']][0]

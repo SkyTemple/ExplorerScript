@@ -24,19 +24,19 @@ from typing import List, Optional
 
 from antlr4 import InputStream, CommonTokenStream
 
+from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
+from explorerscript.ssb_converting.compiler.compiler_listener import ExplorerScriptCompilerListener
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
-from explorerscript.ssb_script.ssb_converting.compiler.compiler_listener import SsbScriptCompilerListener
 from explorerscript.syntax_error_listener import SyntaxErrorListener
 
 
-class SsbScriptSsbCompiler:
+class ExplorerScriptSsbCompiler:
     """
-    Base class for compiling SSBScript to SSB. This will return the components, that make
+    Base class for compiling ExplorerScript to SSB. This will return the components, that make
     a SSB model. To turn this into an actual binary SSB model, see
     skytemple_files.script.ssb.script_compiler.ScriptCompiler and
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
@@ -72,12 +72,12 @@ class SsbScriptSsbCompiler:
         self.named_coroutines = None
 
         input_stream = InputStream(ssb_script_src)
-        lexer = SsbScriptLexer(input_stream)
+        lexer = ExplorerScriptLexer(input_stream)
         stream = CommonTokenStream(lexer)
-        parser = SsbScriptParser(stream)
+        parser = ExplorerScriptParser(stream)
         error_listener = SyntaxErrorListener()
         parser.addErrorListener(error_listener)
-        compiler_listener = SsbScriptCompilerListener()
+        compiler_listener = ExplorerScriptCompilerListener()
         parser.addParseListener(compiler_listener)
 
         # Start Parsing

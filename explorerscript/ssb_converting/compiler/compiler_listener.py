@@ -20,13 +20,22 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from explorerscript.syntax_error_listener import AntlrSyntaxError
+from typing import List, Dict
+
+from explorerscript.antlr.ExplorerScriptListener import ExplorerScriptListener
+from explorerscript.source_map import SourceMapBuilder
+from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation
 
 
-class ParseError(Exception):
-    """A syntax error during the parsing of SSBScript or ExplorerScript."""
-    def __init__(self, error: AntlrSyntaxError):
-        self.error = error
+class ExplorerScriptCompilerListener(ExplorerScriptListener):
+    """Builds the SSB data structures while listening for parsing events."""
+    def __init__(self):
+        # The information about routines stored in the ssb.
+        self.routine_infos: List[SsbRoutineInfo] = []
+        self.routine_ops: List[List[SsbOperation]] = []
+        self.named_coroutines: List[str] = []
+        # A dict that assigns all collected labels their next opcode id.
+        self.label_offsets: Dict[int, int] = {}
+        # Source map
+        self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 
-    def __str__(self):
-        str(self.error)

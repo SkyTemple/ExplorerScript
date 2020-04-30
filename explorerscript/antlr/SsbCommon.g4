@@ -125,7 +125,7 @@ CLOSE_SHARP : '>';
 POINT_FIVE : '.5';
 
 SKIP_
- : ( SPACES | LINE_JOINING ) -> skip
+ : ( LINE_COMMENT | BLOCK_COMMENT | SPACES | LINE_JOINING ) -> skip
  ;
 
 UNKNOWN_CHAR
@@ -173,3 +173,11 @@ fragment SPACES
 fragment LINE_JOINING
  : '\\' SPACES? ( '\r'? '\n' | '\r' | '\f')
  ;
+
+fragment BLOCK_COMMENT
+   : '/*' .*? ('*/' | EOF)
+   ;
+
+fragment LINE_COMMENT
+   : '//' ~ [\r\n]*
+   ;
