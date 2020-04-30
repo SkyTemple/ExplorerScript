@@ -52,7 +52,7 @@ position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' 
 position_marker_arg: INTEGER POINT_FIVE?;
 
 jump_marker: AT IDENTIFIER;
-label: DOLLAR IDENTIFIER;
+label: PARAGRAPH IDENTIFIER;
 
 string: STRING_LITERAL | lang_string;
 lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? CLOSE_BRACE;
@@ -83,7 +83,7 @@ PREVIOUS: 'previous';
 POSITION: 'Position';
 
 IDENTIFIER
- : [a-zA-Z_][0-9a-zA-Z_]*
+ : [$]?[a-zA-Z_][0-9a-zA-Z_]*
  ;
 
 INTEGER
@@ -117,7 +117,7 @@ COLON : ':';
 ASSIGN : '=';
 PLUS : '+';
 AT : '@';
-DOLLAR : '$';
+PARAGRAPH : '§';
 OPEN_BRACE : '{';
 CLOSE_BRACE : '}';
 OPEN_SHARP : '<';

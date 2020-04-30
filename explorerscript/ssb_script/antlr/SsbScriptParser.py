@@ -83,14 +83,14 @@ class SsbScriptParser ( Parser ):
                      "'alias'", "'previous'", "'Position'", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "'('", "')'", "','", "':'", "'='", "'+'", 
-                     "'@'", "'$'", "'{'", "'}'", "'<'", "'>'", "'.5'" ]
+                     "'@'", "'\u00A7'", "'{'", "'}'", "'<'", "'>'", "'.5'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "STRING_LITERAL", "FOR_TARGET", 
                       "CORO", "DEF", "FOR_ACTOR", "FOR_OBJECT", "FOR_PERFORMER", 
                       "ALIAS", "PREVIOUS", "POSITION", "IDENTIFIER", "INTEGER", 
                       "DECIMAL_INTEGER", "OCT_INTEGER", "HEX_INTEGER", "BIN_INTEGER", 
                       "OPEN_PAREN", "CLOSE_PAREN", "COMMA", "COLON", "ASSIGN", 
-                      "PLUS", "AT", "DOLLAR", "OPEN_BRACE", "CLOSE_BRACE", 
+                      "PLUS", "AT", "PARAGRAPH", "OPEN_BRACE", "CLOSE_BRACE", 
                       "OPEN_SHARP", "CLOSE_SHARP", "POINT_FIVE", "SKIP_", 
                       "UNKNOWN_CHAR" ]
 
@@ -144,7 +144,7 @@ class SsbScriptParser ( Parser ):
     ASSIGN=22
     PLUS=23
     AT=24
-    DOLLAR=25
+    PARAGRAPH=25
     OPEN_BRACE=26
     CLOSE_BRACE=27
     OPEN_SHARP=28
@@ -552,7 +552,7 @@ class SsbScriptParser ( Parser ):
                 self.state = 69
                 self.operation()
                 pass
-            elif token in [SsbScriptParser.DOLLAR]:
+            elif token in [SsbScriptParser.PARAGRAPH]:
                 self.state = 70
                 self.label()
                 pass
@@ -682,7 +682,7 @@ class SsbScriptParser ( Parser ):
             self.state = 89
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.DOLLAR]:
+            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.PARAGRAPH]:
                 self.state = 84 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -692,7 +692,7 @@ class SsbScriptParser ( Parser ):
                     self.state = 86 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    if not (_la==SsbScriptParser.IDENTIFIER or _la==SsbScriptParser.DOLLAR):
+                    if not (_la==SsbScriptParser.IDENTIFIER or _la==SsbScriptParser.PARAGRAPH):
                         break
 
                 pass
@@ -1088,8 +1088,8 @@ class SsbScriptParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def DOLLAR(self):
-            return self.getToken(SsbScriptParser.DOLLAR, 0)
+        def PARAGRAPH(self):
+            return self.getToken(SsbScriptParser.PARAGRAPH, 0)
 
         def IDENTIFIER(self):
             return self.getToken(SsbScriptParser.IDENTIFIER, 0)
@@ -1115,7 +1115,7 @@ class SsbScriptParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 130
-            self.match(SsbScriptParser.DOLLAR)
+            self.match(SsbScriptParser.PARAGRAPH)
             self.state = 131
             self.match(SsbScriptParser.IDENTIFIER)
         except RecognitionException as re:

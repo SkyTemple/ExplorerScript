@@ -24,7 +24,7 @@ null
 '='
 '+'
 '@'
-'$'
+'§'
 '{'
 '}'
 '<'
@@ -59,7 +59,7 @@ COLON
 ASSIGN
 PLUS
 AT
-DOLLAR
+PARAGRAPH
 OPEN_BRACE
 CLOSE_BRACE
 OPEN_SHARP

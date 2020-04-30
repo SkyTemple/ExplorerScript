@@ -101,5 +101,5 @@ class LabelWriteHandler(AbstractWriteHandler):
         raise ValueError(f"After a label there must be exactly 1 opcode.")
 
     def _write_label(self, label: SsbLabel):
-        self.decompiler.write_stmnt(f'$label_{label.id};')
+        self.decompiler.write_stmnt(f'§label_{label.id};')
         self.decompiler.labels_already_printed.append(label.id)

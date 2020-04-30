@@ -87,7 +87,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
                     with Blk(self.decompiler, False):
                         # If this will be visited multiple times, we need a label
                         if e in edges_that_will_be_visited_multiple_times and e not in already_printed_edges:
-                            self.decompiler.write_stmnt(f"$switch{m.switch_id}_{e.index};")
+                            self.decompiler.write_stmnt(f"§switch{m.switch_id}_{e.index};")
                         if e in already_printed_edges:
                             # Write the label jump instead
                             self.decompiler.write_stmnt(f"jump @switch{m.switch_id}_{e.index};")
