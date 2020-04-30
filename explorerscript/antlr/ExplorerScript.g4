@@ -25,7 +25,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 grammar ExplorerScript;
-import SsbScript;
+import SsbCommon;
 
 /*
  * parser rules

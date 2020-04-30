@@ -15,56 +15,56 @@ def serializedATN():
         buf.write("\u009e\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
-        buf.write("\4\24\t\24\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\3\3")
-        buf.write("\3\3\5\3\64\n\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3")
-        buf.write("\6\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\5\bJ\n\b\3")
-        buf.write("\b\3\b\3\t\3\t\3\t\5\tQ\n\t\3\t\3\t\3\n\3\n\6\nW\n\n\r")
-        buf.write("\n\16\nX\3\n\5\n\\\n\n\3\n\3\n\3\13\3\13\3\13\3\13\3\f")
-        buf.write("\3\f\3\f\7\fg\n\f\f\f\16\fj\13\f\3\f\5\fm\n\f\3\r\3\r")
-        buf.write("\3\r\3\r\5\rs\n\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3")
-        buf.write("\16\3\16\3\17\3\17\5\17\u0080\n\17\3\20\3\20\3\20\3\21")
-        buf.write("\3\21\3\21\3\22\3\22\5\22\u008a\n\22\3\23\3\23\3\23\3")
-        buf.write("\23\7\23\u0090\n\23\f\23\16\23\u0093\13\23\3\23\5\23\u0096")
-        buf.write("\n\23\3\23\3\23\3\24\3\24\3\24\3\24\3\24\2\2\25\2\4\6")
-        buf.write("\b\n\f\16\20\22\24\26\30\32\34\36 \"$&\2\3\3\2\16\17\2")
-        buf.write("\u009a\2+\3\2\2\2\4\63\3\2\2\2\6\65\3\2\2\2\b9\3\2\2\2")
-        buf.write("\n=\3\2\2\2\fE\3\2\2\2\16I\3\2\2\2\20M\3\2\2\2\22T\3\2")
-        buf.write("\2\2\24_\3\2\2\2\26c\3\2\2\2\30r\3\2\2\2\32t\3\2\2\2\34")
-        buf.write("}\3\2\2\2\36\u0081\3\2\2\2 \u0084\3\2\2\2\"\u0089\3\2")
-        buf.write("\2\2$\u008b\3\2\2\2&\u0099\3\2\2\2(*\5\4\3\2)(\3\2\2\2")
-        buf.write("*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7")
-        buf.write("\2\2\3/\3\3\2\2\2\60\64\5\b\5\2\61\64\5\6\4\2\62\64\5")
-        buf.write("\n\6\2\63\60\3\2\2\2\63\61\3\2\2\2\63\62\3\2\2\2\64\5")
-        buf.write("\3\2\2\2\65\66\7\7\2\2\66\67\7\17\2\2\678\5\22\n\28\7")
-        buf.write("\3\2\2\29:\7\6\2\2:;\7\16\2\2;<\5\22\n\2<\t\3\2\2\2=>")
-        buf.write("\7\7\2\2>?\7\17\2\2?@\7\5\2\2@A\7\24\2\2AB\5\f\7\2BC\7")
-        buf.write("\25\2\2CD\5\22\n\2D\13\3\2\2\2EF\t\2\2\2F\r\3\2\2\2GJ")
-        buf.write("\5\20\t\2HJ\5 \21\2IG\3\2\2\2IH\3\2\2\2JK\3\2\2\2KL\7")
-        buf.write("\3\2\2L\17\3\2\2\2MN\7\16\2\2NP\7\24\2\2OQ\5\26\f\2PO")
-        buf.write("\3\2\2\2PQ\3\2\2\2QR\3\2\2\2RS\7\25\2\2S\21\3\2\2\2T[")
-        buf.write("\7\34\2\2UW\5\16\b\2VU\3\2\2\2WX\3\2\2\2XV\3\2\2\2XY\3")
-        buf.write("\2\2\2Y\\\3\2\2\2Z\\\5\24\13\2[V\3\2\2\2[Z\3\2\2\2\\]")
-        buf.write("\3\2\2\2]^\7\35\2\2^\23\3\2\2\2_`\7\13\2\2`a\7\f\2\2a")
-        buf.write("b\7\3\2\2b\25\3\2\2\2ch\5\30\r\2de\7\26\2\2eg\5\30\r\2")
-        buf.write("fd\3\2\2\2gj\3\2\2\2hf\3\2\2\2hi\3\2\2\2il\3\2\2\2jh\3")
-        buf.write("\2\2\2km\7\26\2\2lk\3\2\2\2lm\3\2\2\2m\27\3\2\2\2ns\5")
-        buf.write("\f\7\2os\5\"\22\2ps\5\32\16\2qs\5\36\20\2rn\3\2\2\2ro")
-        buf.write("\3\2\2\2rp\3\2\2\2rq\3\2\2\2s\31\3\2\2\2tu\7\r\2\2uv\7")
-        buf.write("\36\2\2vw\7\4\2\2wx\7\26\2\2xy\5\34\17\2yz\7\26\2\2z{")
-        buf.write("\5\34\17\2{|\7\37\2\2|\33\3\2\2\2}\177\7\17\2\2~\u0080")
-        buf.write("\7 \2\2\177~\3\2\2\2\177\u0080\3\2\2\2\u0080\35\3\2\2")
-        buf.write("\2\u0081\u0082\7\32\2\2\u0082\u0083\7\16\2\2\u0083\37")
-        buf.write("\3\2\2\2\u0084\u0085\7\33\2\2\u0085\u0086\7\16\2\2\u0086")
-        buf.write("!\3\2\2\2\u0087\u008a\7\4\2\2\u0088\u008a\5$\23\2\u0089")
-        buf.write("\u0087\3\2\2\2\u0089\u0088\3\2\2\2\u008a#\3\2\2\2\u008b")
-        buf.write("\u008c\7\34\2\2\u008c\u0091\5&\24\2\u008d\u008e\7\26\2")
-        buf.write("\2\u008e\u0090\5&\24\2\u008f\u008d\3\2\2\2\u0090\u0093")
-        buf.write("\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0092\3\2\2\2\u0092")
-        buf.write("\u0095\3\2\2\2\u0093\u0091\3\2\2\2\u0094\u0096\7\26\2")
-        buf.write("\2\u0095\u0094\3\2\2\2\u0095\u0096\3\2\2\2\u0096\u0097")
-        buf.write("\3\2\2\2\u0097\u0098\7\35\2\2\u0098%\3\2\2\2\u0099\u009a")
-        buf.write("\7\16\2\2\u009a\u009b\7\30\2\2\u009b\u009c\7\4\2\2\u009c")
-        buf.write("\'\3\2\2\2\17+\63IPX[hlr\177\u0089\u0091\u0095")
+        buf.write("\4\24\t\24\3\2\3\2\3\2\3\2\5\2-\n\2\3\3\3\3\3\3\3\4\7")
+        buf.write("\4\63\n\4\f\4\16\4\66\13\4\3\4\3\4\3\5\3\5\3\5\5\5=\n")
+        buf.write("\5\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b")
+        buf.write("\3\b\3\b\3\b\3\t\3\t\3\n\3\n\5\nS\n\n\3\n\3\n\3\13\3\13")
+        buf.write("\3\13\5\13Z\n\13\3\13\3\13\3\f\3\f\6\f`\n\f\r\f\16\fa")
+        buf.write("\3\f\5\fe\n\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\7")
+        buf.write("\16p\n\16\f\16\16\16s\13\16\3\16\5\16v\n\16\3\17\3\17")
+        buf.write("\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\20\3\20\5\20\u0083")
+        buf.write("\n\20\3\21\3\21\3\21\3\22\3\22\5\22\u008a\n\22\3\23\3")
+        buf.write("\23\3\23\3\23\7\23\u0090\n\23\f\23\16\23\u0093\13\23\3")
+        buf.write("\23\5\23\u0096\n\23\3\23\3\23\3\24\3\24\3\24\3\24\3\24")
+        buf.write("\2\2\25\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&\2")
+        buf.write("\3\3\2\16\17\2\u009a\2,\3\2\2\2\4.\3\2\2\2\6\64\3\2\2")
+        buf.write("\2\b<\3\2\2\2\n>\3\2\2\2\fB\3\2\2\2\16F\3\2\2\2\20N\3")
+        buf.write("\2\2\2\22R\3\2\2\2\24V\3\2\2\2\26]\3\2\2\2\30h\3\2\2\2")
+        buf.write("\32l\3\2\2\2\34w\3\2\2\2\36\u0080\3\2\2\2 \u0084\3\2\2")
+        buf.write("\2\"\u0089\3\2\2\2$\u008b\3\2\2\2&\u0099\3\2\2\2(-\5\20")
+        buf.write("\t\2)-\5\"\22\2*-\5\34\17\2+-\5\4\3\2,(\3\2\2\2,)\3\2")
+        buf.write("\2\2,*\3\2\2\2,+\3\2\2\2-\3\3\2\2\2./\7\32\2\2/\60\7\16")
+        buf.write("\2\2\60\5\3\2\2\2\61\63\5\b\5\2\62\61\3\2\2\2\63\66\3")
+        buf.write("\2\2\2\64\62\3\2\2\2\64\65\3\2\2\2\65\67\3\2\2\2\66\64")
+        buf.write("\3\2\2\2\678\7\2\2\38\7\3\2\2\29=\5\f\7\2:=\5\n\6\2;=")
+        buf.write("\5\16\b\2<9\3\2\2\2<:\3\2\2\2<;\3\2\2\2=\t\3\2\2\2>?\7")
+        buf.write("\7\2\2?@\7\17\2\2@A\5\26\f\2A\13\3\2\2\2BC\7\6\2\2CD\7")
+        buf.write("\16\2\2DE\5\26\f\2E\r\3\2\2\2FG\7\7\2\2GH\7\17\2\2HI\7")
+        buf.write("\5\2\2IJ\7\24\2\2JK\5\20\t\2KL\7\25\2\2LM\5\26\f\2M\17")
+        buf.write("\3\2\2\2NO\t\2\2\2O\21\3\2\2\2PS\5\24\13\2QS\5 \21\2R")
+        buf.write("P\3\2\2\2RQ\3\2\2\2ST\3\2\2\2TU\7\3\2\2U\23\3\2\2\2VW")
+        buf.write("\7\16\2\2WY\7\24\2\2XZ\5\32\16\2YX\3\2\2\2YZ\3\2\2\2Z")
+        buf.write("[\3\2\2\2[\\\7\25\2\2\\\25\3\2\2\2]d\7\34\2\2^`\5\22\n")
+        buf.write("\2_^\3\2\2\2`a\3\2\2\2a_\3\2\2\2ab\3\2\2\2be\3\2\2\2c")
+        buf.write("e\5\30\r\2d_\3\2\2\2dc\3\2\2\2ef\3\2\2\2fg\7\35\2\2g\27")
+        buf.write("\3\2\2\2hi\7\13\2\2ij\7\f\2\2jk\7\3\2\2k\31\3\2\2\2lq")
+        buf.write("\5\2\2\2mn\7\26\2\2np\5\2\2\2om\3\2\2\2ps\3\2\2\2qo\3")
+        buf.write("\2\2\2qr\3\2\2\2ru\3\2\2\2sq\3\2\2\2tv\7\26\2\2ut\3\2")
+        buf.write("\2\2uv\3\2\2\2v\33\3\2\2\2wx\7\r\2\2xy\7\36\2\2yz\7\4")
+        buf.write("\2\2z{\7\26\2\2{|\5\36\20\2|}\7\26\2\2}~\5\36\20\2~\177")
+        buf.write("\7\37\2\2\177\35\3\2\2\2\u0080\u0082\7\17\2\2\u0081\u0083")
+        buf.write("\7 \2\2\u0082\u0081\3\2\2\2\u0082\u0083\3\2\2\2\u0083")
+        buf.write("\37\3\2\2\2\u0084\u0085\7\33\2\2\u0085\u0086\7\16\2\2")
+        buf.write("\u0086!\3\2\2\2\u0087\u008a\7\4\2\2\u0088\u008a\5$\23")
+        buf.write("\2\u0089\u0087\3\2\2\2\u0089\u0088\3\2\2\2\u008a#\3\2")
+        buf.write("\2\2\u008b\u008c\7\34\2\2\u008c\u0091\5&\24\2\u008d\u008e")
+        buf.write("\7\26\2\2\u008e\u0090\5&\24\2\u008f\u008d\3\2\2\2\u0090")
+        buf.write("\u0093\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0092\3\2\2\2")
+        buf.write("\u0092\u0095\3\2\2\2\u0093\u0091\3\2\2\2\u0094\u0096\7")
+        buf.write("\26\2\2\u0095\u0094\3\2\2\2\u0095\u0096\3\2\2\2\u0096")
+        buf.write("\u0097\3\2\2\2\u0097\u0098\7\35\2\2\u0098%\3\2\2\2\u0099")
+        buf.write("\u009a\7\16\2\2\u009a\u009b\7\30\2\2\u009b\u009c\7\4\2")
+        buf.write("\2\u009c\'\3\2\2\2\17,\64<RYadqu\u0082\u0089\u0091\u0095")
         return buf.getvalue()
 
 
@@ -94,30 +94,31 @@ class SsbScriptParser ( Parser ):
                       "OPEN_SHARP", "CLOSE_SHARP", "POINT_FIVE", "SKIP_", 
                       "UNKNOWN_CHAR" ]
 
-    RULE_start = 0
-    RULE_funcdef = 1
-    RULE_simple_def = 2
-    RULE_coro_def = 3
-    RULE_for_target_def = 4
-    RULE_integer_like = 5
-    RULE_stmt = 6
-    RULE_operation = 7
-    RULE_func_suite = 8
-    RULE_func_alias = 9
-    RULE_arglist = 10
-    RULE_pos_argument = 11
-    RULE_position_marker = 12
-    RULE_position_marker_arg = 13
-    RULE_jump_marker = 14
+    RULE_pos_argument = 0
+    RULE_jump_marker = 1
+    RULE_start = 2
+    RULE_funcdef = 3
+    RULE_simple_def = 4
+    RULE_coro_def = 5
+    RULE_for_target_def = 6
+    RULE_integer_like = 7
+    RULE_stmt = 8
+    RULE_operation = 9
+    RULE_func_suite = 10
+    RULE_func_alias = 11
+    RULE_arglist = 12
+    RULE_position_marker = 13
+    RULE_position_marker_arg = 14
     RULE_label = 15
     RULE_string = 16
     RULE_lang_string = 17
     RULE_lang_string_argument = 18
 
-    ruleNames =  [ "start", "funcdef", "simple_def", "coro_def", "for_target_def", 
-                   "integer_like", "stmt", "operation", "func_suite", "func_alias", 
-                   "arglist", "pos_argument", "position_marker", "position_marker_arg", 
-                   "jump_marker", "label", "string", "lang_string", "lang_string_argument" ]
+    ruleNames =  [ "pos_argument", "jump_marker", "start", "funcdef", "simple_def", 
+                   "coro_def", "for_target_def", "integer_like", "stmt", 
+                   "operation", "func_suite", "func_alias", "arglist", "position_marker", 
+                   "position_marker_arg", "label", "string", "lang_string", 
+                   "lang_string_argument" ]
 
     EOF = Token.EOF
     T__0=1
@@ -162,6 +163,127 @@ class SsbScriptParser ( Parser ):
 
 
 
+    class Pos_argumentContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def integer_like(self):
+            return self.getTypedRuleContext(SsbScriptParser.Integer_likeContext,0)
+
+
+        def string(self):
+            return self.getTypedRuleContext(SsbScriptParser.StringContext,0)
+
+
+        def position_marker(self):
+            return self.getTypedRuleContext(SsbScriptParser.Position_markerContext,0)
+
+
+        def jump_marker(self):
+            return self.getTypedRuleContext(SsbScriptParser.Jump_markerContext,0)
+
+
+        def getRuleIndex(self):
+            return SsbScriptParser.RULE_pos_argument
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPos_argument" ):
+                listener.enterPos_argument(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPos_argument" ):
+                listener.exitPos_argument(self)
+
+
+
+
+    def pos_argument(self):
+
+        localctx = SsbScriptParser.Pos_argumentContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 0, self.RULE_pos_argument)
+        try:
+            self.state = 42
+            self._errHandler.sync(self)
+            token = self._input.LA(1)
+            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.INTEGER]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 38
+                self.integer_like()
+                pass
+            elif token in [SsbScriptParser.STRING_LITERAL, SsbScriptParser.OPEN_BRACE]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 39
+                self.string()
+                pass
+            elif token in [SsbScriptParser.POSITION]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 40
+                self.position_marker()
+                pass
+            elif token in [SsbScriptParser.AT]:
+                self.enterOuterAlt(localctx, 4)
+                self.state = 41
+                self.jump_marker()
+                pass
+            else:
+                raise NoViableAltException(self)
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class Jump_markerContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def AT(self):
+            return self.getToken(SsbScriptParser.AT, 0)
+
+        def IDENTIFIER(self):
+            return self.getToken(SsbScriptParser.IDENTIFIER, 0)
+
+        def getRuleIndex(self):
+            return SsbScriptParser.RULE_jump_marker
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterJump_marker" ):
+                listener.enterJump_marker(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitJump_marker" ):
+                listener.exitJump_marker(self)
+
+
+
+
+    def jump_marker(self):
+
+        localctx = SsbScriptParser.Jump_markerContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 2, self.RULE_jump_marker)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 44
+            self.match(SsbScriptParser.AT)
+            self.state = 45
+            self.match(SsbScriptParser.IDENTIFIER)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
     class StartContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -195,21 +317,21 @@ class SsbScriptParser ( Parser ):
     def start(self):
 
         localctx = SsbScriptParser.StartContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 0, self.RULE_start)
+        self.enterRule(localctx, 4, self.RULE_start)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 41
+            self.state = 50
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==SsbScriptParser.CORO or _la==SsbScriptParser.DEF:
-                self.state = 38
+                self.state = 47
                 self.funcdef()
-                self.state = 43
+                self.state = 52
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 44
+            self.state = 53
             self.match(SsbScriptParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -255,26 +377,26 @@ class SsbScriptParser ( Parser ):
     def funcdef(self):
 
         localctx = SsbScriptParser.FuncdefContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 2, self.RULE_funcdef)
+        self.enterRule(localctx, 6, self.RULE_funcdef)
         try:
-            self.state = 49
+            self.state = 58
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 46
+                self.state = 55
                 self.coro_def()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 47
+                self.state = 56
                 self.simple_def()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 48
+                self.state = 57
                 self.for_target_def()
                 pass
 
@@ -321,14 +443,14 @@ class SsbScriptParser ( Parser ):
     def simple_def(self):
 
         localctx = SsbScriptParser.Simple_defContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_simple_def)
+        self.enterRule(localctx, 8, self.RULE_simple_def)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 51
+            self.state = 60
             self.match(SsbScriptParser.DEF)
-            self.state = 52
+            self.state = 61
             self.match(SsbScriptParser.INTEGER)
-            self.state = 53
+            self.state = 62
             self.func_suite()
         except RecognitionException as re:
             localctx.exception = re
@@ -372,14 +494,14 @@ class SsbScriptParser ( Parser ):
     def coro_def(self):
 
         localctx = SsbScriptParser.Coro_defContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_coro_def)
+        self.enterRule(localctx, 10, self.RULE_coro_def)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 55
+            self.state = 64
             self.match(SsbScriptParser.CORO)
-            self.state = 56
+            self.state = 65
             self.match(SsbScriptParser.IDENTIFIER)
-            self.state = 57
+            self.state = 66
             self.func_suite()
         except RecognitionException as re:
             localctx.exception = re
@@ -436,22 +558,22 @@ class SsbScriptParser ( Parser ):
     def for_target_def(self):
 
         localctx = SsbScriptParser.For_target_defContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_for_target_def)
+        self.enterRule(localctx, 12, self.RULE_for_target_def)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 59
+            self.state = 68
             self.match(SsbScriptParser.DEF)
-            self.state = 60
+            self.state = 69
             self.match(SsbScriptParser.INTEGER)
-            self.state = 61
+            self.state = 70
             self.match(SsbScriptParser.FOR_TARGET)
-            self.state = 62
+            self.state = 71
             self.match(SsbScriptParser.OPEN_PAREN)
-            self.state = 63
+            self.state = 72
             self.integer_like()
-            self.state = 64
+            self.state = 73
             self.match(SsbScriptParser.CLOSE_PAREN)
-            self.state = 65
+            self.state = 74
             self.func_suite()
         except RecognitionException as re:
             localctx.exception = re
@@ -491,11 +613,11 @@ class SsbScriptParser ( Parser ):
     def integer_like(self):
 
         localctx = SsbScriptParser.Integer_likeContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_integer_like)
+        self.enterRule(localctx, 14, self.RULE_integer_like)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 67
+            self.state = 76
             _la = self._input.LA(1)
             if not(_la==SsbScriptParser.IDENTIFIER or _la==SsbScriptParser.INTEGER):
                 self._errHandler.recoverInline(self)
@@ -542,24 +664,24 @@ class SsbScriptParser ( Parser ):
     def stmt(self):
 
         localctx = SsbScriptParser.StmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_stmt)
+        self.enterRule(localctx, 16, self.RULE_stmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 71
+            self.state = 80
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [SsbScriptParser.IDENTIFIER]:
-                self.state = 69
+                self.state = 78
                 self.operation()
                 pass
             elif token in [SsbScriptParser.PARAGRAPH]:
-                self.state = 70
+                self.state = 79
                 self.label()
                 pass
             else:
                 raise NoViableAltException(self)
 
-            self.state = 73
+            self.state = 82
             self.match(SsbScriptParser.T__0)
         except RecognitionException as re:
             localctx.exception = re
@@ -606,23 +728,23 @@ class SsbScriptParser ( Parser ):
     def operation(self):
 
         localctx = SsbScriptParser.OperationContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_operation)
+        self.enterRule(localctx, 18, self.RULE_operation)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 75
+            self.state = 84
             self.match(SsbScriptParser.IDENTIFIER)
-            self.state = 76
+            self.state = 85
             self.match(SsbScriptParser.OPEN_PAREN)
-            self.state = 78
+            self.state = 87
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << SsbScriptParser.STRING_LITERAL) | (1 << SsbScriptParser.POSITION) | (1 << SsbScriptParser.IDENTIFIER) | (1 << SsbScriptParser.INTEGER) | (1 << SsbScriptParser.AT) | (1 << SsbScriptParser.OPEN_BRACE))) != 0):
-                self.state = 77
+                self.state = 86
                 self.arglist()
 
 
-            self.state = 80
+            self.state = 89
             self.match(SsbScriptParser.CLOSE_PAREN)
         except RecognitionException as re:
             localctx.exception = re
@@ -673,23 +795,23 @@ class SsbScriptParser ( Parser ):
     def func_suite(self):
 
         localctx = SsbScriptParser.Func_suiteContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 16, self.RULE_func_suite)
+        self.enterRule(localctx, 20, self.RULE_func_suite)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 82
+            self.state = 91
             self.match(SsbScriptParser.OPEN_BRACE)
-            self.state = 89
+            self.state = 98
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.PARAGRAPH]:
-                self.state = 84 
+                self.state = 93 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while True:
-                    self.state = 83
+                    self.state = 92
                     self.stmt()
-                    self.state = 86 
+                    self.state = 95 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
                     if not (_la==SsbScriptParser.IDENTIFIER or _la==SsbScriptParser.PARAGRAPH):
@@ -697,13 +819,13 @@ class SsbScriptParser ( Parser ):
 
                 pass
             elif token in [SsbScriptParser.ALIAS]:
-                self.state = 88
+                self.state = 97
                 self.func_alias()
                 pass
             else:
                 raise NoViableAltException(self)
 
-            self.state = 91
+            self.state = 100
             self.match(SsbScriptParser.CLOSE_BRACE)
         except RecognitionException as re:
             localctx.exception = re
@@ -743,14 +865,14 @@ class SsbScriptParser ( Parser ):
     def func_alias(self):
 
         localctx = SsbScriptParser.Func_aliasContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_func_alias)
+        self.enterRule(localctx, 22, self.RULE_func_alias)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 93
+            self.state = 102
             self.match(SsbScriptParser.ALIAS)
-            self.state = 94
+            self.state = 103
             self.match(SsbScriptParser.PREVIOUS)
-            self.state = 95
+            self.state = 104
             self.match(SsbScriptParser.T__0)
         except RecognitionException as re:
             localctx.exception = re
@@ -797,108 +919,32 @@ class SsbScriptParser ( Parser ):
     def arglist(self):
 
         localctx = SsbScriptParser.ArglistContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_arglist)
+        self.enterRule(localctx, 24, self.RULE_arglist)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 97
+            self.state = 106
             self.pos_argument()
-            self.state = 102
+            self.state = 111
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 98
+                    self.state = 107
                     self.match(SsbScriptParser.COMMA)
-                    self.state = 99
+                    self.state = 108
                     self.pos_argument() 
-                self.state = 104
+                self.state = 113
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
 
-            self.state = 106
+            self.state = 115
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==SsbScriptParser.COMMA:
-                self.state = 105
+                self.state = 114
                 self.match(SsbScriptParser.COMMA)
 
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class Pos_argumentContext(ParserRuleContext):
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def integer_like(self):
-            return self.getTypedRuleContext(SsbScriptParser.Integer_likeContext,0)
-
-
-        def string(self):
-            return self.getTypedRuleContext(SsbScriptParser.StringContext,0)
-
-
-        def position_marker(self):
-            return self.getTypedRuleContext(SsbScriptParser.Position_markerContext,0)
-
-
-        def jump_marker(self):
-            return self.getTypedRuleContext(SsbScriptParser.Jump_markerContext,0)
-
-
-        def getRuleIndex(self):
-            return SsbScriptParser.RULE_pos_argument
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPos_argument" ):
-                listener.enterPos_argument(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPos_argument" ):
-                listener.exitPos_argument(self)
-
-
-
-
-    def pos_argument(self):
-
-        localctx = SsbScriptParser.Pos_argumentContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_pos_argument)
-        try:
-            self.state = 112
-            self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.INTEGER]:
-                self.enterOuterAlt(localctx, 1)
-                self.state = 108
-                self.integer_like()
-                pass
-            elif token in [SsbScriptParser.STRING_LITERAL, SsbScriptParser.OPEN_BRACE]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 109
-                self.string()
-                pass
-            elif token in [SsbScriptParser.POSITION]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 110
-                self.position_marker()
-                pass
-            elif token in [SsbScriptParser.AT]:
-                self.enterOuterAlt(localctx, 4)
-                self.state = 111
-                self.jump_marker()
-                pass
-            else:
-                raise NoViableAltException(self)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -957,24 +1003,24 @@ class SsbScriptParser ( Parser ):
     def position_marker(self):
 
         localctx = SsbScriptParser.Position_markerContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 24, self.RULE_position_marker)
+        self.enterRule(localctx, 26, self.RULE_position_marker)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 114
-            self.match(SsbScriptParser.POSITION)
-            self.state = 115
-            self.match(SsbScriptParser.OPEN_SHARP)
-            self.state = 116
-            self.match(SsbScriptParser.STRING_LITERAL)
             self.state = 117
-            self.match(SsbScriptParser.COMMA)
+            self.match(SsbScriptParser.POSITION)
             self.state = 118
-            self.position_marker_arg()
+            self.match(SsbScriptParser.OPEN_SHARP)
             self.state = 119
-            self.match(SsbScriptParser.COMMA)
+            self.match(SsbScriptParser.STRING_LITERAL)
             self.state = 120
-            self.position_marker_arg()
+            self.match(SsbScriptParser.COMMA)
             self.state = 121
+            self.position_marker_arg()
+            self.state = 122
+            self.match(SsbScriptParser.COMMA)
+            self.state = 123
+            self.position_marker_arg()
+            self.state = 124
             self.match(SsbScriptParser.CLOSE_SHARP)
         except RecognitionException as re:
             localctx.exception = re
@@ -1014,65 +1060,20 @@ class SsbScriptParser ( Parser ):
     def position_marker_arg(self):
 
         localctx = SsbScriptParser.Position_marker_argContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_position_marker_arg)
+        self.enterRule(localctx, 28, self.RULE_position_marker_arg)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 123
+            self.state = 126
             self.match(SsbScriptParser.INTEGER)
-            self.state = 125
+            self.state = 128
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==SsbScriptParser.POINT_FIVE:
-                self.state = 124
+                self.state = 127
                 self.match(SsbScriptParser.POINT_FIVE)
 
 
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class Jump_markerContext(ParserRuleContext):
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def AT(self):
-            return self.getToken(SsbScriptParser.AT, 0)
-
-        def IDENTIFIER(self):
-            return self.getToken(SsbScriptParser.IDENTIFIER, 0)
-
-        def getRuleIndex(self):
-            return SsbScriptParser.RULE_jump_marker
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterJump_marker" ):
-                listener.enterJump_marker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitJump_marker" ):
-                listener.exitJump_marker(self)
-
-
-
-
-    def jump_marker(self):
-
-        localctx = SsbScriptParser.Jump_markerContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_jump_marker)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 127
-            self.match(SsbScriptParser.AT)
-            self.state = 128
-            self.match(SsbScriptParser.IDENTIFIER)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)

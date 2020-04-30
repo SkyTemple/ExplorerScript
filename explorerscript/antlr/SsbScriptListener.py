@@ -8,6 +8,24 @@ else:
 # This class defines a complete listener for a parse tree produced by SsbScriptParser.
 class SsbScriptListener(ParseTreeListener):
 
+    # Enter a parse tree produced by SsbScriptParser#pos_argument.
+    def enterPos_argument(self, ctx:SsbScriptParser.Pos_argumentContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#pos_argument.
+    def exitPos_argument(self, ctx:SsbScriptParser.Pos_argumentContext):
+        pass
+
+
+    # Enter a parse tree produced by SsbScriptParser#jump_marker.
+    def enterJump_marker(self, ctx:SsbScriptParser.Jump_markerContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#jump_marker.
+    def exitJump_marker(self, ctx:SsbScriptParser.Jump_markerContext):
+        pass
+
+
     # Enter a parse tree produced by SsbScriptParser#start.
     def enterStart(self, ctx:SsbScriptParser.StartContext):
         pass
@@ -107,15 +125,6 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by SsbScriptParser#pos_argument.
-    def enterPos_argument(self, ctx:SsbScriptParser.Pos_argumentContext):
-        pass
-
-    # Exit a parse tree produced by SsbScriptParser#pos_argument.
-    def exitPos_argument(self, ctx:SsbScriptParser.Pos_argumentContext):
-        pass
-
-
     # Enter a parse tree produced by SsbScriptParser#position_marker.
     def enterPosition_marker(self, ctx:SsbScriptParser.Position_markerContext):
         pass
@@ -131,15 +140,6 @@ class SsbScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by SsbScriptParser#position_marker_arg.
     def exitPosition_marker_arg(self, ctx:SsbScriptParser.Position_marker_argContext):
-        pass
-
-
-    # Enter a parse tree produced by SsbScriptParser#jump_marker.
-    def enterJump_marker(self, ctx:SsbScriptParser.Jump_markerContext):
-        pass
-
-    # Exit a parse tree produced by SsbScriptParser#jump_marker.
-    def exitJump_marker(self, ctx:SsbScriptParser.Jump_markerContext):
         pass
 
 
