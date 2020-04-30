@@ -268,4 +268,4 @@ class SsbScriptCompilerListener(SsbScriptListener):
 
     def _string_literal(self, string_literal):
         # TODO: Very naive "escaping" atm.
-        return str(string_literal)[1:-1].replace('\\"', '"').replace("\\'", "'")
+        return str(string_literal)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")
