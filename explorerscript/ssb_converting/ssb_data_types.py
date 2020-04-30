@@ -162,15 +162,12 @@ class SsbOpParamPositionMarker:
 
     def __str__(self):
         x_offset_marker = ''
-        if self.x_offset == 2 or self.x_offset == 3:
-            x_offset_marker = '+'
-        elif self.x_offset >= 4:
-            x_offset_marker = '++'
+        if self.x_offset > 1:
+            # TODO: The offset parameter is a bit weird, check if this is actually the case:
+            x_offset_marker = '.5'
         y_offset_marker = ''
-        if self.y_offset == 2 or self.y_offset == 3:
-            y_offset_marker = '+'
-        elif self.y_offset >= 4:
-            y_offset_marker = '++'
+        if self.y_offset > 1:
+            y_offset_marker = '.5'
         return f'Position<\'{self.name}\', {self.x_relative}{x_offset_marker}, {self.y_relative}{y_offset_marker}>'
 
 

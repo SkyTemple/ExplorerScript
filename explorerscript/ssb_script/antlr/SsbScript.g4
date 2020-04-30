@@ -49,7 +49,7 @@ arglist: pos_argument (',' pos_argument)*  (',')?;
 pos_argument: integer_like | string | position_marker | jump_marker;
 
 position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' position_marker_arg CLOSE_SHARP;
-position_marker_arg: INTEGER PLUS? PLUS?;
+position_marker_arg: INTEGER POINT_FIVE?;
 
 jump_marker: AT IDENTIFIER;
 label: DOLLAR IDENTIFIER;
@@ -122,6 +122,7 @@ OPEN_BRACE : '{';
 CLOSE_BRACE : '}';
 OPEN_SHARP : '<';
 CLOSE_SHARP : '>';
+POINT_FIVE : '.5';
 
 SKIP_
  : ( SPACES | LINE_JOINING ) -> skip

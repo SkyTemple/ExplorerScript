@@ -193,12 +193,10 @@ class SsbScriptCompilerListener(SsbScriptListener):
         if self._is_processing_argument:
             self._argument_type = ListenerArgType.POSITION_MARKER
             relative = int(str(ctx.INTEGER()))
-            offset_marks = ctx.PLUS()
+            point_five = ctx.POINT_FIVE()
             offset = 0
-            if len(offset_marks) == 1:
+            if point_five:
                 offset = 2
-            elif len(offset_marks) == 2:
-                offset = 4
             if self._collected_pos_marker.x_offset == -1:
                 # We collected the x argument
                 self._collected_pos_marker.x_offset = offset

@@ -11,8 +11,8 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3!")
-        buf.write("\u00a1\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\"")
+        buf.write("\u009e\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
         buf.write("\4\24\t\24\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\3\3")
@@ -22,51 +22,49 @@ def serializedATN():
         buf.write("\n\16\nX\3\n\5\n\\\n\n\3\n\3\n\3\13\3\13\3\13\3\13\3\f")
         buf.write("\3\f\3\f\7\fg\n\f\f\f\16\fj\13\f\3\f\5\fm\n\f\3\r\3\r")
         buf.write("\3\r\3\r\5\rs\n\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3")
-        buf.write("\16\3\16\3\17\3\17\5\17\u0080\n\17\3\17\5\17\u0083\n\17")
-        buf.write("\3\20\3\20\3\20\3\21\3\21\3\21\3\22\3\22\5\22\u008d\n")
-        buf.write("\22\3\23\3\23\3\23\3\23\7\23\u0093\n\23\f\23\16\23\u0096")
-        buf.write("\13\23\3\23\5\23\u0099\n\23\3\23\3\23\3\24\3\24\3\24\3")
-        buf.write("\24\3\24\2\2\25\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36")
-        buf.write(" \"$&\2\3\3\2\16\17\2\u009e\2+\3\2\2\2\4\63\3\2\2\2\6")
-        buf.write("\65\3\2\2\2\b9\3\2\2\2\n=\3\2\2\2\fE\3\2\2\2\16I\3\2\2")
-        buf.write("\2\20M\3\2\2\2\22T\3\2\2\2\24_\3\2\2\2\26c\3\2\2\2\30")
-        buf.write("r\3\2\2\2\32t\3\2\2\2\34}\3\2\2\2\36\u0084\3\2\2\2 \u0087")
-        buf.write("\3\2\2\2\"\u008c\3\2\2\2$\u008e\3\2\2\2&\u009c\3\2\2\2")
-        buf.write("(*\5\4\3\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3")
-        buf.write("\2\2\2-+\3\2\2\2./\7\2\2\3/\3\3\2\2\2\60\64\5\b\5\2\61")
-        buf.write("\64\5\6\4\2\62\64\5\n\6\2\63\60\3\2\2\2\63\61\3\2\2\2")
-        buf.write("\63\62\3\2\2\2\64\5\3\2\2\2\65\66\7\7\2\2\66\67\7\17\2")
-        buf.write("\2\678\5\22\n\28\7\3\2\2\29:\7\6\2\2:;\7\16\2\2;<\5\22")
-        buf.write("\n\2<\t\3\2\2\2=>\7\7\2\2>?\7\17\2\2?@\7\5\2\2@A\7\24")
-        buf.write("\2\2AB\5\f\7\2BC\7\25\2\2CD\5\22\n\2D\13\3\2\2\2EF\t\2")
-        buf.write("\2\2F\r\3\2\2\2GJ\5\20\t\2HJ\5 \21\2IG\3\2\2\2IH\3\2\2")
-        buf.write("\2JK\3\2\2\2KL\7\3\2\2L\17\3\2\2\2MN\7\16\2\2NP\7\24\2")
-        buf.write("\2OQ\5\26\f\2PO\3\2\2\2PQ\3\2\2\2QR\3\2\2\2RS\7\25\2\2")
-        buf.write("S\21\3\2\2\2T[\7\34\2\2UW\5\16\b\2VU\3\2\2\2WX\3\2\2\2")
-        buf.write("XV\3\2\2\2XY\3\2\2\2Y\\\3\2\2\2Z\\\5\24\13\2[V\3\2\2\2")
-        buf.write("[Z\3\2\2\2\\]\3\2\2\2]^\7\35\2\2^\23\3\2\2\2_`\7\13\2")
-        buf.write("\2`a\7\f\2\2ab\7\3\2\2b\25\3\2\2\2ch\5\30\r\2de\7\26\2")
-        buf.write("\2eg\5\30\r\2fd\3\2\2\2gj\3\2\2\2hf\3\2\2\2hi\3\2\2\2")
-        buf.write("il\3\2\2\2jh\3\2\2\2km\7\26\2\2lk\3\2\2\2lm\3\2\2\2m\27")
-        buf.write("\3\2\2\2ns\5\f\7\2os\5\"\22\2ps\5\32\16\2qs\5\36\20\2")
-        buf.write("rn\3\2\2\2ro\3\2\2\2rp\3\2\2\2rq\3\2\2\2s\31\3\2\2\2t")
-        buf.write("u\7\r\2\2uv\7\36\2\2vw\7\4\2\2wx\7\26\2\2xy\5\34\17\2")
-        buf.write("yz\7\26\2\2z{\5\34\17\2{|\7\37\2\2|\33\3\2\2\2}\177\7")
-        buf.write("\17\2\2~\u0080\7\31\2\2\177~\3\2\2\2\177\u0080\3\2\2\2")
-        buf.write("\u0080\u0082\3\2\2\2\u0081\u0083\7\31\2\2\u0082\u0081")
-        buf.write("\3\2\2\2\u0082\u0083\3\2\2\2\u0083\35\3\2\2\2\u0084\u0085")
-        buf.write("\7\32\2\2\u0085\u0086\7\16\2\2\u0086\37\3\2\2\2\u0087")
-        buf.write("\u0088\7\33\2\2\u0088\u0089\7\16\2\2\u0089!\3\2\2\2\u008a")
-        buf.write("\u008d\7\4\2\2\u008b\u008d\5$\23\2\u008c\u008a\3\2\2\2")
-        buf.write("\u008c\u008b\3\2\2\2\u008d#\3\2\2\2\u008e\u008f\7\34\2")
-        buf.write("\2\u008f\u0094\5&\24\2\u0090\u0091\7\26\2\2\u0091\u0093")
-        buf.write("\5&\24\2\u0092\u0090\3\2\2\2\u0093\u0096\3\2\2\2\u0094")
-        buf.write("\u0092\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0098\3\2\2\2")
-        buf.write("\u0096\u0094\3\2\2\2\u0097\u0099\7\26\2\2\u0098\u0097")
-        buf.write("\3\2\2\2\u0098\u0099\3\2\2\2\u0099\u009a\3\2\2\2\u009a")
-        buf.write("\u009b\7\35\2\2\u009b%\3\2\2\2\u009c\u009d\7\16\2\2\u009d")
-        buf.write("\u009e\7\30\2\2\u009e\u009f\7\4\2\2\u009f\'\3\2\2\2\20")
-        buf.write("+\63IPX[hlr\177\u0082\u008c\u0094\u0098")
+        buf.write("\16\3\16\3\17\3\17\5\17\u0080\n\17\3\20\3\20\3\20\3\21")
+        buf.write("\3\21\3\21\3\22\3\22\5\22\u008a\n\22\3\23\3\23\3\23\3")
+        buf.write("\23\7\23\u0090\n\23\f\23\16\23\u0093\13\23\3\23\5\23\u0096")
+        buf.write("\n\23\3\23\3\23\3\24\3\24\3\24\3\24\3\24\2\2\25\2\4\6")
+        buf.write("\b\n\f\16\20\22\24\26\30\32\34\36 \"$&\2\3\3\2\16\17\2")
+        buf.write("\u009a\2+\3\2\2\2\4\63\3\2\2\2\6\65\3\2\2\2\b9\3\2\2\2")
+        buf.write("\n=\3\2\2\2\fE\3\2\2\2\16I\3\2\2\2\20M\3\2\2\2\22T\3\2")
+        buf.write("\2\2\24_\3\2\2\2\26c\3\2\2\2\30r\3\2\2\2\32t\3\2\2\2\34")
+        buf.write("}\3\2\2\2\36\u0081\3\2\2\2 \u0084\3\2\2\2\"\u0089\3\2")
+        buf.write("\2\2$\u008b\3\2\2\2&\u0099\3\2\2\2(*\5\4\3\2)(\3\2\2\2")
+        buf.write("*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7")
+        buf.write("\2\2\3/\3\3\2\2\2\60\64\5\b\5\2\61\64\5\6\4\2\62\64\5")
+        buf.write("\n\6\2\63\60\3\2\2\2\63\61\3\2\2\2\63\62\3\2\2\2\64\5")
+        buf.write("\3\2\2\2\65\66\7\7\2\2\66\67\7\17\2\2\678\5\22\n\28\7")
+        buf.write("\3\2\2\29:\7\6\2\2:;\7\16\2\2;<\5\22\n\2<\t\3\2\2\2=>")
+        buf.write("\7\7\2\2>?\7\17\2\2?@\7\5\2\2@A\7\24\2\2AB\5\f\7\2BC\7")
+        buf.write("\25\2\2CD\5\22\n\2D\13\3\2\2\2EF\t\2\2\2F\r\3\2\2\2GJ")
+        buf.write("\5\20\t\2HJ\5 \21\2IG\3\2\2\2IH\3\2\2\2JK\3\2\2\2KL\7")
+        buf.write("\3\2\2L\17\3\2\2\2MN\7\16\2\2NP\7\24\2\2OQ\5\26\f\2PO")
+        buf.write("\3\2\2\2PQ\3\2\2\2QR\3\2\2\2RS\7\25\2\2S\21\3\2\2\2T[")
+        buf.write("\7\34\2\2UW\5\16\b\2VU\3\2\2\2WX\3\2\2\2XV\3\2\2\2XY\3")
+        buf.write("\2\2\2Y\\\3\2\2\2Z\\\5\24\13\2[V\3\2\2\2[Z\3\2\2\2\\]")
+        buf.write("\3\2\2\2]^\7\35\2\2^\23\3\2\2\2_`\7\13\2\2`a\7\f\2\2a")
+        buf.write("b\7\3\2\2b\25\3\2\2\2ch\5\30\r\2de\7\26\2\2eg\5\30\r\2")
+        buf.write("fd\3\2\2\2gj\3\2\2\2hf\3\2\2\2hi\3\2\2\2il\3\2\2\2jh\3")
+        buf.write("\2\2\2km\7\26\2\2lk\3\2\2\2lm\3\2\2\2m\27\3\2\2\2ns\5")
+        buf.write("\f\7\2os\5\"\22\2ps\5\32\16\2qs\5\36\20\2rn\3\2\2\2ro")
+        buf.write("\3\2\2\2rp\3\2\2\2rq\3\2\2\2s\31\3\2\2\2tu\7\r\2\2uv\7")
+        buf.write("\36\2\2vw\7\4\2\2wx\7\26\2\2xy\5\34\17\2yz\7\26\2\2z{")
+        buf.write("\5\34\17\2{|\7\37\2\2|\33\3\2\2\2}\177\7\17\2\2~\u0080")
+        buf.write("\7 \2\2\177~\3\2\2\2\177\u0080\3\2\2\2\u0080\35\3\2\2")
+        buf.write("\2\u0081\u0082\7\32\2\2\u0082\u0083\7\16\2\2\u0083\37")
+        buf.write("\3\2\2\2\u0084\u0085\7\33\2\2\u0085\u0086\7\16\2\2\u0086")
+        buf.write("!\3\2\2\2\u0087\u008a\7\4\2\2\u0088\u008a\5$\23\2\u0089")
+        buf.write("\u0087\3\2\2\2\u0089\u0088\3\2\2\2\u008a#\3\2\2\2\u008b")
+        buf.write("\u008c\7\34\2\2\u008c\u0091\5&\24\2\u008d\u008e\7\26\2")
+        buf.write("\2\u008e\u0090\5&\24\2\u008f\u008d\3\2\2\2\u0090\u0093")
+        buf.write("\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0092\3\2\2\2\u0092")
+        buf.write("\u0095\3\2\2\2\u0093\u0091\3\2\2\2\u0094\u0096\7\26\2")
+        buf.write("\2\u0095\u0094\3\2\2\2\u0095\u0096\3\2\2\2\u0096\u0097")
+        buf.write("\3\2\2\2\u0097\u0098\7\35\2\2\u0098%\3\2\2\2\u0099\u009a")
+        buf.write("\7\16\2\2\u009a\u009b\7\30\2\2\u009b\u009c\7\4\2\2\u009c")
+        buf.write("\'\3\2\2\2\17+\63IPX[hlr\177\u0089\u0091\u0095")
         return buf.getvalue()
 
 
@@ -85,7 +83,7 @@ class SsbScriptParser ( Parser ):
                      "'alias'", "'previous'", "'Position'", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "'('", "')'", "','", "':'", "'='", "'+'", 
-                     "'@'", "'$'", "'{'", "'}'", "'<'", "'>'" ]
+                     "'@'", "'$'", "'{'", "'}'", "'<'", "'>'", "'.5'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "STRING_LITERAL", "FOR_TARGET", 
                       "CORO", "DEF", "FOR_ACTOR", "FOR_OBJECT", "FOR_PERFORMER", 
@@ -93,7 +91,8 @@ class SsbScriptParser ( Parser ):
                       "DECIMAL_INTEGER", "OCT_INTEGER", "HEX_INTEGER", "BIN_INTEGER", 
                       "OPEN_PAREN", "CLOSE_PAREN", "COMMA", "COLON", "ASSIGN", 
                       "PLUS", "AT", "DOLLAR", "OPEN_BRACE", "CLOSE_BRACE", 
-                      "OPEN_SHARP", "CLOSE_SHARP", "SKIP_", "UNKNOWN_CHAR" ]
+                      "OPEN_SHARP", "CLOSE_SHARP", "POINT_FIVE", "SKIP_", 
+                      "UNKNOWN_CHAR" ]
 
     RULE_start = 0
     RULE_funcdef = 1
@@ -150,8 +149,9 @@ class SsbScriptParser ( Parser ):
     CLOSE_BRACE=27
     OPEN_SHARP=28
     CLOSE_SHARP=29
-    SKIP_=30
-    UNKNOWN_CHAR=31
+    POINT_FIVE=30
+    SKIP_=31
+    UNKNOWN_CHAR=32
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -994,11 +994,8 @@ class SsbScriptParser ( Parser ):
         def INTEGER(self):
             return self.getToken(SsbScriptParser.INTEGER, 0)
 
-        def PLUS(self, i:int=None):
-            if i is None:
-                return self.getTokens(SsbScriptParser.PLUS)
-            else:
-                return self.getToken(SsbScriptParser.PLUS, i)
+        def POINT_FIVE(self):
+            return self.getToken(SsbScriptParser.POINT_FIVE, 0)
 
         def getRuleIndex(self):
             return SsbScriptParser.RULE_position_marker_arg
@@ -1025,18 +1022,10 @@ class SsbScriptParser ( Parser ):
             self.match(SsbScriptParser.INTEGER)
             self.state = 125
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
-            if la_ == 1:
-                self.state = 124
-                self.match(SsbScriptParser.PLUS)
-
-
-            self.state = 128
-            self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==SsbScriptParser.PLUS:
-                self.state = 127
-                self.match(SsbScriptParser.PLUS)
+            if _la==SsbScriptParser.POINT_FIVE:
+                self.state = 124
+                self.match(SsbScriptParser.POINT_FIVE)
 
 
         except RecognitionException as re:
@@ -1080,9 +1069,9 @@ class SsbScriptParser ( Parser ):
         self.enterRule(localctx, 28, self.RULE_jump_marker)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 130
+            self.state = 127
             self.match(SsbScriptParser.AT)
-            self.state = 131
+            self.state = 128
             self.match(SsbScriptParser.IDENTIFIER)
         except RecognitionException as re:
             localctx.exception = re
@@ -1125,9 +1114,9 @@ class SsbScriptParser ( Parser ):
         self.enterRule(localctx, 30, self.RULE_label)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 133
+            self.state = 130
             self.match(SsbScriptParser.DOLLAR)
-            self.state = 134
+            self.state = 131
             self.match(SsbScriptParser.IDENTIFIER)
         except RecognitionException as re:
             localctx.exception = re
@@ -1170,17 +1159,17 @@ class SsbScriptParser ( Parser ):
         localctx = SsbScriptParser.StringContext(self, self._ctx, self.state)
         self.enterRule(localctx, 32, self.RULE_string)
         try:
-            self.state = 138
+            self.state = 135
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [SsbScriptParser.STRING_LITERAL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 136
+                self.state = 133
                 self.match(SsbScriptParser.STRING_LITERAL)
                 pass
             elif token in [SsbScriptParser.OPEN_BRACE]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 137
+                self.state = 134
                 self.lang_string()
                 pass
             else:
@@ -1241,32 +1230,32 @@ class SsbScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 140
+            self.state = 137
             self.match(SsbScriptParser.OPEN_BRACE)
-            self.state = 141
+            self.state = 138
             self.lang_string_argument()
-            self.state = 146
+            self.state = 143
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,12,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 142
+                    self.state = 139
                     self.match(SsbScriptParser.COMMA)
-                    self.state = 143
+                    self.state = 140
                     self.lang_string_argument() 
-                self.state = 148
+                self.state = 145
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,12,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
 
-            self.state = 150
+            self.state = 147
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==SsbScriptParser.COMMA:
-                self.state = 149
+                self.state = 146
                 self.match(SsbScriptParser.COMMA)
 
 
-            self.state = 152
+            self.state = 149
             self.match(SsbScriptParser.CLOSE_BRACE)
         except RecognitionException as re:
             localctx.exception = re
@@ -1312,11 +1301,11 @@ class SsbScriptParser ( Parser ):
         self.enterRule(localctx, 36, self.RULE_lang_string_argument)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 154
+            self.state = 151
             self.match(SsbScriptParser.IDENTIFIER)
-            self.state = 155
+            self.state = 152
             self.match(SsbScriptParser.ASSIGN)
-            self.state = 156
+            self.state = 153
             self.match(SsbScriptParser.STRING_LITERAL)
         except RecognitionException as re:
             localctx.exception = re
