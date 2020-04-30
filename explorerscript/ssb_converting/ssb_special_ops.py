@@ -51,6 +51,7 @@ OPS_BRANCH = {
     'BranchVariation': 1,
 }
 
+OPS_SWITCH_DUNGEON_MODE = 'SwitchDungeonMode'
 OPS_REGULAR_CASES = ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
 OPS_SWITCH_CASE_MAP = {
     'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
@@ -62,7 +63,7 @@ OPS_SWITCH_CASE_MAP = {
     'SwitchScenario': OPS_REGULAR_CASES,
     'SwitchRandom': OPS_REGULAR_CASES,
     'SwitchScenarioLevel': OPS_REGULAR_CASES,
-    'SwitchDungeonMode': OPS_REGULAR_CASES,
+    OPS_SWITCH_DUNGEON_MODE: OPS_REGULAR_CASES,
     'main_EnterAdventure': OPS_REGULAR_CASES,
     'main_EnterRescueUser': OPS_REGULAR_CASES,
     'main_EnterTraining': OPS_REGULAR_CASES,

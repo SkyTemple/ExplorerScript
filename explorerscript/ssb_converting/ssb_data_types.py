@@ -130,7 +130,7 @@ class SsbOpParamConstString:
         self.name = name
 
     def __str__(self):
-        return f"'{self.name}'"
+        return f"'{escape_newlines(escape_quotes(self.name))}'"
 
 
 class SsbOpParamLanguageString:
@@ -252,18 +252,19 @@ class SsbCalcOperator(Enum):
 
 
 class DungeonModeConstants:
-    def __init__(self, open_constant: str, request_constant: str, close_constant: str):
+    def __init__(self, close_constant: str, open_constant: str, request_constant: str, open_and_request_constant: str):
         self.open_constant = open_constant
         self.request_constant = request_constant
         self.close_constant = close_constant
+        self.open_and_request_constant = open_and_request_constant
 
-    def get_explorerscript_flag_set_for(self, idx: int):
+    def get_explorerscript_constant_for(self, idx: int):
         if idx == 1:
             return self.open_constant
         if idx == 2:
             return self.request_constant
         if idx == 3:
-            return f'{self.open_constant} & {self.request_constant}'
+            return self.open_and_request_constant
         return self.close_constant
 
 

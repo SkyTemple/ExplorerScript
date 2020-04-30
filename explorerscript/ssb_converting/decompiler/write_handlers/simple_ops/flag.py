@@ -58,7 +58,7 @@ class FlagSimpleOpWriteHandler(AbstractWriteHandler):
         elif op.op_code.name == OPS_FLAG__CALC_SET_ADVENTURE_LOG:
             self.decompiler.write_stmnt(f"adventure_log = {op.params[0]};")
         elif op.op_code.name == OPS_FLAG__CALC_SET_DUNGEON_MODE:
-            flag_value = self.decompiler.dungeon_mode_constants.get_explorerscript_flag_set_for(op.params[1])
+            flag_value = self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[1])
             self.decompiler.write_stmnt(f"dungeon_mode({op.params[0]}) = {flag_value};")
         elif op.op_code.name == OPS_FLAG__CALC_SET_PERFORMANCE:
             self.decompiler.write_stmnt(f"{self.decompiler.performance_progress_list_var_name}[{op.params[0]}] = {op.params[1]};")
