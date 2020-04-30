@@ -27,8 +27,8 @@ from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, SsbOpParam, \
     SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
-from explorerscript.ssb_script.antlr.SsbScriptListener import SsbScriptListener
-from explorerscript.ssb_script.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript.antlr.SsbScriptListener import SsbScriptListener
+from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 
 
 class ListenerArgType(Enum):

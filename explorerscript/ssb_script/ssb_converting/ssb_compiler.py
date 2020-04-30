@@ -28,8 +28,8 @@ from explorerscript.parse_error import ParseError
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.ssb_script.antlr.SsbScriptLexer import SsbScriptLexer
-from explorerscript.ssb_script.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
+from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.ssb_script.ssb_converting.compiler_listener import SsbScriptCompilerListener
 from explorerscript.syntax_error_listener import SyntaxErrorListener
 
