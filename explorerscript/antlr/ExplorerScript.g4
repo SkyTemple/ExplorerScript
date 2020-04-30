@@ -54,8 +54,7 @@ if_h_scn: scn_var OPEN_BRACKET conditional_operator INTEGER COMMA conditional_op
 
 switch_block: SWITCH OPEN_PAREN switch_header CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
 multi_switch_block: MULTI SWITCH OPEN_PAREN switch_header (COMMA switch_header)+ CLOSE_PAREN OPEN_BRACE (default | multi_case_block)* CLOSE_BRACE;
-// header optional for CaseText
-single_case_block: CASE case_header? COLON stmt*;
+single_case_block: CASE case_header COLON stmt*;
 multi_case_block: CASE INTEGER COMMA case_header COLON stmt*;
 default: DEFAULT COLON stmt*;
 
