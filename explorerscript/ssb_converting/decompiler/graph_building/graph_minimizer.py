@@ -641,6 +641,8 @@ class SsbGraphMinimizer:
         """
         already_visited = set()
         self._get_edges__add_edge(g, rtn, rtn_id, label_indices, 0, already_visited)
+        return
+        # TODO: below is for debugging.
 
         # Also collect left-over opcodes at the very end of a routine. For some routines there seems to be code
         # at the end that SEEMS unreachable, but we collect it anyway and try connect it from reverse with the first
