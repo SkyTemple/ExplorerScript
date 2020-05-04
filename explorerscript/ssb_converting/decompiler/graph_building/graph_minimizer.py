@@ -551,7 +551,7 @@ class SsbGraphMinimizer:
 
         continues = [e for e in start.in_edges() if e['loop']]
         # Make sure the loop doesn't cross any existing loops
-        path_filter = lambda e, v: not (e['loop'] and isinstance(v['op'], SsbLabel) and any(isinstance(m, ForeverStart) for m in v['op'].markers))
+        path_filter = lambda e, v: not any_incoming_edge_is_loop(v)
         immediate_breaks = get_out_edges_of_subgraph(start.graph, start, [c.source for c in continues], path_filter)
         if immediate_breaks is None:
             return False, None, None
@@ -563,10 +563,9 @@ class SsbGraphMinimizer:
         if len(immediate_breaks) > 1:
             # we can allow open branches, because we know all other branches will either also break
             # or loop
-            # we allow loops, because there might be sub-loops in our loop, but we still want to see if there's
-            # an exit point.
+            # we don't allow loops, because the breaks of the nested loop might lead to some really nasty edge cases.
             breaks = find_first_common_next_vertex_in_edges(
-                start.graph, immediate_breaks, allow_open_branches=True, allow_loops=True
+                start.graph, immediate_breaks, allow_open_branches=True, allow_loops=False, allow_loop_edges=False
             )
             if not breaks:
                 return False, None, None

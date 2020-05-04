@@ -63,7 +63,7 @@ def find_first_common_next_vertex_in_edges__clear_cache():
 
 
 def find_first_common_next_vertex_in_edges(
-        g, es: List[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: List[int] = None
+        g, es: List[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: List[int] = None, allow_loop_edges=True
 ) -> Union[None, List[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
@@ -81,6 +81,11 @@ def find_first_common_next_vertex_in_edges(
     Else:
         If a vertex is visited 100 times (possibly infinite loop detected!), aborts this branch
 
+    If allow_loop_edges is False:
+        Edges which are marked as causing logical loops are visited
+    Else:
+        Those edges are not visited, aborting the branch.
+
     If no common vertex is found, returns None.
     """
     # TODO: Performance with (not allow_open_branches).
@@ -91,7 +96,7 @@ def find_first_common_next_vertex_in_edges(
         return find_first_common_next_vertex_in_edges_cache[id(g)][es_ids]
     assert len(es) > 1
     result = _find_first_common_next_vertex_in_edges__impl(
-        g, [{e} for e in es], [], allow_open_branches, allow_loops, vs_to_not_visit
+        g, [{e} for e in es], [], allow_open_branches, allow_loops, vs_to_not_visit, allow_loop_edges
     )
     find_first_common_next_vertex_in_edges_cache[id(g)][es_ids] = result
     return result
@@ -99,7 +104,7 @@ def find_first_common_next_vertex_in_edges(
 
 def _find_first_common_next_vertex_in_edges__impl(
         g, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
-        allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: List[int] = None
+        allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: List[int] = None, allow_loop_edges=True
 ) -> Union[None, List[Edge]]:
     """
     :param g: Graph
@@ -154,6 +159,9 @@ def _find_first_common_next_vertex_in_edges__impl(
                         new_es_entry.add(None)
                         continue
                 v_es = v.out_edges()
+                if not allow_loop_edges:
+                    # Remove edges marked as looping
+                    v_es = [e for e in v_es if not any_incoming_edge_is_loop(e.target_vertex)]
                 if len(v_es) == 0:
                     new_es_entry.add(None)
                 elif len(v_es) == 1:
@@ -482,3 +490,10 @@ def get_all_vertices_between(g, start, target, path_filter=lambda e, v: True):
                 for e in v.out_edges():
                     paths_to_go_through.append((e, vs_on_path.copy()))
     return vs_on_the_way_to_target
+
+
+def any_incoming_edge_is_loop(v: Vertex):
+    for e in v.in_edges():
+        if e['loop']:
+            return True
+    return False
