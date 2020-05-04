@@ -27,22 +27,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRout
 class SimpleDefCompileHandler(AbstractFuncdefCompileHandler):
     def collect(self) -> any:
         """Collects routine info and operations."""
-        linked_to = -1
-        linked_to_name = None
-        integer_like = str(self.ctx.integer_like().children[0])
-        try:
-            linked_to = int(integer_like)
-        except:
-            linked_to_name = integer_like
-
-        if str(self.ctx.FOR_TARGET()) == 'for_actor':
-            routine_info = SsbRoutineInfo(SsbRoutineType.ACTOR, linked_to, linked_to_name)
-        elif str(self.ctx.FOR_TARGET()) == 'for_object':
-            routine_info = SsbRoutineInfo(SsbRoutineType.OBJECT, linked_to, linked_to_name)
-        else:
-            routine_info = SsbRoutineInfo(SsbRoutineType.PERFORMER, linked_to, linked_to_name)
-
-        return routine_info, self.collect_ops()
+        return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
 
     def get_new_routine_id(self, old_id: int) -> int:
         return int(str(self.ctx.INTEGER()))

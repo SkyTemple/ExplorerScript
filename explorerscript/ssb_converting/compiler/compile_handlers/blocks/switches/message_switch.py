@@ -60,8 +60,10 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
             if header_handler.get_header_handler_type() != IntegerLikeCompileHandler:
                 raise SsbCompilerError(f"Invalid case type for message_ switch (line {self.ctx.start.line}.")
             string = h.get_text()
-            value = header_handler.collect()
-            case_ops.append(self._generate_operation(OP_CASE_TEXT, [string, value]))
+            value_blueprint = header_handler.collect()
+            # We obviously don't want the bluprint
+            value = value_blueprint.params[0]
+            case_ops.append(self._generate_operation(OP_CASE_TEXT, [value, string]))
         if self._default_handler:
             if not self._default_handler.is_message_case:
                 raise SsbCompilerError(
