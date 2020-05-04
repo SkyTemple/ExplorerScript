@@ -283,6 +283,8 @@ class SsbLabel(SsbOperation):
         """If the number of incoming vertices is bigger than max_in_vs, then we need to print this label"""
         max_in_vs = 1
         for m in self.markers:
+            if isinstance(m, SwitchFalltrough):
+                max_in_vs += 1  # A fallthrough always has two.
             if isinstance(m, IfEnd):
                 max_in_vs += 1  # Each if adds one else branch.
             if isinstance(m, SwitchEnd):
