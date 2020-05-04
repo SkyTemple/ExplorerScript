@@ -24,6 +24,7 @@ from typing import Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
+from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.routine import RoutineWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import *
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
@@ -60,6 +61,8 @@ class ExplorerScriptSsbDecompiler:
         self.smb: SourceMapBuilder = None
         self.performance_progress_list_var_name = performance_progress_list_var_name
         self.dungeon_mode_constants = dungeon_mode_constants
+        # Since forever blocks break_forevers do NOT have to be on the exact next level, we use a stack system instead!
+        self.forever_start_handler_stack: List[ForeverWriteHandler] = []
 
     def convert(self) -> Tuple[str, SourceMap]:
         self._output = ""

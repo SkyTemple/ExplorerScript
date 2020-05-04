@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from typing import Optional
 
 from igraph import Vertex
 
@@ -36,6 +37,8 @@ class ForeverWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
         self.m: ForeverStart = None
         self.ended_on_jump = True
+        # Since the break_forever does NOT have to be on the exact next level, we use a stack system instead!
+        self._vertex_after_forever: Optional[Vertex] = None
 
     def write_content(self):
         op: SsbLabelJump = self.start_vertex['op']
@@ -46,10 +49,16 @@ class ForeverWriteHandler(AbstractWriteHandler):
 
         self.decompiler.write_stmnt(f"forever")
         with Blk(self.decompiler):
-            return BlockWriteHandler(
+            self.decompiler.forever_start_handler_stack.append(self)
+            BlockWriteHandler(
                 exits[0].target_vertex, self.decompiler, self, self.start_vertex,
                 check_end_block=self.check_end_block
             ).write_content()
+            self.decompiler.forever_start_handler_stack.pop()
+            return self._vertex_after_forever
+
+    def set_vertex_after(self, v: Vertex):
+        self._vertex_after_forever = v
 
     def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler):
         """

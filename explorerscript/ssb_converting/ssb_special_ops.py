@@ -318,6 +318,9 @@ class SsbForeignLabel(SsbOperation):
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
     def __init__(self, root: SsbOperation, label: Union[SsbLabel, None]):
+        if isinstance(root, SsbLabelJump):
+            # SsbLabelJumps can not be nested, that makes no sense. But for convenience, they can be "copied" this way.
+            root = root.root
         if label is not None:
             label_id = label.id
         else:

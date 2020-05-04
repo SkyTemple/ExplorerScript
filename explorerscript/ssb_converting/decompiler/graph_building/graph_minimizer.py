@@ -596,7 +596,7 @@ class SsbGraphMinimizer:
             vs_to_delete = set()
             # First, let's delete all redundant jumps (actual OP_JUMPs that jump to opcodes with only one in edge)
             for v in g.vs:
-                if isinstance(v['op'], SsbLabelJump) and v['op'].root is not None and v['op'].root.op_code.name == OP_JUMP:
+                if isinstance(v['op'], SsbLabelJump) and v['op'].root is not None and v['op'].root.op_code.name == OP_JUMP and v['op'].get_marker() is None:
                     in_edges = v.in_edges()
                     out_edges = v.out_edges()
                     if len(in_edges) != 0:
