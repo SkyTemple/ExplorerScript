@@ -107,7 +107,8 @@ class SsbScriptSsbDecompiler:
         for i, param in enumerate(orig_params):
             if isinstance(param, SsbOpParamPositionMarker):
                 self._source_map_builder.add_position_mark(SourceMapPositionMark(
-                    line_number=self._line_number, opcode_idx_in_line=0, argument_idx=i,
+                    line_number=self._line_number, column_number=self.indent * NUMBER_OF_SPACES_PER_INDENT,
+                    argument_idx=i,
                     name=param.name,
                     x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative, y_relative=param.y_relative
                 ))

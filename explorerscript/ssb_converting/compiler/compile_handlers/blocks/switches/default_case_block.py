@@ -47,7 +47,7 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
         if self.is_message_case:
             raise SsbCompilerError("Invalid message switch case call.")
         self.compiler_ctx.add_switch_case(self)
-        retval = self._process_block()
+        retval = self._process_block(False)
         self.compiler_ctx.remove_switch_case()
         return retval
 

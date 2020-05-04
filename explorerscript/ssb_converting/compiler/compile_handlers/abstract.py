@@ -23,7 +23,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
 
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, OP_JUMP
 
@@ -64,7 +64,9 @@ class AbstractCompileHandler(ABC):
             params
         ))
 
-    def _generate_jump_operation(self, op_name: str, params: List[SsbOpParam], label: Optional[SsbLabel]):
+    def _generate_jump_operation(self, op_name: str, params: List[SsbOpParam], label: Optional[SsbLabel], none_allowed=False):
+        if not none_allowed:
+            assert label is not None
         return SsbLabelJump(
             self._generate_operation(op_name, params), label
         )
@@ -75,6 +77,7 @@ class AbstractCompileHandler(ABC):
         so it's supposed to be done in collect()!
         """
         self.compiler_ctx.source_map_builder.add_opcode(
+            # Antlr line ids are 1-indexed.
             self.compiler_ctx.counter_ops.count, self.ctx.start.line - 1, self.ctx.start.column
         )
         return op
@@ -103,6 +106,7 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         self.processed_header_jumps: List[SsbLabelJump] = []
         self._added_handlers: List[AbstractStatementCompileHandler] = []
         self.start_label: Optional[SsbLabel] = None
+        self.end_label: Optional[SsbLabel] = None
 
     def _process_block(self, insert_the_jump_if_needed=True) -> List[SsbOperation]:
         """
@@ -118,43 +122,49 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
                   the if (see _update_last_jump_to_end_label).
 
         After this the generated header opcodes can be retrieved using get_processed_header_jumps()
+
+        The returned list is guaranteed to have one entry: the end label (next opcode outside this block).
+        It usually also has a start label (if the only-one-jump case didn't happen).
         """
         ops: List[SsbOperation] = []
 
         for h in self._added_handlers:
             ops += h.collect()
 
+        self.end_label = SsbLabel(
+            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block end label'
+        )
+
         if len(self._header_jump_blueprints) > 0 and len(ops) == 1 \
                 and isinstance(ops[0], SsbLabelJump) and ops[0].root.op_code.name == OP_JUMP:
             # Just has a jump, insert that into the headers instead
             for hjb in self._header_jump_blueprints:
                 self.processed_header_jumps.append(hjb.build_for(ops[0].label))
-            return []  # in this case we don't actually have any operations to write
+            self.start_label = ops[0].label
+            return [self.end_label]  # in this case we don't actually have any operations to write
 
-        if insert_the_jump_if_needed and (len(ops) == 0 or not ops[-1] in OPS_THAT_END_CONTROL_FLOW):
+        if insert_the_jump_if_needed and (len(ops) == 0 or not does_op_end_control_flow(ops[-1])):
             # insert the end label jump
             ops.append(self._generate_empty_jump())
 
-        # Generate the label for the start of this block and insert it there
+        # Generate the start and end label for this block
         self.start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block start label'
         )
         ops.insert(0, self.start_label)
-        # Update headers to jump to the block
+        ops.append(self.end_label)
+        # Update headers to jump to/over the block
         for hjb in self._header_jump_blueprints:
-            self.processed_header_jumps.append(hjb.build_for(self.start_label))
+            if hjb.jump_is_positive:
+                self.processed_header_jumps.append(hjb.build_for(self.start_label))
+            else:
+                self.processed_header_jumps.append(hjb.build_for(self.end_label))
 
         return ops
 
     def _generate_empty_jump(self) -> SsbLabelJump:
         """Generate a new empty jump operation"""
-        return self._generate_jump_operation(OP_JUMP, [], None)
-
-    @staticmethod
-    def _update_last_jump_to_end_label(ops: List[SsbOperation], end_label: SsbLabel):
-        """If the list of opcodes ends on a label jump, that does NOT have a label set, set it's label to end_label."""
-        if len(ops) > 0 and isinstance(ops[-1], SsbLabelJump) and ops[-1].root.op_code.name == OP_JUMP and ops[-1].label is None:
-            ops[0].label = end_label
+        return self._generate_jump_operation(OP_JUMP, [], None, True)
 
     def get_processed_header_jumps(self):
         return self.processed_header_jumps

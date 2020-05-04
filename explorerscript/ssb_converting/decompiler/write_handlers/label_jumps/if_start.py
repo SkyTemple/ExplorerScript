@@ -106,7 +106,7 @@ class IfWriteHandler(AbstractWriteHandler):
     def _if_header_for(self, op: SsbOperation, is_not):
         if is_not:
             # Remove double nots (see RESCUE_DEBUG)
-            return f'not {self._if_header_for_impl(op)}'.lstrip('not not ')
+            return f'not {self._if_header_for_impl(op)}'.replace('not not ', '')
         return self._if_header_for_impl(op)
 
     def _if_header_for_impl(self, op: SsbOperation):

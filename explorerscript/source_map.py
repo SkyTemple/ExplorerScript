@@ -25,10 +25,10 @@ from typing import Dict, Tuple, List, Union
 
 class SourceMapPositionMark:
     """A position mark encoded in the source code of SSBScript / ExplorerScript."""
-    def __init__(self, line_number: int, opcode_idx_in_line: int, argument_idx: int,
+    def __init__(self, line_number: int, column_number: int, argument_idx: int,
                  name: str, x_offset: int, y_offset: int, x_relative: int, y_relative: int):
         self.line_number = line_number
-        self.opcode_idx_in_line = opcode_idx_in_line
+        self.column_number = column_number
         self.argument_idx = argument_idx
         self.name = name
         self.x_offset = x_offset
@@ -64,14 +64,14 @@ class SourceMapPositionMark:
 
     def __str__(self):
         return f'SourceMapPositionMark<' \
-               f'"{self.name}" @{self.line_number}:{self.opcode_idx_in_line}:{self.argument_idx} - ' \
+               f'"{self.name}" @{self.line_number}:{self.column_number}:{self.argument_idx} - ' \
                f'{self.x_relative}:{self.x_offset}, {self.y_relative}:{self.y_offset}>)'
 
     def __eq__(self, other):
         if not isinstance(other, SourceMapPositionMark):
             return False
         return self.line_number == other.line_number and \
-                self.opcode_idx_in_line == other.opcode_idx_in_line and \
+                self.column_number == other.column_number and \
                 self.argument_idx == other.argument_idx and \
                 self.name == other.name and \
                 self.x_offset == other.x_offset and \

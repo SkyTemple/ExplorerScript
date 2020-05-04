@@ -50,7 +50,7 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
             # CaseVariable
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
-                OP_CASE_VARIABLE, [self.operator, self.value]
+                OP_CASE_VARIABLE, [self.operator.value, self.value]
             )
 
         #if self.operator == SsbOperator.EQ:
@@ -63,7 +63,7 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         # CaseValue
         return SsbLabelJumpBlueprint(
             self.compiler_ctx, self.ctx,
-            OP_CASE_VALUE, [self.operator, self.value]
+            OP_CASE_VALUE, [self.operator.value, self.value]
         )
 
     def add(self, obj: any):

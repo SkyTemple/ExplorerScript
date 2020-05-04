@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
@@ -28,9 +28,9 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
 
 
 class IfBlockCompileHandler(AbstractBlockCompileHandler):
@@ -43,57 +43,77 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         self.ctx: ExplorerScriptParser.If_blockContext
-        if_block_ops: List[SsbOperation]
-        elseif_blocks_ops: List[List[SsbOperation]] = []
-        else_block_ops: List[SsbOperation]
+        if_header__allocations: List[int] = []  # list index in ops!
+        if_block__was_output = False
+        elseif_header__allocations: List[List[int]] = []  # list index in ops!
+        elseif_block__was_output: List[bool] = []
         # 0. Prepare the end label to insert.
         end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
         )
 
-        # 1. Generate and allocate if header op templates
-        self._header_jump_blueprints = [h.collect() for h in self._if_header_handlers]
-        first = self.compiler_ctx.counter_ops.allocate(len(self._header_jump_blueprints))
-        for i, h in enumerate(self._header_jump_blueprints):
-            h.set_index_number(first + i)
-        # 2. For each else if: Generate and allocate if header op templates
+        ops: List[Optional[SsbOperation]] = []
+
+        # 1. Go over all if header ops:
+        for h in self._if_header_handlers:
+            ops.append(None)
+            jmpb = h.collect()
+            self._header_jump_blueprints.append(jmpb)
+            jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
+            # 1b. If all are positive, allocate 1 for it's branch op, note that output can happen later
+            if_header__allocations.append(len(ops) - 1)
+            if not jmpb.jump_is_positive and not if_block__was_output:
+                # 1c. If one is negative, allocate 1 for it's branch op + output the block
+                if_block__was_output = True
+                ops += self._process_block()
+        # 2. For each else if: Go over all if header ops:
         for else_if_h in self._else_if_handlers:
             jmp_blueprints = else_if_h.create_header_jump_templates()
-            first = self.compiler_ctx.counter_ops.allocate(len(jmp_blueprints))
-            for i, h in enumerate(jmp_blueprints):
-                h.set_index_number(first + i)
-        # 3. Collect else sub block ops (first because else is after no branch op branched)
+            this_elseif__allocations = []
+            this_elseif__was_output = False
+            for jmpb in jmp_blueprints:
+                ops.append(None)
+                jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
+                # 2b. If all are positive, allocate 1 for it's branch op, note that output can happen later
+                this_elseif__allocations.append(len(ops) - 1)
+                if not jmpb.jump_is_positive and not this_elseif__was_output:
+                    # 2c. If one is negative, allocate 1 for it's branch op + output the block
+                    this_elseif__was_output = True
+                    ops += else_if_h._process_block()
+            elseif_header__allocations.append(this_elseif__allocations)
+            elseif_block__was_output.append(this_elseif__was_output)
+        # 3. Collect else sub block ops
         if self._else_handler:
-            else_block_ops = self._else_handler.collect()
-        # 3b. If no else: Create an else block with just one jump without target
+            ops += self._else_handler.collect()
         else:
-            else_block_ops = [self._generate_empty_jump()]
-        # 4. Collect If sub block ops
-        if_block_ops = self._process_block()
-        # 5. Collect elseif sub block ops
-        for h in self._else_if_handlers:
-            elseif_blocks_ops.append(h.collect())
+            # 3b. If no else: Create an else block with just one jump without target
+            ops.append(self._generate_empty_jump())
+        # 4. Collect if sub block ops, if not already done
+        if not if_block__was_output:
+            if_block__was_output = True
+            ops += self._process_block()
+        # 5. Collect remaining elseif sub block ops
+        for i, else_if_h in enumerate(self._else_if_handlers):
+            if not elseif_block__was_output[i]:
+                elseif_block__was_output[i] = True
+                ops += else_if_h._process_block()
         # 6. Go through all blocks and check, if the last op is a jump without target
         #    if so: insert jump to the end label
-        self._update_last_jump_to_end_label(if_block_ops, end_label)
-        for block in elseif_blocks_ops:
-            self._update_last_jump_to_end_label(block, end_label)
-        self._update_last_jump_to_end_label(else_block_ops, end_label)
-        # 7. Build ops list
-        ops = self.get_processed_header_jumps()
-        for h in self._else_if_handlers:
-            ops += h.get_processed_header_jumps()
-        ops += else_block_ops
-        ops += if_block_ops
-        for o in elseif_blocks_ops:
-            ops += o
+        for op in ops:
+            if isinstance(op, SsbLabelJump) and op.root.op_code.name == OP_JUMP and op.label is None:
+                op.label = end_label
+        # 7. Process header ops
+        for i, jmp in enumerate(self.get_processed_header_jumps()):
+            allocation = if_header__allocations[i]
+            ops[allocation] = jmp
+        for i, else_if_h in enumerate(self._else_if_handlers):
+            for j, jmp in enumerate(else_if_h.get_processed_header_jumps()):
+                allocation = elseif_header__allocations[i][j]
+                ops[allocation] = jmp
+
         return ops + [end_label]
 
     def add(self, obj: any):
-        if isinstance(obj, AbstractStatementCompileHandler):
-            # Sub statement for the block
-            self._added_handlers.append(obj)
-            return
         if isinstance(obj, IfHeaderCompileHandler):
             self._if_header_handlers.append(obj)
             return
@@ -102,5 +122,9 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
             return
         if isinstance(obj, ElseBlockCompileHandler):
             self._else_handler = obj
+            return
+        if isinstance(obj, AbstractStatementCompileHandler):
+            # Sub statement for the block
+            self._added_handlers.append(obj)
             return
         self._raise_add_error(obj)

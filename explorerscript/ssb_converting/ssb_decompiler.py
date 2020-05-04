@@ -136,10 +136,9 @@ class ExplorerScriptSsbDecompiler:
 
     def source_map_add_position_mark(self, argument_index, param: SsbOpParamPositionMarker):
         self.smb.add_position_mark(
-            # TODO: Assumes that all statements start in a new line.
-            #       Might need this more flexible.
             SourceMapPositionMark(
-                line_number=self._line_number, opcode_idx_in_line=0, argument_idx=argument_index,
+                line_number=self._line_number, column_number=self.indent * NUMBER_OF_SPACES_PER_INDENT,
+                argument_idx=argument_index,
                 name=param.name,
                 x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative,
                 y_relative=param.y_relative

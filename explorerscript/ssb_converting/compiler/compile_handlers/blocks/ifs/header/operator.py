@@ -53,7 +53,7 @@ class IfHeaderOperatorCompileHandler(AbstractCompileHandler):
             # BranchVariable
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
-                OP_BRANCH_VARIABLE, [self.var_target, self.operator, self.value]
+                OP_BRANCH_VARIABLE, [self.var_target, self.operator.value, self.value]
             )
         if self.operator == SsbOperator.EQ:
             # Branch
@@ -64,7 +64,7 @@ class IfHeaderOperatorCompileHandler(AbstractCompileHandler):
         # BranchValue
         return SsbLabelJumpBlueprint(
             self.compiler_ctx, self.ctx,
-            OP_BRANCH_VALUE, [self.var_target, self.operator, self.value]
+            OP_BRANCH_VALUE, [self.var_target, self.operator.value, self.value]
         )
 
     def add(self, obj: any):

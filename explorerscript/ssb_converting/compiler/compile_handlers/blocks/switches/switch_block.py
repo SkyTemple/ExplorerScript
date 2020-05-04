@@ -34,7 +34,8 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.swi
     SwitchHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT, SsbLabel, OP_JUMP
+from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT, SsbLabel, OP_JUMP, \
+    OP_SWITCH_SCENARIO, OP_CASE_VALUE, OP_CASE_SCENARIO
 
 
 class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
@@ -50,14 +51,21 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
         self.ctx: ExplorerScriptParser.Switch_blockContext
         # 0. Prepare labels to insert
         default_start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, 'switch default start label'
         )
         end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, 'entire switch-block end label'
         )
         default_jmp_to_case_block: Optional[SsbLabelJumpBlueprint] = None
         case_ops: List[SsbOperation] = []
-        default_ops: List[SsbOperation] = []
+        default_ops: List[SsbOperation]
+
+        # 0b. Switch op
+        switch_op = self._switch_header_handler.collect()
+
+        # If there is no default and also no cases... we really don't need anything.
+        if self._default_handler is None and len(self._case_handlers) == 0:
+            return [switch_op]
 
         # 1. For each case: Generate and allocate case header op templates
         for h in self._case_handlers:
@@ -67,6 +75,10 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             jmp_blueprint = h.get_header_jump_template()
             first = self.compiler_ctx.counter_ops.allocate(1)
             jmp_blueprint.set_index_number(first)
+            # A little special case: If the switch header op is SwitchScenario and the case is CaseValue, change it to
+            # CaseScenario, just to be more consistent with how the game odes it.
+            if switch_op.op_code.name == OP_SWITCH_SCENARIO and jmp_blueprint.op_code_name == OP_CASE_VALUE:
+                jmp_blueprint.op_code_name = OP_CASE_SCENARIO
 
         # 2. Default block (first because default is after no case op branched)
         if self._default_handler:
@@ -75,7 +87,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             default_ops = self._default_handler.collect()
             # 2b. If no operations: Insert a jump blueprint for now, note it, and if it comes up later during 3b,
             #     process it like explained there.
-            if len(default_ops) == 0:
+            if len([x for x in default_ops if not isinstance(x, SsbLabel)]) == 0:
                 default_jmp_to_case_block = SsbLabelJumpBlueprint(
                     self.compiler_ctx, self.ctx,
                     OP_JUMP, []
@@ -117,7 +129,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             else:
                 raise SsbCompilerError(f"Unexpected switch end (line {self.ctx.start.line})")
         # 4. Build ops list
-        header_ops = []
+        header_ops = [switch_op]
         for h in self._case_handlers:
             header_ops += h.get_processed_header_jumps()
         return header_ops + [default_start_label] + default_ops + case_ops + [end_label]

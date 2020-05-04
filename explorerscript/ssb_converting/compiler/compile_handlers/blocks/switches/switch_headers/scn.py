@@ -42,9 +42,9 @@ class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
 
         index = int(str(self.ctx.INTEGER()))
         if index == 0:
-            return self._generate_operation(OP_SWITCH_SCENARIO_LEVEL, [self.scn_var_target])
-        elif index == 1:
             return self._generate_operation(OP_SWITCH_SCENARIO, [self.scn_var_target])
+        elif index == 1:
+            return self._generate_operation(OP_SWITCH_SCENARIO_LEVEL, [self.scn_var_target])
         raise SsbCompilerError(f"Index for scn() if condition must be 0 or 1 (line {self.ctx.start.line}).")
 
     def add(self, obj: any):

@@ -61,10 +61,10 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
 
         # CalcValue / CalcVariable / Set
         if self.value_is_a_variable:
-            return [self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator, self.value])]
+            return [self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator.value, self.value])]
         if self.operator == SsbCalcOperator.ASSIGN:
             return [self._generate_operation(OPS_FLAG__SET, [self.var_target, self.value])]
-        return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator, self.value])]
+        return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator.value, self.value])]
 
     def add(self, obj: any):
         # assign_operator -> operator

@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List
+from typing import List, Optional
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
     AbstractStatementCompileHandler
@@ -34,10 +34,10 @@ class ForeverBlockCompileHandler(AbstractBlockCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, 'forever-block outer start label'
         )
         self._end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+            self.compiler_ctx.counter_labels(), -1, 'forever-block outer end label'
         )
 
     def collect(self) -> List[SsbOperation]:

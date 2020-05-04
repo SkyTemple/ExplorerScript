@@ -25,7 +25,7 @@ from typing import Dict, List, TYPE_CHECKING, Union
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OPS_THAT_END_CONTROL_FLOW
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.forevers.forever_block import \
@@ -124,6 +124,7 @@ class SsbLabelJumpBlueprint:
 
     def build_for(self, label: SsbLabel):
         """Create a new jump operation for the given label. Counters will be increased, souce map updated."""
+        assert label is not None
         number = self.number
         if not number:
             number = self.compiler_ctx.counter_ops()
@@ -139,7 +140,59 @@ class SsbLabelJumpBlueprint:
             ), label
         )
 
+
 def string_literal(string):
     # TODO: Very naive "escaping" atm.
     return str(string)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")
 
+
+def routine_op_offsets_are_ordered(routine_ops: List[List[SsbOperation]]):
+    last_offset = -1
+    for routine in routine_ops:
+        for op in routine:
+            if op.offset != -1 and op.offset <= last_offset:
+                return False
+            last_offset = op.offset
+
+    return True
+
+
+def strip_last_label(routine_ops: List[List[SsbOperation]]):
+    """
+    Checks if the last opcode of a routine is a label, and if so
+    removes it. if there are jumps to it, they are removed and replaced with an return.
+    """
+    returned_routine_ops = []
+    for routine in routine_ops:
+        if len(routine) > 0:
+            while isinstance(routine[-1], SsbLabel):
+                indices_to_remove = set()
+                label = routine[-1]
+                # Remove the label
+                del routine[-1]
+                # Replace the jumps to it with returns
+                op_before_ends_control_flow = False
+                for op_i, op in enumerate(routine):
+                    if isinstance(op, SsbLabelJump) and op.label == label:
+                        # We only have to insert the return, if the previous op didn't end control flow
+                        if op_before_ends_control_flow:
+                            indices_to_remove.add(op_i)
+                        else:
+                            routine[op_i] = SsbOperation(op.offset, SsbOpCode(-1, OP_RETURN), [])
+                            op_before_ends_control_flow = False
+                    else:
+                        if isinstance(op, SsbLabel):
+                            pass
+                        else:
+                            op_before_ends_control_flow = does_op_end_control_flow(op)
+                routine = [x for i, x in enumerate(routine) if i not in indices_to_remove]
+            returned_routine_ops.append(routine)
+        else:
+            returned_routine_ops.append([])
+    return returned_routine_ops
+
+
+def does_op_end_control_flow(op: SsbOperation) -> bool:
+    if isinstance(op, SsbLabelJump):
+        return op.root.op_code.name in OPS_THAT_END_CONTROL_FLOW
+    return op.op_code.name in OPS_THAT_END_CONTROL_FLOW

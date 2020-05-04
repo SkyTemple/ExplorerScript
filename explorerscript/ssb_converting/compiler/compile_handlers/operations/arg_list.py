@@ -22,14 +22,26 @@
 #
 from typing import List
 
+from explorerscript.source_map import SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
+from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOpParamPositionMarker
 
 
 class ArgListCompileHandler(AbstractCompileHandler):
     def collect(self) -> List[SsbOpParam]:
-        return [h.collect() for h in self._added_handlers]
+        ret = []
+        for i, h in enumerate(self._added_handlers):
+            arg = h.collect()
+            ret.append(arg)
+            if isinstance(arg, SsbOpParamPositionMarker):
+                # Collect position marker source map entries
+                self.compiler_ctx.source_map_builder.add_position_mark(SourceMapPositionMark(
+                    # Antlr line ids are 1-indexed.
+                    self.ctx.start.line - 1, self.ctx.start.column, i,
+                    arg.name, arg.x_offset, arg.y_offset, arg.x_relative, arg.y_relative
+                ))
+        return ret
 
     def add(self, obj: any):
         if isinstance(obj, ArgCompileHandler):

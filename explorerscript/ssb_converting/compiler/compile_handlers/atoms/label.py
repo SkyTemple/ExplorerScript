@@ -34,7 +34,7 @@ class LabelCompileHandler(AbstractStatementCompileHandler):
             label = self.compiler_ctx.collected_labels[label_name]
         else:
             label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1  # todo: routine id is not set yet, but not used anyway.
+                self.compiler_ctx.counter_labels(), -1, f'proper label, named {label_name}'
             )
             self.compiler_ctx.collected_labels[label_name] = label
 

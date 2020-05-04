@@ -216,7 +216,7 @@ class SsbOperator(Enum):
         self._notation_ = notation
 
     def __str__(self):
-        return self.value
+        return self.name
 
     @property
     def notation(self):
@@ -241,7 +241,7 @@ class SsbCalcOperator(Enum):
         self._notation_ = notation
 
     def __str__(self):
-        return self.value
+        return self.name
 
     @property
     def notation(self):

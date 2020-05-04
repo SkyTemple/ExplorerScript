@@ -29,7 +29,9 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.compiler_listener import ExplorerScriptCompilerListener
+from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalizer
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
+from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
 from explorerscript.syntax_error_listener import SyntaxErrorListener
 
@@ -100,15 +102,10 @@ class ExplorerScriptSsbCompiler:
         assert routine_op_offsets_are_ordered(compiler_listener.routine_ops)
 
         # Copy from listener / remove labels and label jumps
-        # TODO:
-        #   strip_last_label checks if the last opcode of a routine is a label, and if so
-        #   removes it. if there are jumps to it, they are removed and replaced with an return.
-        # TODO:
-        #   LabelFinalizer updates the opcodes of all labels
         label_finalizer = LabelFinalizer(strip_last_label(compiler_listener.routine_ops))
 
         self.routine_ops = OpsLabelJumpToRemover(
-            label_finalizer.routine_ops, label_finalizer.label_offsets
+            label_finalizer.routines, label_finalizer.label_offsets
         ).routines
         self.routine_infos = compiler_listener.routine_infos
         self.named_coroutines = compiler_listener.named_coroutines

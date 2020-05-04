@@ -65,16 +65,23 @@ OPS_BRANCH = {
     OP_BRANCH_VARIATION: 1,
 }
 
+OP_CASE = 'Case'
+OP_CASE_MENU = 'CaseMenu'
+OP_CASE_MENU2 = 'CaseMenu2'
+OP_CASE_VALUE = 'CaseValue'
+OP_CASE_VARIABLE = 'CaseVariable'
+OP_CASE_SCENARIO = 'CaseScenario'
+
 OP_SWITCH = 'Switch'
 OP_SWITCH_SECTOR = 'SwitchSector'
 OP_SWITCH_SCENARIO = 'SwitchScenario'
 OP_SWITCH_RANDOM = 'SwitchRandom'
 OP_SWITCH_SCENARIO_LEVEL = 'SwitchScenarioLevel'
 OP_SWITCH_DUNGEON_MODE = 'SwitchDungeonMode'
-OPS_REGULAR_CASES = ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
+OPS_REGULAR_CASES = [OP_CASE, OP_CASE_VALUE, OP_CASE_VARIABLE, OP_CASE_SCENARIO]
 OPS_SWITCH_CASE_MAP = {
-    'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
-    'message_SwitchMenu2': ['CaseMenu', 'CaseMenu2'],
+    'message_SwitchMenu': [OP_CASE_MENU, OP_CASE_MENU2],
+    'message_SwitchMenu2': [OP_CASE_MENU, OP_CASE_MENU2],
     OP_SWITCH: OPS_REGULAR_CASES,
     OP_SWITCH_SECTOR: OPS_REGULAR_CASES,
     'ProcessSpecial': OPS_REGULAR_CASES,
@@ -100,18 +107,13 @@ OPS_SWITCH_TEXT_CASE_MAP = {
 }
 
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
-OP_CASE = 'Case'
-OP_CASE_MENU = 'CaseMenu'
-OP_CASE_MENU2 = 'CaseMenu2'
-OP_CASE_VALUE = 'CaseValue'
-OP_CASE_VARIABLE = 'CaseVariable'
 OPS_WITH_JUMP_TO_MEM_OFFSET = {
     #'Call': 0,  TODO: Check
     #'CancelRecoverCommon': 0,  TODO: Check
     OP_CASE: 1,
     OP_CASE_MENU: 1,
     OP_CASE_MENU2: 1,
-    'CaseScenario': 2,
+    OP_CASE_SCENARIO: 2,
     OP_CASE_VALUE: 2,
     OP_CASE_VARIABLE: 2,
     # Special case; this OpCode ALWAYS jumps:
@@ -262,7 +264,7 @@ class ForeverEnd(LabelMarker):
 
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
-    def __init__(self, id: int, routine_id: int):
+    def __init__(self, id: int, routine_id: int, debugging_note: str = None):
         #                                                      Params only for debugging
         super().__init__(-1, SsbOpCode(-1, f'ES_LABEL<{id}>'), [id])
         self.id: int = id
@@ -272,6 +274,7 @@ class SsbLabel(SsbOperation):
         self.referenced_from_other_routine = False
         # Markers for this label (type of label)
         self.markers: List[LabelMarker] = []
+        self.debugging_note = debugging_note
 
     def add_marker(self, m: LabelMarker):
         self.markers.append(m)
@@ -299,6 +302,9 @@ class SsbLabel(SsbOperation):
                     if isinstance(m, SwitchStart) and m.switch_id == switch_id:
                         return v
         return None
+
+    def __str__(self):
+        return f"{self.__class__.__name__}<id={self.id}, note={self.debugging_note}, markers={self.markers}>"
 
 
 class SsbForeignLabel(SsbOperation):

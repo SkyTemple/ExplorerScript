@@ -148,7 +148,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
             if isinstance(arg, SsbOpParamPositionMarker):
                 self.source_map_builder.add_position_mark(SourceMapPositionMark(
                     # Antlr line ids are 1-indexed.
-                    ctx.start.line - 1, self._op_idx_in_current_line, i,
+                    ctx.start.line - 1, ctx.start.column, i,
                     arg.name, arg.x_offset, arg.y_offset, arg.x_relative, arg.y_relative
                 ))
 

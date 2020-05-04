@@ -27,7 +27,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRout
 class CoroDefCompileHandler(AbstractFuncdefCompileHandler):
     def collect(self) -> any:
         """Collects name of the coroutine, routine info and operations."""
-        return str(self.ctx.IDENTIFIER()), SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
+        return str(self.ctx.IDENTIFIER()), SsbRoutineInfo(SsbRoutineType.COROUTINE, 0), self.collect_ops()
 
     def get_new_routine_id(self, old_id: int) -> int:
         return old_id + 1
