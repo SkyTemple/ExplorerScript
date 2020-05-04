@@ -82,23 +82,20 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
 
         # 2. Default block (first because default is after no case op branched)
         if self._default_handler:
-            # 2a. If has operations: Collect default sub block ops
             self._default_handler.set_end_label(end_label)
-            default_ops = self._default_handler.collect()
-            # 2b. If no operations: Insert a jump blueprint for now, note it, and if it comes up later during 3b,
-            #     process it like explained there.
-            if len([x for x in default_ops if not isinstance(x, SsbLabel)]) == 0:
-                default_jmp_to_case_block = SsbLabelJumpBlueprint(
-                    self.compiler_ctx, self.ctx,
-                    OP_JUMP, []
-                )
+            default_ops = []
+            # Insert a jump blueprint for now, note it, and if it comes up later during 3b,
+            # process it like explained there.
+            default_jmp_to_case_block = SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_JUMP, []
+            )
+            self._case_handlers.insert(self._default_handler_index, self._default_handler)
         else:
             # 2c. If no default: Create a default block with just one jump to end label
             default_ops = [self._generate_jump_operation(OP_JUMP, [], end_label)]
         # 3. For each case:
         cases_waiting_for_a_block = []
-        default_waits = False
-        i = -1
         for i, h in enumerate(self._case_handlers):
             if not h.has_sub_block_handlers():
                 # 3b. Else: Jump to the block of the next case which has a block.
@@ -106,28 +103,20 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             else:
                 # 3a. If the case has operations: Collect case sub-block ops
                 ops = h.collect()
-                for h_waiting in cases_waiting_for_a_block:
-                    h_waiting.set_processed_header_jumps(
-                        [h_waiting.get_header_jump_template().build_for(h.get_start_label())]
-                    )
-                cases_waiting_for_a_block = []
-                if default_waits:
-                    default_waits = False
+                if isinstance(h, DefaultCaseBlockCompileHandler):
                     default_ops = [default_jmp_to_case_block.build_for(h.get_start_label())]
-                case_ops += ops
-            if default_jmp_to_case_block and i == self._default_handler_index:
-                default_waits = True
-        # 3c. Edge case: We expected a next case with ops, but got end of switch instead. Invalid!
-        if len(cases_waiting_for_a_block) > 0 or default_waits:
-            # ok either we ended to early, or the last condition is the default one:
-            if i > - 1 and self._default_handler_index == i + 1:
-                # ok, we just jump to the default case then, even though it's a bit pointless.
                 for h_waiting in cases_waiting_for_a_block:
-                    h_waiting.set_processed_header_jumps(
-                        [h_waiting.get_header_jump_template().build_for(default_start_label)]
-                    )
-            else:
-                raise SsbCompilerError(f"Unexpected switch end (line {self.ctx.start.line})")
+                    if isinstance(h_waiting, DefaultCaseBlockCompileHandler):
+                        default_ops = [default_jmp_to_case_block.build_for(h.get_start_label())]
+                    else:
+                        h_waiting.set_processed_header_jumps(
+                            [h_waiting.get_header_jump_template().build_for(h.get_start_label())]
+                        )
+                cases_waiting_for_a_block = []
+                case_ops += ops
+        # 3c. Edge case: We expected a next case with ops, but got end of switch instead. Invalid!
+        if len(cases_waiting_for_a_block) > 0:
+            raise SsbCompilerError(f"Unexpected switch end (line {self.ctx.start.line})")
         # 4. Build ops list
         header_ops = [switch_op]
         for h in self._case_handlers:

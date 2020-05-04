@@ -54,6 +54,9 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
     def break_case(self):
         return self._generate_jump_operation(OP_JUMP, [], self._end_label)
 
+    def has_sub_block_handlers(self):
+        return len(self._added_handlers) > 0
+
     def get_text(self) -> SsbOpParam:
         if not self.is_message_case:
             raise SsbCompilerError("Invalid message switch case call.")
