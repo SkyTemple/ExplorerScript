@@ -82,7 +82,6 @@ class ExplorerScriptSsbDecompiler:
         grapher.invert_branches()
         grapher.group_branches()
         grapher.build_and_group_switch_cases()
-        grapher.group_switches()
         grapher.group_switch_cases()
         grapher.build_switch_fallthroughs()
         # Process loops

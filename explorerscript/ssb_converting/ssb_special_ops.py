@@ -33,37 +33,56 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode
 
 OP_JUMP = 'Jump'
 
+OP_BRANCH = 'Branch'
+OP_BRANCH_BIT = 'BranchBit'
+OP_BRANCH_DEBUG = 'BranchDebug'
+OP_BRANCH_EDIT = 'BranchEdit'
+OP_BRANCH_PERFORMANCE = 'BranchPerformance'
+OP_BRANCH_SCENARIO_NOW = 'BranchScenarioNow'
+OP_BRANCH_SCENARIO_NOW_AFTER = 'BranchScenarioNowAfter'
+OP_BRANCH_SCENARIO_NOW_BEFORE = 'BranchScenarioNowBefore'
+OP_BRANCH_SCENARIO_AFTER = 'BranchScenarioAfter'
+OP_BRANCH_SCENARIO_BEFORE = 'BranchScenarioBefore'
+OP_BRANCH_VALUE = 'BranchValue'
+OP_BRANCH_VARIABLE = 'BranchVariable'
+OP_BRANCH_VARIATION = 'BranchVariation'
+
 OPS_BRANCH = {
-    'Branch': 2,
-    'BranchBit': 2,
-    'BranchDebug': 1,
-    'BranchEdit': 1,
+    OP_BRANCH: 2,
+    OP_BRANCH_BIT: 2,
+    OP_BRANCH_DEBUG: 1,
+    OP_BRANCH_EDIT: 1,
     'BranchExecuteSub': 1,
-    'BranchPerformance': 2,
-    'BranchScenarioNow': 3,
-    'BranchScenarioNowAfter': 3,
-    'BranchScenarioNowBefore': 3,
-    'BranchScenarioAfter': 3,
-    'BranchScenarioBefore': 3,
+    OP_BRANCH_PERFORMANCE: 2,
+    OP_BRANCH_SCENARIO_NOW: 3,
+    OP_BRANCH_SCENARIO_NOW_AFTER: 3,
+    OP_BRANCH_SCENARIO_NOW_BEFORE: 3,
+    OP_BRANCH_SCENARIO_AFTER: 3,
+    OP_BRANCH_SCENARIO_BEFORE: 3,
     'BranchSum': 3,
-    'BranchValue': 3,
-    'BranchVariable': 3,
-    'BranchVariation': 1,
+    OP_BRANCH_VALUE: 3,
+    OP_BRANCH_VARIABLE: 3,
+    OP_BRANCH_VARIATION: 1,
 }
 
-OPS_SWITCH_DUNGEON_MODE = 'SwitchDungeonMode'
+OP_SWITCH = 'Switch'
+OP_SWITCH_SECTOR = 'SwitchSector'
+OP_SWITCH_SCENARIO = 'SwitchScenario'
+OP_SWITCH_RANDOM = 'SwitchRandom'
+OP_SWITCH_SCENARIO_LEVEL = 'SwitchScenarioLevel'
+OP_SWITCH_DUNGEON_MODE = 'SwitchDungeonMode'
 OPS_REGULAR_CASES = ['Case', 'CaseValue', 'CaseVariable', 'CaseScenario']
 OPS_SWITCH_CASE_MAP = {
     'message_SwitchMenu': ['CaseMenu', 'CaseMenu2'],
     'message_SwitchMenu2': ['CaseMenu', 'CaseMenu2'],
-    'Switch': OPS_REGULAR_CASES,
-    'SwitchSector': OPS_REGULAR_CASES,
+    OP_SWITCH: OPS_REGULAR_CASES,
+    OP_SWITCH_SECTOR: OPS_REGULAR_CASES,
     'ProcessSpecial': OPS_REGULAR_CASES,
     'message_Menu': OPS_REGULAR_CASES,
-    'SwitchScenario': OPS_REGULAR_CASES,
-    'SwitchRandom': OPS_REGULAR_CASES,
-    'SwitchScenarioLevel': OPS_REGULAR_CASES,
-    OPS_SWITCH_DUNGEON_MODE: OPS_REGULAR_CASES,
+    OP_SWITCH_SCENARIO: OPS_REGULAR_CASES,
+    OP_SWITCH_RANDOM: OPS_REGULAR_CASES,
+    OP_SWITCH_SCENARIO_LEVEL: OPS_REGULAR_CASES,
+    OP_SWITCH_DUNGEON_MODE: OPS_REGULAR_CASES,
     'main_EnterAdventure': OPS_REGULAR_CASES,
     'main_EnterRescueUser': OPS_REGULAR_CASES,
     'main_EnterTraining': OPS_REGULAR_CASES,
@@ -81,15 +100,20 @@ OPS_SWITCH_TEXT_CASE_MAP = {
 }
 
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
+OP_CASE = 'Case'
+OP_CASE_MENU = 'CaseMenu'
+OP_CASE_MENU2 = 'CaseMenu2'
+OP_CASE_VALUE = 'CaseValue'
+OP_CASE_VARIABLE = 'CaseVariable'
 OPS_WITH_JUMP_TO_MEM_OFFSET = {
     #'Call': 0,  TODO: Check
     #'CancelRecoverCommon': 0,  TODO: Check
-    'Case': 1,
-    'CaseMenu': 1,
-    'CaseMenu2': 1,
+    OP_CASE: 1,
+    OP_CASE_MENU: 1,
+    OP_CASE_MENU2: 1,
     'CaseScenario': 2,
-    'CaseValue': 2,
-    'CaseVariable': 2,
+    OP_CASE_VALUE: 2,
+    OP_CASE_VARIABLE: 2,
     # Special case; this OpCode ALWAYS jumps:
     OP_JUMP: 0,
 }
@@ -121,25 +145,25 @@ OPS_CTX_PERFORMER = 'performer'
 OPS_CTX = [OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER]
 
 
-OPS_FLAG__CALC_BIT                  = 'flag_CalcBit'
-OPS_FLAG__CALC_VALUE                = 'flag_CalcValue'
-OPS_FLAG__CALC_VARIABLE             = 'flag_CalcVariable'
-OPS_FLAG__CALC_CLEAR                = 'flag_Clear'
-OPS_FLAG__CALC_INITIAL              = 'flag_Initial'
-OPS_FLAG__CALC_SET                  = 'flag_Set'
-OPS_FLAG__CALC_RESET_DUNGEON_RESULT = 'flag_ResetDungeonResult'
-OPS_FLAG__CALC_RESET_SCENARIO       = 'flag_ResetScenario'
-OPS_FLAG__CALC_SET_ADVENTURE_LOG    = 'flag_SetAdventureLog'
-OPS_FLAG__CALC_SET_DUNGEON_MODE     = 'flag_SetDungeonMode'
-#OPS_FLAG__SET_DUNGEON_RESULT       = 'flag_SetDungeonResult'
-OPS_FLAG__CALC_SET_PERFORMANCE      = 'flag_SetPerformance'
-OPS_FLAG__CALC_SET_SCENARIO         = 'flag_SetScenario'
+OPS_FLAG__CALC_BIT             = 'flag_CalcBit'
+OPS_FLAG__CALC_VALUE           = 'flag_CalcValue'
+OPS_FLAG__CALC_VARIABLE        = 'flag_CalcVariable'
+OPS_FLAG__CLEAR                = 'flag_Clear'
+OPS_FLAG__INITIAL              = 'flag_Initial'
+OPS_FLAG__SET                  = 'flag_Set'
+OPS_FLAG__RESET_DUNGEON_RESULT = 'flag_ResetDungeonResult'
+OPS_FLAG__RESET_SCENARIO       = 'flag_ResetScenario'
+OPS_FLAG__SET_ADVENTURE_LOG    = 'flag_SetAdventureLog'
+OPS_FLAG__SET_DUNGEON_MODE     = 'flag_SetDungeonMode'
+#OPS_FLAG__SET_DUNGEON_RESULT  = 'flag_SetDungeonResult'
+OPS_FLAG__SET_PERFORMANCE      = 'flag_SetPerformance'
+OPS_FLAG__SET_SCENARIO         = 'flag_SetScenario'
 
 OPS_FLAG_ALL = [
-    OPS_FLAG__CALC_BIT, OPS_FLAG__CALC_VALUE, OPS_FLAG__CALC_VARIABLE, OPS_FLAG__CALC_CLEAR,
-    OPS_FLAG__CALC_INITIAL, OPS_FLAG__CALC_SET, OPS_FLAG__CALC_RESET_DUNGEON_RESULT, OPS_FLAG__CALC_RESET_SCENARIO,
-    OPS_FLAG__CALC_SET_ADVENTURE_LOG, OPS_FLAG__CALC_SET_DUNGEON_MODE, OPS_FLAG__CALC_SET_PERFORMANCE, 
-    OPS_FLAG__CALC_SET_SCENARIO
+    OPS_FLAG__CALC_BIT, OPS_FLAG__CALC_VALUE, OPS_FLAG__CALC_VARIABLE, OPS_FLAG__CLEAR,
+    OPS_FLAG__INITIAL, OPS_FLAG__SET, OPS_FLAG__RESET_DUNGEON_RESULT, OPS_FLAG__RESET_SCENARIO,
+    OPS_FLAG__SET_ADVENTURE_LOG, OPS_FLAG__SET_DUNGEON_MODE, OPS_FLAG__SET_PERFORMANCE,
+    OPS_FLAG__SET_SCENARIO
 ]
 
 
@@ -181,22 +205,6 @@ class SwitchStart(LabelJumpMarker):
 
     def __str__(self):
         return f"SWITCH({self.switch_id})"
-
-
-class MultiSwitchStart(SwitchStart):
-    def __init__(self, if_id: int, start_switches):
-        super().__init__(if_id)
-        self.original_ssb_switch_ops: List[SsbOperation] = start_switches
-
-    def __str__(self):
-        return f"MSWITCH({self.switch_id})"
-
-    def add_switch(self, ssb_switch: SsbOperation):
-        """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of switches."""
-        self.original_ssb_switch_ops.append(ssb_switch)
-
-    def number_of_switches(self):
-        return len(self.original_ssb_switch_ops)
 
 
 class ForeverContinue(LabelJumpMarker):

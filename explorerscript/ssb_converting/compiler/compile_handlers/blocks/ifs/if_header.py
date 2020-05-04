@@ -1,0 +1,100 @@
+#  MIT License
+#
+#  Copyright (c) 2020 Parakoopa
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in all
+#  copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  SOFTWARE.
+#
+from typing import Optional
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.error import SsbCompilerError
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
+    IfHeaderOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
+from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OP_BRANCH_VARIATION, OP_BRANCH_EDIT, \
+    OP_BRANCH_DEBUG, OPS_BRANCH
+
+
+class IfHeaderCompileHandler(AbstractCompileHandler):
+    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+        super().__init__(ctx, compiler_ctx)
+        self._header_cmplx_handler: Optional[AbstractCompileHandler] = None
+
+    def collect(self) -> SsbLabelJumpBlueprint:
+        self.ctx: ExplorerScriptParser.If_headerContext
+        is_positive = self.ctx.NOT() is None
+
+        self.ctx: ExplorerScriptParser.If_headerContext
+        # Complex branches
+        if self._header_cmplx_handler:
+            if isinstance(self._header_cmplx_handler, OperationCompileHandler):
+                # An operation as condition
+                op = self._header_cmplx_handler.collect()
+                if len(op) != 1:
+                    raise SsbCompilerError("Invalid content for an if-header")
+                op = op[0]
+                if op.op_code.name not in OPS_BRANCH.keys():
+                    raise SsbCompilerError(
+                        f"Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"
+                    )
+                jmp = SsbLabelJumpBlueprint(
+                    self.compiler_ctx, self.ctx,
+                    op.op_code.name, op.params
+                )
+                jmp.set_jump_is_positive(is_positive)
+                return jmp
+            else:
+                # A regular complex if condition
+                tmpl: SsbLabelJumpBlueprint = self._header_cmplx_handler.collect()
+                if tmpl.op_code_name == OP_BRANCH_PERFORMANCE:
+                    # Set the value argument depending on whether this is positive or not
+                    tmpl.params[1] = 1 if is_positive else 0
+                else:
+                    tmpl.set_jump_is_positive(is_positive)
+                return tmpl
+
+        # Simple branches
+        if self.ctx.DEBUG():
+            return SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_BRANCH_DEBUG, [1 if is_positive else 0]
+            )
+        if self.ctx.EDIT():
+            return SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_BRANCH_EDIT, [1 if is_positive else 0]
+            )
+        if self.ctx.VARIATION():
+            return SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_BRANCH_VARIATION, [1 if is_positive else 0]
+            )
+
+        raise SsbCompilerError("Unknown if operation.")
+
+    def add(self, obj: any):
+        if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \
+                or isinstance(obj, IfHeaderScnCompileHandler) or isinstance(obj, OperationCompileHandler):
+            self._header_cmplx_handler = obj
+            return
+        self._raise_add_error(obj)

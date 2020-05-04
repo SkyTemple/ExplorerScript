@@ -43,7 +43,7 @@ from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
 from llist import dllist
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, MultiSwitchStart, SwitchCaseOperation
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, SwitchCaseOperation
 
 
 def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
@@ -353,24 +353,24 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 
-    Yields edges in the order that would be evaluated by the game (multi-switch cases are grouped however, as
-    long as they are in order):
-    - [switch_id,index] -> [edge]
-    - 0,1|1,0 -> a
-    - 0,2 -> b
-    - 1,2 -> c
-    - 0,3|1,1 -> b
+    Yields edges in the order that would be evaluated by the game.
+    - [index] -> [edge]
+    - 1|1,0 -> a
+    - 2 -> b
+    - 2 -> c
+    - 3|1,1 -> b
 
     This is the same order as printed in ExplorerScript.
 
     Edges can be yielded multiple times. This can happen when there are gaps in the indices:
-    - 0,0|0,1|0,2 -> a
-    - 0,3 -> b
-    - 0,4|0,5 -> a
+    - 0|1|2 -> a
+    - 3 -> b
+    - 4|5 -> a
 
     Returns tuples of edges, applicable operations and whether or not this edge is also the default edge.
     """
-    number_of_switches_in_switch = 1 if not isinstance(op.get_marker(), MultiSwitchStart) else op.get_marker().number_of_switches()
+    # TODO: Since multi switches were removed, this could be simplified.
+    number_of_switches_in_switch = 1
     map_switches_ops_edges = []
     for i in range(0, number_of_switches_in_switch):
         map_ops_edges = {}

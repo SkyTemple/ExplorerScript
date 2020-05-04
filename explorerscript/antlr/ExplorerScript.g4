@@ -33,7 +33,7 @@ import SsbCommon;
 
 start: funcdef* EOF;
 
-stmt: (simple_stmt | ctx_block | if_block | switch_block | multi_switch_block | forever_block);
+stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block);
 simple_stmt: (operation | label | cntrl_stmt | jump | assignment) ';';
 
 cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_FOREVER;
@@ -53,18 +53,16 @@ if_h_bit: integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
 if_h_scn: scn_var OPEN_BRACKET conditional_operator INTEGER COMMA conditional_operator INTEGER CLOSE_BRACKET;
 
 switch_block: SWITCH OPEN_PAREN switch_header CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
-multi_switch_block: MULTI SWITCH OPEN_PAREN switch_header (COMMA switch_header)+ CLOSE_PAREN OPEN_BRACE (default | multi_case_block)* CLOSE_BRACE;
-single_case_block: CASE case_header COLON stmt*;
-multi_case_block: CASE INTEGER COMMA case_header COLON stmt*;
-default: DEFAULT COLON stmt*;
+message_switch_block: (MESSAGE_SWITCH_TALK | MESSAGE_SWITCH_MONOLOGUE) OPEN_PAREN integer_like CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
+// Either a list of statements (regular switch+case/default) or just one string (message_Switch* + case/default)
+single_case_block: CASE case_header COLON (stmt* | string);
+default: DEFAULT COLON (stmt* | string);
 
-switch_header: integer_like | operation | switch_h_scn | switch_h_random | switch_h_dungeon_mode | switch_h_sector | switch_h_special_menu | switch_h_special_process;
+switch_header: integer_like | operation | switch_h_scn | switch_h_random | switch_h_dungeon_mode | switch_h_sector;
 switch_h_scn: scn_var OPEN_BRACKET INTEGER CLOSE_BRACKET;
 switch_h_random: RANDOM OPEN_PAREN integer_like CLOSE_PAREN;
 switch_h_dungeon_mode: DUNGEON_MODE OPEN_PAREN integer_like CLOSE_PAREN;
 switch_h_sector: SECTOR OPEN_PAREN CLOSE_PAREN;
-switch_h_special_menu: SPECIAL_MENU OPEN_PAREN integer_like CLOSE_PAREN;
-switch_h_special_process: SPECIAL_PROCESS OPEN_PAREN integer_like CLOSE_PAREN;
 
 case_header: integer_like | case_h_menu | case_h_menu2 | case_h_op;
 case_h_menu: MENU OPEN_PAREN string CLOSE_PAREN;
@@ -137,7 +135,6 @@ OP_DIVIDE: '/=';
 
 OR: '||';
 NOT: 'not';
-MULTI: 'multi';
 JUMP: 'jump';
 
 IF: 'if';
@@ -174,5 +171,7 @@ INIT: 'init';
 SCN: 'scn';
 DUNGEON_RESULT: 'dungeon_result';
 ADVENTURE_LOG: 'adventure_log';
+MESSAGE_SWITCH_TALK: 'message_SwitchTalk';
+MESSAGE_SWITCH_MONOLOGUE: 'message_SwitchMonologue';
 OPEN_BRACKET : '[';
 CLOSE_BRACKET : ']';

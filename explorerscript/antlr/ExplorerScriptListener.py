@@ -143,12 +143,12 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by ExplorerScriptParser#multi_switch_block.
-    def enterMulti_switch_block(self, ctx:ExplorerScriptParser.Multi_switch_blockContext):
+    # Enter a parse tree produced by ExplorerScriptParser#message_switch_block.
+    def enterMessage_switch_block(self, ctx:ExplorerScriptParser.Message_switch_blockContext):
         pass
 
-    # Exit a parse tree produced by ExplorerScriptParser#multi_switch_block.
-    def exitMulti_switch_block(self, ctx:ExplorerScriptParser.Multi_switch_blockContext):
+    # Exit a parse tree produced by ExplorerScriptParser#message_switch_block.
+    def exitMessage_switch_block(self, ctx:ExplorerScriptParser.Message_switch_blockContext):
         pass
 
 
@@ -158,15 +158,6 @@ class ExplorerScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by ExplorerScriptParser#single_case_block.
     def exitSingle_case_block(self, ctx:ExplorerScriptParser.Single_case_blockContext):
-        pass
-
-
-    # Enter a parse tree produced by ExplorerScriptParser#multi_case_block.
-    def enterMulti_case_block(self, ctx:ExplorerScriptParser.Multi_case_blockContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#multi_case_block.
-    def exitMulti_case_block(self, ctx:ExplorerScriptParser.Multi_case_blockContext):
         pass
 
 
@@ -221,24 +212,6 @@ class ExplorerScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by ExplorerScriptParser#switch_h_sector.
     def exitSwitch_h_sector(self, ctx:ExplorerScriptParser.Switch_h_sectorContext):
-        pass
-
-
-    # Enter a parse tree produced by ExplorerScriptParser#switch_h_special_menu.
-    def enterSwitch_h_special_menu(self, ctx:ExplorerScriptParser.Switch_h_special_menuContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#switch_h_special_menu.
-    def exitSwitch_h_special_menu(self, ctx:ExplorerScriptParser.Switch_h_special_menuContext):
-        pass
-
-
-    # Enter a parse tree produced by ExplorerScriptParser#switch_h_special_process.
-    def enterSwitch_h_special_process(self, ctx:ExplorerScriptParser.Switch_h_special_processContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#switch_h_special_process.
-    def exitSwitch_h_special_process(self, ctx:ExplorerScriptParser.Switch_h_special_processContext):
         pass
 
 

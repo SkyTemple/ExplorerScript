@@ -24,6 +24,7 @@ from enum import Enum, auto
 from typing import Optional, List, Union, Dict
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
+from explorerscript.ssb_converting.compiler.utils import string_literal
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, SsbOpParam, \
     SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
@@ -187,7 +188,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
 
     def exitPosition_marker(self, ctx: SsbScriptParser.Position_markerContext):
         if self._is_processing_argument:
-            self._collected_pos_marker.name = self._string_literal(ctx.STRING_LITERAL())
+            self._collected_pos_marker.name = string_literal(ctx.STRING_LITERAL())
 
     def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext):
         if self._is_processing_argument:
@@ -222,10 +223,10 @@ class SsbScriptCompilerListener(SsbScriptListener):
 
     def exitString(self, ctx: SsbScriptParser.StringContext):
         if self._is_processing_argument:
-            string_literal = ctx.STRING_LITERAL()
-            if string_literal:
+            string = ctx.STRING_LITERAL()
+            if string:
                 self._argument_type = ListenerArgType.STRING_LITERAL
-                self._argument_value = self._string_literal(string_literal)
+                self._argument_value = string_literal(string)
             else:
                 # Process the collected lang string
                 self._argument_type = ListenerArgType.LANGUAGE_STRING
@@ -235,7 +236,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._collected_lang_string = {}
 
     def exitLang_string_argument(self, ctx: SsbScriptParser.Lang_string_argumentContext):
-        self._collected_lang_string[str(ctx.IDENTIFIER())] = self._string_literal(ctx.STRING_LITERAL())
+        self._collected_lang_string[str(ctx.IDENTIFIER())] = string_literal(ctx.STRING_LITERAL())
 
     def exitLabel(self, ctx: SsbScriptParser.LabelContext):
         label_name = str(ctx.IDENTIFIER())
@@ -263,7 +264,3 @@ class SsbScriptCompilerListener(SsbScriptListener):
                 self.routine_infos.append(None)
                 self.routine_ops.append([])
                 self.named_coroutines.append([])
-
-    def _string_literal(self, string_literal):
-        # TODO: Very naive "escaping" atm.
-        return str(string_literal)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")

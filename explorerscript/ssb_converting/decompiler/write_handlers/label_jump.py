@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.if_start import IfWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump import JumpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
-from explorerscript.ssb_converting.ssb_special_ops import LabelJumpMarker, MultiIfStart, IfStart, MultiSwitchStart, \
+from explorerscript.ssb_converting.ssb_special_ops import LabelJumpMarker, MultiIfStart, IfStart, \
     SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump
 
 
@@ -41,7 +41,6 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
     _label_jump_marker_handlers: Dict[LabelJumpMarker, Type[Optional[AbstractWriteHandler]]] = {
         MultiIfStart: IfWriteHandler,
         IfStart: IfWriteHandler,
-        MultiSwitchStart: SwitchWriteHandler,
         SwitchStart: SwitchWriteHandler,
         ForeverContinue: ForeverContinueWriteHandler,
         ForeverBreak: ForeverBreakWriteHandler,

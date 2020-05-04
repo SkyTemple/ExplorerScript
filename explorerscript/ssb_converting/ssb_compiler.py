@@ -41,7 +41,7 @@ class ExplorerScriptSsbCompiler:
     skytemple_files.script.ssb.script_compiler.ScriptCompiler and
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
-    def __init__(self):
+    def __init__(self, performance_progress_list_var_name: str):
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
         self.routine_infos: Optional[List[SsbRoutineInfo]] = None
@@ -61,11 +61,16 @@ class ExplorerScriptSsbCompiler:
         # Source map for the compiled ssb routine ops.
         self.source_map: Optional[SourceMap] = None
 
+        # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
+        self.performance_progress_list_var_name: str = performance_progress_list_var_name
+
     def compile(self, ssb_script_src: str):
         """
         After compiling, the components are present in this object's attributes.
 
         :raises: ParseError: On parsing errors
+        :raises: SsbCompilerError: On logical compiling errors
+        :raises: ValueError: On misc. unexpected compilation errors
         """
         self.routine_infos = None
         self.routine_ops = None
@@ -77,11 +82,14 @@ class ExplorerScriptSsbCompiler:
         parser = ExplorerScriptParser(stream)
         error_listener = SyntaxErrorListener()
         parser.addErrorListener(error_listener)
-        compiler_listener = ExplorerScriptCompilerListener()
+        compiler_listener = ExplorerScriptCompilerListener(self.performance_progress_list_var_name)
         parser.addParseListener(compiler_listener)
 
         # Start Parsing
-        parser.start()
+        try:
+            parser.start()
+        except AssertionError as e:
+            raise ValueError(str(e)) from e
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
@@ -89,8 +97,19 @@ class ExplorerScriptSsbCompiler:
             # the first screws everything over.
             raise ParseError(error_listener.syntax_errors[0])
 
+        assert routine_op_offsets_are_ordered(compiler_listener.routine_ops)
+
         # Copy from listener / remove labels and label jumps
-        self.routine_ops = OpsLabelJumpToRemover(compiler_listener.routine_ops, compiler_listener.label_offsets).routines
+        # TODO:
+        #   strip_last_label checks if the last opcode of a routine is a label, and if so
+        #   removes it. if there are jumps to it, they are removed and replaced with an return.
+        # TODO:
+        #   LabelFinalizer updates the opcodes of all labels
+        label_finalizer = LabelFinalizer(strip_last_label(compiler_listener.routine_ops))
+
+        self.routine_ops = OpsLabelJumpToRemover(
+            label_finalizer.routine_ops, label_finalizer.label_offsets
+        ).routines
         self.routine_infos = compiler_listener.routine_infos
         self.named_coroutines = compiler_listener.named_coroutines
         self.source_map = compiler_listener.source_map_builder.build()

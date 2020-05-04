@@ -28,8 +28,8 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SwitchStart, MultiSwitchStart, \
-    OPS_THAT_END_CONTROL_FLOW, OPS_SWITCH_DUNGEON_MODE
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SwitchStart, \
+    OPS_THAT_END_CONTROL_FLOW, OP_SWITCH_DUNGEON_MODE
 from explorerscript.ssb_converting.util import Blk
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
 
@@ -44,18 +44,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
     def write_content(self):
         op: SsbLabelJump = self.start_vertex['op']
         m: SwitchStart = op.get_marker()
-        multi = isinstance(m, MultiSwitchStart)
         self.decompiler.source_map_add_opcode(op.offset)
-        if multi:
-            self.decompiler.write_stmnt(
-                f"multi switch ( {', '.join([self._switch_header_for(s) for s in m.original_ssb_switch_ops])} )"
-            )
-            is_switch_dungeon_mode = False
-        else:
-            self.decompiler.write_stmnt(
-                f"switch ( {self._switch_header_for(op.root)} )"
-            )
-            is_switch_dungeon_mode = op.root.op_code.name == OPS_SWITCH_DUNGEON_MODE
+        self.decompiler.write_stmnt(
+            f"switch ( {self._switch_header_for(op.root)} )"
+        )
+        is_switch_dungeon_mode = op.root.op_code.name == OP_SWITCH_DUNGEON_MODE
 
         exits = self.start_vertex.out_edges()
         switch_end_vertices = set()
@@ -77,11 +70,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
             with Blk(self.decompiler):
                 for e, switch_case_ops, is_default in list_of_switch_cases:
                     for sco in switch_case_ops:
-                        if multi:
-                            self.decompiler.source_map_add_opcode(sco.op.offset)
-                            self.decompiler.write_stmnt(f"case {sco.switch_index}, {self._case_header_for(sco.op, is_switch_dungeon_mode)}:")
-                        else:
-                            self.decompiler.write_stmnt(f"case {self._case_header_for(sco.op, is_switch_dungeon_mode)}:")
+                        self.decompiler.write_stmnt(f"case {self._case_header_for(sco.op, is_switch_dungeon_mode)}:")
                     if is_default:
                         self.decompiler.write_stmnt("default:")
                     with Blk(self.decompiler, False):
@@ -137,14 +126,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if op.op_code.name in [
             'message_SwitchMenu', 'message_SwitchMenu2', 'SwitchDirection', 'SwitchDirectionLives',
             'SwitchDirectionLives2', 'SwitchDirectionMark', 'SwitchLives', 'SwitchValue', 'SwitchVariable',
-            'main_EnterAdventure', 'main_EnterRescueUser', 'main_EnterTraining', 'main_EnterTraining2'
+            'main_EnterAdventure', 'main_EnterRescueUser', 'main_EnterTraining', 'main_EnterTraining2', 'message_Menu',
+            'ProcessSpecial'
         ]:
             return f'{op.op_code.name}({", ".join([str(x) for x in op.params])})'
-        if op.op_code.name == 'message_Menu':
-            return f'special_menu({op.params[0]})'
-        if op.op_code.name == 'ProcessSpecial':
-            return f'special_process({op.params[0]})'
-        if op.op_code.name == OPS_SWITCH_DUNGEON_MODE:
+        if op.op_code.name == OP_SWITCH_DUNGEON_MODE:
             return f'dungeon_mode({op.params[0]})'
         if op.op_code.name == 'SwitchRandom':
             return f'random({op.params[0]})'
