@@ -51,9 +51,6 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         end_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
         )
-        self.else_begin_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'else begin meta label'
-        )
         is_positive = self.ctx.NOT() is None
 
         ops: List[Optional[SsbOperation]] = []
@@ -65,44 +62,34 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
             jmpb = h.collect()
             self._header_jump_blueprints.append(jmpb)
             jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
-            # 1b. If all are positive, allocate 1 for it's branch op, note that output can happen later
+            # Allocate 1 for it's branch op
             if_header__allocations.append(len(ops) - 1)
-        for i, h in enumerate(self._if_header_handlers):
-            jmpb = self._header_jump_blueprints[i]
-            if not jmpb.jump_is_positive and not if_block__was_output:
-                # 1c. If one is negative, allocate 1 for it's branch op + output the block
-                if_block__was_output = True
-                ops += self._process_block()
+        if not self._header_jump_blueprints[0].jump_is_positive:
+            # If all the header jumps are negative (if one is all are!) output the block now, else do it later
+            if_block__was_output = True
+            ops += self._process_block()
         # 2. For each else if: Go over all if header ops:
         for else_if_h in self._else_if_handlers:
-            else_if_h.else_begin_label = self.else_begin_label
             jmp_blueprints = else_if_h.create_header_jump_templates()
             this_elseif__allocations = []
             this_elseif__was_output = False
             for jmpb in jmp_blueprints:
                 ops.append(None)
                 jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
-                # 2b. If all are positive, allocate 1 for it's branch op, note that output can happen later
+                # Allocate 1 for it's branch op
                 this_elseif__allocations.append(len(ops) - 1)
-            for jmpb in jmp_blueprints:
-                if not jmpb.jump_is_positive and not this_elseif__was_output:
-                    # 2c. If one is negative, allocate 1 for it's branch op + output the block
-                    this_elseif__was_output = True
-                    ops += else_if_h.collect()
+            if not jmp_blueprints[0].jump_is_positive:
+                # If all the header jumps are negative (if one is all are!) output the block now, else do it later
+                this_elseif__was_output = True
+                ops += else_if_h.collect()
             elseif_header__allocations.append(this_elseif__allocations)
             elseif_block__was_output.append(this_elseif__was_output)
         # 3. Collect else sub block ops
-        insert_else_label_at_end = False
         if self._else_handler:
-            # This is the else, so the end of the else is of course the end of the entire if (although this shouldn't
-            # be used anyway):
-            self._else_handler.else_begin_label = end_label
-            ops += [self.else_begin_label] + self._else_handler.collect()
+            ops += self._else_handler.collect()
         else:
             # 3b. If no else: Create an else block with just one jump without target
             ops.append(self._generate_empty_jump())
-            # We add the else label at the very end, because then we save on unnecessary jump.
-            insert_else_label_at_end = True
         # 4. Collect if sub block ops, if not already done
         if not if_block__was_output:
             if_block__was_output = True
@@ -125,9 +112,6 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
             for j, jmp in enumerate(else_if_h.get_processed_header_jumps()):
                 allocation = elseif_header__allocations[i][j]
                 ops[allocation] = jmp
-
-        if insert_else_label_at_end:
-            ops.append(self.else_begin_label)
 
         return ops + [end_label]
 
