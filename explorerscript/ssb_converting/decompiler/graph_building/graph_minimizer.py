@@ -36,6 +36,8 @@
 import sys
 import warnings
 
+from igraph import IN
+
 from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import *
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
@@ -140,7 +142,7 @@ class SsbGraphMinimizer:
                     self._update_edge_style(else_edge)
 
                     # Common end label
-                    find_first_common_next_vertex_in_edges__clear_cache()  # TODO: Cache seems to be broken atm.
+                    find_first_common_next_vertex_in_edges__clear_cache(g)  # TODO: Cache seems to be broken atm.
                     result = find_first_common_next_vertex_in_edges(g, [if_edge, else_edge])
                     if result is not None:
                         e_on_if_bef_end, e_on_else_bef_end = result
@@ -348,7 +350,7 @@ class SsbGraphMinimizer:
                                 # because of an unfinished inner branch.
                                 # TODO: This could lead to real problems...
                                 warnings.warn("Switch-Branches ended via the same edge...")
-                                find_first_common_next_vertex_in_edges__clear_cache()
+                                find_first_common_next_vertex_in_edges__clear_cache(g)
                                 continue
                             already_updated_switch_end_in_edges.append(e)
                             # Remove the jumps before the common end label (if they exist), we don't need them anymore.
@@ -360,7 +362,7 @@ class SsbGraphMinimizer:
                                 es_to_delete.append(e_before_jump)
                                 self._reconnect(g, e_before_jump.source, e_before_jump, end_vertex, True)
                         g.delete_edges(es_to_delete)
-                    find_first_common_next_vertex_in_edges__clear_cache()
+                    find_first_common_next_vertex_in_edges__clear_cache(g)
 
             g.delete_vertices(vs_to_delete)
 
@@ -393,7 +395,7 @@ class SsbGraphMinimizer:
 
             g.delete_edges(es_to_delete)
             if len(es_to_delete) > 0:
-                find_first_common_next_vertex_in_edges__clear_cache()
+                find_first_common_next_vertex_in_edges__clear_cache(g)
 
     def build_switch_fallthroughs(self):
         """
@@ -451,8 +453,8 @@ class SsbGraphMinimizer:
         - D01P11A/dus03/0
         """
         # TODO: Loop detection & creation really needs to be re-written.
-        find_first_common_next_vertex_in_edges__clear_cache()
         for i, g in enumerate(self._graphs):
+            find_first_common_next_vertex_in_edges__clear_cache(g)
             loop_id = -1
             if len(g.vs) < 1:
                 continue
@@ -576,8 +578,8 @@ class SsbGraphMinimizer:
         return True, list(breaks), continues
 
     def remove_label_markers(self):
-        find_first_common_next_vertex_in_edges__clear_cache()
         for i, g in enumerate(self._graphs):
+            find_first_common_next_vertex_in_edges__clear_cache(g)
             vs_to_delete = set()
             # First, let's delete all redundant jumps (actual OP_JUMPs that jump to opcodes with only one in edge)
             for v in g.vs:

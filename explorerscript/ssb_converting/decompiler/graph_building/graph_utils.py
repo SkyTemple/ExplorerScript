@@ -36,13 +36,12 @@
 import functools
 import itertools
 import operator
+from threading import Lock
 from collections import Counter
 from typing import Tuple, List, Union, Dict, Set, Optional
 
-from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
-from llist import dllist
+from igraph import Edge, OUT, Vertex, Graph
 
-from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, SwitchCaseOperation, IfEnd, SwitchEnd, \
     IfStart, SwitchStart, ForeverStart
 
@@ -55,12 +54,13 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     return min(edges, key=lambda k: k[attr]), max(edges, key=lambda k: k[attr])
 
 
+cache_lock = Lock()
 find_first_common_next_vertex_in_edges_cache = {}
 
 
-def find_first_common_next_vertex_in_edges__clear_cache():
-    global find_first_common_next_vertex_in_edges_cache
-    find_first_common_next_vertex_in_edges_cache = {}
+def find_first_common_next_vertex_in_edges__clear_cache(g: Graph):
+    with cache_lock:
+        find_first_common_next_vertex_in_edges_cache[id(g)] = {}
 
 
 def find_first_common_next_vertex_in_edges(
@@ -91,15 +91,18 @@ def find_first_common_next_vertex_in_edges(
     """
     # TODO: Performance with (not allow_open_branches).
     es_ids = ','.join(sorted([str(e.index) for e in es]))
-    if id(g) not in find_first_common_next_vertex_in_edges_cache:
-        find_first_common_next_vertex_in_edges_cache[id(g)] = {}
-    if es_ids in find_first_common_next_vertex_in_edges_cache[id(g)]:
-        return find_first_common_next_vertex_in_edges_cache[id(g)][es_ids]
+    with cache_lock:
+        if id(g) not in find_first_common_next_vertex_in_edges_cache:
+            find_first_common_next_vertex_in_edges_cache[id(g)] = {}
+        if es_ids in find_first_common_next_vertex_in_edges_cache[id(g)]:
+            return find_first_common_next_vertex_in_edges_cache[id(g)][es_ids]
     assert len(es) > 1
     result = _find_first_common_next_vertex_in_edges__impl(
         g, [{e} for e in es], [], allow_open_branches, allow_loops, vs_to_not_visit, allow_loop_edges
     )
-    find_first_common_next_vertex_in_edges_cache[id(g)][es_ids] = result
+    with cache_lock:
+        # cache may have been cleared in the meantime
+        find_first_common_next_vertex_in_edges_cache[id(g)][es_ids] = result
     return result
 
 
