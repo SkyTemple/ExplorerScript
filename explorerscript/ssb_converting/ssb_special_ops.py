@@ -131,6 +131,8 @@ OPS_WITH_JUMP_TO_MEM_OFFSET.update(OPS_BRANCH)
 OP_HOLD = 'Hold'
 OP_RETURN = 'Return'
 OP_END = 'End'
+# The opcode to insert if a control flow ending opcode needs to be inserted
+OP_DUMMY_END = OP_RETURN
 
 # These ops end the control flow in the current routine
 # (usually by jumping somewhere else and NOT "automatically" returining.)
@@ -187,18 +189,16 @@ class IfStart(LabelJumpMarker):
 
 
 class MultiIfStart(IfStart):
-    def __init__(self, if_id: int, start_ifs, ifs_are_not):
+    def __init__(self, if_id: int, start_ifs):
         super().__init__(if_id)
         self.original_ssb_ifs_ops: List[SsbOperation] = start_ifs
-        self.original_ssb_ifs_is_not: List[bool] = ifs_are_not
 
     def __str__(self):
-        return f"MIF({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
+        return f"MIF{' NOT' if self.is_not else ''}({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
 
-    def add_if(self, ssb_if: SsbOperation, is_not: bool):
+    def add_if(self, ssb_if: SsbOperation):
         """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of ifs."""
         self.original_ssb_ifs_ops.append(ssb_if)
-        self.original_ssb_ifs_is_not.append(is_not)
 
 
 class SwitchStart(LabelJumpMarker):
@@ -275,16 +275,23 @@ class SsbLabel(SsbOperation):
         # Markers for this label (type of label)
         self.markers: List[LabelMarker] = []
         self.debugging_note = debugging_note
+        self.force_write = False
 
     def add_marker(self, m: LabelMarker):
         self.markers.append(m)
 
-    def needs_to_be_printed(self, number_in_vs: int, graph: Graph):
+    def needs_to_be_printed(self, my_vertex_index: int, number_in_vs: int, graph: Graph):
         """If the number of incoming vertices is bigger than max_in_vs, then we need to print this label"""
+        # TODO: There are still issues with this logic, we just output all for now (except switch fallthroughs!)
+        return not(any([isinstance(m, SwitchFalltrough) for m in self.markers]))
+        if self.force_write or my_vertex_index == 0 or self.referenced_from_other_routine:
+            # If the label is the root vertex or referenced from another routine we NEED to output it!
+            return True
         max_in_vs = 1
         for m in self.markers:
             if isinstance(m, SwitchFalltrough):
-                max_in_vs += 1  # A fallthrough always has two.
+                # Switch fallthroughs can not be printed.
+                return False
             if isinstance(m, IfEnd):
                 max_in_vs += 1  # Each if adds one else branch.
             if isinstance(m, SwitchEnd):

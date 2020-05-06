@@ -61,6 +61,8 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.forevers.for
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import \
+    IfHeaderNegatableCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
     IfHeaderOperatorCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
@@ -198,6 +200,17 @@ class ExplorerScriptCompilerListener(ExplorerScriptListener):
         self._current_handlers.append(IfHeaderCompileHandler(ctx, self.compiler_ctx))
 
     def exitIf_header(self, ctx: ExplorerScriptParser.If_headerContext):
+        h = self._generic_end_handler(ctx)
+        self._current_handlers[-1].add(h)
+
+    def enterIf_h_negatable(self, ctx: ExplorerScriptParser.If_h_negatableContext):
+        self._current_handlers.append(IfHeaderNegatableCompileHandler(ctx, self.compiler_ctx))
+
+    def exitIf_h_negatable(self, ctx: ExplorerScriptParser.If_h_negatableContext):
+        h = self._generic_end_handler(ctx)
+        self._current_handlers[-1].add(h)
+
+    def exitIf_h_op(self, ctx: ExplorerScriptParser.If_h_opContext):
         h = self._generic_end_handler(ctx)
         self._current_handlers[-1].add(h)
 

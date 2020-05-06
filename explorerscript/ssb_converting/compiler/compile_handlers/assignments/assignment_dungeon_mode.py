@@ -49,8 +49,9 @@ class AssignmentDungeonModeCompileHandler(AbstractAssignmentCompileHandler):
         if isinstance(obj, IntegerLikeCompileHandler):
             if self.var_target is None:
                 self.var_target = obj.collect()
+                return
             if self.value is None:
                 self.value = obj.collect()
-            return
+                return
 
         self._raise_add_error(obj)

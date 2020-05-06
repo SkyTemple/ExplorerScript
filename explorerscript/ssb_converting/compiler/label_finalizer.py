@@ -67,9 +67,10 @@ class LabelFinalizer:
             while isinstance(r[cursor], SsbLabel) or isinstance(r[cursor], SsbLabelJump):
                 if isinstance(r[cursor], SsbLabelJump):
                     # If this is a label jump, we ignore it, if it ALSO just jumps to a label right after,
+                    # we only do this once because of performance concerns.
                     have_match = False
                     if skip_redundant_label_jumps:
-                        for label in cls._labels_after(r, cursor):
+                        for label in cls._labels_after(r, cursor, False):
                             if r[cursor].label == label:
                                 have_match = True
                                 break

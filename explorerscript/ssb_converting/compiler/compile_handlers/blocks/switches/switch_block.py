@@ -129,7 +129,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             return
         if isinstance(obj, DefaultCaseBlockCompileHandler):
             if self._default_handler is not None:
-                raise SsbCompilerError(f"A switch block can only have a single default case (line {self.ctx.start.line}")
+                raise SsbCompilerError(f"A switch block can only have a single default case (line {self.ctx.start.line}).")
             self._default_handler = obj
             self._default_handler_index = len(self._case_handlers)
             return

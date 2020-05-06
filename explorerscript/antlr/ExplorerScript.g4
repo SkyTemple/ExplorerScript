@@ -44,12 +44,13 @@ jump: JUMP AT IDENTIFIER;
 ctx_block: WITH OPEN_PAREN ctx_header CLOSE_PAREN OPEN_BRACE simple_stmt CLOSE_BRACE;
 ctx_header: CTX_TYPE integer_like;
 
-if_block: IF OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE elseif_block* else_block?;
-elseif_block: ELSEIF OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
+if_block: IF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE elseif_block* else_block?;
+elseif_block: ELSEIF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
 else_block: ELSE OPEN_BRACE stmt* CLOSE_BRACE;
-if_header: NOT? (if_h_op | if_h_bit | DEBUG | EDIT | VARIATION | if_h_scn | operation);
+    if_header: (if_h_op | if_h_bit | if_h_negatable | if_h_scn | operation);
+if_h_negatable: NOT? (DEBUG | EDIT | VARIATION);
 if_h_op: integer_like conditional_operator ( value_of | integer_like );
-if_h_bit: integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
+if_h_bit: NOT? integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
 if_h_scn: scn_var OPEN_BRACKET conditional_operator INTEGER COMMA conditional_operator INTEGER CLOSE_BRACKET;
 
 switch_block: SWITCH OPEN_PAREN switch_header CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
@@ -66,7 +67,7 @@ switch_h_sector: SECTOR OPEN_PAREN CLOSE_PAREN;
 
 case_header: integer_like | case_h_menu | case_h_menu2 | case_h_op;
 case_h_menu: MENU OPEN_PAREN string CLOSE_PAREN;
-case_h_menu2: MENU2 OPEN_PAREN string CLOSE_PAREN;
+case_h_menu2: MENU2 OPEN_PAREN integer_like CLOSE_PAREN;
 case_h_op: conditional_operator ( value_of | integer_like );
 
 forever_block: FOREVER OPEN_BRACE stmt* CLOSE_BRACE;

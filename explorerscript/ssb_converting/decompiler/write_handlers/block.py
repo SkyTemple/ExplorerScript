@@ -28,7 +28,8 @@ from igraph import Vertex
 from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, \
     NestedBlockDisallowedError
-from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, SsbLabel, SsbLabelJump
+from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, SsbLabel, SsbLabelJump, \
+    SsbForeignLabel, OP_HOLD, OP_END, OP_RETURN, OP_DUMMY_END
 
 
 class BlockWriteHandler(AbstractWriteHandler):
@@ -87,10 +88,19 @@ class BlockWriteHandler(AbstractWriteHandler):
                 raise ValueError("Found end of branch, but no previous op...?")
             if previous_vertex['op'].op_code.name not in OPS_THAT_END_CONTROL_FLOW \
                     and not isinstance(previous_vertex['op'], SsbLabelJump) \
-                    and not isinstance(previous_vertex['op'], SsbLabel):
+                    and not isinstance(previous_vertex['op'], SsbLabel) \
+                    and not isinstance(previous_vertex['op'], SsbForeignLabel):
                 # All branches must end with something that ends their control flow
-                warnings.warn(f"Had to insert a return after {previous_vertex['op']}, because it was last in branch.")
-                self.decompiler.write_return()
+                warnings.warn(f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch.")
+                if OP_DUMMY_END == OP_RETURN:
+                    self.decompiler.write_return()
+                elif OP_DUMMY_END == OP_END:
+                    self.decompiler.write_end()
+                elif OP_DUMMY_END == OP_HOLD:
+                    self.decompiler.write_hold()
+                else:
+                    # ?
+                    self.decompiler.write_end()
 
         self.last_vertex = previous_vertex
         return self._next_vertex

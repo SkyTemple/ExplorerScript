@@ -65,7 +65,9 @@ class LabelWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         op: SsbLabel = self.start_vertex['op']
-        needs_to_be_printed = op.needs_to_be_printed(len(self.start_vertex.in_edges()), self.start_vertex.graph)
+        needs_to_be_printed = op.needs_to_be_printed(
+            self.start_vertex.index, len(self.start_vertex.in_edges()), self.start_vertex.graph
+        )
 
         # EXCEPTION for Switch Fallthrough.
         # If this is a switch fallthrough and NOT the first vertex of this branch,

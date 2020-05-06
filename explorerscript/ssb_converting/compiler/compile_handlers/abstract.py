@@ -107,6 +107,7 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         self._added_handlers: List[AbstractStatementCompileHandler] = []
         self.start_label: Optional[SsbLabel] = None
         self.end_label: Optional[SsbLabel] = None
+        self.entire_superblock_end_label: Optional[SsbLabel] = None
 
     def _process_block(self, insert_the_jump_if_needed=True) -> List[SsbOperation]:
         """
@@ -143,7 +144,7 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
             self.start_label = ops[0].label
             return [self.end_label]  # in this case we don't actually have any operations to write
 
-        if insert_the_jump_if_needed and (len(ops) == 0 or not does_op_end_control_flow(ops[-1])):
+        if insert_the_jump_if_needed and (len(ops) < 1 or not does_op_end_control_flow(ops[-1], ops[-2] if len(ops) > 1 else None)):
             # insert the end label jump
             ops.append(self._generate_empty_jump())
 
@@ -157,6 +158,8 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         for hjb in self._header_jump_blueprints:
             if hjb.jump_is_positive:
                 self.processed_header_jumps.append(hjb.build_for(self.start_label))
+            elif self.entire_superblock_end_label:
+                self.processed_header_jumps.append(hjb.build_for(self.entire_superblock_end_label))
             else:
                 self.processed_header_jumps.append(hjb.build_for(self.end_label))
 

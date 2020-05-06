@@ -140,6 +140,7 @@ class SsbGraphMinimizer:
                     self._update_edge_style(else_edge)
 
                     # Common end label
+                    find_first_common_next_vertex_in_edges__clear_cache()  # TODO: Cache seems to be broken atm.
                     result = find_first_common_next_vertex_in_edges(g, [if_edge, else_edge])
                     if result is not None:
                         e_on_if_bef_end, e_on_else_bef_end = result
@@ -156,8 +157,10 @@ class SsbGraphMinimizer:
                         # Remove the jumps before the common end label (if they exist), we don't need them anymore.
                         if isinstance(v_on_if_bef_end['op'], SsbLabelJump) and v_on_if_bef_end['op'].root.op_code.name == OP_JUMP:
                             vs_to_delete.add(v_on_if_bef_end.index)
-                            e_before_jump_on_if = g.es[g.incident(v_on_if_bef_end, IN)[0]]
-                            self._reconnect(g, e_before_jump_on_if.source, e_before_jump_on_if, end_vertex)
+                            in_edges = v_on_if_bef_end.in_edges()
+                            if len(in_edges) > 0:  # TODO: Why is this < 1 sometimes? This really shouldn't happen...?
+                                e_before_jump_on_if = in_edges[0]
+                                self._reconnect(g, e_before_jump_on_if.source, e_before_jump_on_if, end_vertex)
 
                         if e_on_if_bef_end == e_on_else_bef_end:
                             # The common path of the two branches happens after the first actual stop, possibly
@@ -168,8 +171,10 @@ class SsbGraphMinimizer:
 
                         if isinstance(v_on_else_bef_end['op'], SsbLabelJump) and v_on_else_bef_end['op'].root.op_code.name == OP_JUMP:
                             vs_to_delete.add(v_on_else_bef_end.index)
-                            e_before_jump_on_else = g.es[g.incident(v_on_else_bef_end, IN)[0]]
-                            self._reconnect(g, e_before_jump_on_else.source, e_before_jump_on_else, end_vertex)
+                            in_edges = v_on_else_bef_end.in_edges()
+                            if len(in_edges) > 0:  # TODO: Why is this < 1 sometimes? This really shouldn't happen...?
+                                e_before_jump_on_else = in_edges[0]
+                                self._reconnect(g, e_before_jump_on_else.source, e_before_jump_on_else, end_vertex)
 
             g.delete_vertices(vs_to_delete)
 
@@ -189,6 +194,9 @@ class SsbGraphMinimizer:
                     else_edge = [e for e in v.out_edges() if e['is_else']][0]
                     if_edge = [e for e in v.out_edges() if not e['is_else']][0]
                     v_at_if = if_edge.target_vertex
+                    # If both edges end at the same vertex, inverting doesn't really make sense
+                    if if_edge.target == else_edge.target:
+                        continue
                     if isinstance(v_at_if['op'], SsbLabel) and any(isinstance(m, IfEnd) and m.if_id == if_id for m in v_at_if['op'].markers):
                         # Else ends directly at end of if-branch. Swap!
                         else_edge['is_else'] = False
@@ -228,8 +236,7 @@ class SsbGraphMinimizer:
                             #                               and add original v op and v_at_else op to original_ssb_ifs
                             original_op_v.remove_marker()
                             original_op_v.add_marker(MultiIfStart(v_if_id,
-                                                                  [original_op_v.root, original_op_v_at_else.root],
-                                                                  [original_op_v_is_not, original_op_v_at_else_is_not])
+                                                                  [original_op_v.root, original_op_v_at_else.root])
                                                      )
                             # Obfuscate original opcode name and remove root, to clarify that this is a special case
                             original_op_v.root = None
@@ -237,7 +244,7 @@ class SsbGraphMinimizer:
                             first_run = False
                         else:
                             # v op:                         Add v_at_else op to original_ssb_ifs
-                            v['op'].get_marker().add_if(original_op_v_at_else.root, original_op_v_at_else_is_not)
+                            v['op'].get_marker().add_if(original_op_v_at_else.root)
                         # v_at_else:                    Delete
                         vs_to_delete.add(v_at_else)
                         # v:                            Reconnect with else of v_at_else
@@ -421,6 +428,10 @@ class SsbGraphMinimizer:
                                 e_others = reverse_find_edge(edge, lambda e: e['switch_ops'] is not None)
                                 for e_other in e_others:
                                     if list_of_edges[i - 1] == e_other and e_other.source == v.index:
+                                        # If this branch opens and ifs/loops/switches but doesn't close them,
+                                        # we can not turn this into a fallthrough.
+                                        if has_unclosed_blocks(g.get_shortest_paths(e_other.source, edge.target), g):
+                                            continue
                                         possible_fallthrough_marker['op'].add_marker(SwitchFalltrough())
                                         # These falltrough situations may lead to wrong loop markings:
                                         self._update_vertex_style(possible_fallthrough_marker)
@@ -439,6 +450,7 @@ class SsbGraphMinimizer:
         - 673
         - D01P11A/dus03/0
         """
+        # TODO: Loop detection & creation really needs to be re-written.
         find_first_common_next_vertex_in_edges__clear_cache()
         for i, g in enumerate(self._graphs):
             loop_id = -1
@@ -452,6 +464,17 @@ class SsbGraphMinimizer:
                     if len(loop_edges) > 0 and len(v['op'].markers) == 0:
                         # To this node jumps a loop. Check if we can build a proper forever-loop.
                         can_build, break_points, continue_points = self._build_loops__try_loop(v)
+                        # Proper loop detection is hard... This is a backup check, to make sure, that
+                        # any of the break and continue vertices are not reachable from outside the loop.
+                        # Perform the backup proper loop detection check, to make sure we can't reach any of
+                        # the continue and break points from outside the loop
+                        if can_build:
+                            for loop_edge in break_points + continue_points:
+                                if is_reachable_when_removing(g, loop_edge.source, 0, v.index):
+                                    # We can't build this loop, the break point would be
+                                    # reachable from outside the loop!
+                                    can_build = False
+                                    break
                         if can_build:
                             loop_id += 1
                             # Mark break points end vertex as end of loop
@@ -512,43 +535,6 @@ class SsbGraphMinimizer:
         If found, the second entry of the returned tuple contains breaking points and the third all required continue
         markers.
         """
-        # Allow loops when all sub-structures are closed (either continue/implicit or break). Allow breaks
-        # for ifs, if the other branch is also a break or a continue: and for switch if break is in else-path
-        # and all other paths either end on break or continue. Ignore closed ifs and switches.
-        # NOTE: After thinking about this, I'm pretty sure that even "open" branches are fine, because all of them
-        # will either terminate, continue or break at some point.
-        # Print like this:
-        #  - If | Break in if, either continue/break in else:
-        #      forever:
-        #        if x:
-        #          break
-        #        else:
-        #          continue/break
-        #        <NOTHING HERE>
-        #  - If | Break in else, continue in if:
-        #      forever:
-        #        if x:
-        #          ...
-        #          continue
-        #        break
-        #  - Switch with break in default, all other continue [note that the break comes then AFTER the switch]:
-        #      forever:
-        #        switch:
-        #          case A:
-        #            continue
-        #          case B:
-        #            continue
-        #        break
-
-        # Continues are implicit if:
-        # TODO: Currently not implemented anymore. check during code generation?
-        # For if:
-        #  - If does not have an end and all branches of the if continue
-        # For switch:
-        #  - Switch does not have an end and all branches of the switch continue
-        # For regular control flow:
-        #  - Always
-
         continues = [e for e in start.in_edges() if e['loop']]
         # Make sure the loop doesn't cross any existing loops
         path_filter = lambda e, v: not any_incoming_edge_is_loop(v)
@@ -602,11 +588,16 @@ class SsbGraphMinimizer:
                         assert len(in_edges) == 1 and len(out_edges) == 1
                         v_before = in_edges[0].source_vertex
                         v_after = out_edges[0].target_vertex
+                        if isinstance(v_after['op'], SsbLabel):
+                            # if we don't remove it, we will definitely have to print it:
+                            v_after['op'].force_write = True
                         if len(v_after.in_edges()) > 1:
                             # The jump target has multiple entry points, keep the jump
                             continue
-                        if isinstance(v_after['op'], SsbLabel) and len(v_after['op'].markers) > 0:
-                            # The jump target is a special label, we really shouldn't remove it
+                        if isinstance(v_after['op'], SsbForeignLabel) or v_after['op'].id == 0 or out_edges[0]['loop'] or \
+                                (isinstance(v_after['op'], SsbLabel) and len(v_after['op'].markers) > 0):
+                            # The jump target is a special label, loops, or is the first operation, we really
+                            # shouldn't remove it
                             # (may be a loop start for example)
                             continue
                         e = self._reconnect(g, v_before, in_edges[0], v_after, True)
@@ -624,8 +615,9 @@ class SsbGraphMinimizer:
                         vs_to_delete.add(v)
                     elif len(in_edges) == 1:
                         assert len(out_edges) == 1
-                        if isinstance(v['op'], SsbLabel) and len(v['op'].markers) > 0:
-                            # The label is a special label, we really shouldn't remove it
+                        if v['op'].id == 0 or in_edges[0]['loop'] or isinstance(v['op'], SsbLabel) and len(v['op'].markers) > 0:
+                            # The label is a special label, loops, or is the first operation, we really
+                            # shouldn't remove it
                             # (may be a loop start for example)
                             continue
                         v_before = in_edges[0].source_vertex
@@ -799,3 +791,40 @@ class SsbGraphMinimizer:
 
     def get_graphs(self) -> List[Graph]:
         return self._graphs
+
+    # Additional utility transformations for debugging:
+
+    def remove_all_labels_and_simple_jumps(self):
+        for i, g in enumerate(self._graphs):
+            vs_to_delete = set()
+            first_pass = True
+            while first_pass or len(vs_to_delete) > 0:
+                vs_to_delete = set()
+                first_pass = False
+                for v in g.vs:
+                    if v['op'].op_code.name == OP_JUMP or (isinstance(v['op'], SsbLabelJump) and v['op'].root.op_code.name == OP_JUMP):
+                        self._delete_and_reconnect(v, vs_to_delete)
+                    if isinstance(v['op'], SsbLabel):
+                        self._delete_and_reconnect(v, vs_to_delete)
+                    # due to some issues, we better break and continue in next run, even if very slow
+                    if len(vs_to_delete) > 0:
+                        break
+                g.delete_vertices(vs_to_delete)
+            # check
+            for v in g.vs:
+                assert not isinstance(v['op'], SsbLabel)
+                assert not (isinstance(v['op'], SsbLabelJump) and v['op'].root.op_code.name == OP_JUMP)
+
+    def _delete_and_reconnect(self, v, vs_to_delete):
+        g = v.graph
+        in_edges = v.in_edges()
+        out_edges = v.out_edges()
+        if len(in_edges) == 0:
+            vs_to_delete.add(v)
+        else:
+            assert len(out_edges) == 1
+            v_after = out_edges[0].target_vertex
+            for e in in_edges:
+                v_before = e.source_vertex
+                self._reconnect(g, v_before, e, v_after, True)
+            vs_to_delete.add(v)

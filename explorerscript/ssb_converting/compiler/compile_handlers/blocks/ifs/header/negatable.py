@@ -22,41 +22,37 @@
 #
 from typing import Optional
 
-from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_MENU2, OP_CASE_MENU
+from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
+from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_DEBUG, OP_BRANCH_EDIT, OP_BRANCH_VARIATION
 
 
-class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx, is_menu_2: bool):
+class IfHeaderNegatableCompileHandler(AbstractCompileHandler):
+    def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
+        self.var_target: Optional[SsbOpParam] = None
+        self.operator: Optional[SsbOperator] = None
         self.value: Optional[SsbOpParam] = None
-        self.is_menu_2 = is_menu_2
+        self.value_is_a_variable = False
 
     def collect(self) -> SsbLabelJumpBlueprint:
-        if self.value is None:
-            raise SsbCompilerError("No value set for if condition.")
-
-        if self.is_menu_2:
+        is_simple_positive = self.ctx.NOT() is None
+        if self.ctx.DEBUG():
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
-                OP_CASE_MENU2, [self.value]
+                OP_BRANCH_DEBUG, [1 if is_simple_positive else 0]
             )
-        return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_CASE_MENU, [self.value]
-        )
+        if self.ctx.EDIT():
+            return SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_BRANCH_EDIT, [1 if is_simple_positive else 0]
+            )
+        if self.ctx.VARIATION():
+            return SsbLabelJumpBlueprint(
+                self.compiler_ctx, self.ctx,
+                OP_BRANCH_VARIATION, [1 if is_simple_positive else 0]
+            )
 
     def add(self, obj: any):
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self.value = obj.collect()
-            return
-        if isinstance(obj, StringCompileHandler):
-            self.value = obj.collect()
-            return
-
         self._raise_add_error(obj)

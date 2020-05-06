@@ -103,13 +103,7 @@ class IfWriteHandler(AbstractWriteHandler):
             #    raise ValueError("An invalid switch or loop was ended while waiting for an if end.")
         return True
 
-    def _if_header_for(self, op: SsbOperation, is_not):
-        if is_not:
-            # Remove double nots (see RESCUE_DEBUG)
-            return f'not {self._if_header_for_impl(op)}'.replace('not not ', '')
-        return self._if_header_for_impl(op)
-
-    def _if_header_for_impl(self, op: SsbOperation):
+    def _if_header_for(self, op: SsbOperation):
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name == 'Branch':
             return f'{op.params[0]} {SsbOperator.EQ.notation} {op.params[1]}'
@@ -166,16 +160,33 @@ class IfWriteHandler(AbstractWriteHandler):
                     pass
                 return None
             else:
+                # If they are the same, we also need to print the else with a jump to it, so we need to make sure,
+                # the label is wirrten!
+                if else_edge.target == if_edge.target:
+                    if isinstance(if_edge.target_vertex['op'], SsbLabel):
+                        if_edge.target_vertex['op'].force_write = True
+
                 with Blk(self.decompiler):
                     # Handle elseif-branch
                     BlockWriteHandler(
                         if_edge.target_vertex, self.decompiler, self, self.start_vertex,
                         check_end_block=self.check_end_block
                     ).write_content()
-                if not (isinstance(else_edge.target_vertex['op'], SsbLabel) and any(isinstance(mx, IfEnd) and m.if_id == mx.if_id for mx in else_edge.target_vertex['op'].markers)):
+                next_vertex_ends = (isinstance(else_edge.target_vertex['op'], SsbLabel)
+                                    and any(isinstance(mx, IfEnd) and m.if_id == mx.if_id for mx in else_edge.target_vertex['op'].markers))
+                if else_edge.target == if_edge.target or not next_vertex_ends:
+                    # this will lead to the opcodes be
                     assert in_edge != else_edge  # ???
                     in_edge = else_edge
                     op = in_edge.target_vertex['op']
+                elif next_vertex_ends:
+                    # VERY IMPORTANT: If we already wrote this somewhere else, we NEED to write an else regardless,
+                    # because we WON'T be printing it's opcodes next otherwise!
+                    eop = else_edge.target_vertex['op']
+                    if isinstance(eop, SsbLabel) and eop.id in self.decompiler.labels_already_printed:
+                        return else_edge
+                    else:
+                        return None
                 else:
                     return None
         return in_edge
@@ -183,16 +194,17 @@ class IfWriteHandler(AbstractWriteHandler):
     def _write_if_header(self, header_str, op, v, include_newline_in_header=True):
         m: IfStart = op.get_marker()
         if isinstance(m, MultiIfStart):
-            list_of_clauses = [self._if_header_for(s, is_not) for s, is_not in zip(m.original_ssb_ifs_ops, m.original_ssb_ifs_is_not)]
+            list_of_clauses = [self._if_header_for(s) for s in m.original_ssb_ifs_ops]
         else:
-            list_of_clauses = [self._if_header_for(op.root, op.get_marker().is_not)]
+            list_of_clauses = [self._if_header_for(op.root)]
 
         exits = v.out_edges()
 
         self.decompiler.source_map_add_opcode(op.offset)
         opt_space = ' ' if not include_newline_in_header else ''
+        not_str = '' if not op.get_marker().is_not else ' not'
         self.decompiler.write_stmnt(
-            f"{opt_space}{header_str} ( {' || '.join(list_of_clauses)} )",
+            f"{opt_space}{header_str}{not_str} ( {' || '.join(list_of_clauses)} )",
             include_newline_in_header
         )
         else_edge = [e for e in exits if e['is_else']][0]

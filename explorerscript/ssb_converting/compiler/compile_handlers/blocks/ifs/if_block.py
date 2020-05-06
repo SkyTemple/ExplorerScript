@@ -48,26 +48,31 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         elseif_header__allocations: List[List[int]] = []  # list index in ops!
         elseif_block__was_output: List[bool] = []
         # 0. Prepare the end label to insert.
-        end_label = SsbLabel(
+        self.entire_superblock_end_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
         )
+        is_positive = self.ctx.NOT() is None
 
         ops: List[Optional[SsbOperation]] = []
 
         # 1. Go over all if header ops:
         for h in self._if_header_handlers:
             ops.append(None)
+            h.set_positive(is_positive)
             jmpb = h.collect()
             self._header_jump_blueprints.append(jmpb)
             jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
             # 1b. If all are positive, allocate 1 for it's branch op, note that output can happen later
             if_header__allocations.append(len(ops) - 1)
+        for i, h in enumerate(self._if_header_handlers):
+            jmpb = self._header_jump_blueprints[i]
             if not jmpb.jump_is_positive and not if_block__was_output:
                 # 1c. If one is negative, allocate 1 for it's branch op + output the block
                 if_block__was_output = True
                 ops += self._process_block()
         # 2. For each else if: Go over all if header ops:
         for else_if_h in self._else_if_handlers:
+            else_if_h.entire_superblock_end_label = self.entire_superblock_end_label
             jmp_blueprints = else_if_h.create_header_jump_templates()
             this_elseif__allocations = []
             this_elseif__was_output = False
@@ -76,14 +81,16 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
                 jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
                 # 2b. If all are positive, allocate 1 for it's branch op, note that output can happen later
                 this_elseif__allocations.append(len(ops) - 1)
+            for jmpb in jmp_blueprints:
                 if not jmpb.jump_is_positive and not this_elseif__was_output:
                     # 2c. If one is negative, allocate 1 for it's branch op + output the block
                     this_elseif__was_output = True
-                    ops += else_if_h._process_block()
+                    ops += else_if_h.collect()
             elseif_header__allocations.append(this_elseif__allocations)
             elseif_block__was_output.append(this_elseif__was_output)
         # 3. Collect else sub block ops
         if self._else_handler:
+            self._else_handler.entire_superblock_end_label = self.entire_superblock_end_label
             ops += self._else_handler.collect()
         else:
             # 3b. If no else: Create an else block with just one jump without target
@@ -101,7 +108,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         #    if so: insert jump to the end label
         for op in ops:
             if isinstance(op, SsbLabelJump) and op.root.op_code.name == OP_JUMP and op.label is None:
-                op.label = end_label
+                op.label = self.entire_superblock_end_label
         # 7. Process header ops
         for i, jmp in enumerate(self.get_processed_header_jumps()):
             allocation = if_header__allocations[i]
@@ -111,7 +118,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
                 allocation = elseif_header__allocations[i][j]
                 ops[allocation] = jmp
 
-        return ops + [end_label]
+        return ops + [self.entire_superblock_end_label]
 
     def add(self, obj: any):
         if isinstance(obj, IfHeaderCompileHandler):

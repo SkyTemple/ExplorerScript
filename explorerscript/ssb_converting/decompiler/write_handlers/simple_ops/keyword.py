@@ -59,7 +59,7 @@ class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
         self.decompiler.write_return()
 
     def _write_end(self):
-        self.decompiler.write_stmnt("end;")
+        self.decompiler.write_end()
 
     def _write_hold(self):
-        self.decompiler.write_stmnt("hold;")
+        self.decompiler.write_hold()

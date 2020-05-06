@@ -107,6 +107,15 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#if_h_negatable.
+    def enterIf_h_negatable(self, ctx:ExplorerScriptParser.If_h_negatableContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#if_h_negatable.
+    def exitIf_h_negatable(self, ctx:ExplorerScriptParser.If_h_negatableContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#if_h_op.
     def enterIf_h_op(self, ctx:ExplorerScriptParser.If_h_opContext):
         pass

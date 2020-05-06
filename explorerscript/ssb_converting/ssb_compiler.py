@@ -66,7 +66,7 @@ class ExplorerScriptSsbCompiler:
         # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
         self.performance_progress_list_var_name: str = performance_progress_list_var_name
 
-    def compile(self, ssb_script_src: str):
+    def compile(self, explorerscript_src: str):
         """
         After compiling, the components are present in this object's attributes.
 
@@ -78,7 +78,7 @@ class ExplorerScriptSsbCompiler:
         self.routine_ops = None
         self.named_coroutines = None
 
-        input_stream = InputStream(ssb_script_src)
+        input_stream = InputStream(explorerscript_src)
         lexer = ExplorerScriptLexer(input_stream)
         stream = CommonTokenStream(lexer)
         parser = ExplorerScriptParser(stream)

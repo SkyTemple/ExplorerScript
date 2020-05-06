@@ -43,7 +43,8 @@ from igraph import IN, Edge, OUT, Vertex, Graph, EdgeSeq
 from llist import dllist
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, SwitchCaseOperation
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, SwitchCaseOperation, IfEnd, SwitchEnd, \
+    IfStart, SwitchStart, ForeverStart
 
 
 def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
@@ -376,10 +377,12 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     - 4|5 -> a
 
     Returns tuples of edges, applicable operations and whether or not this edge is also the default edge.
+    The default edge is only yielded once.
     """
     # TODO: Since multi switches were removed, this could be simplified.
     number_of_switches_in_switch = 1
     map_switches_ops_edges = []
+    already_yielded_default = False
     for i in range(0, number_of_switches_in_switch):
         map_ops_edges = {}
         for e in case_edges:
@@ -396,7 +399,9 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
     ops_for_edge = []
     while first_cursor_not_at_end < len(cursors):
         if map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]] != next_edge:
-            yield next_edge, ops_for_edge, next_edge['is_else']
+            yield next_edge, ops_for_edge, next_edge['is_else'] and not already_yielded_default
+            if next_edge['is_else']:
+                already_yielded_default = True
             next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
             ops_for_edge = []
         for i in range(first_cursor_not_at_end, len(cursors)):
@@ -405,12 +410,15 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
                 cursors[i] += 1
         while first_cursor_not_at_end < len(cursors) and cursors[first_cursor_not_at_end] >= len(map_switches_ops_edges[first_cursor_not_at_end]):
             first_cursor_not_at_end += 1
-    yield next_edge, ops_for_edge, next_edge['is_else']
+    yield next_edge, ops_for_edge, next_edge['is_else'] and not already_yielded_default
+    if next_edge['is_else']:
+        already_yielded_default = True
 
     # Also take care of the default case if there are no extra switch ops for it
-    else_edge_candidates = [e for e in case_edges if e['is_else']]
-    if len(else_edge_candidates) > 0 and else_edge_candidates[0]['switch_ops'] is None:
-        yield else_edge_candidates[0], [], True
+    if not already_yielded_default:
+        else_edge_candidates = [e for e in case_edges if e['is_else']]
+        if len(else_edge_candidates) > 0 and else_edge_candidates[0]['switch_ops'] is None:
+            yield else_edge_candidates[0], [], True
 
 
 def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:
@@ -492,8 +500,64 @@ def get_all_vertices_between(g, start, target, path_filter=lambda e, v: True):
     return vs_on_the_way_to_target
 
 
+def find_switch_end_label(g: Graph, switch_id: int) -> Optional[Vertex]:
+    for v in g.vs:
+        if isinstance(v['op'], SsbLabel) and any(isinstance(m, SwitchEnd) and m.switch_id == switch_id for m in v['op'].markers):
+            return v
+    return None
+
+
 def any_incoming_edge_is_loop(v: Vertex):
     for e in v.in_edges():
         if e['loop']:
             return True
     return False
+
+
+def has_unclosed_blocks(paths: List[List[int]], g: Graph):
+    """Returns whether the path contains any unclosed ifs/switches or loops"""
+    u_ifs = []
+    u_switches = []
+    u_loops = []
+    for p in paths:
+        for iv in p:
+            v = g.vs[iv]
+            if isinstance(v['op'], SsbLabelJump):
+                m = v['op'].get_marker()
+                if isinstance(m, IfStart):
+                    u_ifs.append(m.if_id)
+                elif isinstance(m, SwitchStart):
+                    u_switches.append(m.switch_id)
+                elif isinstance(m, ForeverStart):
+                    u_loops.append(m.loop_id)
+            elif isinstance(v['op'], SsbLabel):
+                for m in v['op'].markers:
+                    try:
+                        if isinstance(m, IfEnd):
+                            u_ifs.remove(m.if_id)
+                        elif isinstance(m, SwitchEnd):
+                            u_switches.remove(m.switch_id)
+                    except ValueError:
+                        pass
+                # We assume all loops are unclosed, because they can't reliably be fully closed in a situation like this.
+
+    return len(u_ifs) > 0 or len(u_switches) > 0 or len(u_loops) > 0
+
+
+def is_reachable_when_removing(g: Graph, check_id: int, start_id: int, remove_id: int):
+    """Checks if check is still reachable from start if remove is removed"""
+    g_copy: Graph = g.copy()
+
+    if check_id > remove_id:
+        check_id -= 1
+    if start_id > remove_id:
+        remove_id -= 1
+
+    # Simulate the removal on the copy
+    g_copy.delete_vertices(remove_id)
+
+    check = g_copy.vs[check_id]
+    start = g_copy.vs[start_id]
+
+    p = g_copy.get_shortest_paths(start, check)
+    return len(p[0]) > 0

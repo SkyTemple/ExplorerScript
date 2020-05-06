@@ -82,8 +82,8 @@ class ExplorerScriptSsbDecompiler:
         # Build groups switch+cases, switch groups, branch-groups
         # get rid of as many label references (jumps) as possible
         grapher.build_branches()
-        grapher.invert_branches()
         grapher.group_branches()
+        grapher.invert_branches()
         grapher.build_and_group_switch_cases()
         grapher.group_switch_cases()
         grapher.build_switch_fallthroughs()
@@ -114,6 +114,12 @@ class ExplorerScriptSsbDecompiler:
 
     def write_return(self):
         self.write_stmnt("return;")
+
+    def write_end(self):
+        self.write_stmnt("end;")
+
+    def write_hold(self):
+        self.write_stmnt("hold;")
 
     def write_label_jump(self, label_id: int, previous_op: SsbOperation):
         # Depending on what the previous operation was, this has to be printed differently

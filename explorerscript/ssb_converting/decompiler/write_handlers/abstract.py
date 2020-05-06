@@ -54,3 +54,9 @@ class AbstractWriteHandler(ABC):
 
 class NestedBlockDisallowedError(Exception):
     pass
+
+
+class FallbackToJump(Exception):
+    """Raised when a label jump write handler can not do
+    it's task and the default jump handler should be used instead."""
+    pass

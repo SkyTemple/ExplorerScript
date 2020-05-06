@@ -20,12 +20,13 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Dict, List, TYPE_CHECKING, Union
+from typing import Dict, List, TYPE_CHECKING, Union, Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OPS_THAT_END_CONTROL_FLOW
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OPS_THAT_END_CONTROL_FLOW, \
+    SsbForeignLabel, OP_DUMMY_END, OPS_CTX
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.forevers.forever_block import \
@@ -106,7 +107,7 @@ class CompilerCtx:
 
 class SsbLabelJumpBlueprint:
     """A builder for a label jump, to be used when compiling ifs/switches."""
-    def __init__(self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: List[SsbOpParam]):
+    def __init__(self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: List[SsbOpParam], jump_is_positive=True):
         self.compiler_ctx: CompilerCtx = compiler_ctx
         self.ctx = ctx
         self.op_code_name: str = op_code_name
@@ -114,7 +115,7 @@ class SsbLabelJumpBlueprint:
         # offset indices for these blueprints can be pre-allocated.
         self.number = None
         # Whether or not this jump is negated (False) or not (True)
-        self.jump_is_positive = True
+        self.jump_is_positive = jump_is_positive
 
     def set_index_number(self, number):
         self.number = number
@@ -160,7 +161,7 @@ def routine_op_offsets_are_ordered(routine_ops: List[List[SsbOperation]]):
 def strip_last_label(routine_ops: List[List[SsbOperation]]):
     """
     Checks if the last opcode of a routine is a label, and if so
-    removes it. if there are jumps to it, they are removed and replaced with an return.
+    removes it. if there are jumps to it, they are removed and replaced with an OP_DUMMY_END.
     """
     returned_routine_ops = []
     for routine in routine_ops:
@@ -174,17 +175,19 @@ def strip_last_label(routine_ops: List[List[SsbOperation]]):
                 op_before_ends_control_flow = False
                 for op_i, op in enumerate(routine):
                     if isinstance(op, SsbLabelJump) and op.label == label:
-                        # We only have to insert the return, if the previous op didn't end control flow
+                        # We only have to insert the OP_DUMMY_END, if the previous op didn't end control flow
                         if op_before_ends_control_flow:
                             indices_to_remove.add(op_i)
                         else:
-                            routine[op_i] = SsbOperation(op.offset, SsbOpCode(-1, OP_RETURN), [])
+                            routine[op_i] = SsbOperation(op.offset, SsbOpCode(-1, OP_DUMMY_END), [])
                             op_before_ends_control_flow = False
                     else:
                         if isinstance(op, SsbLabel):
-                            pass
+                            # If there is a label before, then something might jump here!
+                            if _number_of_jumps_to_label(op, routine) > 1:
+                                op_before_ends_control_flow = False
                         else:
-                            op_before_ends_control_flow = does_op_end_control_flow(op)
+                            op_before_ends_control_flow = does_op_end_control_flow(op, routine[op_i - 1] if op_i > 0 else None)
                 routine = [x for i, x in enumerate(routine) if i not in indices_to_remove]
             returned_routine_ops.append(routine)
         else:
@@ -192,7 +195,17 @@ def strip_last_label(routine_ops: List[List[SsbOperation]]):
     return returned_routine_ops
 
 
-def does_op_end_control_flow(op: SsbOperation) -> bool:
+def does_op_end_control_flow(op: SsbOperation, previous_op: Optional[SsbOperation]) -> bool:
+    if previous_op is not None and previous_op.op_code.name in OPS_CTX:
+        return False
     if isinstance(op, SsbLabelJump):
         return op.root.op_code.name in OPS_THAT_END_CONTROL_FLOW
     return op.op_code.name in OPS_THAT_END_CONTROL_FLOW
+
+
+def _number_of_jumps_to_label(label: SsbLabel, routine: List[SsbOperation]):
+    counter = 0
+    for o in routine:
+        if isinstance(o, SsbLabelJump) and o.label == label:
+            counter += 1
+    return counter

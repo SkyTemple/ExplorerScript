@@ -23,7 +23,7 @@
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
 
 
 class ForeverBreakWriteHandler(AbstractWriteHandler):
@@ -38,9 +38,12 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
         self.decompiler.write_stmnt("break_forever;")
         exits = self.start_vertex.out_edges()
         if len(exits) == 1:
+            if len(self.decompiler.forever_start_handler_stack) < 1:
+                # We REALLY shouldn't land here, if we are outside of a loop, but sometimes loop detection still
+                # raises some "false positives" and builds loops that have break statements reachable from outside
+                # the loop
+                raise FallbackToJump()
             # Make sure the forever start block is aware of the next vertex!
             self.decompiler.forever_start_handler_stack[-1].set_vertex_after(exits[0].target_vertex)
             return None
-        elif len(exits) == 0:
-            return None
-        raise ValueError(f"After a break_forever there must be exactly 0 or 1 immediate opcode.")
+        raise ValueError(f"After a break_forever there must be exactly 1 immediate opcode.")

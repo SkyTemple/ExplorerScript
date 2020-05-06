@@ -23,7 +23,8 @@
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import iterate_switch_edges_using_edges_and_op
+from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import iterate_switch_edges_using_edges_and_op, \
+    find_switch_end_label
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
@@ -51,15 +52,14 @@ class SwitchWriteHandler(AbstractWriteHandler):
         is_switch_dungeon_mode = op.root.op_code.name == OP_SWITCH_DUNGEON_MODE
 
         exits = self.start_vertex.out_edges()
-        switch_end_vertices = set()
         edges_that_will_be_visited_multiple_times = set()
         already_printed_edges = set()
 
-        if len(exits) == 1:
+        if len(exits) == 1 and (exits[0]['switch_ops'] is None or len(exits[0]['switch_ops']) == 0):
             # Not a real switch (empty body menu or special process)
             self.decompiler.write_stmnt(" { }", False)
             return exits[0].target_vertex
-        elif len(exits) > 1:
+        else:
             list_of_switch_cases = list(iterate_switch_edges_using_edges_and_op(exits, op))
             # Build a list of all edges that will be visited multiple times, make sure to generate a label for them
             for e, _, __ in list_of_switch_cases:
@@ -92,13 +92,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
                                 root_op_before = self._get_root_op(handler.last_vertex)
                                 if not handler.last_handler_in_block.ended_on_jump and (root_op_before is None or root_op_before.op_code.name not in OPS_THAT_END_CONTROL_FLOW):
                                     self.decompiler.write_stmnt("break;")
-                            # If this branch didn't end on a label jump: Add it's end vertex to the set of end vertices
-                            if not handler.last_handler_in_block or not handler.last_handler_in_block.ended_on_jump:
-                                switch_end_vertices.add(end_vertex)
 
-            if len(switch_end_vertices) == 1:
+            next_vertex = find_switch_end_label(self.start_vertex.graph, m.switch_id)
+            if next_vertex:
                 # End on the same end vertex, continue after.
-                return switch_end_vertices.pop()
+                return next_vertex
 
             return None
 

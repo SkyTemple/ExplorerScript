@@ -123,6 +123,11 @@ class SsbOpParamConstant:
     def __str__(self):
         return self.name
 
+    def __eq__(self, other):
+        if not isinstance(other, SsbOpParamConstant):
+            return False
+        return self.name == other.name
+
 
 class SsbOpParamConstString:
     """A string constant from the table of string constants in an Ssb"""
@@ -131,6 +136,11 @@ class SsbOpParamConstString:
 
     def __str__(self):
         return f"'{escape_newlines(escape_quotes(self.name))}'"
+
+    def __eq__(self, other):
+        if not isinstance(other, SsbOpParamConstString):
+            return False
+        return self.name == other.name
 
 
 class SsbOpParamLanguageString:
@@ -149,6 +159,11 @@ class SsbOpParamLanguageString:
         string += ' ' * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
         string += '}'
         return string
+
+    def __eq__(self, other):
+        if not isinstance(other, SsbOpParamLanguageString):
+            return False
+        return self.strings == other.strings
 
 
 class SsbOpParamPositionMarker:
@@ -169,6 +184,12 @@ class SsbOpParamPositionMarker:
         if self.y_offset > 1:
             y_offset_marker = '.5'
         return f'Position<\'{self.name}\', {self.x_relative}{x_offset_marker}, {self.y_relative}{y_offset_marker}>'
+
+    def __eq__(self, other):
+        if not isinstance(other, SsbOpParamPositionMarker):
+            return False
+        return self.x_offset == other.x_offset and self.y_offset == other.y_offset \
+                and self.x_relative == other.x_relative and self.y_relative == other.y_relative
 
 
 SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker]

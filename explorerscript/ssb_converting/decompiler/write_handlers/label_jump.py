@@ -24,7 +24,7 @@ from typing import Dict, Type, Optional
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever_break import ForeverBreakWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever_continue import \
     ForeverContinueWriteHandler
@@ -32,7 +32,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.if_star
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump import JumpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import LabelJumpMarker, MultiIfStart, IfStart, \
-    SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump
+    SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump, OP_JUMP
 
 
 class LabelJumpWriteHandler(AbstractWriteHandler):
@@ -49,13 +49,17 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
 
     def __init__(self, start_vertex: Vertex, decompiler, parent):
         super().__init__(start_vertex, decompiler, parent)
-        self.ended_on_jump = True
+        m = self.start_vertex['op'].get_marker()
+        self.ended_on_jump = type(m) in self._label_jump_marker_handlers and self._label_jump_marker_handlers[type(m)] == JumpWriteHandler
 
     def write_content(self):
         """Delegates to the handlers in .label_jump"""
         op: SsbLabelJump = self.start_vertex['op']
         m = op.get_marker()
         if type(m) in self._label_jump_marker_handlers:
-            return self._label_jump_marker_handlers[type(m)](self.start_vertex, self.decompiler, self).write_content()
+            try:
+                return self._label_jump_marker_handlers[type(m)](self.start_vertex, self.decompiler, self).write_content()
+            except FallbackToJump:
+                return self._label_jump_marker_handlers[type(None)](self.start_vertex, self.decompiler, self).write_content()
         else:
             raise ValueError(f"Unknown label marker type ({type(m)}) for {op}: {m}")

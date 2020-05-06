@@ -26,23 +26,28 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import \
+    IfHeaderNegatableCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
     IfHeaderOperatorCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
-from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OP_BRANCH_VARIATION, OP_BRANCH_EDIT, \
-    OP_BRANCH_DEBUG, OPS_BRANCH
+from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OPS_BRANCH
 
 
 class IfHeaderCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._header_cmplx_handler: Optional[AbstractCompileHandler] = None
+        self._is_positive = True
+
+    def set_positive(self, positive):
+        self._is_positive = positive
 
     def collect(self) -> SsbLabelJumpBlueprint:
         self.ctx: ExplorerScriptParser.If_headerContext
-        is_positive = self.ctx.NOT() is None
+        is_positive = self._is_positive
 
         self.ctx: ExplorerScriptParser.If_headerContext
         # Complex branches
@@ -66,34 +71,14 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
             else:
                 # A regular complex if condition
                 tmpl: SsbLabelJumpBlueprint = self._header_cmplx_handler.collect()
-                if tmpl.op_code_name == OP_BRANCH_PERFORMANCE:
-                    # Set the value argument depending on whether this is positive or not
-                    tmpl.params[1] = 1 if is_positive else 0
-                else:
-                    tmpl.set_jump_is_positive(is_positive)
+                tmpl.set_jump_is_positive(is_positive)
                 return tmpl
-
-        # Simple branches
-        if self.ctx.DEBUG():
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_DEBUG, [1 if is_positive else 0]
-            )
-        if self.ctx.EDIT():
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_EDIT, [1 if is_positive else 0]
-            )
-        if self.ctx.VARIATION():
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_VARIATION, [1 if is_positive else 0]
-            )
 
         raise SsbCompilerError("Unknown if operation.")
 
     def add(self, obj: any):
         if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \
+                or isinstance(obj, IfHeaderNegatableCompileHandler) \
                 or isinstance(obj, IfHeaderScnCompileHandler) or isinstance(obj, OperationCompileHandler):
             self._header_cmplx_handler = obj
             return
