@@ -70,6 +70,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
             with Blk(self.decompiler):
                 for e, switch_case_ops, is_default in list_of_switch_cases:
                     for sco in switch_case_ops:
+                        self.decompiler.source_map_add_opcode(sco.op.offset)
                         self.decompiler.write_stmnt(f"case {self._case_header_for(sco.op, is_switch_dungeon_mode)}:")
                     if is_default:
                         self.decompiler.write_stmnt("default:")
