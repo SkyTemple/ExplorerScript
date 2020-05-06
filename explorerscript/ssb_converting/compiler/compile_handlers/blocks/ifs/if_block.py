@@ -48,8 +48,11 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         elseif_header__allocations: List[List[int]] = []  # list index in ops!
         elseif_block__was_output: List[bool] = []
         # 0. Prepare the end label to insert.
-        self.entire_superblock_end_label = SsbLabel(
+        end_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
+        )
+        self.else_begin_label = SsbLabel(
+            self.compiler_ctx.counter_labels(), -1, 'else begin meta label'
         )
         is_positive = self.ctx.NOT() is None
 
@@ -72,7 +75,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
                 ops += self._process_block()
         # 2. For each else if: Go over all if header ops:
         for else_if_h in self._else_if_handlers:
-            else_if_h.entire_superblock_end_label = self.entire_superblock_end_label
+            else_if_h.else_begin_label = self.else_begin_label
             jmp_blueprints = else_if_h.create_header_jump_templates()
             this_elseif__allocations = []
             this_elseif__was_output = False
@@ -89,12 +92,17 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
             elseif_header__allocations.append(this_elseif__allocations)
             elseif_block__was_output.append(this_elseif__was_output)
         # 3. Collect else sub block ops
+        insert_else_label_at_end = False
         if self._else_handler:
-            self._else_handler.entire_superblock_end_label = self.entire_superblock_end_label
-            ops += self._else_handler.collect()
+            # This is the else, so the end of the else is of course the end of the entire if (although this shouldn't
+            # be used anyway):
+            self._else_handler.else_begin_label = end_label
+            ops += [self.else_begin_label] + self._else_handler.collect()
         else:
             # 3b. If no else: Create an else block with just one jump without target
             ops.append(self._generate_empty_jump())
+            # We add the else label at the very end, because then we save on unnecessary jump.
+            insert_else_label_at_end = True
         # 4. Collect if sub block ops, if not already done
         if not if_block__was_output:
             if_block__was_output = True
@@ -103,12 +111,12 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         for i, else_if_h in enumerate(self._else_if_handlers):
             if not elseif_block__was_output[i]:
                 elseif_block__was_output[i] = True
-                ops += else_if_h._process_block()
+                ops += else_if_h.collect()
         # 6. Go through all blocks and check, if the last op is a jump without target
         #    if so: insert jump to the end label
         for op in ops:
             if isinstance(op, SsbLabelJump) and op.root.op_code.name == OP_JUMP and op.label is None:
-                op.label = self.entire_superblock_end_label
+                op.label = end_label
         # 7. Process header ops
         for i, jmp in enumerate(self.get_processed_header_jumps()):
             allocation = if_header__allocations[i]
@@ -118,7 +126,10 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
                 allocation = elseif_header__allocations[i][j]
                 ops[allocation] = jmp
 
-        return ops + [self.entire_superblock_end_label]
+        if insert_else_label_at_end:
+            ops.append(self.else_begin_label)
+
+        return ops + [end_label]
 
     def add(self, obj: any):
         if isinstance(obj, IfHeaderCompileHandler):
