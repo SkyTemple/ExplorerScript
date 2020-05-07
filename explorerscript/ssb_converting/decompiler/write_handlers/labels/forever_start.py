@@ -37,7 +37,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
         self.m: ForeverStart = None
         self.ended_on_jump = True
-        # Since the break_forever does NOT have to be on the exact next level, we use a stack system instead!
+        # Since the break_loop does NOT have to be on the exact next level, we use a stack system instead!
         self._vertex_after_forever: Optional[Vertex] = None
 
     def write_content(self):

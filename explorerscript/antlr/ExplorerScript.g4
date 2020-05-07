@@ -33,10 +33,10 @@ import SsbCommon;
 
 start: funcdef* EOF;
 
-stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block);
+stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block );
 simple_stmt: (operation | label | cntrl_stmt | jump | assignment) ';';
 
-cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_FOREVER;
+cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_LOOP;
 jump: JUMP AT IDENTIFIER;
 
 // a ctx block needs exactly one simple statement, we enforce this on parser level.
@@ -47,7 +47,7 @@ ctx_header: CTX_TYPE integer_like;
 if_block: IF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE elseif_block* else_block?;
 elseif_block: ELSEIF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
 else_block: ELSE OPEN_BRACE stmt* CLOSE_BRACE;
-    if_header: (if_h_op | if_h_bit | if_h_negatable | if_h_scn | operation);
+if_header: (if_h_op | if_h_bit | if_h_negatable | if_h_scn | operation);
 if_h_negatable: NOT? (DEBUG | EDIT | VARIATION);
 if_h_op: integer_like conditional_operator ( value_of | integer_like );
 if_h_bit: NOT? integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
@@ -71,6 +71,8 @@ case_h_menu2: MENU2 OPEN_PAREN integer_like CLOSE_PAREN;
 case_h_op: conditional_operator ( value_of | integer_like );
 
 forever_block: FOREVER OPEN_BRACE stmt* CLOSE_BRACE;
+for_block: FOR OPEN_PAREN simple_stmt if_header ';' simple_stmt CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
+while_block: WHILE NOT? OPEN_PAREN if_header CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
 
 assignment: assignment_regular | assignment_clear | assignment_initial | assignment_reset | assignment_adv_log | assignment_dungeon_mode | assignment_scn;
 assignment_regular: integer_like (OPEN_BRACKET INTEGER CLOSE_BRACKET)? assign_operator (integer_like | value_of);
@@ -149,7 +151,7 @@ END: 'end';
 HOLD: 'hold';
 CONTINUE: 'continue';
 BREAK: 'break';
-BREAK_FOREVER: 'break_forever';
+BREAK_LOOP: 'break_loop';
 ACTOR: 'actor';
 OBJECT: 'object';
 PERFORMER: 'performer';
@@ -160,8 +162,6 @@ VARIATION: 'variation';
 RANDOM: 'random';
 SECTOR: 'sector';
 DUNGEON_MODE: 'dungeon_mode';
-SPECIAL_MENU: 'special_menu';
-SPECIAL_PROCESS: 'special_process';
 MENU2: 'menu2';
 MENU: 'menu';
 CASE: 'case';
@@ -174,5 +174,7 @@ DUNGEON_RESULT: 'dungeon_result';
 ADVENTURE_LOG: 'adventure_log';
 MESSAGE_SWITCH_TALK: 'message_SwitchTalk';
 MESSAGE_SWITCH_MONOLOGUE: 'message_SwitchMonologue';
+WHILE: 'while';
+FOR: 'for';
 OPEN_BRACKET : '[';
 CLOSE_BRACKET : ']';

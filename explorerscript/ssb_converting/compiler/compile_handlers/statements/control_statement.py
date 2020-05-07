@@ -39,11 +39,11 @@ class ControlStatementCompileHandler(AbstractStatementCompileHandler):
         elif self.ctx.HOLD():
             ops.append(self._generate_operation(OP_HOLD, []))
         elif self.ctx.CONTINUE():
-            ops.append(self._register_operation(self.compiler_ctx.continue_forever(self.ctx)))
+            ops.append(self._register_operation(self.compiler_ctx.continue_loop(self.ctx)))
         elif self.ctx.BREAK():
             ops.append(self._register_operation(self.compiler_ctx.break_case(self.ctx)))
-        elif self.ctx.BREAK_FOREVER():
-            ops.append(self._register_operation(self.compiler_ctx.break_forever(self.ctx)))
+        elif self.ctx.BREAK_LOOP():
+            ops.append(self._register_operation(self.compiler_ctx.break_loop(self.ctx)))
 
         return ops
 

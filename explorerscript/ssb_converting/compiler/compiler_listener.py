@@ -56,7 +56,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var impor
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ctxs.ctx_block import CtxBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.forevers.forever_block import \
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.forever_block import \
     ForeverBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
@@ -68,6 +68,8 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.o
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_block import IfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.for_block import ForBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.while_block import WhileBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import \
     CaseHeaderMenuCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import \
@@ -331,6 +333,22 @@ class ExplorerScriptCompilerListener(ExplorerScriptListener):
         self._current_handlers.append(h)
 
     def exitForever_block(self, ctx: ExplorerScriptParser.Forever_blockContext):
+        h = self._generic_end_handler(ctx)
+        self._current_handlers[-1].add(h)
+
+    def enterFor_block(self, ctx: ExplorerScriptParser.For_blockContext):
+        h = ForBlockCompileHandler(ctx, self.compiler_ctx)
+        self._current_handlers.append(h)
+
+    def exitFor_block(self, ctx: ExplorerScriptParser.For_blockContext):
+        h = self._generic_end_handler(ctx)
+        self._current_handlers[-1].add(h)
+
+    def enterWhile_block(self, ctx: ExplorerScriptParser.While_blockContext):
+        h = WhileBlockCompileHandler(ctx, self.compiler_ctx)
+        self._current_handlers.append(h)
+
+    def exitWhile_block(self, ctx: ExplorerScriptParser.While_blockContext):
         h = self._generic_end_handler(ctx)
         self._current_handlers[-1].add(h)
 

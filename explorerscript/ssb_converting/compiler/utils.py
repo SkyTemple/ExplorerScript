@@ -25,12 +25,11 @@ from typing import Dict, List, TYPE_CHECKING, Union, Optional
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OPS_THAT_END_CONTROL_FLOW, \
-    SsbForeignLabel, OP_DUMMY_END, OPS_CTX
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, \
+    OP_DUMMY_END, OPS_CTX
 
 if TYPE_CHECKING:
-    from explorerscript.ssb_converting.compiler.compile_handlers.blocks.forevers.forever_block import \
-        ForeverBlockCompileHandler
+    from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import \
         CaseBlockCompileHandler
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import \
@@ -58,6 +57,7 @@ class Counter:
     def next_id(self):
         return self.count + 1
 
+
 class CompilerCtx:
     def __init__(self, counter_ops: Counter, source_map_builder: SourceMapBuilder,
                  collected_labels: Dict[str, SsbLabel],
@@ -71,14 +71,14 @@ class CompilerCtx:
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
         # Current handlers for structures that have ending opcodes collected by child handlers
-        self._forevers: List['ForeverBlockCompileHandler'] = []
+        self._loops: List['AbstractLoopBlockCompileHandler'] = []
         self._switch_cases: List[Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']] = []
 
-    def add_forever(self, h: 'ForeverBlockCompileHandler'):
-        self._forevers.append(h)
+    def add_loop(self, h: 'AbstractLoopBlockCompileHandler'):
+        self._loops.append(h)
 
-    def remove_forever(self):
-        self._forevers.pop()
+    def remove_loop(self):
+        self._loops.pop()
 
     def add_switch_case(self, h: Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']):
         self._switch_cases.append(h)
@@ -86,17 +86,17 @@ class CompilerCtx:
     def remove_switch_case(self):
         self._switch_cases.pop()
 
-    def continue_forever(self, ctx) -> SsbOperation:
-        """Handle the continue forever opcode"""
-        if len(self._forevers) < 1:
+    def continue_loop(self, ctx) -> SsbOperation:
+        """Handle the continue opcode"""
+        if len(self._loops) < 1:
             raise SsbCompilerError(f"Unexpected continue; in line {ctx.start.line}")
-        return self._forevers[-1].continue_forever()
+        return self._loops[-1].continue_loop()
 
-    def break_forever(self, ctx) -> SsbOperation:
+    def break_loop(self, ctx) -> SsbOperation:
         """Handle the break forever opcode"""
-        if len(self._forevers) < 1:
-            raise SsbCompilerError(f"Unexpected break_forever; in line {ctx.start.line}")
-        return self._forevers[-1].break_forever()
+        if len(self._loops) < 1:
+            raise SsbCompilerError(f"Unexpected break_loop; in line {ctx.start.line}")
+        return self._loops[-1].break_loop()
 
     def break_case(self, ctx) -> SsbOperation:
         """Handle the break opcode"""

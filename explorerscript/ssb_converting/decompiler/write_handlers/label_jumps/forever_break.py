@@ -35,7 +35,7 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
     def write_content(self):
         """Print a break and end"""
         self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
-        self.decompiler.write_stmnt("break_forever;")
+        self.decompiler.write_stmnt("break_loop;")
         exits = self.start_vertex.out_edges()
         if len(exits) == 1:
             if len(self.decompiler.forever_start_handler_stack) < 1:
@@ -46,4 +46,4 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
             # Make sure the forever start block is aware of the next vertex!
             self.decompiler.forever_start_handler_stack[-1].set_vertex_after(exits[0].target_vertex)
             return None
-        raise ValueError(f"After a break_forever there must be exactly 1 immediate opcode.")
+        raise ValueError(f"After a break_loop there must be exactly 1 immediate opcode.")

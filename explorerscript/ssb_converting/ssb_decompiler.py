@@ -61,7 +61,7 @@ class ExplorerScriptSsbDecompiler:
         self.smb: SourceMapBuilder = None
         self.performance_progress_list_var_name = performance_progress_list_var_name
         self.dungeon_mode_constants = dungeon_mode_constants
-        # Since forever blocks break_forevers do NOT have to be on the exact next level, we use a stack system instead!
+        # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
         self.forever_start_handler_stack: List[ForeverWriteHandler] = []
 
     def convert(self) -> Tuple[str, SourceMap]:

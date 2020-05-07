@@ -269,6 +269,24 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#for_block.
+    def enterFor_block(self, ctx:ExplorerScriptParser.For_blockContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#for_block.
+    def exitFor_block(self, ctx:ExplorerScriptParser.For_blockContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#while_block.
+    def enterWhile_block(self, ctx:ExplorerScriptParser.While_blockContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#while_block.
+    def exitWhile_block(self, ctx:ExplorerScriptParser.While_blockContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#assignment.
     def enterAssignment(self, ctx:ExplorerScriptParser.AssignmentContext):
         pass

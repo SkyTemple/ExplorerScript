@@ -176,6 +176,23 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         return self.start_label
 
 
+class AbstractLoopBlockCompileHandler(AbstractBlockCompileHandler, ABC):
+    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+        super().__init__(ctx, compiler_ctx)
+        self._start_label = SsbLabel(
+            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} outer start label'
+        )
+        self._end_label = SsbLabel(
+            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} outer end label'
+        )
+
+    def continue_loop(self) -> SsbOperation:
+        return self._generate_jump_operation(OP_JUMP, [], self._start_label)
+
+    def break_loop(self) -> SsbOperation:
+        return self._generate_jump_operation(OP_JUMP, [], self._end_label)
+
+
 class AbstractFuncdefCompileHandler(AbstractCompileHandler, ABC):
     """An abstract handler for funcdefs."""
     def add(self, obj: any):

@@ -20,37 +20,21 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
+from typing import List
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import \
+    AbstractStatementCompileHandler, AbstractLoopBlockCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
 
 
-class ForeverBlockCompileHandler(AbstractBlockCompileHandler):
+class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler):
     """Handles an entire forever block."""
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
-        super().__init__(ctx, compiler_ctx)
-        self._start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'forever-block outer start label'
-        )
-        self._end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'forever-block outer end label'
-        )
 
     def collect(self) -> List[SsbOperation]:
-        self.compiler_ctx.add_forever(self)
+        self.compiler_ctx.add_loop(self)
         retval = [self._start_label] + self._process_block(False) + [self._end_label]
-        self.compiler_ctx.remove_forever()
+        self.compiler_ctx.remove_loop()
         return retval
-
-    def continue_forever(self) -> SsbOperation:
-        return self._generate_jump_operation(OP_JUMP, [], self._start_label)
-
-    def break_forever(self) -> SsbOperation:
-        return self._generate_jump_operation(OP_JUMP, [], self._end_label)
 
     def add(self, obj: any):
         if isinstance(obj, AbstractStatementCompileHandler):
