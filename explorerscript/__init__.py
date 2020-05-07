@@ -21,3 +21,4 @@
 #  SOFTWARE.
 #
 
+EXPLORERSCRIPT_EXT = '.exps'

@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import json
 from typing import Dict, Tuple, List, Union
 
 
@@ -79,6 +80,20 @@ class SourceMapPositionMark:
                 self.x_relative == other.x_relative and \
                 self.y_relative == other.y_relative
 
+    def serialize(self) -> str:
+        return json.dumps([
+            self.line_number, self.column_number, self.argument_idx,
+            self.name, self.x_offset, self.y_offset, self.x_relative, self.y_relative
+        ])
+
+    @classmethod
+    def deserialize(cls, json_str: str) -> 'SourceMapPositionMark':
+        json_d = json.loads(json_str)
+        return SourceMapPositionMark(
+            line_number=json_d[0], column_number=json_d[1], argument_idx=json_d[2],
+            name=json_d[3], x_offset=json_d[4], y_offset=json_d[5], x_relative=json_d[6], y_relative=json_d[7]
+        )
+
 
 class SourceMap:
     """
@@ -117,6 +132,20 @@ class SourceMap:
         if not isinstance(other, SourceMap):
             return False
         return self._mappings == other._mappings and self.position_marks == other.position_marks
+
+    def serialize(self) -> str:
+        return json.dumps({
+            'map': self._mappings,
+            'pos_marks': [m.serialize() for m in self.position_marks]
+        })
+
+    @classmethod
+    def deserialize(cls, json_str: str) -> 'SourceMap':
+        json_d = json.loads(json_str)
+        return SourceMap(
+            {x: (y[0], y[1]) for x, y in json_d['map'].items()},
+            [SourceMapPositionMark.deserialize(m) for m in json_d['pos_marks']]
+        )
 
 
 class SourceMapBuilder:
