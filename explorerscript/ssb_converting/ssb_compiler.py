@@ -28,7 +28,7 @@ from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
-from explorerscript.ssb_converting.compiler.compiler_listener import ExplorerScriptCompilerListener
+from explorerscript.ssb_converting.compiler.compiler_visitor import ExplorerScriptRoutineCompilerVisitor
 from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalizer
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
@@ -84,13 +84,21 @@ class ExplorerScriptSsbCompiler:
         parser = ExplorerScriptParser(stream)
         error_listener = SyntaxErrorListener()
         parser.addErrorListener(error_listener)
-        compiler_listener = ExplorerScriptCompilerListener(self.performance_progress_list_var_name)
-        parser.addParseListener(compiler_listener)
+        compiler_visitor = ExplorerScriptRoutineCompilerVisitor(self.performance_progress_list_var_name)
 
         # Start Parsing
+        tree = parser.start()
+
+        # Look for errors
+        if len(error_listener.syntax_errors) > 0:
+            # We only return the first error, the rest is probably not relevant, since
+            # the first screws everything over.
+            raise ParseError(error_listener.syntax_errors[0])
+
+        # Start Compiling
         try:
             try:
-                parser.start()
+                compiler_visitor.visit(tree)
             except Exception as ex:
                 # due to the stack nature of the decompile listener, we get many stack exceptions after raising
                 # the first. Raise the last exception in the context chain.
@@ -100,22 +108,16 @@ class ExplorerScriptSsbCompiler:
         except AssertionError as e:
             raise ValueError(str(e)) from e
 
-        # Look for errors
-        if len(error_listener.syntax_errors) > 0:
-            # We only return the first error, the rest is probably not relevant, since
-            # the first screws everything over.
-            raise ParseError(error_listener.syntax_errors[0])
-
-        assert routine_op_offsets_are_ordered(compiler_listener.routine_ops)
+        assert routine_op_offsets_are_ordered(compiler_visitor.routine_ops)
 
         # Copy from listener / remove labels and label jumps
-        label_finalizer = LabelFinalizer(strip_last_label(compiler_listener.routine_ops))
+        label_finalizer = LabelFinalizer(strip_last_label(compiler_visitor.routine_ops))
 
         self.routine_ops = OpsLabelJumpToRemover(
             label_finalizer.routines, label_finalizer.label_offsets
         ).routines
-        self.routine_infos = compiler_listener.routine_infos
-        self.named_coroutines = compiler_listener.named_coroutines
-        self.source_map = compiler_listener.source_map_builder.build()
+        self.routine_infos = compiler_visitor.routine_infos
+        self.named_coroutines = compiler_visitor.named_coroutines
+        self.source_map = compiler_visitor.source_map_builder.build()
 
         # Done!

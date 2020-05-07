@@ -522,6 +522,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitStart" ):
                 listener.exitStart(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStart" ):
+                return visitor.visitStart(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -601,6 +607,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt" ):
                 listener.exitStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStmt" ):
+                return visitor.visitStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -695,6 +707,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitSimple_stmt" ):
                 listener.exitSimple_stmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSimple_stmt" ):
+                return visitor.visitSimple_stmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -779,6 +797,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitCntrl_stmt" ):
                 listener.exitCntrl_stmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCntrl_stmt" ):
+                return visitor.visitCntrl_stmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -830,6 +854,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitJump" ):
                 listener.exitJump(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitJump" ):
+                return visitor.visitJump(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -895,6 +925,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitCtx_block" ):
                 listener.exitCtx_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCtx_block" ):
+                return visitor.visitCtx_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -950,6 +986,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitCtx_header" ):
                 listener.exitCtx_header(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCtx_header" ):
+                return visitor.visitCtx_header(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1038,6 +1080,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf_block" ):
                 listener.exitIf_block(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_block" ):
+                return visitor.visitIf_block(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1173,6 +1221,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitElseif_block" ):
                 listener.exitElseif_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitElseif_block" ):
+                return visitor.visitElseif_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1267,6 +1321,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitElse_block" ):
                 listener.exitElse_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitElse_block" ):
+                return visitor.visitElse_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1338,6 +1398,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf_header" ):
                 listener.exitIf_header(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_header" ):
+                return visitor.visitIf_header(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1415,6 +1481,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitIf_h_negatable" ):
                 listener.exitIf_h_negatable(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_h_negatable" ):
+                return visitor.visitIf_h_negatable(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1480,6 +1552,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf_h_op" ):
                 listener.exitIf_h_op(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_h_op" ):
+                return visitor.visitIf_h_op(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1549,6 +1627,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf_h_bit" ):
                 listener.exitIf_h_bit(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_h_bit" ):
+                return visitor.visitIf_h_bit(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1627,6 +1711,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf_h_scn" ):
                 listener.exitIf_h_scn(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf_h_scn" ):
+                return visitor.visitIf_h_scn(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1711,6 +1801,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSwitch_block" ):
                 listener.exitSwitch_block(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_block" ):
+                return visitor.visitSwitch_block(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1818,6 +1914,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitMessage_switch_block" ):
                 listener.exitMessage_switch_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMessage_switch_block" ):
+                return visitor.visitMessage_switch_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1914,6 +2016,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitSingle_case_block" ):
                 listener.exitSingle_case_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSingle_case_block" ):
+                return visitor.visitSingle_case_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1994,6 +2102,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDefault" ):
                 listener.exitDefault(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDefault" ):
+                return visitor.visitDefault(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2080,6 +2194,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSwitch_header" ):
                 listener.exitSwitch_header(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_header" ):
+                return visitor.visitSwitch_header(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2168,6 +2288,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitSwitch_h_scn" ):
                 listener.exitSwitch_h_scn(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_h_scn" ):
+                return visitor.visitSwitch_h_scn(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2223,6 +2349,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSwitch_h_random" ):
                 listener.exitSwitch_h_random(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_h_random" ):
+                return visitor.visitSwitch_h_random(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2280,6 +2412,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitSwitch_h_dungeon_mode" ):
                 listener.exitSwitch_h_dungeon_mode(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_h_dungeon_mode" ):
+                return visitor.visitSwitch_h_dungeon_mode(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2331,6 +2469,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSwitch_h_sector" ):
                 listener.exitSwitch_h_sector(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwitch_h_sector" ):
+                return visitor.visitSwitch_h_sector(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2388,6 +2532,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitCase_header" ):
                 listener.exitCase_header(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCase_header" ):
+                return visitor.visitCase_header(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2462,6 +2612,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitCase_h_menu" ):
                 listener.exitCase_h_menu(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCase_h_menu" ):
+                return visitor.visitCase_h_menu(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2518,6 +2674,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitCase_h_menu2" ):
                 listener.exitCase_h_menu2(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCase_h_menu2" ):
+                return visitor.visitCase_h_menu2(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2572,6 +2734,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitCase_h_op" ):
                 listener.exitCase_h_op(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCase_h_op" ):
+                return visitor.visitCase_h_op(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2639,6 +2807,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitForever_block" ):
                 listener.exitForever_block(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForever_block" ):
+                return visitor.visitForever_block(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2724,6 +2898,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFor_block" ):
                 listener.exitFor_block(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFor_block" ):
+                return visitor.visitFor_block(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2818,6 +2998,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitWhile_block" ):
                 listener.exitWhile_block(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhile_block" ):
+                return visitor.visitWhile_block(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2911,6 +3097,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignment" ):
                 listener.exitAssignment(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment" ):
+                return visitor.visitAssignment(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3016,6 +3208,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitAssignment_regular" ):
                 listener.exitAssignment_regular(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_regular" ):
+                return visitor.visitAssignment_regular(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3089,6 +3287,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitAssignment_clear" ):
                 listener.exitAssignment_clear(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_clear" ):
+                return visitor.visitAssignment_clear(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3134,6 +3338,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignment_initial" ):
                 listener.exitAssignment_initial(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_initial" ):
+                return visitor.visitAssignment_initial(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3183,6 +3393,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignment_reset" ):
                 listener.exitAssignment_reset(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_reset" ):
+                return visitor.visitAssignment_reset(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3245,6 +3461,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitAssignment_adv_log" ):
                 listener.exitAssignment_adv_log(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_adv_log" ):
+                return visitor.visitAssignment_adv_log(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3304,6 +3526,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignment_dungeon_mode" ):
                 listener.exitAssignment_dungeon_mode(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_dungeon_mode" ):
+                return visitor.visitAssignment_dungeon_mode(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3377,6 +3605,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitAssignment_scn" ):
                 listener.exitAssignment_scn(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignment_scn" ):
+                return visitor.visitAssignment_scn(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3441,6 +3675,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitValue_of" ):
                 listener.exitValue_of(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValue_of" ):
+                return visitor.visitValue_of(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3496,6 +3736,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitScn_var" ):
                 listener.exitScn_var(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitScn_var" ):
+                return visitor.visitScn_var(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3573,6 +3819,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitConditional_operator" ):
                 listener.exitConditional_operator(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitConditional_operator" ):
+                return visitor.visitConditional_operator(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3631,6 +3883,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitAssign_operator" ):
                 listener.exitAssign_operator(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssign_operator" ):
+                return visitor.visitAssign_operator(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3685,6 +3943,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFuncdef" ):
                 listener.exitFuncdef(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFuncdef" ):
+                return visitor.visitFuncdef(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3752,6 +4016,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitSimple_def" ):
                 listener.exitSimple_def(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSimple_def" ):
+                return visitor.visitSimple_def(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3802,6 +4072,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitCoro_def" ):
                 listener.exitCoro_def(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCoro_def" ):
+                return visitor.visitCoro_def(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3867,6 +4143,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitFor_target_def" ):
                 listener.exitFor_target_def(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFor_target_def" ):
+                return visitor.visitFor_target_def(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -3921,6 +4203,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitInteger_like" ):
                 listener.exitInteger_like(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInteger_like" ):
+                return visitor.visitInteger_like(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3977,6 +4265,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitOperation" ):
                 listener.exitOperation(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitOperation" ):
+                return visitor.visitOperation(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4044,6 +4338,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFunc_suite" ):
                 listener.exitFunc_suite(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFunc_suite" ):
+                return visitor.visitFunc_suite(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4115,6 +4415,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitFunc_alias" ):
                 listener.exitFunc_alias(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFunc_alias" ):
+                return visitor.visitFunc_alias(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -4168,6 +4474,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitArglist" ):
                 listener.exitArglist(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitArglist" ):
+                return visitor.visitArglist(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4239,6 +4551,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPos_argument" ):
                 listener.exitPos_argument(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPos_argument" ):
+                return visitor.visitPos_argument(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4320,6 +4638,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitPosition_marker" ):
                 listener.exitPosition_marker(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPosition_marker" ):
+                return visitor.visitPosition_marker(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -4377,6 +4701,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitPosition_marker_arg" ):
                 listener.exitPosition_marker_arg(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPosition_marker_arg" ):
+                return visitor.visitPosition_marker_arg(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -4429,6 +4759,12 @@ class ExplorerScriptParser ( Parser ):
             if hasattr( listener, "exitLabel" ):
                 listener.exitLabel(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLabel" ):
+                return visitor.visitLabel(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -4474,6 +4810,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitString" ):
                 listener.exitString(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitString" ):
+                return visitor.visitString(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4543,6 +4885,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLang_string" ):
                 listener.exitLang_string(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLang_string" ):
+                return visitor.visitLang_string(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -4615,6 +4963,12 @@ class ExplorerScriptParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLang_string_argument" ):
                 listener.exitLang_string_argument(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLang_string_argument" ):
+                return visitor.visitLang_string_argument(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
