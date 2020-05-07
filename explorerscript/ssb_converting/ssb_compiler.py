@@ -89,7 +89,14 @@ class ExplorerScriptSsbCompiler:
 
         # Start Parsing
         try:
-            parser.start()
+            try:
+                parser.start()
+            except Exception as ex:
+                # due to the stack nature of the decompile listener, we get many stack exceptions after raising
+                # the first. Raise the last exception in the context chain.
+                while ex.__context__ is not None:
+                    ex = ex.__context__
+                raise ex
         except AssertionError as e:
             raise ValueError(str(e)) from e
 

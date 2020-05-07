@@ -74,7 +74,7 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
                 tmpl.set_jump_is_positive(is_positive)
                 return tmpl
 
-        raise SsbCompilerError("Unknown if operation.")
+        raise SsbCompilerError(f"Unknown if operation in line {self.ctx.start.line}.")
 
     def add(self, obj: any):
         if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \
