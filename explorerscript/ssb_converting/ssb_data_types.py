@@ -123,6 +123,9 @@ class SsbOpParamConstant:
     def __str__(self):
         return self.name
 
+    def __repr__(self):
+        return str(self)
+
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamConstant):
             return False
@@ -136,6 +139,9 @@ class SsbOpParamConstString:
 
     def __str__(self):
         return f"'{escape_newlines(escape_quotes(self.name))}'"
+
+    def __repr__(self):
+        return f'str({str(self)})'
 
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamConstString):

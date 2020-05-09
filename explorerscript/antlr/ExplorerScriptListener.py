@@ -17,6 +17,24 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#import_stmt.
+    def enterImport_stmt(self, ctx:ExplorerScriptParser.Import_stmtContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#import_stmt.
+    def exitImport_stmt(self, ctx:ExplorerScriptParser.Import_stmtContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#macrodef.
+    def enterMacrodef(self, ctx:ExplorerScriptParser.MacrodefContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#macrodef.
+    def exitMacrodef(self, ctx:ExplorerScriptParser.MacrodefContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#stmt.
     def enterStmt(self, ctx:ExplorerScriptParser.StmtContext):
         pass
@@ -50,6 +68,15 @@ class ExplorerScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by ExplorerScriptParser#jump.
     def exitJump(self, ctx:ExplorerScriptParser.JumpContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#macro_call.
+    def enterMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#macro_call.
+    def exitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
         pass
 
 

@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 import json
-from typing import Dict, Tuple, List, Union
+from typing import Dict, Tuple, List, Union, Optional
 
 
 class SourceMapPositionMark:
@@ -114,44 +114,95 @@ class SourceMap:
 
     This also provides information about position marks used in the source file.
     """
-    def __init__(self, mappings: Dict[int, Tuple[int, int]], position_marks: List[SourceMapPositionMark]):
-        """Init from a dictionary of mappings
-        (keys are routine ids, values are dict of line numbers + column for opcodes)"""
+    def __init__(
+            self,
+            mappings: Dict[int, Tuple[int, int]],
+            position_marks: List[SourceMapPositionMark],
+            mappings_macros: Dict[int, Tuple[Optional[str], str, int, int]],
+            position_marks_macro: List[Tuple[Optional[str], str, SourceMapPositionMark]]
+    ):
+        """
+        mappings:               Actual main source mappings:
+                                Keys are opcode offsets, values are tuple of line numbers + column
+        position_marks:         Encoded position marks
+        mappings_macro:         Source mappings in macros.
+                                Keys are opcode offsets, values are a tuple of
+                                - relative path to source file name (if not in this file; then None)
+                                - macro name
+                                - line number in the source file of this macro
+                                - column
+        position_marks_macro:   Position marks encoded in macros. Values are tuple of:
+                                - relative file path, macro name, position mark
+        """
         self._mappings = mappings
-        self.position_marks = position_marks
+        self._position_marks = position_marks
+        # TODO: Make retrievable directly with get_position?
+        self._mappings_macros = mappings_macros
+        self._position_marks_macro = position_marks_macro
 
-    def get_position(self, op_offset: int) -> Tuple[int, int]:
+    def get_op_line_and_col__direct(self, op_offset: int) -> Tuple[int, int]:
         if op_offset in self._mappings:
             return self._mappings[op_offset]
 
+    def get_op_line_and_col__macros(self, op_offset: int) -> Tuple[Optional[str], str, int, int]:
+        if op_offset in self._mappings_macros:
+            return self._mappings_macros[op_offset]
+        
+    def get_position_marks__direct(self) -> List[SourceMapPositionMark]:
+        return self._position_marks
+
+    def get_position_marks__macros(self) -> List[Tuple[Optional[str], str, SourceMapPositionMark]]:
+        return self._position_marks_macro
+
     def __iter__(self):
+        """
+        Iterates over all source map entries, including the macro entries.
+        If it's a macro entry, macro_name is a string.
+        """
         for opcode_offset, (line_number, column) in self._mappings.items():
-            yield opcode_offset, line_number, column
+            yield None, None, opcode_offset, line_number, column
+        for opcode_offset, (macro_file, macro_name, line_number, column) in self._mappings_macros.items():
+            yield macro_file, macro_name, opcode_offset, line_number, column
 
     def __eq__(self, other):
         if not isinstance(other, SourceMap):
             return False
-        return self._mappings == other._mappings and self.position_marks == other.position_marks
+        return self._mappings == other._mappings and self._position_marks == other._position_marks
 
-    def serialize(self) -> str:
+    def __str__(self):
+        return self.serialize()
+
+    def serialize(self, pretty=False) -> str:
         return json.dumps({
             'map': self._mappings,
-            'pos_marks': [m.serialize() for m in self.position_marks]
-        })
+            'pos_marks': [m.serialize() for m in self._position_marks],
+            'macros': {
+                'map': self._mappings_macros,
+                'pos_marks': [[y[0], y[1], y[2].serialize()] for y in self._position_marks_macro]
+            }
+        }, indent=2 if pretty else None)
 
     @classmethod
     def deserialize(cls, json_str: str) -> 'SourceMap':
         json_d = json.loads(json_str)
         return SourceMap(
             {x: (y[0], y[1]) for x, y in json_d['map'].items()},
-            [SourceMapPositionMark.deserialize(m) for m in json_d['pos_marks']]
+            [SourceMapPositionMark.deserialize(m) for m in json_d['pos_marks']],
+            {x: (y[0], y[1], y[2], y[3]) for x, y in json_d['macros']['map'].items()},
+            [(y[0], y[1], SourceMapPositionMark.deserialize(y[2])) for y in json_d['macros']['pos_marks']],
         )
+
+    @classmethod
+    def create_empty(cls):
+        return cls({}, [], {}, [])
 
 
 class SourceMapBuilder:
     def __init__(self):
         self._mappings = {}
         self._pos_marks = []
+        self._mappings_macros = {}
+        self._pos_marks_macros = []
 
     def add_opcode(self, op_offset, line_number, column):
         self._mappings[op_offset] = (line_number, column)
@@ -160,4 +211,14 @@ class SourceMapBuilder:
         self._pos_marks.append(position_mark)
 
     def build(self):
-        return SourceMap(self._mappings, self._pos_marks)
+        return SourceMap(self._mappings, self._pos_marks, self._mappings_macros, self._pos_marks_macros)
+
+    def add_macro_opcode(self, op_offset, if_incl_rel_path: Optional[str], macro_name: str, line_number, column):
+        """Add an operation that has it's source code in a macro.
+        If the macro is in a different file, if_incl_rel_path should contain the relative path to this file
+        from the original source file that this source map is generated for."""
+        self._mappings_macros[op_offset] = (if_incl_rel_path, macro_name, line_number, column)
+
+    def add_macro_position_mark(self, if_incl_rel_path: Optional[str], macro_name: str, position_mark: SourceMapPositionMark):
+        """Add a position mark, that has it's source code in a macro. See notes for add_macro_opcode"""
+        self._pos_marks_macros.append((if_incl_rel_path, macro_name, position_mark))

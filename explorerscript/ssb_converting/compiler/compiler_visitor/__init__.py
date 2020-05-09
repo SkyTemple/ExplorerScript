@@ -20,25 +20,4 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant
-
-
-class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant]:
-        self.ctx: ExplorerScriptParser.Integer_likeContext
-        if self.ctx.INTEGER():
-            return int(str(self.ctx.INTEGER()))
-        if self.ctx.IDENTIFIER():
-            return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
-        if self.ctx.VARIABLE():
-            return SsbOpParamConstant(str(self.ctx.VARIABLE()))
-        raise SsbCompilerError("Unknown 'integer like'.")
-
-    def add(self, obj: any):
-        # Doesn't accept anything.
-        self._raise_add_error(obj)

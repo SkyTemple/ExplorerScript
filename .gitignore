@@ -106,5 +106,6 @@ venv.bak/
 .mypy_cache/
 ### JetBrains
 .idea/
+/gen/
 ### skytemple
 dbg_output

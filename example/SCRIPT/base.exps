@@ -1,0 +1,16 @@
+import "dir/macros1.exps";
+
+macro local_macro($i1, $i2, $i3, $aString) {
+    debug_Print("Begin LocalMacro");
+    vars($i1, $i2, $i3, $aString);
+    ~remote_macro($i2, $aString);
+    debug_Print("End LocalMacro");
+}
+
+def 0 {
+    debug_Print("Before Macro");
+    ~local_macro(1, 2, 3, "String");
+    ~local_macro(10, 9, 8, "Another one");
+    //~local_macro("not enough arguments");
+    debug_Print("After Macro");
+}

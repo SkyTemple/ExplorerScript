@@ -27,17 +27,22 @@ from explorerscript.source_map import SourceMap
 
 class SourceMapVisualizer:
     """Visualizes a source map by adding comments to it's source code pointing to the opcodes."""
-    def __init__(self, source_code: str, source_map: SourceMap):
+    def __init__(self, source_code: str, source_map: SourceMap, apply_for_macro_calls=None):
         self.source_code = source_code
         self._source_map = source_map
         # A dict of a list of strings to insert at given lines
         self._inserts: Dict[int, List[str]] = {}
 
         # Opcodes
-        for opcode_offset, line_number, column in self._source_map:
-            self._insert_comment(line_number, f'col: {column} - 0x{opcode_offset:0x}')
+        for macro_file, macro_name, opcode_offset, line_number, column in self._source_map:
+            if macro_name is None:
+                self._insert_comment(line_number, f'col: {column} - 0x{opcode_offset:0x}')
+            else:
+                if macro_file == apply_for_macro_calls:
+                    self._insert_comment(line_number, f'~{macro_name}:: '
+                                                      f'col: {column} - 0x{opcode_offset:0x}')
         # Position Marks
-        for pos_mark in self._source_map.position_marks:
+        for pos_mark in self._source_map.get_position_marks__direct():
             self._insert_comment(pos_mark.line_number, f'{pos_mark}')
 
     def write(self) -> str:

@@ -24,9 +24,8 @@ from typing import Type, List, TypeVar, Tuple
 
 from antlr4 import ParserRuleContext
 
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.source_map import SourceMapBuilder
+from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_adventure_log import \
     AssignmentAdventureLogCompileHandler
@@ -96,66 +95,29 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.swi
     SwitchHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.sector import \
     SwitchHeaderSectorCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.functions.coro_def import CoroDefCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.functions.for_target_def import ForTargetDefCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.functions.simple_def import SimpleDefCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.null import NullCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.operations.macro_call import MacroCallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import \
     ControlStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
-from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 
 
 T = AbstractCompileHandler
 
 
-class ExplorerScriptRoutineCompilerVisitor(ExplorerScriptVisitor):
-    """Builds the SSB data structures while visiting the parsing tree."""
-    def __init__(self, performance_progress_list_var_name: str):
-        # The information about routines stored in the ssb.
-        self.routine_infos: List[SsbRoutineInfo] = []
-        self.routine_ops: List[List[SsbOperation]] = []
-        self.named_coroutines: List[str] = []
-        # Source map
-        self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
-
-        # Global compilation context for the handlers
-        self.compiler_ctx = CompilerCtx(
-            Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name
-        )
-
-        self._active_routine_id = -1
+class StatementVisitor(ExplorerScriptVisitor):
+    """This listener collects a single statements from a routine / macro."""
+    def __init__(self, root_handler: AbstractCompileHandler, compiler_ctx: CompilerCtx):
+        self.compiler_ctx = compiler_ctx
         # This stack contains the handlers for the blocks during compilation.
         # The bottom is always the null handler, which raises an assertion error if any method is called.
-        self._current_handlers: List[AbstractCompileHandler] = [NullCompileHandler(None, self.compiler_ctx)]
-
-    def visitSimple_def(self, ctx: ExplorerScriptParser.Simple_defContext):
-        retval, h = self._push_handler(ctx, SimpleDefCompileHandler)
-        self._active_routine_id = h.get_new_routine_id(self._active_routine_id)
-        self._enlarge_routine_info()
-        self.routine_infos[self._active_routine_id], self.routine_ops[self._active_routine_id] = h.collect()
-        return retval
-
-    def visitCoro_def(self, ctx: ExplorerScriptParser.Coro_defContext):
-        retval, h = self._push_handler(ctx, CoroDefCompileHandler)
-        self._active_routine_id = h.get_new_routine_id(self._active_routine_id)
-        self._enlarge_routine_info()
-
-        self.named_coroutines[self._active_routine_id], \
-            self.routine_infos[self._active_routine_id], \
-            self.routine_ops[self._active_routine_id] = h.collect()
-        return retval
-
-    def visitFor_target_def(self, ctx: ExplorerScriptParser.For_target_defContext):
-        retval, h = self._push_handler(ctx, ForTargetDefCompileHandler)
-        self._active_routine_id = h.get_new_routine_id(self._active_routine_id)
-        self._enlarge_routine_info()
-        self.routine_infos[self._active_routine_id], self.routine_ops[self._active_routine_id] = h.collect()
-        return retval
+        self._current_handlers: List[AbstractCompileHandler] = [
+            NullCompileHandler(None, self.compiler_ctx), root_handler
+        ]
 
     def visitCntrl_stmt(self, ctx: ExplorerScriptParser.Cntrl_stmtContext):
         return self._push_handler_and_add(ctx, ControlStatementCompileHandler)
@@ -301,8 +263,8 @@ class ExplorerScriptRoutineCompilerVisitor(ExplorerScriptVisitor):
     def visitLang_string_argument(self, ctx: ExplorerScriptParser.Lang_string_argumentContext):
         return self._push_handler_and_add(ctx, LangStringArgumentCompileHandler)
 
-    def shouldVisitNextChild(self, node, currentResult):
-        return True
+    def visitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
+        return self._push_handler_and_add(ctx, MacroCallCompileHandler)
 
     def _push_handler_and_add(self, ctx: ParserRuleContext, compile_handler: Type[AbstractCompileHandler], **kwargs) -> any:
         """Pushes the handler on the stack, visits the children and when done adds the handler to the parent handler."""
@@ -318,11 +280,3 @@ class ExplorerScriptRoutineCompilerVisitor(ExplorerScriptVisitor):
         assert id(h.ctx) == id(ctx), "Fatal compilation error: Unexpected compilation handler on stack."
         assert not isinstance(h, NullCompileHandler), "Fatal compilation error: Stack error."
         return retval, h
-
-    def _enlarge_routine_info(self):
-        if len(self.routine_infos) - 1 < self._active_routine_id:
-            needed = self._active_routine_id - len(self.routine_infos) + 1
-            for i in range(0, needed):
-                self.routine_infos.append(None)
-                self.routine_ops.append([])
-                self.named_coroutines.append([])

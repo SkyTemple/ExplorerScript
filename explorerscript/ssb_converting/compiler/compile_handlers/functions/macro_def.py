@@ -20,25 +20,26 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
+from typing import List
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 
 
-class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant]:
-        self.ctx: ExplorerScriptParser.Integer_likeContext
-        if self.ctx.INTEGER():
-            return int(str(self.ctx.INTEGER()))
-        if self.ctx.IDENTIFIER():
-            return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
-        if self.ctx.VARIABLE():
-            return SsbOpParamConstant(str(self.ctx.VARIABLE()))
-        raise SsbCompilerError("Unknown 'integer like'.")
+class MacroDefCompileHandler(AbstractFuncdefCompileHandler):
+    def collect(self) -> any:
+        """Collects macro operations."""
+        return self.collect_ops()
 
-    def add(self, obj: any):
-        # Doesn't accept anything.
-        self._raise_add_error(obj)
+    def get_new_routine_id(self, old_id: int) -> int:
+        """n/a, use get_name"""
+        return -1
+
+    def get_name(self) -> str:
+        """Returns the macro name"""
+        return str(self.ctx.IDENTIFIER())
+
+    def get_variables(self) -> List[str]:
+        vars = []
+        for var in self.ctx.VARIABLE():
+            vars.append(str(var))
+        return vars

@@ -38,7 +38,11 @@ simple_def: DEF INTEGER func_suite;
 coro_def: CORO IDENTIFIER func_suite;
 for_target_def: DEF INTEGER FOR_TARGET OPEN_PAREN integer_like CLOSE_PAREN func_suite;
 
-integer_like: INTEGER | IDENTIFIER;
+// In SSBScript identifiers and variables are not distinguished.
+// For ExplorerScript:
+//   Variables and identifier are treated the same in funcdefs but may or may not be different things
+//   in macros, depending on if they are defined in the header or not.
+integer_like: INTEGER | IDENTIFIER | VARIABLE;
 
 stmt: (operation | label) ';';
 operation: IDENTIFIER OPEN_PAREN arglist? CLOSE_PAREN;
@@ -83,7 +87,15 @@ PREVIOUS: 'previous';
 POSITION: 'Position';
 
 IDENTIFIER
- : [$]?[a-zA-Z_][0-9a-zA-Z_]*
+ : IDENTIFIER_BASE
+ ;
+
+VARIABLE
+ : [$] IDENTIFIER_BASE
+ ;
+
+MACRO_CALL
+ : [~] IDENTIFIER_BASE
  ;
 
 INTEGER
@@ -180,4 +192,8 @@ fragment BLOCK_COMMENT
 
 fragment LINE_COMMENT
    : '//' ~ [\r\n]*
+   ;
+
+fragment IDENTIFIER_BASE
+   : [a-zA-Z_][0-9a-zA-Z_]*
    ;

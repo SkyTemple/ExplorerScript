@@ -20,15 +20,22 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
+import os
+from pathlib import PurePosixPath, PurePath
+from typing import List, Optional, Dict
 
 from antlr4 import InputStream, CommonTokenStream
 
 from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.error import ParseError
+from explorerscript.error import ParseError, SsbCompilerError
+from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMap
-from explorerscript.ssb_converting.compiler.compiler_visitor import ExplorerScriptRoutineCompilerVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.has_routines_visitor import HasRoutinesVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.import_visitor import ImportVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.macro_resolution_order import MacroResolutionOrderVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.macro_visitor import MacroVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.routine_visitor import RoutineVisitor
 from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalizer
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
@@ -43,7 +50,12 @@ class ExplorerScriptSsbCompiler:
     skytemple_files.script.ssb.script_compiler.ScriptCompiler and
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
-    def __init__(self, performance_progress_list_var_name: str):
+    def __init__(self, performance_progress_list_var_name: str,
+                 lookup_paths: List[str] = None, recursion_check: List[str] = None):
+        if lookup_paths is None:
+            lookup_paths = []
+        if recursion_check is None:
+            recursion_check = []
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
         self.routine_infos: Optional[List[SsbRoutineInfo]] = None
@@ -63,12 +75,37 @@ class ExplorerScriptSsbCompiler:
         # Source map for the compiled ssb routine ops.
         self.source_map: Optional[SourceMap] = None
 
+        # The raw file paths in the import headers of the compiled ExplorerScript file.
+        self.imports: List[str] = []
+
+        # The macros of by this script
+        self.macros: Dict[str, ExplorerScriptMacro] = {}
+
+        # The order of which the macros in this file have to be processed, due to dependencies
+        self.macro_resolution_order: List[str] = []
+
+        ####
+
         # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
         self.performance_progress_list_var_name: str = performance_progress_list_var_name
 
-    def compile(self, explorerscript_src: str):
+        # A list of directories to search for imports. The paths are searched in order and the first match is taken.
+        # Unlike the import statement paths, this is expected to be a set of platform specific paths (Windows or Unix
+        # style depending on the current platform)
+        self.lookup_paths = lookup_paths
+
+        # A list of absolute paths of files that were already 'import'ed. If the compiler tries to import one of these
+        # files again, an SsbCompilerError is raised.
+        self.recursion_check = recursion_check
+
+    def compile(self, explorerscript_src: str, file_name: str, macros_only=False, original_base_file=None):
         """
         After compiling, the components are present in this object's attributes.
+
+        file_name is the full path to the file that is being compiled.
+        original_base_file is the full path to the file that originally started an import chain. If not given, file_name
+        is used.
+        If macros_only is True, then an exception is raised, if the script files contains any routines.
 
         :raises: ParseError: On parsing errors
         :raises: SsbCompilerError: On logical compiling errors
@@ -77,6 +114,11 @@ class ExplorerScriptSsbCompiler:
         self.routine_infos = None
         self.routine_ops = None
         self.named_coroutines = None
+        self.source_map = None
+        self.imports = []
+        self.macros = {}
+        if original_base_file is None:
+            original_base_file = file_name
 
         input_stream = InputStream(explorerscript_src)
         lexer = ExplorerScriptLexer(input_stream)
@@ -84,7 +126,6 @@ class ExplorerScriptSsbCompiler:
         parser = ExplorerScriptParser(stream)
         error_listener = SyntaxErrorListener()
         parser.addErrorListener(error_listener)
-        compiler_visitor = ExplorerScriptRoutineCompilerVisitor(self.performance_progress_list_var_name)
 
         # Start Parsing
         tree = parser.start()
@@ -95,12 +136,46 @@ class ExplorerScriptSsbCompiler:
             # the first screws everything over.
             raise ParseError(error_listener.syntax_errors[0])
 
+        # Collect imports
+        self.imports = ImportVisitor().visit(tree)
+
+        # Resolve imports and load macros in the imported files
+        for subfile_path in self._resolve_imported_file(os.path.dirname(file_name)):
+            if subfile_path in self.recursion_check:
+                raise SsbCompilerError(f"Infinite recursion detected while trying to load "
+                                       f"an ExplorerScript file from {subfile_path}.\n"
+                                       f"Tried loading from: {file_name}.")
+            subfile_compiler = self.__class__(self.performance_progress_list_var_name, self.lookup_paths,
+                                              recursion_check=self.recursion_check + [file_name])
+            with open(subfile_path, 'r') as f:
+                subfile_compiler.compile(f.read(), subfile_path, macros_only=True)
+            self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
+
+        # Sort the list of macros by how they are used
+        self.macro_resolution_order = MacroResolutionOrderVisitor(self.macros).visit(tree)
+
+        # Loads and compiles modules in base file
+        # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).
+        self.macros.update(self._macros_add_filenames(MacroVisitor(
+            self.performance_progress_list_var_name, self.macros, self.macro_resolution_order
+        ).visit(tree), None, file_name))
+
+        # Check if macros_only
+        if macros_only:
+            # Check if the file contains any routines
+            if HasRoutinesVisitor().visit(parser.start()):
+                raise SsbCompilerError(f"{os.path.basename(file_name)}: Macro scripts must not contain any routines.")
+            return self
+
         # Start Compiling
         try:
             try:
+                compiler_visitor = RoutineVisitor(
+                    self.performance_progress_list_var_name, self.macros
+                )
                 compiler_visitor.visit(tree)
             except Exception as ex:
-                # due to the stack nature of the decompile listener, we get many stack exceptions after raising
+                # due to the stack nature of the decompile visitor, we get many stack exceptions after raising
                 # the first. Raise the last exception in the context chain.
                 while ex.__context__ is not None:
                     ex = ex.__context__
@@ -121,3 +196,44 @@ class ExplorerScriptSsbCompiler:
         self.source_map = compiler_visitor.source_map_builder.build()
 
         # Done!
+        return self
+
+    def _resolve_imported_file(self, dir_name):
+        """
+        Returns the full paths to all imports specified in self.imports.
+        If any file can not be found, raises an SsbCompilerError.
+        """
+        fs = []
+        for import_file in self.imports:
+            if import_file.startswith('.') or import_file.startswith('/'):
+                # Relative or absolute import
+                abs_path = os.path.realpath(str(PurePath(PurePosixPath(dir_name).joinpath(PurePosixPath(import_file)))))
+                if not os.path.exists(abs_path):
+                    raise SsbCompilerError(f"The file to import ('{import_file}') was not found.")
+            else:
+                # Relative to one of the lookup paths
+                abs_path = None
+                path_parts = import_file.split('/')
+                if '.' in path_parts or '..' in path_parts:
+                    raise SsbCompilerError(f"Invalid import: '{import_file}'. Non absolute/relative "
+                                           f"imports must not contain relative paths.")
+                for lp in self.lookup_paths:
+                    abs_path_c = os.path.realpath(str(PurePath(dir_name).joinpath(PurePosixPath(lp).joinpath(import_file))))
+                    if os.path.exists(abs_path_c):
+                        abs_path = abs_path_c
+                        break
+                if abs_path is None:
+                    raise SsbCompilerError(f"The file to import ('{import_file}') was not found.")
+            fs.append(abs_path)
+
+        return fs
+
+    def _macros_add_filenames(self, macros: Dict[str, ExplorerScriptMacro],
+                              basefile_path: Optional[str], subfile_path: str):
+        """Updates path information of all of the macros. See the field descriptions for more details"""
+        for macro in macros.values():
+            macro.included__absolute_path = subfile_path
+            if basefile_path is not None:
+                macro.included__used_by = os.path.relpath(basefile_path, os.path.dirname(subfile_path))
+                macro.included__relative_path = os.path.relpath(subfile_path, os.path.dirname(basefile_path))
+        return macros

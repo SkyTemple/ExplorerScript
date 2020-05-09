@@ -34,6 +34,7 @@ if TYPE_CHECKING:
         CaseBlockCompileHandler
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import \
         DefaultCaseBlockCompileHandler
+    from explorerscript.macro import ExplorerScriptMacro
 
 
 class Counter:
@@ -60,13 +61,15 @@ class Counter:
 
 class CompilerCtx:
     def __init__(self, counter_ops: Counter, source_map_builder: SourceMapBuilder,
-                 collected_labels: Dict[str, SsbLabel],
-                 counter_labels: Counter, performance_progress_list_var_name: str):
+                 collected_labels: Dict[str, SsbLabel], counter_labels: Counter,
+                 performance_progress_list_var_name: str, macros: Dict[str, 'ExplorerScriptMacro']):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
         # A dict that assigns all collected labels their next opcode id.
         self.collected_labels = collected_labels
         self.counter_labels = counter_labels
+        # Loaded macros that can be used for macro calls.
+        self.macros: Dict[str, 'ExplorerScriptMacro'] = macros
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 

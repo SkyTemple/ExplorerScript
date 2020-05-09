@@ -20,25 +20,31 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
-
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant
+from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 
 
-class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant]:
-        self.ctx: ExplorerScriptParser.Integer_likeContext
-        if self.ctx.INTEGER():
-            return int(str(self.ctx.INTEGER()))
-        if self.ctx.IDENTIFIER():
-            return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
-        if self.ctx.VARIABLE():
-            return SsbOpParamConstant(str(self.ctx.VARIABLE()))
-        raise SsbCompilerError("Unknown 'integer like'.")
+class HasRoutinesVisitor(ExplorerScriptVisitor):
+    """Visitor that returns whether or not the ExplorerScript tree contains any routines."""
+    def __init__(self):
+        pass
 
-    def add(self, obj: any):
-        # Doesn't accept anything.
-        self._raise_add_error(obj)
+    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
+        # Are not visited.
+        return False
+
+    def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext):
+        return True
+
+    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
+        # Are not visited.
+        return False
+
+    def defaultResult(self):
+        return False
+
+    def visitTerminal(self, node):
+        return False
+
+    def aggregateResult(self, aggregate, nextResult):
+        return aggregate or nextResult

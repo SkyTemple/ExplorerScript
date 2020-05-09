@@ -14,6 +14,16 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#import_stmt.
+    def visitImport_stmt(self, ctx:ExplorerScriptParser.Import_stmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExplorerScriptParser#macrodef.
+    def visitMacrodef(self, ctx:ExplorerScriptParser.MacrodefContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExplorerScriptParser#stmt.
     def visitStmt(self, ctx:ExplorerScriptParser.StmtContext):
         return self.visitChildren(ctx)
@@ -31,6 +41,11 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by ExplorerScriptParser#jump.
     def visitJump(self, ctx:ExplorerScriptParser.JumpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExplorerScriptParser#macro_call.
+    def visitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
         return self.visitChildren(ctx)
 
 

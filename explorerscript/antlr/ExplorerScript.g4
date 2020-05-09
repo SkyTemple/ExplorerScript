@@ -31,13 +31,18 @@ import SsbCommon;
  * parser rules
  */
 
-start: funcdef* EOF;
+start: import_stmt* (macrodef | funcdef)* EOF;
 
-stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block );
+import_stmt: IMPORT STRING_LITERAL ';';
+
+macrodef: MACRO IDENTIFIER OPEN_PAREN VARIABLE? (',' VARIABLE)* CLOSE_PAREN func_suite;
+
+stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block | macro_call );
 simple_stmt: (operation | label | cntrl_stmt | jump | assignment) ';';
 
 cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_LOOP;
 jump: JUMP AT IDENTIFIER;
+macro_call: MACRO_CALL OPEN_PAREN arglist? CLOSE_PAREN ';';
 
 // a ctx block needs exactly one simple statement, we enforce this on parser level.
 // warning: the parser also accepts labels, which isn't valid!
@@ -140,6 +145,8 @@ OR: '||';
 NOT: 'not';
 JUMP: 'jump';
 
+IMPORT: 'import';
+MACRO: 'macro';
 IF: 'if';
 ELSEIF: 'elseif';
 ELSE: 'else';

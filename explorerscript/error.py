@@ -29,7 +29,7 @@ class ParseError(Exception):
         self.error = error
 
     def __str__(self):
-        str(self.error)
+        return str(self.error)
 
 
 class SsbCompilerError(Exception):
