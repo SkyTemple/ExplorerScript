@@ -234,6 +234,5 @@ class ExplorerScriptSsbCompiler:
         for macro in macros.values():
             macro.included__absolute_path = subfile_path
             if basefile_path is not None:
-                macro.included__used_by = os.path.relpath(basefile_path, os.path.dirname(subfile_path))
                 macro.included__relative_path = os.path.relpath(subfile_path, os.path.dirname(basefile_path))
         return macros

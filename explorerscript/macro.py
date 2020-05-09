@@ -54,14 +54,8 @@ class ExplorerScriptMacro:
         # when building the macro
         self.source_map: SourceMap = source_map
 
-        # The relative path of the ExplorerScript source file that was originally requested to be
-        # compiled by the user (relative to self.included__absolute_path).
-        # This can be used to know which files use this macro and where they are relative to this file.
+        # The relative path to this file from the file that includes it.
         # May not be set if not applicable (for macros in the originally requested file it is None).
-        self.included__used_by: Optional[str] = None
-
-        # The opposite of self.included__used_by -> The relative path to THIS file from the file
-        # that includes it.
         # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
         self.included__relative_path: Optional[str] = None
 

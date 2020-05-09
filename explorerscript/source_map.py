@@ -164,6 +164,10 @@ class SourceMap:
         for opcode_offset, (macro_file, macro_name, line_number, column) in self._mappings_macros.items():
             yield macro_file, macro_name, opcode_offset, line_number, column
 
+    def collect_mappings__macros(self):
+        for opcode_offset, (macro_file, macro_name, line_number, column) in self._mappings_macros.items():
+            yield macro_file, macro_name, opcode_offset, line_number, column
+
     def __eq__(self, other):
         if not isinstance(other, SourceMap):
             return False
