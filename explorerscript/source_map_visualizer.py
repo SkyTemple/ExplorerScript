@@ -22,7 +22,7 @@
 #
 from typing import List, Dict
 
-from explorerscript.source_map import SourceMap
+from explorerscript.source_map import SourceMap, MacroSourceMapping
 
 
 class SourceMapVisualizer:
@@ -34,13 +34,20 @@ class SourceMapVisualizer:
         self._inserts: Dict[int, List[str]] = {}
 
         # Opcodes
-        for macro_file, macro_name, opcode_offset, line_number, column in self._source_map:
-            if macro_name is None:
-                self._insert_comment(line_number, f'col: {column} - 0x{opcode_offset:0x}')
+        for opcode_offset, mapping in self._source_map:
+            if not isinstance(mapping, MacroSourceMapping):
+                if apply_for_macro_calls is None:
+                    self._insert_comment(mapping.line, f'col: {mapping.column} - 0x{opcode_offset:0x}')
             else:
-                if macro_file == apply_for_macro_calls:
-                    self._insert_comment(line_number, f'~{macro_name}:: '
-                                                      f'col: {column} - 0x{opcode_offset:0x}')
+                if mapping.relpath_included_file == apply_for_macro_calls:
+                    self._insert_comment(mapping.line, f'~{mapping.macro_name}:: '
+                                                       f'col: {mapping.column} - 0x{opcode_offset:0x}'
+                                                       f' - [StepOut -> 0x{mapping.return_addr:0x}]')
+                if mapping.called_in:
+                    called_in_file, called_in_line, called_in_col = mapping.called_in
+                    if called_in_file == apply_for_macro_calls:
+                        self._insert_comment(called_in_line, f'col: {called_in_col} - 0x{opcode_offset:0x}'
+                                                             f' (CALL TO ~{mapping.macro_name})')
         # Position Marks
         for pos_mark in self._source_map.get_position_marks__direct():
             self._insert_comment(pos_mark.line_number, f'{pos_mark}')

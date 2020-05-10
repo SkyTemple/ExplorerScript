@@ -47,3 +47,9 @@ if __name__ == '__main__':
     print(SourceMapVisualizer(macros1_exps, c.source_map, apply_for_macro_calls=os.path.join(
         '..', 'macros', 'dir', 'macros1.exps'
     )).write())
+    print("// SOURCE MAP FOR base.exps APPLIED FOR macros2.exps:")
+    with open(os.path.join(base, 'macros', 'dir', 'macros2.exps')) as f:
+        macros2_exps = f.read()
+    print(SourceMapVisualizer(macros2_exps, c.source_map, apply_for_macro_calls=os.path.join(
+        '..', 'macros', 'dir', 'macros2.exps'
+    )).write())

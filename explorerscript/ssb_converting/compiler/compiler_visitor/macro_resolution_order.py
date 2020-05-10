@@ -48,10 +48,9 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         roots = [v for v in self._dependency_graph.vs if len(v.in_edges()) == 0]
         resolution_order = []
         for v in roots:
-            resolution_order.append(v['name'])
             for sv in self._dependency_graph.bfsiter(v.index):
                 if sv['name'] not in resolution_order:
-                    resolution_order.append(sv['name'])
+                    resolution_order.insert(0, sv['name'])
         return resolution_order
 
     def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
@@ -73,7 +72,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         assert self._active_macro_name is not None
         self._create_vertex(name)
         if not self._dependency_graph.are_connected(name, self._active_macro_name):
-            self._dependency_graph.add_edge(name, self._active_macro_name)
+            self._dependency_graph.add_edge(self._active_macro_name, name)
 
     def _create_vertex(self, name):
         if name not in self._already_added_to_graph:

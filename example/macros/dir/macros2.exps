@@ -1,0 +1,10 @@
+macro macro_in_macros_2() {
+    debug_Print("macro_in_macros_2");
+    // If the op above would be removed, we couldn't accurately create the jump source map entry for calls to
+    // macro_in_macros_2, but that's just how it is, since macro calls don't create mappable operations.
+    ~macro2_in_macros_2();
+    NUMBER_ONE_im_in_macros_2();
+}
+macro macro2_in_macros_2() {
+    NUMBER_TWO_im_in_macros_2();
+}

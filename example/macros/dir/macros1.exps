@@ -1,3 +1,5 @@
+import "./macros2.exps";
+
 /*macro calls_local_macro($i1, $i2, $i3, $aString) {
     // Compiling this must fail, because local_macro is in base.
     ~local_macro($i1, $i2, $i3, $aString);
@@ -6,6 +8,8 @@
 macro remote_macro($aVariable, $aString) {
     vars_in_remote_macro($aVariable, $aString, $notAvailable);
     ~remote_macro2("from remote_macro", $aString);
+    debug_Print("REMOTE2 SHOULD END HERE");
+    ~macro_in_macros_2();
 }
 
 /*macro recursion2() {
@@ -18,5 +22,7 @@ macro recursion() {
 }*/
 
 macro remote_macro2($aString, $anotherString) {
+    debug_Print("BELOW IS A TEST RETURN");
+    return; // This should jump out of the macro.
     vars_in_remote_macro2($aString, $anotherString, $notAvailable);
 }

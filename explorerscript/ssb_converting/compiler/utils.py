@@ -62,7 +62,8 @@ class Counter:
 class CompilerCtx:
     def __init__(self, counter_ops: Counter, source_map_builder: SourceMapBuilder,
                  collected_labels: Dict[str, SsbLabel], counter_labels: Counter,
-                 performance_progress_list_var_name: str, macros: Dict[str, 'ExplorerScriptMacro']):
+                 performance_progress_list_var_name: str,
+                 macros: Dict[str, 'ExplorerScriptMacro']):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
         # A dict that assigns all collected labels their next opcode id.

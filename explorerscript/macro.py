@@ -25,8 +25,18 @@ from typing import Optional, List, Dict
 
 from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter
-from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamConstant
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamConstant, SsbOpCode
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OP_JUMP
+
+
+class MacroStartSsbLabel(SsbLabel):
+    def __init__(self, id: int, routine_id: int, length_of_macro: int, debugging_note: str = None):
+        super().__init__(id, routine_id, debugging_note)
+        self.length_of_macro = length_of_macro
+
+
+class MacroEndSsbLabel(SsbLabel):
+    pass
 
 
 class ExplorerScriptMacro:
@@ -72,17 +82,46 @@ class ExplorerScriptMacro:
             if var_name not in parameters.keys():
                 raise ValueError(f"Value for macro variable {var_name} not provided.")
 
-        out_ops: List[SsbOperation] = []
+        # Macro callstack: Push our outer call
+        len_real_ops_in_blueprints = len([o for o in self.blueprints if not isinstance(o, SsbLabel)]) + 1
+        smb.macro_return_addr__push(op_idx_counter.count + len_real_ops_in_blueprints)
+
+        # Add the macro start label if we are processed later as a sub-macro, so that the parent macro can push
+        # our ops to the callstack.
+        out_ops: List[SsbOperation] = [MacroStartSsbLabel(
+            lbl_idx_counter(), -1, len_real_ops_in_blueprints, f"Macro call {self.name} start label."
+        )]
+
+        # End label, also for sub-macros and when we are processing a return statement
+        end_label = MacroEndSsbLabel(
+            lbl_idx_counter(), -1, f"Macro call {self.name} end label."
+        )
+
         # Maps blueprint label ids to new actual labels
         new_labels: Dict[int, SsbLabel] = {}
 
         for blueprint_op in self.blueprints:
+            # If this a start / end of a macro, update the macro callstack
+            if isinstance(blueprint_op, MacroStartSsbLabel):
+                smb.macro_return_addr__push(op_idx_counter.count + blueprint_op.length_of_macro)
+            elif isinstance(blueprint_op, MacroEndSsbLabel):
+                smb.macro_return_addr__pop()
+
             if isinstance(blueprint_op, SsbLabel):
                 if blueprint_op.id not in new_labels.keys():
                     # Copy the label with a new proper index
-                    new_labels[blueprint_op.id] = SsbLabel(
-                        lbl_idx_counter(), -1, blueprint_op.debugging_note
-                    )
+                    if isinstance(blueprint_op, MacroStartSsbLabel):
+                        new_labels[blueprint_op.id] = MacroStartSsbLabel(
+                            lbl_idx_counter(), -1, blueprint_op.length_of_macro, blueprint_op.debugging_note
+                        )
+                    elif isinstance(blueprint_op, MacroEndSsbLabel):
+                        new_labels[blueprint_op.id] = MacroEndSsbLabel(
+                            lbl_idx_counter(), -1, blueprint_op.debugging_note
+                        )
+                    else:
+                        new_labels[blueprint_op.id] = SsbLabel(
+                            lbl_idx_counter(), -1, blueprint_op.debugging_note
+                        )
                     new_labels[blueprint_op.id].markers = blueprint_op.markers.copy()
                 out_ops.append(new_labels[blueprint_op.id])
             elif isinstance(blueprint_op, SsbLabelJump):
@@ -96,6 +135,14 @@ class ExplorerScriptMacro:
                 new_jumps = SsbLabelJump(new_root, new_labels[blueprint_op.label.id])
                 new_jumps.markers = blueprint_op.markers.copy()
                 out_ops.append(new_jumps)
+            elif blueprint_op.op_code.name == OP_RETURN:
+                # Process return: Exit the macro instead
+                replacement_blueprint_op = SsbOperation(blueprint_op.offset, SsbOpCode(-1, OP_JUMP), [])
+                out_ops.append(SsbLabelJump(
+                    self._build_op(
+                        op_idx_counter, replacement_blueprint_op, smb, parameters
+                    ), end_label
+                ))
             else:
                 out_ops.append(self._build_op(op_idx_counter, blueprint_op, smb, parameters))
         for pos_mark in self.source_map.get_position_marks__direct():
@@ -103,6 +150,12 @@ class ExplorerScriptMacro:
         # Also add the sub-macro position marks to the map
         for m in self.source_map.get_position_marks__macros():
             smb.add_macro_position_mark(*m)
+
+        out_ops.append(end_label)
+
+        # Macro callstack: Pop our return address
+        smb.macro_return_addr__pop()
+
         return out_ops
 
     def _build_op(self, op_idx_counter: Counter, blueprint_op: SsbOperation,
@@ -112,14 +165,24 @@ class ExplorerScriptMacro:
         potential_macro_sm_entry = self.source_map.get_op_line_and_col__macros(blueprint_op.offset)
         if potential_macro_sm_entry:
             # If the file path was None in that entry, then it's OUR file. Correct the entry.
-            file_path = potential_macro_sm_entry[0]
+            file_path = potential_macro_sm_entry.relpath_included_file
             if file_path is None:
                 file_path = self.included__relative_path
-            smb.add_macro_opcode(new_op_idx, file_path, *potential_macro_sm_entry[1:])
+            # If the macro has a called_in field, add this to the current map with the correct data as well.
+            if potential_macro_sm_entry.called_in:
+                # Either our file called this...
+                called_in_filename = self.included__relative_path
+                if potential_macro_sm_entry.called_in[0] is not None:
+                    # ... or the field was already set by another macro, we can just take it
+                    called_in_filename = potential_macro_sm_entry.called_in[0]
+                smb.next_macro_opcode_called_in(called_in_filename, *potential_macro_sm_entry.called_in[1:])
+            smb.add_macro_opcode(new_op_idx, file_path,
+                                 potential_macro_sm_entry.macro_name, potential_macro_sm_entry.line,
+                                 potential_macro_sm_entry.column)
         else:
             # Nope, it wasn't:
-            orig_ln, orig_col = self.source_map.get_op_line_and_col__direct(blueprint_op.offset)
-            smb.add_macro_opcode(new_op_idx, self.included__relative_path, self.name, orig_ln, orig_col)
+            mapping = self.source_map.get_op_line_and_col__direct(blueprint_op.offset)
+            smb.add_macro_opcode(new_op_idx, self.included__relative_path, self.name, mapping.line, mapping.column)
         return SsbOperation(
             new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params)
         )

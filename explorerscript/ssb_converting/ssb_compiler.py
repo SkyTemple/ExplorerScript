@@ -148,7 +148,7 @@ class ExplorerScriptSsbCompiler:
             subfile_compiler = self.__class__(self.performance_progress_list_var_name, self.lookup_paths,
                                               recursion_check=self.recursion_check + [file_name])
             with open(subfile_path, 'r') as f:
-                subfile_compiler.compile(f.read(), subfile_path, macros_only=True)
+                subfile_compiler.compile(f.read(), subfile_path, macros_only=True, original_base_file=original_base_file)
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
         # Sort the list of macros by how they are used
