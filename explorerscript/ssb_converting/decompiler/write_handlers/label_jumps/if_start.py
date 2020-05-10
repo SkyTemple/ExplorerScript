@@ -125,15 +125,15 @@ class IfWriteHandler(AbstractWriteHandler):
             n = 'not ' if op.params[1] < 1 else ''
             return f'{n}{self.decompiler.performance_progress_list_var_name}[{op.params[0]}]'
         if op.op_code.name == 'BranchScenarioNow':
-            return f'scn({op.params[0]})[== {op.params[1]}, == {op.params[2]}]'
+            return f'scn({op.params[0]}) == [{op.params[1]}, {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioNowAfter':
-            return f'scn({op.params[0]})[== {op.params[1]}, >= {op.params[2]}]'
+            return f'scn({op.params[0]}) >= [{op.params[1]}, {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioNowBefore':
-            return f'scn({op.params[0]})[== {op.params[1]}, <= {op.params[2]}]'
+            return f'scn({op.params[0]}) <= [{op.params[1]}, {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioAfter':
-            return f'scn({op.params[0]})[== {op.params[1]}, > {op.params[2]}]'
+            return f'scn({op.params[0]}) > [{op.params[1]}, {op.params[2]}]'
         if op.op_code.name == 'BranchScenarioBefore':
-            return f'scn({op.params[0]})[== {op.params[1]}, < {op.params[2]}]'
+            return f'scn({op.params[0]}) < [{op.params[1]}, {op.params[2]}]'
         if op.op_code.name == 'BranchSum':
             return f'BranchSum({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == 'BranchValue':

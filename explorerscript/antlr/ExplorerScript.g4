@@ -56,7 +56,7 @@ if_header: (if_h_op | if_h_bit | if_h_negatable | if_h_scn | operation);
 if_h_negatable: NOT? (DEBUG | EDIT | VARIATION);
 if_h_op: integer_like conditional_operator ( value_of | integer_like );
 if_h_bit: NOT? integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
-if_h_scn: scn_var OPEN_BRACKET conditional_operator INTEGER COMMA conditional_operator INTEGER CLOSE_BRACKET;
+if_h_scn: scn_var conditional_operator OPEN_BRACKET INTEGER COMMA INTEGER CLOSE_BRACKET;
 
 switch_block: SWITCH OPEN_PAREN switch_header CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
 message_switch_block: (MESSAGE_SWITCH_TALK | MESSAGE_SWITCH_MONOLOGUE) OPEN_PAREN integer_like CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;

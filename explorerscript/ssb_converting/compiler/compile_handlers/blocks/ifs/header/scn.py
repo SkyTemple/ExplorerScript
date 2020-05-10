@@ -37,43 +37,34 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.scn_var_target: Optional[SsbOpParam] = None
-        self.operator1: Optional[SsbOperator] = None
-        self.operator2: Optional[SsbOperator] = None
+        self.operator: Optional[SsbOperator] = None
 
     def collect(self) -> SsbLabelJumpBlueprint:
         if self.scn_var_target is None:
             raise SsbCompilerError("No variable for assignment.")
-        if self.operator1 is None:
-            raise SsbCompilerError("Not enough operator set for if condition.")
-        if self.operator2 is None:
-            raise SsbCompilerError("Not enough operator set for if condition.")
-
-        if self.operator1 != SsbOperator.EQ:
-            raise SsbCompilerError(f"The only supported operator for the first value of scn if "
-                                   f"conditions is == (line {self.ctx.start.line})")
-        if self.operator2 not in [SsbOperator.EQ, SsbOperator.LE, SsbOperator.LT, SsbOperator.GE, SsbOperator.GT]:
-            raise SsbCompilerError(f"The only supported operators for the second value of scn if "
+        if self.operator not in [SsbOperator.EQ, SsbOperator.LE, SsbOperator.LT, SsbOperator.GE, SsbOperator.GT]:
+            raise SsbCompilerError(f"The only supported operators for scn if "
                                    f"conditions are ==,<,<=,>,>= (line {self.ctx.start.line})")
 
         scn_value = int(str(self.ctx.INTEGER(0)))
         level_value = int(str(self.ctx.INTEGER(1)))
 
-        if self.operator2 == SsbOperator.LE:
+        if self.operator == SsbOperator.LE:
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
                 OP_BRANCH_SCENARIO_NOW_BEFORE, [self.scn_var_target, scn_value, level_value]
             )
-        if self.operator2 == SsbOperator.LT:
+        if self.operator == SsbOperator.LT:
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
                 OP_BRANCH_SCENARIO_BEFORE, [self.scn_var_target, scn_value, level_value]
             )
-        if self.operator2 == SsbOperator.GE:
+        if self.operator == SsbOperator.GE:
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
                 OP_BRANCH_SCENARIO_NOW_AFTER, [self.scn_var_target, scn_value, level_value]
             )
-        if self.operator2 == SsbOperator.GT:
+        if self.operator == SsbOperator.GT:
             return SsbLabelJumpBlueprint(
                 self.compiler_ctx, self.ctx,
                 OP_BRANCH_SCENARIO_AFTER, [self.scn_var_target, scn_value, level_value]
@@ -88,10 +79,7 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
             self.scn_var_target = obj.collect()
             return
         if isinstance(obj, ConditionalOperatorCompileHandler):
-            if self.operator1 is None:
-                self.operator1 = obj.collect()
-            else:
-                self.operator2 = obj.collect()
+            self.operator = obj.collect()
             return
 
         self._raise_add_error(obj)
