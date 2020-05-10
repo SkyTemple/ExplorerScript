@@ -240,6 +240,26 @@ class SourceMap:
     def create_empty(cls):
         return cls({}, [], {}, [])
 
+    def rewrite_offsets(self, new_mapping: Dict[int, int]):
+        """
+        Replace all opcode offsets (in mappings, macrco mappings, macro return addresses) with new
+        offsets. The parameter is a dict mapping old offsets to new offsets.
+        """
+        # It may happen, that the new mapping contains fewer opcodes than originally added (eg. if they were optimized)
+        # but that's ok.
+        self._mappings = {new_mapping[key]: val for key, val in self._mappings.items() if key in new_mapping}
+        self._mappings_macros = {new_mapping[key]: val for key, val in self._mappings_macros.items() if key in new_mapping}
+        for m in self._mappings_macros.values():
+            if m.return_addr:
+                addr = m.return_addr
+                while addr not in new_mapping:
+                    # if the return addr opcode was optimized away, we take the next index. TODO: Good idea?
+                    addr += 1
+                    if addr > len(self._mappings):
+                        addr = None
+                        break
+                if addr is not None:
+                    m.return_addr = new_mapping[m.return_addr]
 
 class SourceMapBuilder:
     def __init__(self):
