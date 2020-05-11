@@ -87,8 +87,12 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
             vs_to_check_inner = {v}
             while len(vs_to_check_inner) > 0:
                 v_inner = vs_to_check_inner.pop()
+                vs_directly_connected = set()
                 for e in self._dependency_graph.vs[v_inner].out_edges():
                     v_inner = e.target
+                    if v_inner in vs_directly_connected:
+                        continue
+                    vs_directly_connected.add(v_inner)
                     if v_inner in vs_visited_in_run:
                         raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
                                                f" (for macro '{e.target_vertex['name']}').")

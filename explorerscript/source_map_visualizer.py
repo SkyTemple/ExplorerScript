@@ -42,7 +42,8 @@ class SourceMapVisualizer:
                 if mapping.relpath_included_file == apply_for_macro_calls:
                     self._insert_comment(mapping.line, f'~{mapping.macro_name}:: '
                                                        f'col: {mapping.column} - 0x{opcode_offset:0x}'
-                                                       f' - [StepOut -> 0x{mapping.return_addr:0x}]')
+                                                       f' - [StepOut -> 0x{mapping.return_addr:0x}] '
+                                                       f'[{mapping.parameter_mapping}]')
                 if mapping.called_in:
                     called_in_file, called_in_line, called_in_col = mapping.called_in
                     if called_in_file == apply_for_macro_calls:

@@ -21,7 +21,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter
@@ -30,9 +30,10 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 
 
 class MacroStartSsbLabel(SsbLabel):
-    def __init__(self, id: int, routine_id: int, length_of_macro: int, debugging_note: str = None):
+    def __init__(self, id: int, routine_id: int, length_of_macro: int, parameter_mapping, debugging_note: str = None):
         super().__init__(id, routine_id, debugging_note)
         self.length_of_macro = length_of_macro
+        self.parameter_mapping = parameter_mapping
 
 
 class MacroEndSsbLabel(SsbLabel):
@@ -84,12 +85,13 @@ class ExplorerScriptMacro:
 
         # Macro callstack: Push our outer call
         len_real_ops_in_blueprints = len([o for o in self.blueprints if not isinstance(o, SsbLabel)]) + 1
-        smb.macro_return_addr__push(op_idx_counter.count + len_real_ops_in_blueprints)
+        parameter_mapping = self._create_parameter_mapping(parameters)
+        smb.macro_context__push(op_idx_counter.count + len_real_ops_in_blueprints, parameter_mapping)
 
         # Add the macro start label if we are processed later as a sub-macro, so that the parent macro can push
         # our ops to the callstack.
         out_ops: List[SsbOperation] = [MacroStartSsbLabel(
-            lbl_idx_counter(), -1, len_real_ops_in_blueprints, f"Macro call {self.name} start label."
+            lbl_idx_counter(), -1, len_real_ops_in_blueprints, parameter_mapping, f"Macro call {self.name} start label."
         )]
 
         # End label, also for sub-macros and when we are processing a return statement
@@ -103,32 +105,24 @@ class ExplorerScriptMacro:
         for blueprint_op in self.blueprints:
             # If this a start / end of a macro, update the macro callstack
             if isinstance(blueprint_op, MacroStartSsbLabel):
-                smb.macro_return_addr__push(op_idx_counter.count + blueprint_op.length_of_macro)
+                smb.macro_context__push(op_idx_counter.count + blueprint_op.length_of_macro,
+                                        self._replace_in_param_mapping(blueprint_op.parameter_mapping, parameters))
             elif isinstance(blueprint_op, MacroEndSsbLabel):
-                smb.macro_return_addr__pop()
+                smb.macro_context__pop()
 
             if isinstance(blueprint_op, SsbLabel):
                 if blueprint_op.id not in new_labels.keys():
                     # Copy the label with a new proper index
-                    if isinstance(blueprint_op, MacroStartSsbLabel):
-                        new_labels[blueprint_op.id] = MacroStartSsbLabel(
-                            lbl_idx_counter(), -1, blueprint_op.length_of_macro, blueprint_op.debugging_note
-                        )
-                    elif isinstance(blueprint_op, MacroEndSsbLabel):
-                        new_labels[blueprint_op.id] = MacroEndSsbLabel(
-                            lbl_idx_counter(), -1, blueprint_op.debugging_note
-                        )
-                    else:
-                        new_labels[blueprint_op.id] = SsbLabel(
-                            lbl_idx_counter(), -1, blueprint_op.debugging_note
-                        )
+                    new_labels[blueprint_op.id] = self._copy_blueprint_label(
+                        lbl_idx_counter, blueprint_op
+                    )
                     new_labels[blueprint_op.id].markers = blueprint_op.markers.copy()
                 out_ops.append(new_labels[blueprint_op.id])
             elif isinstance(blueprint_op, SsbLabelJump):
                 if blueprint_op.label.id not in new_labels.keys():
                     # Copy the label with a new proper index
-                    new_labels[blueprint_op.label.id] = SsbLabel(
-                        lbl_idx_counter(), -1, blueprint_op.label.debugging_note
+                    new_labels[blueprint_op.label.id] = self._copy_blueprint_label(
+                        lbl_idx_counter, blueprint_op.label
                     )
                     new_labels[blueprint_op.label.id].markers = blueprint_op.label.markers.copy()
                 new_root = self._build_op(op_idx_counter, blueprint_op.root, smb, parameters)
@@ -154,7 +148,7 @@ class ExplorerScriptMacro:
         out_ops.append(end_label)
 
         # Macro callstack: Pop our return address
-        smb.macro_return_addr__pop()
+        smb.macro_context__pop()
 
         return out_ops
 
@@ -204,3 +198,32 @@ class ExplorerScriptMacro:
             else:
                 new_params.append(p)
         return new_params
+
+    def _create_parameter_mapping(self, parameters: Dict[str, SsbOpParam]):
+        return {x: str(y) for x, y in parameters.items()}
+
+    def _replace_in_param_mapping(self, parameter_mapping: Dict[str, Tuple[int, str]], our_parameters: Dict[str, SsbOpParam]):
+        our_parameters = self._create_parameter_mapping(our_parameters)
+        new_dict = {}
+        for p_name, p_value in parameter_mapping.items():
+            if p_value in our_parameters:
+                new_dict[p_name] = our_parameters[p_value]
+            else:
+                new_dict[p_name] = p_value
+        return new_dict
+
+    def _copy_blueprint_label(self, lbl_idx_counter: Counter, blueprint_op: SsbLabel):
+        if isinstance(blueprint_op, MacroStartSsbLabel):
+            return MacroStartSsbLabel(
+                lbl_idx_counter(), -1, blueprint_op.length_of_macro,
+                blueprint_op.parameter_mapping,
+                blueprint_op.debugging_note
+            )
+        elif isinstance(blueprint_op, MacroEndSsbLabel):
+            return MacroEndSsbLabel(
+                lbl_idx_counter(), -1, blueprint_op.debugging_note
+            )
+        else:
+            return SsbLabel(
+                lbl_idx_counter(), -1, blueprint_op.debugging_note
+            )

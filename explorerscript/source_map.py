@@ -115,7 +115,8 @@ class SourceMapping:
 class MacroSourceMapping(SourceMapping):
     def __init__(self, relpath_included_file: str, macro_name: str,
                  line_number: int, column: int,
-                 called_in: Optional[Tuple[str, int, int]] = None, return_addr: Optional[int] = None):
+                 called_in: Optional[Tuple[str, int, int]],
+                 return_addr: Optional[int], parameter_mapping: Dict[str, Union[int, str]]):
         super().__init__(line_number, column)
         self.relpath_included_file = relpath_included_file
         self.macro_name = macro_name
@@ -126,17 +127,20 @@ class MacroSourceMapping(SourceMapping):
         self.called_in = called_in
         # The opcode address to jump to when stepping out of this macro
         self.return_addr = return_addr
+        # The mapping of parameter values for the current macro context, only for informational
+        # purposes. Contains the string representation or integer value
+        self.parameter_mapping = parameter_mapping
 
     def serialize(self) -> list:
         return [
             self.relpath_included_file, self.macro_name, self.line, self.column,
-            self.called_in, self.return_addr
+            self.called_in, self.return_addr, self.parameter_mapping
         ]
 
     @classmethod
     def deserialize(cls, data_list) -> 'MacroSourceMapping':
         return MacroSourceMapping(
-            data_list[0], data_list[1], data_list[2], data_list[3], data_list[4], data_list[5]
+            data_list[0], data_list[1], data_list[2], data_list[3], data_list[4], data_list[5], data_list[6]
         )
 
 
@@ -274,7 +278,7 @@ class SourceMapBuilder:
         self._mappings_macros = {}
         self._pos_marks_macros = []
         self._next_macro_called_in: Optional[SourceMapping] = None
-        self._macro_return_addr__stack: List[int] = []
+        self._macro_context__stack: List[Tuple[int, Dict[str, Union[int, str]]]] = []
 
     def add_opcode(self, op_offset, line_number, column):
         self._mappings[op_offset] = SourceMapping(line_number, column)
@@ -282,17 +286,18 @@ class SourceMapBuilder:
     def add_position_mark(self, position_mark: SourceMapPositionMark):
         self._pos_marks.append(position_mark)
 
-    def macro_return_addr__push(self, opcode_to_jump_to):
+    def macro_context__push(self, opcode_to_jump_to: int, parameter_mapping: Dict[str, Union[int, str]]):
         """
-        Push a new macro return address to the stack, all added macro ops will use the address on the top of the stack.
+        Push a new macro return address and parameter mapping to the stack, all added macro ops will
+        use what's on the top of the stack.
         """
-        self._macro_return_addr__stack.append(opcode_to_jump_to)
+        self._macro_context__stack.append((opcode_to_jump_to, parameter_mapping))
 
-    def macro_return_addr__pop(self):
+    def macro_context__pop(self):
         """
-        Pop a macro return address from the stack.
+        Pop a macro context from the stack.
         """
-        self._macro_return_addr__stack.pop()
+        self._macro_context__stack.pop()
 
     def next_macro_opcode_called_in(self, if_incl_rel_path: Optional[str], line_number, column):
         """Mark the next added macro opcode as being called in this line/column. This marks a macro call."""
@@ -306,16 +311,17 @@ class SourceMapBuilder:
         from the original source file that this source map is generated for.
         At least one macro return address entry has to be on the call stack!
         """
-        if len(self._macro_return_addr__stack) < 1:
+        if len(self._macro_context__stack) < 1:
             raise ValueError("There are no return addresses on the macro return address stack, "
                              "can not add macro opcode.")
         called_in = None
         if self._next_macro_called_in is not None:
             called_in = self._next_macro_called_in
             self._next_macro_called_in = None
+        return_addr, parameter_mapping = self._macro_context__stack[-1]
         self._mappings_macros[op_offset] = MacroSourceMapping(if_incl_rel_path, macro_name,
                                                               line_number,
-                                                              column, called_in, self._macro_return_addr__stack[-1])
+                                                              column, called_in, return_addr, parameter_mapping)
 
     def add_macro_position_mark(self, if_incl_rel_path: Optional[str], macro_name: str, position_mark: SourceMapPositionMark):
         """Add a position mark, that has it's source code in a macro. See notes for add_macro_opcode"""
