@@ -180,6 +180,12 @@ class SourceMap:
         self._mappings_macros = mappings_macros
         self._position_marks_macro = position_marks_macro
 
+    def get_op_line_and_col(self, op_offset: int) -> Optional[SourceMapping]:
+        if op_offset in self._mappings:
+            return self._mappings[op_offset]
+        if op_offset in self._mappings_macros:
+            return self._mappings_macros[op_offset]
+
     def get_op_line_and_col__direct(self, op_offset: int) -> Optional[SourceMapping]:
         if op_offset in self._mappings:
             return self._mappings[op_offset]
@@ -218,10 +224,10 @@ class SourceMap:
 
     def serialize(self, pretty=False) -> str:
         return json.dumps({
-            'map': {x: m.serialize() for x, m in self._mappings.items()},
+            'map': {int(x): m.serialize() for x, m in self._mappings.items()},
             'pos_marks': [m.serialize() for m in self._position_marks],
             'macros': {
-                'map': {x: m.serialize() for x, m in self._mappings_macros.items()},
+                'map': {int(x): m.serialize() for x, m in self._mappings_macros.items()},
                 'pos_marks': [[y[0], y[1], y[2].serialize()] for y in self._position_marks_macro]
             }
         }, indent=2 if pretty else None)
@@ -230,9 +236,9 @@ class SourceMap:
     def deserialize(cls, json_str: str) -> 'SourceMap':
         json_d = json.loads(json_str)
         return SourceMap(
-            {x: SourceMapping.deserialize(y) for x, y in json_d['map'].items()},
+            {int(x): SourceMapping.deserialize(y) for x, y in json_d['map'].items()},
             [SourceMapPositionMark.deserialize(m) for m in json_d['pos_marks']],
-            {x: MacroSourceMapping.deserialize(y) for x, y in json_d['macros']['map'].items()},
+            {int(x): MacroSourceMapping.deserialize(y) for x, y in json_d['macros']['map'].items()},
             [(y[0], y[1], SourceMapPositionMark.deserialize(y[2])) for y in json_d['macros']['pos_marks']]
         )
 
@@ -318,6 +324,3 @@ class SourceMapBuilder:
     def build(self):
         return SourceMap(self._mappings, self._pos_marks,
                          self._mappings_macros, self._pos_marks_macros)
-
-# TODO: DON'T FORGET TO UPDATE SOURCE MAP OPCODE OFFSET REMAPPINGS at ssb script compiler
-#  ; for callstack and macro opcode offsets
