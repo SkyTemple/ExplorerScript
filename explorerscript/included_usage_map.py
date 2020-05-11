@@ -38,9 +38,9 @@ class IncludedUsageMap:
         # A set of <absolute file name of included file>
         self.included_files = set()
         dirname_base_abs_file_path = os.path.dirname(base_abs_file_path)
-        for relative_file, macro_name, line, col in source_map.collect_mappings__macros():
-            if relative_file is not None:
-                self.included_files.add(os.path.abspath(os.path.join(dirname_base_abs_file_path, relative_file)))
+        for opcode_offset, mapping in source_map.collect_mappings__macros():
+            if mapping.relpath_included_file is not None:
+                self.included_files.add(os.path.abspath(os.path.join(dirname_base_abs_file_path, mapping.relpath_included_file)))
 
     def __sub__(self, other) -> 'IncludedUsageMapDiff':
         """Subtract two maps. The result is IncludedUsageMapDiff."""
