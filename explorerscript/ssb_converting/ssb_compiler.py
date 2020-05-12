@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 import os
 from pathlib import PurePosixPath, PurePath
 from typing import List, Optional, Dict
@@ -41,6 +42,7 @@ from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabe
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
 from explorerscript.syntax_error_listener import SyntaxErrorListener
+logger = logging.getLogger(__name__)
 
 
 class ExplorerScriptSsbCompiler:
@@ -111,6 +113,7 @@ class ExplorerScriptSsbCompiler:
         :raises: SsbCompilerError: On logical compiling errors
         :raises: ValueError: On misc. unexpected compilation errors
         """
+        logger.debug("<%d> Compiling ExplorerScript (-> %s)... - Macros only:%d, base:%s", id(self), file_name, macros_only, original_base_file)
         self.routine_infos = None
         self.routine_ops = None
         self.named_coroutines = None
@@ -137,10 +140,12 @@ class ExplorerScriptSsbCompiler:
             raise ParseError(error_listener.syntax_errors[0])
 
         # Collect imports
+        logger.debug("<%d> Collecting imports...", id(self))
         self.imports = ImportVisitor().visit(tree)
 
         # Resolve imports and load macros in the imported files
         for subfile_path in self._resolve_imported_file(os.path.dirname(file_name)):
+            logger.debug("<%d> Compiling sub-file %s...", id(self), subfile_path)
             if subfile_path in self.recursion_check:
                 raise SsbCompilerError(f"Infinite recursion detected while trying to load "
                                        f"an ExplorerScript file from {subfile_path}.\n"
@@ -152,10 +157,12 @@ class ExplorerScriptSsbCompiler:
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
         # Sort the list of macros by how they are used
+        logger.debug("<%d> Building macro resolution order...", id(self))
         self.macro_resolution_order = MacroResolutionOrderVisitor(self.macros).visit(tree)
 
         # Loads and compiles modules in base file
         # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).
+        logger.debug("<%d> Compiling macros...", id(self))
         self.macros.update(self._macros_add_filenames(MacroVisitor(
             self.performance_progress_list_var_name, self.macros, self.macro_resolution_order
         ).visit(tree), None, file_name))
@@ -170,6 +177,7 @@ class ExplorerScriptSsbCompiler:
         # Start Compiling
         try:
             try:
+                logger.debug("<%d> Compiling routines...", id(self))
                 compiler_visitor = RoutineVisitor(
                     self.performance_progress_list_var_name, self.macros
                 )

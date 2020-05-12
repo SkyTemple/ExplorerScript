@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
@@ -30,6 +31,7 @@ from explorerscript.ssb_converting.ssb_special_ops import *
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbRoutineInfo, SsbOpParam, \
     SsbOperation, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker, DungeonModeConstants
+logger = logging.getLogger(__name__)
 
 
 class ExplorerScriptSsbDecompiler:
@@ -65,6 +67,7 @@ class ExplorerScriptSsbDecompiler:
         self.forever_start_handler_stack: List[ForeverWriteHandler] = []
 
     def convert(self) -> Tuple[str, SourceMap]:
+        logger.debug("Decompiling ExplorerScript...")
         self._output = ""
         self.indent = 0
         self.labels_already_printed = []
@@ -96,6 +99,7 @@ class ExplorerScriptSsbDecompiler:
         # Step 3:
         # We can now just go through the graph and build the result.
         for r_id, (r_info, r_graph) in enumerate(zip(self._routine_infos, grapher.get_graphs())):
+            logger.debug("Decompiling (%d, %s)...", r_id, self.named_coroutines[r_id] if r_id in self.named_coroutines else None)
             RoutineWriteHandler(self, r_id, r_info, r_graph).write_content()
 
         return self._output, self.smb.build()

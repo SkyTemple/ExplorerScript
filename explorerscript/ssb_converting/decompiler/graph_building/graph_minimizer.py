@@ -20,19 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-
-#  MIT License
-#
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#
-#
+import logging
 import sys
 import warnings
 
@@ -44,6 +32,8 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
     SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart, ForeverEnd, \
     SsbForeignLabel
+logger = logging.getLogger(__name__)
+
 
 sys.setrecursionlimit(10000)
 
@@ -77,6 +67,7 @@ class SsbGraphMinimizer:
 
     def optimize_paths(self):
         """Perform some general optimizations. To be run before any of the other graph changing methods."""
+        logger.debug("Optimizing paths...")
         for g in self._graphs:
             vs_to_delete = []
             for v in g.vs:
@@ -123,6 +114,7 @@ class SsbGraphMinimizer:
         - 90 for if-else w tail [2] and if-only [3]
         - complex: 89
         """
+        logger.debug("Building branches...")
         for i, g in enumerate(self._graphs):
             vs_to_delete = set()
             current_if_id = -1
@@ -187,6 +179,7 @@ class SsbGraphMinimizer:
 
         Must be run after build_branches.
         """
+        logger.debug("Searching for inverted branches...")
         for i, g in enumerate(self._graphs):
             vs_to_delete = set()
             for v in g.vs:
@@ -216,6 +209,7 @@ class SsbGraphMinimizer:
 
         Must be run after build_branches.
         """
+        logger.debug("Grouping branches...")
         for i, g in enumerate(self._graphs):
             vs_to_delete = set()
             for v in g.vs:
@@ -275,6 +269,7 @@ class SsbGraphMinimizer:
         return False
 
     def build_and_group_switch_cases(self):
+        logger.debug("Building switches...")
         for i, g in enumerate(self._graphs):
             vs_to_delete = set()
             current_switch_id = -1
@@ -368,6 +363,7 @@ class SsbGraphMinimizer:
 
     def group_switch_cases(self):
         """Group cases of a switch or multi switch that jump to the same point"""
+        logger.debug("Grouping switches...")
         for i, g in enumerate(self._graphs):
             es_to_delete = set()
             for v in g.vs:
@@ -403,6 +399,7 @@ class SsbGraphMinimizer:
         Examples:
             - unionall 67 (1 and 15)
         """
+        logger.debug("Building switch fallthroughs...")
         for i, g in enumerate(self._graphs):
             for v in g.vs:
                 if isinstance(v['op'], SsbLabelJump) and isinstance(v['op'].get_marker(), SwitchStart):
@@ -452,6 +449,7 @@ class SsbGraphMinimizer:
         - 673
         - D01P11A/dus03/0
         """
+        logger.debug("Detecting loops...")
         # TODO: Loop detection & creation really needs to be re-written.
         for i, g in enumerate(self._graphs):
             find_first_common_next_vertex_in_edges__clear_cache(g)
@@ -578,6 +576,7 @@ class SsbGraphMinimizer:
         return True, list(breaks), continues
 
     def remove_label_markers(self):
+        logger.debug("Removing unnecessary labels...")
         for i, g in enumerate(self._graphs):
             find_first_common_next_vertex_in_edges__clear_cache(g)
             vs_to_delete = set()

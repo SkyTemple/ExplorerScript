@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import TYPE_CHECKING
 
 from igraph import Vertex
@@ -27,6 +28,8 @@ from igraph import Vertex
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbForeignLabel, SsbLabelJump
+logger = logging.getLogger(__name__)
+
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler

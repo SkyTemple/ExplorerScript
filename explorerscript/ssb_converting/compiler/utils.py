@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import Dict, List, TYPE_CHECKING, Union, Optional
 
 from explorerscript.error import SsbCompilerError
@@ -27,6 +28,8 @@ from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, \
     OP_DUMMY_END, OPS_CTX
+logger = logging.getLogger(__name__)
+
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler
@@ -167,6 +170,7 @@ def strip_last_label(routine_ops: List[List[SsbOperation]]):
     Checks if the last opcode of a routine is a label, and if so
     removes it. if there are jumps to it, they are removed and replaced with an OP_DUMMY_END.
     """
+    logger.debug("Stripping last label...")
     returned_routine_ops = []
     for routine in routine_ops:
         if len(routine) > 0:

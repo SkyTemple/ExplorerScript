@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import List, Optional
 
 from antlr4 import InputStream, CommonTokenStream
@@ -32,6 +33,7 @@ from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.ssb_script.ssb_converting.compiler.compiler_listener import SsbScriptCompilerListener
 from explorerscript.syntax_error_listener import SyntaxErrorListener
+logger = logging.getLogger(__name__)
 
 
 class SsbScriptSsbCompiler:
@@ -67,6 +69,7 @@ class SsbScriptSsbCompiler:
 
         :raises: ParseError: On parsing errors
         """
+        logger.debug("Compiling SSBScript...")
         self.routine_infos = None
         self.routine_ops = None
         self.named_coroutines = None

@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 
 from igraph import Vertex
 
@@ -33,10 +34,11 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SwitchSt
     OPS_THAT_END_CONTROL_FLOW, OP_SWITCH_DUNGEON_MODE
 from explorerscript.ssb_converting.util import Blk
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
+logger = logging.getLogger(__name__)
 
 
 class SwitchWriteHandler(AbstractWriteHandler):
-    """Handles writing ifs."""
+    """Handles writing switches."""
 
     def __init__(self, start_vertex: Vertex, decompiler, parent):
         super().__init__(start_vertex, decompiler, parent)
@@ -54,9 +56,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
         exits = self.start_vertex.out_edges()
         edges_that_will_be_visited_multiple_times = set()
         already_printed_edges = set()
+        logger.debug("Handling a switch (%s)...", op)
 
         if len(exits) == 1 and (exits[0]['switch_ops'] is None or len(exits[0]['switch_ops']) == 0):
             # Not a real switch (empty body menu or special process)
+            logger.debug("switch was empty.", op)
             self.decompiler.write_stmnt(" { }", False)
             return exits[0].target_vertex
         else:
@@ -68,13 +72,17 @@ class SwitchWriteHandler(AbstractWriteHandler):
                 already_printed_edges.add(e)
             already_printed_edges = set()  # reuse
             with Blk(self.decompiler):
+                logger.debug("Handling switch cases...")
                 for e, switch_case_ops, is_default in list_of_switch_cases:
                     for sco in switch_case_ops:
+                        logger.debug("Writing switch case (%s)...", sco)
                         self.decompiler.source_map_add_opcode(sco.op.offset)
                         self.decompiler.write_stmnt(f"case {self._case_header_for(sco.op, is_switch_dungeon_mode)}:")
                     if is_default:
+                        logger.debug("Writing default...")
                         self.decompiler.write_stmnt("default:")
                     with Blk(self.decompiler, False):
+                        logger.debug("... NOW block for cases.")
                         # If this will be visited multiple times, we need a label
                         if e in edges_that_will_be_visited_multiple_times and e not in already_printed_edges:
                             self.decompiler.write_stmnt(f"§switch{m.switch_id}_{e.index};")

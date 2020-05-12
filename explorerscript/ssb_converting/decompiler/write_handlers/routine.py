@@ -20,12 +20,15 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
+
 from igraph import Graph
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 from explorerscript.ssb_converting.util import Blk
+logger = logging.getLogger(__name__)
 
 
 class RoutineWriteHandler(AbstractWriteHandler):
@@ -40,6 +43,7 @@ class RoutineWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         self._write_routine_header()
+        logger.debug("Handling a routine...")
         with Blk(self.decompiler):
             if len(self.r_graph.vs) == 0:
                 self.decompiler.write_stmnt("alias previous;")

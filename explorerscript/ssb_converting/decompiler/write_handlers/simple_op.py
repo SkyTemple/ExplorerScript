@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import Optional, Dict, Type
 
 from igraph import Vertex
@@ -36,6 +37,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple i
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, OPS_CTX, OP_JUMP, OP_RETURN, \
     OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST, OPS_FLAG_ALL
+logger = logging.getLogger(__name__)
 
 
 class SimpleOperationWriteHandler(AbstractWriteHandler):
@@ -64,6 +66,7 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
 
     def get_real_handler(self) -> Type[AbstractWriteHandler]:
         op: SsbOperation = self.start_vertex['op']
+        logger.debug("Writing a simple operation (%s)...", op)
         handler = self._ssb_operations_special_cases_handlers[None]
         for h_types, h in self._ssb_operations_special_cases_handlers.items():
             if op.op_code.name == h_types:

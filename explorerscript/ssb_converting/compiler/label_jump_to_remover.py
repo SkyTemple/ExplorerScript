@@ -24,14 +24,17 @@ and replaces jumps by regular opcodes arguments.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import List, Dict
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
+logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToRemover:
     def __init__(self, routines: List[List[SsbOperation]], label_offsets: Dict[int, int]):
+        logger.debug("Removing labels - replacing them with opcode jumps...")
         self.routines = []
 
         # label_offsets is a dict that maps label ids to their next opcode offset id

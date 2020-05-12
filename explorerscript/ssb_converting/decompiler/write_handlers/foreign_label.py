@@ -20,11 +20,13 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbForeignLabel
-
+logger = logging.getLogger(__name__)
 
 class ForeignLabelWriteHandler(AbstractWriteHandler):
     """Handles writing foreign labels (references to labels in other routines)."""
@@ -35,6 +37,7 @@ class ForeignLabelWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         op: SsbForeignLabel = self.start_vertex['op']
+        logger.debug("Handling a foreign label (%s)...", op)
         exits = self.start_vertex.out_edges()
         assert len(exits) == 0
         # See note in LabelWriteHandler.

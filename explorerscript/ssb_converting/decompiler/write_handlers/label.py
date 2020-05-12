@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 
 from igraph import Vertex
 
@@ -27,6 +28,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SwitchFalltrough, SsbLabel, IfEnd, SwitchEnd, ForeverStart, \
     ForeverEnd
+logger = logging.getLogger(__name__)
 
 
 class LabelWriteHandler(AbstractWriteHandler):
@@ -65,6 +67,7 @@ class LabelWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         op: SsbLabel = self.start_vertex['op']
+        logger.debug("Handling a label (%s)...", op)
         needs_to_be_printed = op.needs_to_be_printed(
             self.start_vertex.index, len(self.start_vertex.in_edges()), self.start_vertex.graph
         )
@@ -76,6 +79,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             if needs_to_be_printed and op.id not in self.decompiler.labels_already_printed:
                 self._write_label(op)
             self.ended_on_jump = True
+            logger.debug("Label was switch fallthrough!")
             return None
 
         # Let's check if we need to print it
@@ -86,6 +90,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             previous_vertex_op = self.vertex_that_started_block['op'] if self.is_first_vertex_of_block else None
             self.decompiler.write_label_jump(op.id, previous_vertex_op)
             self.ended_on_jump = True
+            logger.debug("Wrote the label!")
             return None
         elif needs_to_be_printed:
             # Print the label
@@ -97,6 +102,7 @@ class LabelWriteHandler(AbstractWriteHandler):
                 # Delegate to loop handler
                 # TODO: Handle multiple loop starts (oh dear god what a nightmare)
                 assert len(self.started_loops) == 1
+                logger.debug("Handing of to forever write handler!")
                 return ForeverWriteHandler(self.start_vertex, self.decompiler, self.parent).write_content()
 
             return exits[0].target_vertex

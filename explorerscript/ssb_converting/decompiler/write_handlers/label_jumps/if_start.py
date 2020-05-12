@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 
 from igraph import Vertex, Edge
 
@@ -30,6 +31,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import IfStart, SsbLabelJump, MultiIfStart, SsbLabel, IfEnd
 from explorerscript.ssb_converting.util import Blk
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
+logger = logging.getLogger(__name__)
 
 
 class IfWriteHandler(AbstractWriteHandler):
@@ -45,11 +47,13 @@ class IfWriteHandler(AbstractWriteHandler):
         if_edge, else_edge = self._write_if_header('if', op, self.start_vertex)
 
         if else_edge == if_edge:
+            logger.debug("<%d> Handling empty if-block (%s)...", id(self.start_vertex), op)
             # Great if!
             with Blk(self.decompiler):
                 pass
             return else_edge.target_vertex
         else:
+            logger.debug("<%d> Handling if-block (%s)...", id(self.start_vertex), op)
             with Blk(self.decompiler):
                 # Handle if-branch
                 if_branch_handler = BlockWriteHandler(
@@ -64,6 +68,7 @@ class IfWriteHandler(AbstractWriteHandler):
                 # TODO: does this actually work correctly for the common-end detection...? It think this works?
                 else_edge = self._build_else_if_chain(else_edge)
                 if else_edge is not None:
+                    logger.debug("<%d> Handling else-block...", id(self.start_vertex))
                     else_ends_on_common_vtx = False
                     self.decompiler.write_stmnt(" else", False)
                     with Blk(self.decompiler):
@@ -151,11 +156,13 @@ class IfWriteHandler(AbstractWriteHandler):
         """Starting from the in_edge try to build as many elseif constructs as possible."""
         op: SsbOperation = in_edge.target_vertex['op']
         while isinstance(op, SsbLabelJump) and isinstance(op.get_marker(), IfStart):
+            logger.debug("<%d> Handling else-if-block (%s)...", id(self.start_vertex), op)
             m: IfStart = op.get_marker()
             if_edge, else_edge = self._write_if_header('elseif', op, in_edge.target_vertex, False)
 
             if else_edge == if_edge:
                 # Great if!
+                logger.debug("<%d> Empty else-if-block (%s).", id(self.start_vertex), op)
                 with Blk(self.decompiler):
                     pass
                 return None

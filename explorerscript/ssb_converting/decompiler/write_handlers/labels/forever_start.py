@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import Optional
 
 from igraph import Vertex
@@ -28,6 +29,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, ForeverStart
 from explorerscript.ssb_converting.util import Blk
+logger = logging.getLogger(__name__)
 
 
 class ForeverWriteHandler(AbstractWriteHandler):
@@ -42,6 +44,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         op: SsbLabelJump = self.start_vertex['op']
+        logger.debug("Writing a forever-block (%s)...", op)
         m: ForeverStart = [m for m in op.markers if isinstance(m, ForeverStart)][0]
         self.m = m
 

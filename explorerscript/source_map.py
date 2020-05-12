@@ -21,7 +21,9 @@
 #  SOFTWARE.
 #
 import json
+import logging
 from typing import Dict, Tuple, List, Union, Optional, Iterable
+logger = logging.getLogger(__name__)
 
 
 class SourceMapPositionMark:
@@ -271,6 +273,7 @@ class SourceMap:
                 if addr is not None:
                     m.return_addr = new_mapping[m.return_addr]
 
+
 class SourceMapBuilder:
     def __init__(self):
         self._mappings = {}
@@ -279,12 +282,15 @@ class SourceMapBuilder:
         self._pos_marks_macros = []
         self._next_macro_called_in: Optional[SourceMapping] = None
         self._macro_context__stack: List[Tuple[int, Dict[str, Union[int, str]]]] = []
+        logger.debug("<%d>: Init.", id(self))
 
     def add_opcode(self, op_offset, line_number, column):
         self._mappings[op_offset] = SourceMapping(line_number, column)
+        logger.debug("<%d>: Adding opcode: %d -> %d, %d", id(self), op_offset, line_number, column)
 
     def add_position_mark(self, position_mark: SourceMapPositionMark):
         self._pos_marks.append(position_mark)
+        logger.debug("<%d>: Adding PositionMark: %s", id(self), position_mark)
 
     def macro_context__push(self, opcode_to_jump_to: int, parameter_mapping: Dict[str, Union[int, str]]):
         """
@@ -292,16 +298,19 @@ class SourceMapBuilder:
         use what's on the top of the stack.
         """
         self._macro_context__stack.append((opcode_to_jump_to, parameter_mapping))
+        logger.debug("<%d>: -- PUSH MACRO CTX --> [%d, %s]", id(self), opcode_to_jump_to, parameter_mapping)
 
     def macro_context__pop(self):
         """
         Pop a macro context from the stack.
         """
         self._macro_context__stack.pop()
+        logger.debug("<%d>: <-- POP MACRO CTX", id(self))
 
     def next_macro_opcode_called_in(self, if_incl_rel_path: Optional[str], line_number, column):
         """Mark the next added macro opcode as being called in this line/column. This marks a macro call."""
         self._next_macro_called_in = (if_incl_rel_path, line_number, column)
+        logger.debug("<%d>: Marked next macro opcode as called in %s:%d, %d", id(self), str(if_incl_rel_path), line_number, column)
 
     def add_macro_opcode(self, op_offset, if_incl_rel_path: Optional[str], macro_name: str,
                          line_number, column):
@@ -319,6 +328,7 @@ class SourceMapBuilder:
             called_in = self._next_macro_called_in
             self._next_macro_called_in = None
         return_addr, parameter_mapping = self._macro_context__stack[-1]
+        logger.debug("<%d>: Adding macro opcode: %s:%s:%d -> %d, %d", id(self), if_incl_rel_path, macro_name, op_offset, line_number, column)
         self._mappings_macros[op_offset] = MacroSourceMapping(if_incl_rel_path, macro_name,
                                                               line_number,
                                                               column, called_in, return_addr, parameter_mapping)
@@ -326,6 +336,7 @@ class SourceMapBuilder:
     def add_macro_position_mark(self, if_incl_rel_path: Optional[str], macro_name: str, position_mark: SourceMapPositionMark):
         """Add a position mark, that has it's source code in a macro. See notes for add_macro_opcode"""
         self._pos_marks_macros.append((if_incl_rel_path, macro_name, position_mark))
+        logger.debug("<%d>: Adding Macro PositionMark: %s:%s - %s", id(self), if_incl_rel_path, macro_name, position_mark)
 
     def build(self):
         return SourceMap(self._mappings, self._pos_marks,

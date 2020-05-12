@@ -24,14 +24,17 @@ and inserts labels at the appropriate locations.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import List, Dict
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel
+logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToResolver:
     def __init__(self, routines: List[List[SsbOperation]]):
+        logger.debug("Constructing labels and jumps...")
         # A mapping of labels: {mem_location: label_name}
         self.labels: Dict[int, SsbLabel] = {}
         self.routines = []

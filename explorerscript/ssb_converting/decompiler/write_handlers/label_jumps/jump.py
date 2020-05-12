@@ -20,10 +20,13 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump
+logger = logging.getLogger(__name__)
 
 
 class JumpWriteHandler(AbstractWriteHandler):
@@ -34,6 +37,7 @@ class JumpWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         """Delegates to the handlers in .label_jump"""
+        logger.debug("Handling a jump; (%s)...", self.start_vertex['op'])
         op: SsbLabelJump = self.start_vertex['op']
         # TODO: Writing this source map entry may be confusing, if no jump is written next (by the label handler)...
         self.decompiler.source_map_add_opcode(op.offset)

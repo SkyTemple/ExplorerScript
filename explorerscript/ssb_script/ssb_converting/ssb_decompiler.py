@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import List, Dict, Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
@@ -28,6 +29,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
     SsbOpParam, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
 from explorerscript.ssb_converting.util import Blk
+logger = logging.getLogger(__name__)
 
 
 class SsbScriptSsbDecompiler:
@@ -46,6 +48,7 @@ class SsbScriptSsbDecompiler:
         self._source_map_builder: SourceMapBuilder = None
 
     def convert(self) -> Tuple[str, SourceMap]:
+        logger.debug("Decompiling SSBScript...")
         self._output = ""
         self.indent = 0
         self._line_number = 1
@@ -56,6 +59,7 @@ class SsbScriptSsbDecompiler:
         self._routine_ops = list(resolver)
 
         for r_id, (r_info, r_ops) in enumerate(zip(self._routine_infos, self._routine_ops)):
+            logger.debug("Decompiling (%d, %s)...", r_id, self._named_coroutines[r_id] if r_id in self._named_coroutines else None)
             self._write_routine_header(r_id, r_info)
             with Blk(self):
                 if len(r_ops) == 0:

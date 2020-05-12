@@ -20,10 +20,10 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-
-
+import logging
 import os
 from explorerscript.source_map import SourceMap
+logger = logging.getLogger(__name__)
 
 
 class IncludedUsageMap:
@@ -62,3 +62,4 @@ class IncludedUsageMapDiff:
         self.removed = usage_files_before - usage_files_after
         # 2. Add to the new macro usage files we were not in yet
         self.added = usage_files_after - usage_files_before
+        logger.debug("Inclusion map diff result: Added<%s> - Removed<%s>", self.added, self.removed)

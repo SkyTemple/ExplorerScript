@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 from typing import Dict, Type, Optional
 
 from igraph import Vertex
@@ -33,6 +34,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump im
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import LabelJumpMarker, MultiIfStart, IfStart, \
     SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump, OP_JUMP
+logger = logging.getLogger(__name__)
 
 
 class LabelJumpWriteHandler(AbstractWriteHandler):
@@ -55,6 +57,7 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
     def write_content(self):
         """Delegates to the handlers in .label_jump"""
         op: SsbLabelJump = self.start_vertex['op']
+        logger.debug("Handling a label jump (%s)...", op)
         m = op.get_marker()
         if type(m) in self._label_jump_marker_handlers:
             try:

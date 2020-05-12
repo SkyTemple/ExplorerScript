@@ -20,10 +20,12 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+logger = logging.getLogger(__name__)
 
 
 class ForeverBreakWriteHandler(AbstractWriteHandler):
@@ -34,6 +36,7 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         """Print a break and end"""
+        logger.debug("Handling a break_loop; (%s)...", self.start_vertex['op'])
         self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
         self.decompiler.write_stmnt("break_loop;")
         exits = self.start_vertex.out_edges()
@@ -42,6 +45,7 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
                 # We REALLY shouldn't land here, if we are outside of a loop, but sometimes loop detection still
                 # raises some "false positives" and builds loops that have break statements reachable from outside
                 # the loop
+                logger.warning("While decompiling, tried to generate break_loop; outside loop!")
                 raise FallbackToJump()
             # Make sure the forever start block is aware of the next vertex!
             self.decompiler.forever_start_handler_stack[-1].set_vertex_after(exits[0].target_vertex)
