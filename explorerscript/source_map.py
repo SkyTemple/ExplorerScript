@@ -186,6 +186,10 @@ class SourceMap:
         self._mappings_macros = mappings_macros
         self._position_marks_macro = position_marks_macro
 
+    @property
+    def is_empty(self):
+        return len(self._mappings) == 0
+
     def get_op_line_and_col(self, op_offset: int) -> Optional[SourceMapping]:
         if op_offset in self._mappings:
             return self._mappings[op_offset]
