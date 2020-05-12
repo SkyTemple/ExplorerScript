@@ -60,7 +60,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
 
         if len(exits) == 1 and (exits[0]['switch_ops'] is None or len(exits[0]['switch_ops']) == 0):
             # Not a real switch (empty body menu or special process)
-            logger.debug("switch was empty.", op)
+            logger.debug("switch was empty.")
             self.decompiler.write_stmnt(" { }", False)
             return exits[0].target_vertex
         else:
