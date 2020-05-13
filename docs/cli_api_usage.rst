@@ -214,6 +214,353 @@ the process exits with exit code 0, it's successful.
 Compiling an example
 --------------------
 
+Compiling the source code in the ``example`` directory::
+
+  python -m explorerscript.cli.compile example/SCRIPT/base.exps --settings /tmp/settings.json --lookup example/macros
+
+With ``/tmp/settings.json`` having the following content:
+
+.. code:: json
+
+    {
+      "settings": {
+        "performance_progress_list_var_name": "$PERFORMANCE_PROGRESS_LIST",
+        "dungeon_mode_constants": {
+          "open": "DMODE_OPEN",
+          "closed": "DMODE_CLOSED",
+          "request": "DMODE_REQUEST",
+          "open_request": "OPEN_AND_REQUEST"
+        }
+      }
+    }
+
+
+Output:
+
+.. code:: json
+
+    {
+      "settings": {
+        "performance_progress_list_var_name": "$PERFORMANCE_PROGRESS_LIST",
+        "dungeon_mode_constants": {
+          "open": "DMODE_OPEN",
+          "closed": "DMODE_CLOSED",
+          "request": "DMODE_REQUEST",
+          "open_request": "OPEN_AND_REQUEST"
+        }
+      },
+      "routines": [
+        {
+          "type": "GENERIC",
+          "ops": [
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "Before Macro"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "Begin LocalMacro"
+                }
+              ]
+            },
+            {
+              "opcode": "vars",
+              "params": [
+                {
+                  "type": "POSITION_MARK",
+                  "value": {
+                    "name": "PositionName",
+                    "x": "10",
+                    "y": "10.5"
+                  }
+                },
+                2,
+                3,
+                {
+                  "type": "CONST_STRING",
+                  "value": "String"
+                }
+              ]
+            },
+            {
+              "opcode": "vars_in_remote_macro",
+              "params": [
+                2,
+                {
+                  "type": "CONST_STRING",
+                  "value": "String"
+                },
+                {
+                  "type": "CONSTANT",
+                  "value": "$notAvailable"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "BELOW IS A TEST RETURN"
+                }
+              ]
+            },
+            {
+              "opcode": "BranchValue",
+              "params": [
+                {
+                  "type": "CONSTANT",
+                  "value": "$TEST_VAR"
+                },
+                4,
+                3,
+                8
+              ]
+            },
+            {
+              "opcode": "Jump",
+              "params": [
+                10
+              ]
+            },
+            {
+              "opcode": "print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "The variable is smaller"
+                }
+              ]
+            },
+            {
+              "opcode": "Jump",
+              "params": [
+                11
+              ]
+            },
+            {
+              "opcode": "vars_in_remote_macro2",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "from remote_macro"
+                },
+                {
+                  "type": "CONST_STRING",
+                  "value": "String"
+                },
+                {
+                  "type": "CONSTANT",
+                  "value": "$notAvailable"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "REMOTE2 SHOULD END HERE"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "macro_in_macros_2"
+                }
+              ]
+            },
+            {
+              "opcode": "NUMBER_TWO_im_in_macros_2",
+              "params": []
+            },
+            {
+              "opcode": "NUMBER_ONE_im_in_macros_2",
+              "params": []
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "End LocalMacro"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "Begin LocalMacro"
+                }
+              ]
+            },
+            {
+              "opcode": "vars",
+              "params": [
+                10,
+                9,
+                8,
+                {
+                  "type": "CONST_STRING",
+                  "value": "Another one"
+                }
+              ]
+            },
+            {
+              "opcode": "vars_in_remote_macro",
+              "params": [
+                9,
+                {
+                  "type": "CONST_STRING",
+                  "value": "Another one"
+                },
+                {
+                  "type": "CONSTANT",
+                  "value": "$notAvailable"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "BELOW IS A TEST RETURN"
+                }
+              ]
+            },
+            {
+              "opcode": "BranchValue",
+              "params": [
+                {
+                  "type": "CONSTANT",
+                  "value": "$TEST_VAR"
+                },
+                4,
+                3,
+                22
+              ]
+            },
+            {
+              "opcode": "Jump",
+              "params": [
+                24
+              ]
+            },
+            {
+              "opcode": "print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "The variable is smaller"
+                }
+              ]
+            },
+            {
+              "opcode": "Jump",
+              "params": [
+                25
+              ]
+            },
+            {
+              "opcode": "vars_in_remote_macro2",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "from remote_macro"
+                },
+                {
+                  "type": "CONST_STRING",
+                  "value": "Another one"
+                },
+                {
+                  "type": "CONSTANT",
+                  "value": "$notAvailable"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "REMOTE2 SHOULD END HERE"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "macro_in_macros_2"
+                }
+              ]
+            },
+            {
+              "opcode": "NUMBER_TWO_im_in_macros_2",
+              "params": []
+            },
+            {
+              "opcode": "NUMBER_ONE_im_in_macros_2",
+              "params": []
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "End LocalMacro"
+                }
+              ]
+            },
+            {
+              "opcode": "debug_Print",
+              "params": [
+                {
+                  "type": "CONST_STRING",
+                  "value": "After Macro"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ACTOR",
+          "target_id": "TEST",
+          "ops": [
+            {
+              "opcode": "test_actor",
+              "params": []
+            }
+          ]
+        },
+        {
+          "type": "ACTOR",
+          "target_id": 2,
+          "ops": [
+            {
+              "opcode": "test_actor_id",
+              "params": []
+            }
+          ]
+        }
+      ]
+    }
+
 Python API
 ----------
 
