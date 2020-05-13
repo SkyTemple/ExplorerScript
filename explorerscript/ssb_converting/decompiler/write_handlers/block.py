@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import logging
 import warnings
 from typing import Optional
 
@@ -30,6 +31,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
     NestedBlockDisallowedError
 from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, SsbLabel, SsbLabelJump, \
     SsbForeignLabel, OP_HOLD, OP_END, OP_RETURN, OP_DUMMY_END
+logger = logging.getLogger(__name__)
 
 
 class BlockWriteHandler(AbstractWriteHandler):
@@ -91,7 +93,7 @@ class BlockWriteHandler(AbstractWriteHandler):
                     and not isinstance(previous_vertex['op'], SsbLabel) \
                     and not isinstance(previous_vertex['op'], SsbForeignLabel):
                 # All branches must end with something that ends their control flow
-                warnings.warn(f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch.")
+                logger.warning(f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch.")
                 if OP_DUMMY_END == OP_RETURN:
                     self.decompiler.write_return()
                 elif OP_DUMMY_END == OP_END:

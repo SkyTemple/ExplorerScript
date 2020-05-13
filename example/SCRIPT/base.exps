@@ -9,8 +9,16 @@ macro local_macro($i1, $i2, $i3, $aString) {
 
 def 0 {
     debug_Print("Before Macro");
-    ~local_macro(1, 2, 3, "String");
+    ~local_macro(Position<'PositionName', 10, 10.5>, 2, 3, "String");
     ~local_macro(10, 9, 8, "Another one");
     //~local_macro("not enough arguments");
     debug_Print("After Macro");
+}
+
+def 1 for_actor(TEST) {
+    test_actor();
+}
+
+def 2 for_actor(2) {
+    test_actor_id();
 }

@@ -9,7 +9,10 @@ macro remote_macro($aVariable, $aString) {
 
 macro remote_macro2($aString, $anotherString) {
     debug_Print("BELOW IS A TEST RETURN");
-    return; // This should jump out of the macro.
+    if ($TEST_VAR < 3) {
+        print("The variable is smaller");
+        return; // This should jump out of the macro.
+    }
     vars_in_remote_macro2($aString, $anotherString, $notAvailable);
 }
 

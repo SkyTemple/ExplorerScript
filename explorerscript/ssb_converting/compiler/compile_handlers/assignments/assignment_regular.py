@@ -54,7 +54,7 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
             index = int(str(self.ctx.INTEGER()))
             # CalcBit / SetPerformance
             if self.value_is_a_variable:
-                raise SsbCompilerError(f"value_of can not be used with index based assignments (line {self.ctx.start.line}).")
+                raise SsbCompilerError(f"value(X) can not be used with index based assignments (line {self.ctx.start.line}).")
             if str(self.var_target) == self.compiler_ctx.performance_progress_list_var_name:
                 return [self._generate_operation(OPS_FLAG__SET_PERFORMANCE, [index, self.value])]
             return [self._generate_operation(OPS_FLAG__CALC_BIT, [self.var_target, index, self.value])]

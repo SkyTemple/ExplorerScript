@@ -181,15 +181,24 @@ class SsbOpParamPositionMarker:
         self.x_relative = x_relative
         self.y_relative = y_relative
 
-    def __str__(self):
+    @property
+    def x_final(self):
         x_offset_marker = ''
         if self.x_offset > 1:
             # TODO: The offset parameter is a bit weird, check if this is actually the case:
             x_offset_marker = '.5'
+        return f'{self.x_relative}{x_offset_marker}'
+
+    @property
+    def y_final(self):
         y_offset_marker = ''
         if self.y_offset > 1:
+            # TODO: The offset parameter is a bit weird, check if this is actually the case:
             y_offset_marker = '.5'
-        return f'Position<\'{self.name}\', {self.x_relative}{x_offset_marker}, {self.y_relative}{y_offset_marker}>'
+        return f'{self.y_relative}{y_offset_marker}'
+
+    def __str__(self):
+        return f'Position<\'{self.name}\', {self.x_final}, {self.y_final}>'
 
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamPositionMarker):

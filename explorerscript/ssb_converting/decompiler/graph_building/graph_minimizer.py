@@ -125,7 +125,7 @@ class SsbGraphMinimizer:
                     try:
                         else_edge, if_edge = find_lowest_and_highest_out_edge(g, v, 'flow_level')
                     except ValueError:
-                        warnings.warn(f"If without edges: {v}")
+                        logger.warning(f"If without edges: {v}")
                         continue
                     assert else_edge != if_edge
                     v['op'].add_marker(IfStart(current_if_id))
@@ -143,7 +143,7 @@ class SsbGraphMinimizer:
                         v_on_else_bef_end = e_on_else_bef_end.source_vertex
                         if not isinstance(end_vertex['op'], SsbLabel):
                             # There's no real end, but a loop. TODO: This could lead to real problems...
-                            warnings.warn("If-Branch ended on a vertex that is not a label...")
+                            logger.warning("If-Branch ended on a vertex that is not a label...")
                             continue
                         end_vertex['op'].add_marker(IfEnd(current_if_id))
                         self._update_vertex_style(end_vertex)
@@ -160,7 +160,7 @@ class SsbGraphMinimizer:
                             # The common path of the two branches happens after the first actual stop, possibly
                             # because of an unfinished inner branch.
                             # TODO: This could lead to real problems...
-                            warnings.warn("If-Branches ended via the same edge...")
+                            logger.warning("If-Branches ended via the same edge...")
                             continue
 
                         if isinstance(v_on_else_bef_end['op'], SsbLabelJump) and v_on_else_bef_end['op'].root.op_code.name == OP_JUMP:
@@ -279,7 +279,7 @@ class SsbGraphMinimizer:
                     # SWITCH
                     out_edges = v.out_edges()
                     if len(out_edges) == 0:
-                        warnings.warn(f"Warning: A switch was not connected: {v['label']}.")
+                        logger.warning(f"Warning: A switch was not connected: {v['label']}.")
                         continue
                     # -- FIRST: FINDING THE START POINTS
                     v['op'] = SsbLabelJump(v['op'], None)
@@ -332,7 +332,7 @@ class SsbGraphMinimizer:
                         end_vertex = result[0].target_vertex
                         if not isinstance(end_vertex['op'], SsbLabel):
                             # There's no real end, but a loop. TODO: This could lead to real problems...
-                            warnings.warn("Switch ended on a vertex that is not a label...")
+                            logger.warning("Switch ended on a vertex that is not a label...")
                             continue
                         end_vertex['op'].add_marker(SwitchEnd(current_switch_id))
                         self._update_vertex_style(end_vertex)
@@ -344,7 +344,7 @@ class SsbGraphMinimizer:
                                 # The common path of the branches happens after the first actual stop, possibly
                                 # because of an unfinished inner branch.
                                 # TODO: This could lead to real problems...
-                                warnings.warn("Switch-Branches ended via the same edge...")
+                                logger.warning("Switch-Branches ended via the same edge...")
                                 find_first_common_next_vertex_in_edges__clear_cache(g)
                                 continue
                             already_updated_switch_end_in_edges.append(e)
@@ -558,7 +558,7 @@ class SsbGraphMinimizer:
             break_target = breaks[0].target_vertex
             if break_target == start:
                 # hm, this really shouldn't happen.
-                warnings.warn("Warning, break node was starting node when building loop")
+                logger.warning("Warning, break node was starting node when building loop")
                 return False, None, None
             breaks = set(breaks)
             # Get a list of all vertices visited from the immediate break points, to the first common end point
