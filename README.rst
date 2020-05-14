@@ -3,8 +3,8 @@ ExplorerScript
 
 |build| |pypi-version| |pypi-downloads| |pypi-license| |pypi-pyversions| |discord|
 
-.. |build| image:: https://jenkins.riptide.parakoopa.de/buildStatus/icon?job=explorerscript%2Fmaster
-    :target: https://jenkins.riptide.parakoopa.de/blue/organizations/jenkins/explorerscript/activity
+.. |build| image:: https://jenkins.riptide.parakoopa.de/buildStatus/icon?job=ExplorerScript%2Fmaster
+    :target: https://jenkins.riptide.parakoopa.de/blue/organizations/jenkins/ExplorerScript/activity
     :alt: Build Status
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/explorerscript
