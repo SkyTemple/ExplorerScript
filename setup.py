@@ -9,17 +9,22 @@ with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='explorerscript',
-    version='0.0.1',
+    version='0.0.2a1',
     packages=find_packages(),
-    # TODO:
-    description='',
+    description='ExplorerScript and SSBScript: Script languages for decompiled SSB (Pokémon Mystery Dungeon Explorers of Sky)',
     long_description=long_description,
     long_description_content_type='text/x-rst',
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
-        # TODO
+        'python-igraph >= 0.8.0',
+        'antlr4-python3-runtime >= 4.8'
     ],
     classifiers=[
-        # TODO
+        'Development Status :: 2 - Pre-Alpha',
+        'Programming Language :: Python',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
 )

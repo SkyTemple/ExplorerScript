@@ -22,7 +22,7 @@
 #  SOFTWARE.
 #
 from enum import Enum
-from typing import Dict, TypeVar, Union, List, OrderedDict as OrderedDictType, NamedTuple
+from typing import Dict, Union, List
 
 
 def escape_quotes(string):
