@@ -28,11 +28,12 @@ logger = logging.getLogger(__name__)
 
 class SourceMapPositionMark:
     """A position mark encoded in the source code of SSBScript / ExplorerScript."""
-    def __init__(self, line_number: int, column_number: int, argument_idx: int,
+    def __init__(self, line_number: int, column_number: int, end_line_number: int, end_column_number: int,
                  name: str, x_offset: int, y_offset: int, x_relative: int, y_relative: int):
         self.line_number = line_number
         self.column_number = column_number
-        self.argument_idx = argument_idx
+        self.end_line_number = end_line_number
+        self.end_column_number = end_column_number
         self.name = name
         self.x_offset = x_offset
         self.y_offset = y_offset
@@ -67,15 +68,19 @@ class SourceMapPositionMark:
 
     def __str__(self):
         return f'SourceMapPositionMark<' \
-               f'"{self.name}" @{self.line_number}:{self.column_number}:{self.argument_idx} - ' \
+               f'"{self.name}" @{self.line_number}:{self.column_number}->{self.end_line_number}:{self.end_column_number} - ' \
                f'{self.x_relative}:{self.x_offset}, {self.y_relative}:{self.y_offset}>)'
+
+    def __repr__(self):
+        return str(self)
 
     def __eq__(self, other):
         if not isinstance(other, SourceMapPositionMark):
             return False
         return self.line_number == other.line_number and \
                 self.column_number == other.column_number and \
-                self.argument_idx == other.argument_idx and \
+                self.end_line_number == other.end_line_number and \
+                self.end_column_number == other.end_column_number and \
                 self.name == other.name and \
                 self.x_offset == other.x_offset and \
                 self.y_offset == other.y_offset and \
@@ -84,16 +89,17 @@ class SourceMapPositionMark:
 
     def serialize(self) -> list:
         return [
-            self.line_number, self.column_number, self.argument_idx,
+            self.line_number, self.column_number, self.end_line_number, self.end_column_number,
             self.name, self.x_offset, self.y_offset, self.x_relative, self.y_relative
         ]
 
     @classmethod
     def deserialize(cls, data_list) -> 'SourceMapPositionMark':
         return SourceMapPositionMark(
-            line_number=data_list[0], column_number=data_list[1], argument_idx=data_list[2],
-            name=data_list[3], x_offset=data_list[4], y_offset=data_list[5],
-            x_relative=data_list[6], y_relative=data_list[7]
+            line_number=data_list[0], column_number=data_list[1],
+            end_line_number=data_list[2], end_column_number=data_list[3],
+            name=data_list[4], x_offset=data_list[5], y_offset=data_list[6],
+            x_relative=data_list[7], y_relative=data_list[8]
         )
 
 

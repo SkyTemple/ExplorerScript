@@ -147,11 +147,12 @@ class ExplorerScriptSsbDecompiler:
         #       Might need this more flexible.
         self.smb.add_opcode(op_offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
 
-    def source_map_add_position_mark(self, argument_index, param: SsbOpParamPositionMarker):
+    def source_map_add_position_mark(self, length, param: SsbOpParamPositionMarker):
+        col_number = self.indent * NUMBER_OF_SPACES_PER_INDENT
         self.smb.add_position_mark(
             SourceMapPositionMark(
-                line_number=self._line_number, column_number=self.indent * NUMBER_OF_SPACES_PER_INDENT,
-                argument_idx=argument_index,
+                line_number=self._line_number, column_number=col_number,
+                end_line_number=self._line_number, end_column_number=col_number + length,
                 name=param.name,
                 x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative,
                 y_relative=param.y_relative

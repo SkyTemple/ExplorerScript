@@ -25,11 +25,8 @@ import os
 from pathlib import PurePosixPath, PurePath
 from typing import List, Optional, Dict
 
-from antlr4 import InputStream, CommonTokenStream
-
-from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.error import ParseError, SsbCompilerError
+from explorerscript.error import SsbCompilerError
+from explorerscript.explorerscript_reader import ExplorerScriptReader
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.compiler_visitor.has_routines_visitor import HasRoutinesVisitor
@@ -41,7 +38,6 @@ from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalize
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.syntax_error_listener import SyntaxErrorListener
 logger = logging.getLogger(__name__)
 
 
@@ -123,21 +119,7 @@ class ExplorerScriptSsbCompiler:
         if original_base_file is None:
             original_base_file = file_name
 
-        input_stream = InputStream(explorerscript_src)
-        lexer = ExplorerScriptLexer(input_stream)
-        stream = CommonTokenStream(lexer)
-        parser = ExplorerScriptParser(stream)
-        error_listener = SyntaxErrorListener()
-        parser.addErrorListener(error_listener)
-
-        # Start Parsing
-        tree = parser.start()
-
-        # Look for errors
-        if len(error_listener.syntax_errors) > 0:
-            # We only return the first error, the rest is probably not relevant, since
-            # the first screws everything over.
-            raise ParseError(error_listener.syntax_errors[0])
+        tree = ExplorerScriptReader(explorerscript_src).read()
 
         # Collect imports
         logger.debug("<%d> Collecting imports...", id(self))

@@ -108,13 +108,15 @@ class SsbScriptSsbDecompiler:
                 params += ", "
             params += f"@label_{op.label.id}"
         # Build position mark source maps
-        for i, param in enumerate(orig_params):
+        for param in orig_params:
             if isinstance(param, SsbOpParamPositionMarker):
+                cn = self.indent * NUMBER_OF_SPACES_PER_INDENT
                 self._source_map_builder.add_position_mark(SourceMapPositionMark(
-                    line_number=self._line_number, column_number=self.indent * NUMBER_OF_SPACES_PER_INDENT,
-                    argument_idx=i,
+                    line_number=self._line_number, column_number=cn,
+                    end_line_number=self._line_number, end_column_number=cn + len(self._single_param_to_string(param)),
                     name=param.name,
-                    x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative, y_relative=param.y_relative
+                    x_offset=param.x_offset, y_offset=param.y_offset,
+                    x_relative=param.x_relative, y_relative=param.y_relative
                 ))
         self._source_map_builder.add_opcode(op.offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
         self.write_stmnt(f"{real_op.op_code.name}({params});")

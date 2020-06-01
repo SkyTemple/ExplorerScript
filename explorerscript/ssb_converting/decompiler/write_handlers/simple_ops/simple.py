@@ -43,9 +43,9 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
         )
 
         # Build position mark source maps
-        for i, param in enumerate(op.params):
+        for param in op.params:
             if isinstance(param, SsbOpParamPositionMarker):
-                self.decompiler.source_map_add_position_mark(i, param)
+                self.decompiler.source_map_add_position_mark(len(self._single_param_to_string(param)), param)
         self.decompiler.source_map_add_opcode(op.offset)
         self.decompiler.write_stmnt(f"{op.op_code.name}({params});")
 
