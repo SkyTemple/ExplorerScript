@@ -34,7 +34,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbOperat
     DungeonModeConstants, SsbRoutineType, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, \
     SsbOpParamPositionMarker, SsbOpCode
 from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
-
+from explorerscript.util import open_utf8
 
 counter = Counter()
 
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         print("JSON file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open(args.ssb_path, 'r') as f:
+    with open_utf8(args.ssb_path, 'r') as f:
         ssb_file = json.load(f)
 
     check_settings(ssb_file)
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     exps_src, source_map = decompiler.convert()
 
     if args.source_map is not None:
-        with open(args.source_map, 'w') as f:
+        with open_utf8(args.source_map, 'w') as f:
             f.write(source_map.serialize())
 
     print(exps_src)

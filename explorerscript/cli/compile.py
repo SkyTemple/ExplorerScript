@@ -30,6 +30,7 @@ from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, chec
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, \
     SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker
+from explorerscript.util import open_utf8
 
 
 def build_ops(ops: List[SsbOperation]):
@@ -110,7 +111,7 @@ if __name__ == '__main__':
         print("Settings file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open(args.settings, 'r') as f:
+    with open_utf8(args.settings, 'r') as f:
         settings = json.load(f)
 
     check_settings(settings)
@@ -120,7 +121,7 @@ if __name__ == '__main__':
         print("ExplorerScript source file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open(args.exps_source, 'r') as f:
+    with open_utf8(args.exps_source, 'r') as f:
         exps_source = f.read()
 
     lookup_paths = args.lookup_paths
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     }
 
     if args.source_map is not None:
-        with open(args.source_map, 'w') as f:
+        with open_utf8(args.source_map, 'w') as f:
             f.write(compiler.source_map.serialize())
 
     print(json.dumps(output_dict))

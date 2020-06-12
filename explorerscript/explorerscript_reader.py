@@ -32,6 +32,7 @@ class ExplorerScriptReader:
     """Constructs a parsing tree out of ExplorerScript source code."""
     def __init__(self, source_code: str):
         self.source_code = source_code
+        self.parser = None
 
     def read(self):
         """
@@ -40,12 +41,12 @@ class ExplorerScriptReader:
         input_stream = InputStream(self.source_code)
         lexer = ExplorerScriptLexer(input_stream)
         stream = CommonTokenStream(lexer)
-        parser = ExplorerScriptParser(stream)
+        self.parser = ExplorerScriptParser(stream)
         error_listener = SyntaxErrorListener()
-        parser.addErrorListener(error_listener)
+        self.parser.addErrorListener(error_listener)
 
         # Start Parsing
-        tree = parser.start()
+        tree = self.parser.start()
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
@@ -54,3 +55,6 @@ class ExplorerScriptReader:
             raise ParseError(error_listener.syntax_errors[0])
 
         return tree
+
+    def get_parser(self):
+        return self.parser

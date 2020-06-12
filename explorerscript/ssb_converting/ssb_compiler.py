@@ -38,6 +38,8 @@ from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalize
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
+from explorerscript.util import open_utf8
+
 logger = logging.getLogger(__name__)
 
 
@@ -119,7 +121,9 @@ class ExplorerScriptSsbCompiler:
         if original_base_file is None:
             original_base_file = file_name
 
-        tree = ExplorerScriptReader(explorerscript_src).read()
+        reader = ExplorerScriptReader(explorerscript_src)
+        tree = reader.read()
+        parser = reader.get_parser()
 
         # Collect imports
         logger.debug("<%d> Collecting imports...", id(self))
@@ -134,7 +138,7 @@ class ExplorerScriptSsbCompiler:
                                        f"Tried loading from: {file_name}.")
             subfile_compiler = self.__class__(self.performance_progress_list_var_name, self.lookup_paths,
                                               recursion_check=self.recursion_check + [file_name])
-            with open(subfile_path, 'r') as f:
+            with open_utf8(subfile_path, 'r') as f:
                 subfile_compiler.compile(f.read(), subfile_path, macros_only=True, original_base_file=original_base_file)
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
