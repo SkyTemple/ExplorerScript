@@ -1,0 +1,3 @@
+macro other_macro($var1) {
+    doSomething($var1);
+}

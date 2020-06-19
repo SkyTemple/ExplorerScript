@@ -6,6 +6,14 @@ pipeline {
 
     stages {
 
+        stage("Tests") {
+            steps {
+                sh 'mkdir test_reports'
+                sh 'chmod a+rwxt test_reports'
+                sh 'docker run -v "$(pwd):/src" -it themattrix/tox'
+            }
+        }
+
         stage('Build') {
             steps {
                 // Setup virtual env
@@ -35,6 +43,13 @@ pipeline {
             }
             steps {
                 sh 'twine upload -u "$TWINE_USR" -p "$TWINE_PSW" dist/*'
+            }
+        }
+
+        post {
+            always {
+                junit 'test_reports/**/*.xml'
+                sh "rm test_reports -rf || true"
             }
         }
 

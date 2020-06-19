@@ -48,9 +48,12 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         roots = [v for v in self._dependency_graph.vs if len(v.in_edges()) == 0]
         resolution_order = []
         for v in roots:
+            resolution_order_local = []
             for sv in self._dependency_graph.bfsiter(v.index):
-                if sv['name'] not in resolution_order:
-                    resolution_order.insert(0, sv['name'])
+                if sv['name'] in resolution_order:
+                    resolution_order.remove(sv['name'])
+                resolution_order_local.append(sv['name'])
+            resolution_order += resolution_order_local
         return resolution_order
 
     def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
@@ -72,7 +75,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         assert self._active_macro_name is not None
         self._create_vertex(name)
         if not self._dependency_graph.are_connected(name, self._active_macro_name):
-            self._dependency_graph.add_edge(self._active_macro_name, name)
+            self._dependency_graph.add_edge(name, self._active_macro_name)
 
     def _create_vertex(self, name):
         if name not in self._already_added_to_graph:
@@ -80,21 +83,15 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
             self._dependency_graph.add_vertex(name, label=name)
 
     def _check_cycles(self):
-        vs_to_check = set(i for i in range(0, len(self._dependency_graph.vs)))
-        while len(vs_to_check) > 0:
-            v = vs_to_check.pop()
-            vs_visited_in_run = {v}
-            vs_to_check_inner = {v}
-            while len(vs_to_check_inner) > 0:
-                v_inner = vs_to_check_inner.pop()
-                vs_directly_connected = set()
-                for e in self._dependency_graph.vs[v_inner].out_edges():
-                    v_inner = e.target
-                    if v_inner in vs_directly_connected:
-                        continue
-                    vs_directly_connected.add(v_inner)
-                    if v_inner in vs_visited_in_run:
-                        raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
-                                               f" (for macro '{e.target_vertex['name']}').")
-                    vs_visited_in_run.add(v_inner)
-                    vs_to_check_inner.add(v_inner)
+        for v in self._dependency_graph.vs:
+            if any(self._has_path(out_e.target, v) for out_e in v.out_edges()):
+                raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
+                                       f" (for macro '{v['name']}').")
+            # Check direct cycles
+            if any(v.index == e.target for e in v.out_edges()):
+                raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
+                                       f" (for macro '{v['name']}').")
+
+    def _has_path(self, a, b):
+        # TODO: can be done more efficiently
+        return len(b.graph.get_all_simple_paths(a, b)) > 0

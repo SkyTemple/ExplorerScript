@@ -1,0 +1,21 @@
+import "./other_file.exps";
+import "./other_file2.exps";
+
+macro test_macro2($var1, $var2) {
+    doSomething($var1, $var2);
+    ~other_macro_caller("In other file");
+}
+
+def 0 {
+    ~test_macro("Hello World", 123);
+    ~other_macro_caller("In other file");
+    ~other_macro("In other file");
+    ~other_macro2("In other file");
+    ~test_macro2("Hello World", 123);
+}
+
+macro test_macro($var1, $var2) {
+    doSomething($var1, $var2);
+    ~test_macro2("Hello World", 123);
+    ~other_macro_caller("In other file");
+}

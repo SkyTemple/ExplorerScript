@@ -1,0 +1,19 @@
+import "./other_file2.exps";
+
+macro other_macro($var1) {
+    doSomething($var1);
+    ~other_macro2($var1);
+}
+
+macro other_macro_caller($var1) {
+    ~other_macro($var1);
+    ~other_macro_bottom($var1);
+    ~other_macro($var1);
+    ~other_macro_bottom($var1);
+}
+
+macro other_macro_bottom($var1) {
+    doSomething($var1);
+    ~other_macro2($var1);
+    ~other_macro($var1);
+}

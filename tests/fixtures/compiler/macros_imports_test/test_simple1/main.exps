@@ -1,0 +1,7 @@
+def 0 {
+    ~test_macro("Hello World", 123);
+}
+
+macro test_macro($var1, $var2) {
+    doSomething($var1, $var2);
+}
