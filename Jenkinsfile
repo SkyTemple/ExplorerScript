@@ -10,7 +10,7 @@ pipeline {
             steps {
                 sh 'mkdir test_reports'
                 sh 'chmod a+rwxt test_reports'
-                sh 'docker run -v "$(pwd):/src" -it themattrix/tox'
+                sh 'docker run -v "$(pwd):/src" themattrix/tox'
             }
         }
 
@@ -46,13 +46,13 @@ pipeline {
             }
         }
 
-        post {
-            always {
-                junit 'test_reports/**/*.xml'
-                sh "rm test_reports -rf || true"
-            }
-        }
+    }
 
+    post {
+        always {
+            junit 'test_reports/**/*.xml'
+            sh "rm test_reports -rf || true"
+        }
     }
 
 }
