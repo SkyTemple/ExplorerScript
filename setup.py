@@ -19,6 +19,13 @@ setup(
         'python-igraph >= 0.8.0',
         'antlr4-python3-runtime >= 4.8'
     ],
+    extras_require={
+        'pygments':  ["pygments>=2.6.1"]
+    },
+    entry_points='''
+        [pygments.lexers]
+        expslexer=explorerscript.pygments.expslexer:ExplorerScriptLexer
+    ''',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python',

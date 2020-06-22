@@ -18,6 +18,7 @@
 
 
 # -- Project information -----------------------------------------------------
+import sys, os
 
 project = 'ExplorerScript'
 copyright = '2020, Parakoopa'
@@ -39,7 +40,8 @@ release = ''
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'explorerscript.pygments.expslexer'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

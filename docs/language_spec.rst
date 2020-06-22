@@ -9,7 +9,7 @@ is more flexible though, it can in it's core also be used
 for other games or purposes.
 
 The lexer and parser specifications can be found in the
-``explorer.antlr`` package as an Antlr 4 grammar.
+``explorerscript.antlr`` package as an Antlr 4 grammar.
 
 .. admonition:: EoS Compiler
 
@@ -375,9 +375,9 @@ supports it, ``not`` can be used to check if the field is not set instead.
 .. admonition:: EoS Compiler
 
    If the variable is the game variable ``PERFORMANCE_PROGRESS_LIST`` (see CLI docs),
-   this get's compiled as a ``BranchPerformance``
+   this gets compiled as a ``BranchPerformance``
 
-   Else it get's compiled as ``BranchBit``.
+   Else it gets compiled as ``BranchBit``.
 
    The ``not`` keyword is only allowed for ``PERFORMANCE_PROGRESS_LIST``!
 
@@ -390,14 +390,14 @@ As conditional operators only ``==,<,>,<=,>=`` can be used.
 .. code:: ExplorerScript
 
     if (scn($SCENARIO_MAIN) > [30, 2]) {
-        /** This only get's executed when
+        /** This only gets executed when
             field 0 of the variable is > 30 and
             field 1 of the variable is > 2 **/
     }
 
 .. admonition:: EoS Compiler
 
-   Depending on the operator, this get's compiled to
+   Depending on the operator, this gets compiled to
    ``BranchScenarioNow``, ``BranchScenarioNowAfter``, ``BranchScenarioNowBefore``,
    ``BranchScenarioAfter``, or ``BranchScenarioBefore``.
 
@@ -441,7 +441,7 @@ and a set of instructions. If the end of a case-Block's body is reached,
 it will continue executing the next case body will be executed. The
 execution of a case-Block can be stopped with the ``break`` statement.
 
-A switch can have a ``default`` case, that get's executed when no
+A switch can have a ``default`` case, that gets executed when no
 other case matches.
 
 .. code:: ExplorerScript
@@ -555,7 +555,7 @@ Check that the value provided by the switch header matches a value.
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as a ``Case`` operation.
+   This gets compiled as a ``Case`` operation.
 
 Check against operator
 ......................
@@ -573,8 +573,8 @@ instead.
 
 .. admonition:: EoS Compiler
 
-   If ``value(X)`` is used, this get's compiled as a ``CaseVariable``
-   operation. Else it get's compiled as a ``CaseValue`` operation.
+   If ``value(X)`` is used, this gets compiled as a ``CaseVariable``
+   operation. Else it gets compiled as a ``CaseValue`` operation.
 
 Menu
 ....
@@ -594,7 +594,7 @@ of this case.
 
 .. admonition:: EoS Compiler
 
-   Usually used with ``message_SwitchMenu``. This get's compiled
+   Usually used with ``message_SwitchMenu``. This gets compiled
    as ``CaseMenu``.
 
 Menu 2
@@ -608,7 +608,7 @@ menu option identified by an integer or constant.
 
 .. admonition:: EoS Compiler
 
-   Usually used with ``message_SwitchMenu``. This get's compiled
+   Usually used with ``message_SwitchMenu``. This gets compiled
    as ``CaseMenu2``.
 
 Message Switches
@@ -638,7 +638,7 @@ the bodies of case-Blocks contain a single string.
 .. admonition:: EoS Compiler
 
    The switch statements get compiled as either ``message_SwitchTalk`` or ``message_SwitchMonologue``.
-   The cases get compiled as ``CaseText`` and the default case get's compiled as ``DefaultText``.
+   The cases get compiled as ``CaseText`` and the default case gets compiled as ``DefaultText``.
 
 forever-Loops
 ~~~~~~~~~~~~~
@@ -694,7 +694,7 @@ condition is allowed (no "||").
 .. admonition:: EoS Compiler
 
    The switch statements get compiled as either ``message_SwitchTalk`` or ``message_SwitchMonologue``.
-   The cases get compiled as ``CaseText`` and the default case get's compiled as ``DefaultText``.
+   The cases get compiled as ``CaseText`` and the default case gets compiled as ``DefaultText``.
 
 
 Assignments
@@ -737,9 +737,9 @@ operator used.
 
 .. admonition:: EoS Compiler
 
-   If ``value(X)`` is used, this get's compiled as ``flag_CalcVariable``.
-   Else if, an assigment operator other than ``=`` is used, this get's compiled as ``flag_CalcValue``.
-   Else, this get's compiled as ``flag_Set``.
+   If ``value(X)`` is used, this gets compiled as ``flag_CalcVariable``.
+   Else if, an assigment operator other than ``=`` is used, this gets compiled as ``flag_CalcValue``.
+   Else, this gets compiled as ``flag_Set``.
 
 Bit-Set
 #######
@@ -754,9 +754,9 @@ Only 0 and 1 are allowed as values.
 .. admonition:: EoS Compiler
 
    If the variable is the game variable ``PERFORMANCE_PROGRESS_LIST`` (see CLI docs),
-   this get's compiled as a ``flag_SetPerformance``
+   this gets compiled as a ``flag_SetPerformance``
 
-   Else it get's compiled as ``flag_CalcBit``.
+   Else it gets compiled as ``flag_CalcBit``.
 
 Scenario
 ########
@@ -768,7 +768,7 @@ Set's the two fields of a scenario variable
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_SetScenario``.
+   This gets compiled as ``flag_SetScenario``.
 
 Clear
 #####
@@ -780,7 +780,7 @@ Clears a variable (TODO: What exactly happens is not clear).
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_Clear``.
+   This gets compiled as ``flag_Clear``.
 
 Reset
 #####
@@ -794,7 +794,7 @@ Resets a scenario variable or the dungeon result
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_Reset`` or ``flag_ResetDungeonResult``.
+   This gets compiled as ``flag_Reset`` or ``flag_ResetDungeonResult``.
 
 Initial
 #######
@@ -807,7 +807,7 @@ Set's a variable to it's initial value
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_Initial``.
+   This gets compiled as ``flag_Initial``.
 
 Adventure Log
 #############
@@ -819,7 +819,7 @@ Set's a value of the adventure log. Only ``=`` is allowed.
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_SetAdventureLog``.
+   This gets compiled as ``flag_SetAdventureLog``.
 
 Dungeon Mode
 ############
@@ -833,7 +833,7 @@ by an integer or constant.
 
 .. admonition:: EoS Compiler
 
-   This get's compiled as ``flag_SetDungeonMode``.
+   This gets compiled as ``flag_SetDungeonMode``.
 
 Operations
 ~~~~~~~~~~
