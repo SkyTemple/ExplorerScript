@@ -1,0 +1,10 @@
+project:
+  name: explorerscript-docs
+  src: .
+  app:
+    $ref: /app/sphinx/latest
+    services:
+      sphinx:
+        environment:
+          SPHINX_SOURCE: docs
+          SPHINX_BUILD: docs/build

@@ -1,11 +1,15 @@
 ExplorerScript
 ==============
 
-|build| |pypi-version| |pypi-downloads| |pypi-license| |pypi-pyversions| |discord|
+|build| |docs| |pypi-version| |pypi-downloads| |pypi-license| |pypi-pyversions| |discord|
 
 .. |build| image:: https://jenkins.riptide.parakoopa.de/buildStatus/icon?job=ExplorerScript%2Fmaster
     :target: https://jenkins.riptide.parakoopa.de/blue/organizations/jenkins/ExplorerScript/activity
     :alt: Build Status
+
+.. |docs| image:: https://readthedocs.org/projects/explorerscript/badge/?version=latest
+    :target: https://explorerscript.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/explorerscript
     :target: https://pypi.org/project/explorerscript/
@@ -28,4 +32,4 @@ ExplorerScript
 A programming language + compiler/decompiler for creating scripts for Pokémon Mystery
 Dungeon Explorers of Sky.
 
-Documentation can be found in the docs directory.
+Documentation can be found at https://explorerscript.readthedocs.org (or in the docs directory).
