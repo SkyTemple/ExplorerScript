@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_SCENARIO
+from explorerscript.util import exps_int
 
 
 class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
@@ -41,7 +42,7 @@ class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
             raise SsbCompilerError("No variable for assignment set.")
 
         return [self._generate_operation(OPS_FLAG__SET_SCENARIO,
-                                         [self.var_target, int(str(self.ctx.INTEGER(0))), int(str(self.ctx.INTEGER(1)))])]
+                                         [self.var_target, exps_int(str(self.ctx.INTEGER(0))), exps_int(str(self.ctx.INTEGER(1)))])]
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

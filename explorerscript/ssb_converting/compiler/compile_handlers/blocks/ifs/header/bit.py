@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_BIT, OP_BRANCH_PERFORMANCE
+from explorerscript.util import exps_int
 
 
 class IfHeaderBitCompileHandler(AbstractCompileHandler):
@@ -45,7 +46,7 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
         if hasattr(self.var_target, 'name'):
             var_target_name = self.var_target.name
 
-        index = int(str(self.ctx.INTEGER()))
+        index = exps_int(str(self.ctx.INTEGER()))
         is_simple_positive = self.ctx.NOT() is None
 
         if var_target_name == self.compiler_ctx.performance_progress_list_var_name:

@@ -31,6 +31,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperator
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_SCENARIO_NOW_BEFORE, OP_BRANCH_SCENARIO_BEFORE, \
     OP_BRANCH_SCENARIO_NOW_AFTER, OP_BRANCH_SCENARIO_AFTER, OP_BRANCH_SCENARIO_NOW
+from explorerscript.util import exps_int
 
 
 class IfHeaderScnCompileHandler(AbstractCompileHandler):
@@ -46,8 +47,8 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
             raise SsbCompilerError(f"The only supported operators for scn if "
                                    f"conditions are ==,<,<=,>,>= (line {self.ctx.start.line})")
 
-        scn_value = int(str(self.ctx.INTEGER(0)))
-        level_value = int(str(self.ctx.INTEGER(1)))
+        scn_value = exps_int(str(self.ctx.INTEGER(0)))
+        level_value = exps_int(str(self.ctx.INTEGER(1)))
 
         if self.operator == SsbOperator.LE:
             return SsbLabelJumpBlueprint(

@@ -34,7 +34,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbOperat
     DungeonModeConstants, SsbRoutineType, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, \
     SsbOpParamPositionMarker, SsbOpCode
 from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
-from explorerscript.util import open_utf8
+from explorerscript.util import open_utf8, exps_int
 
 counter = Counter()
 
@@ -42,10 +42,10 @@ counter = Counter()
 def parse_pos_mark_arg(arg_str):
     arg_str_arr = arg_str.split('.')
     if len(arg_str_arr) < 2:
-        return int(arg_str), 0
+        return exps_int(arg_str), 0
     if arg_str_arr[1] != '5' or len(arg_str_arr) > 2:
         raise ValueError("Invalid position mark")
-    return int(arg_str_arr[0]), 2
+    return exps_int(arg_str_arr[0]), 2
 
 
 def read_ops(ops: List[dict]) -> List[SsbOperation]:

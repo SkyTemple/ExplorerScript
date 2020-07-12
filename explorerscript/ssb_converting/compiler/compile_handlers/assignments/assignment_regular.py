@@ -32,6 +32,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbCalcOperator
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CALC_VARIABLE, OPS_FLAG__SET, OPS_FLAG__CALC_VALUE, \
     OPS_FLAG__SET_PERFORMANCE, OPS_FLAG__CALC_BIT
+from explorerscript.util import exps_int
 
 
 class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
@@ -51,7 +52,7 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
             raise SsbCompilerError("No value set for assignment.")
 
         if self.ctx.INTEGER():
-            index = int(str(self.ctx.INTEGER()))
+            index = exps_int(str(self.ctx.INTEGER()))
             # CalcBit / SetPerformance
             if self.value_is_a_variable:
                 raise SsbCompilerError(f"value(X) can not be used with index based assignments (line {self.ctx.start.line}).")

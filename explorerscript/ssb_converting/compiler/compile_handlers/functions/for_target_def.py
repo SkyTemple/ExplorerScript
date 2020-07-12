@@ -24,6 +24,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
+from explorerscript.util import exps_int
 
 
 class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
@@ -37,7 +38,7 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
         linked_to_name = None
         integer_like = self._linked_to_target
         try:
-            linked_to = int(integer_like)
+            linked_to = exps_int(integer_like)
         except:
             linked_to_name = integer_like.name
 
@@ -51,7 +52,7 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
         return routine_info, self.collect_ops()
 
     def get_new_routine_id(self, old_id: int) -> int:
-        return int(str(self.ctx.INTEGER()))
+        return exps_int(str(self.ctx.INTEGER()))
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

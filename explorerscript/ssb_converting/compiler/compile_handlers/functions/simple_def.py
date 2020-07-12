@@ -22,6 +22,7 @@
 #
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
+from explorerscript.util import exps_int
 
 
 class SimpleDefCompileHandler(AbstractFuncdefCompileHandler):
@@ -30,4 +31,4 @@ class SimpleDefCompileHandler(AbstractFuncdefCompileHandler):
         return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
 
     def get_new_routine_id(self, old_id: int) -> int:
-        return int(str(self.ctx.INTEGER()))
+        return exps_int(str(self.ctx.INTEGER()))

@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var impor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_SCENARIO, OP_SWITCH_SCENARIO_LEVEL
+from explorerscript.util import exps_int
 
 
 class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
@@ -40,7 +41,7 @@ class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
         if self.scn_var_target is None:
             raise SsbCompilerError("No variable set for scn switch condition.")
 
-        index = int(str(self.ctx.INTEGER()))
+        index = exps_int(str(self.ctx.INTEGER()))
         if index == 0:
             return self._generate_operation(OP_SWITCH_SCENARIO, [self.scn_var_target])
         elif index == 1:

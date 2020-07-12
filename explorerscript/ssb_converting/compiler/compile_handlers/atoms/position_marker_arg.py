@@ -24,6 +24,7 @@ from typing import Tuple
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
+from explorerscript.util import exps_int
 
 
 class PositionMarkerArgCompileHandler(AbstractCompileHandler):
@@ -32,7 +33,7 @@ class PositionMarkerArgCompileHandler(AbstractCompileHandler):
         offset = 0
         if self.ctx.POINT_FIVE():
             offset = 2
-        pos = int(str(self.ctx.INTEGER()))
+        pos = exps_int(str(self.ctx.INTEGER()))
         return pos, offset
 
     def add(self, obj: any):

@@ -25,3 +25,10 @@
 def open_utf8(file, mode='r', *args, **kwargs):
     """Like open, but always uses the utf-8 encoding, on all platforms."""
     return open(file, mode, *args, encoding='utf-8', **kwargs)
+
+
+def exps_int(to_convert):
+    """Converts to integer, auto-detecting the base (if string)."""
+    if isinstance(to_convert, str):
+        return int(to_convert, 0)
+    return int(to_convert)

@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript.util import exps_int
 
 
 class ListenerArgType(Enum):
@@ -75,7 +76,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._collected_params: List[SsbOpParam] = []
 
     def exitSimple_def(self, ctx: SsbScriptParser.Simple_defContext):
-        self._active_routine_id = int(str(ctx.INTEGER()))
+        self._active_routine_id = exps_int(str(ctx.INTEGER()))
         self._enlarge_routine_info()
         self.routine_infos[self._active_routine_id] = SsbRoutineInfo(SsbRoutineType.GENERIC, 0)
         self.routine_ops[self._active_routine_id] = self._collected_ops
@@ -90,13 +91,13 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._collected_ops = []
 
     def exitFor_target_def(self, ctx: SsbScriptParser.For_target_defContext):
-        self._active_routine_id = int(str(ctx.INTEGER()))
+        self._active_routine_id = exps_int(str(ctx.INTEGER()))
         self._enlarge_routine_info()
         linked_to = -1
         linked_to_name = None
         integer_like = str(ctx.integer_like().children[0])
         try:
-            linked_to = int(integer_like)
+            linked_to = exps_int(integer_like)
         except:
             linked_to_name = integer_like
 
@@ -195,7 +196,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
     def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext):
         if self._is_processing_argument:
             self._argument_type = ListenerArgType.POSITION_MARKER
-            relative = int(str(ctx.INTEGER()))
+            relative = exps_int(str(ctx.INTEGER()))
             point_five = ctx.POINT_FIVE()
             offset = 0
             if point_five:
@@ -213,7 +214,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         if self._is_processing_argument:
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
-                self._argument_value = int(str(ctx.INTEGER()))
+                self._argument_value = exps_int(str(ctx.INTEGER()))
             elif ctx.IDENTIFIER():
                 self._argument_type = ListenerArgType.CONSTANT
                 self._argument_value = str(ctx.IDENTIFIER())
