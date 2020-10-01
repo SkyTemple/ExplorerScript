@@ -79,7 +79,9 @@ class ExplorerScriptSsbDecompiler:
         self._routine_ops = list(resolver)
 
         # Step 2: Build and optimize execution graph
+        logger.debug("Building base graph...")
         grapher = SsbGraphMinimizer(self._routine_ops)
+        logger.debug("Built base graph...")
         # Remove redundant labels
         grapher.optimize_paths()
         # Build groups switch+cases, switch groups, branch-groups

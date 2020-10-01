@@ -665,17 +665,20 @@ class SsbGraphMinimizer:
     def _get_edges__add_edge(self,
                              g: Graph, rtn: List[SsbOperation], rtn_id: int, label_indices: Dict[int, int],
                              op_i: int, already_visited: Set[int], flow_level=0):
-        if op_i in already_visited:
-            return  # Loop
-        if isinstance(g.vs[op_i]['op'], SsbForeignLabel):
-            return  # No out edges here, no real ops here.
-        already_visited.add(op_i)
-        for flow_level, nxt in self._get_edges__get_next_for(g, rtn, rtn_id, flow_level, label_indices, op_i):
-            e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, switch_ops=None, loop=False)
-            if is_loop(g, g.vs[op_i], e):
-                e['loop'] = True
-            self._update_edge_style(e)
-            self._get_edges__add_edge(g, rtn, rtn_id, label_indices, nxt, already_visited, flow_level)
+        nxt_stack = [(flow_level, op_i)]
+        while len(nxt_stack) > 0:
+            flow_level, op_i = nxt_stack.pop()
+            if op_i in already_visited:
+                continue  # Loop
+            if isinstance(g.vs[op_i]['op'], SsbForeignLabel):
+                continue  # No out edges here, no real ops here.
+            already_visited.add(op_i)
+            for flow_level, nxt in self._get_edges__get_next_for(g, rtn, rtn_id, flow_level, label_indices, op_i):
+                e = g.add_edge(op_i, nxt, flow_level=flow_level, label=None, is_else=False, switch_ops=None, loop=False)
+                if is_loop(g, g.vs[op_i], e):
+                    e['loop'] = True
+                self._update_edge_style(e)
+                nxt_stack.insert(0, (flow_level, nxt))
 
     def _get_edges__get_next_for(self, g, rtn: List[SsbOperation], rtn_id: int, flow_level: int,
                                  label_indices: Dict[int, int], op_i: int) -> List[Tuple[int, int]]:
