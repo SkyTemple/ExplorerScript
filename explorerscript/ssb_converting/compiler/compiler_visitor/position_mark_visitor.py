@@ -42,9 +42,6 @@ class PositionMarkVisitor(ExplorerScriptVisitor):
     def visitStart(self, ctx : ExplorerScriptParser.StartContext) -> List[SourceMapPositionMark]:
         return self.visitChildren(ctx)
 
-    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
-        return string_literal(ctx.STRING_LITERAL())
-
     def visitPosition_marker(self, ctx: ExplorerScriptParser.Position_markerContext):
         mark_handler = PositionMarkerCompileHandler(ctx, self.compiler_ctx)
         for arg_handler in self.visitChildren(ctx):
