@@ -20,21 +20,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-
-#  MIT License
-#
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#
-#
 import functools
 import itertools
+import logging
 import operator
 from threading import Lock
 from collections import Counter
@@ -45,6 +33,7 @@ from igraph import Edge, OUT, Vertex, Graph
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel, SwitchCaseOperation, IfEnd, SwitchEnd, \
     IfStart, SwitchStart, ForeverStart
 
+logger = logging.getLogger(__name__)
 
 def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
     edges: List[Edge] = [g.es[e] for e in g.incident(vertex, OUT)]
@@ -107,7 +96,7 @@ def find_first_common_next_vertex_in_edges(
 
 
 def _find_first_common_next_vertex_in_edges__impl(
-        g, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
+        g: Graph, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
         allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: List[int] = None, allow_loop_edges=True
 ) -> Union[None, List[Edge]]:
     """
@@ -162,7 +151,11 @@ def _find_first_common_next_vertex_in_edges__impl(
                         # Potential endless recursion situation. Abort.
                         new_es_entry.add(None)
                         continue
-                v_es = v.out_edges()
+                v_es_tmp = v.out_edges()
+                v_es = []
+                for e in v_es:
+                    if e.index in g.es:
+                        v_es.append(e)
                 if not allow_loop_edges:
                     # Remove edges marked as looping
                     v_es = [e for e in v_es if not any_incoming_edge_is_loop(e.target_vertex)]
