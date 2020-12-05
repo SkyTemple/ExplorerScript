@@ -1,3 +1,4 @@
+__version__ = '0.0.7'
 from setuptools import setup, find_packages
 
 # README read-in
@@ -9,7 +10,7 @@ with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='explorerscript',
-    version='0.0.7',
+    version=__version__,
     packages=find_packages(),
     description='ExplorerScript and SSBScript: Script languages for decompiled SSB (Pokémon Mystery Dungeon Explorers of Sky)',
     long_description=long_description,
