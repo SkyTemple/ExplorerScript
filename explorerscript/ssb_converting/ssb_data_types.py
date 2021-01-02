@@ -1,7 +1,7 @@
 """Data types used to describe ssb components"""
 #  MIT License
 #
-#  Copyright (c) 2020 Parakoopa
+#  Copyright (c) 2020-2021 Parakoopa and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
