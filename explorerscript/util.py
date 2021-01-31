@@ -20,6 +20,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+import gettext
+from inspect import currentframe
 
 
 def open_utf8(file, mode='r', *args, **kwargs):
@@ -32,3 +34,12 @@ def exps_int(to_convert):
     if isinstance(to_convert, str):
         return int(to_convert, 0)
     return int(to_convert)
+
+
+_ = gettext.gettext
+
+
+def f(s):
+    """f-strings as a function, for use with translatable strings: f'{varbiable}' == f('{variable}')"""
+    frame = currentframe().f_back
+    return eval(f"f'{s}'", frame.f_locals, frame.f_globals)

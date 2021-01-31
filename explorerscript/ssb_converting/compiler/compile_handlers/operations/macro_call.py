@@ -28,6 +28,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
+from explorerscript.util import _, f
 
 
 class MacroCallCompileHandler(AbstractStatementCompileHandler):
@@ -42,7 +43,7 @@ class MacroCallCompileHandler(AbstractStatementCompileHandler):
         if self.arg_list_handler:
             args = self.arg_list_handler.collect()
         if name not in self.compiler_ctx.macros.keys():
-            raise SsbCompilerError(f"Macro {name} not found.")
+            raise SsbCompilerError(f(_("Macro {name} not found.")))
         macro = self.compiler_ctx.macros[name]
 
         self.compiler_ctx.source_map_builder.next_macro_opcode_called_in(None, self.ctx.start.line - 1, self.ctx.start.column)

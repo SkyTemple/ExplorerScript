@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_SCENARIO
 from explorerscript.util import exps_int
+from explorerscript.util import _
 
 
 class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
@@ -39,7 +40,7 @@ class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.var_target is None:
-            raise SsbCompilerError("No variable for assignment set.")
+            raise SsbCompilerError(_("No variable for assignment set."))
 
         return [self._generate_operation(OPS_FLAG__SET_SCENARIO,
                                          [self.var_target, exps_int(str(self.ctx.INTEGER(0))), exps_int(str(self.ctx.INTEGER(1)))])]

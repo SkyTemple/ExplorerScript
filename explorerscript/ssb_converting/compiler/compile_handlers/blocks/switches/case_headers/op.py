@@ -31,6 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of impo
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE, OP_CASE_VALUE
+from explorerscript.util import _
 
 
 class CaseHeaderOpCompileHandler(AbstractCompileHandler):
@@ -42,9 +43,9 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbLabelJumpBlueprint:
         if self.operator is None:
-            raise SsbCompilerError("No operator set for if condition.")
+            raise SsbCompilerError(_("No operator set for if condition."))
         if self.value is None:
-            raise SsbCompilerError("No value set for if condition.")
+            raise SsbCompilerError(_("No value set for if condition."))
 
         if self.value_is_a_variable:
             # CaseVariable

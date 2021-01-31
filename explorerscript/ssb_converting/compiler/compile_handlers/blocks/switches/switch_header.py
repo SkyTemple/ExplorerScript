@@ -38,6 +38,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.operations.operatio
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH
+from explorerscript.util import _
 
 
 class SwitchHeaderCompileHandler(AbstractCompileHandler):
@@ -59,7 +60,7 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
                 # An operation as condition
                 op = self._header_cmplx_handler.collect()
                 if len(op) != 1:
-                    raise SsbCompilerError("Invalid content for a switch-header")
+                    raise SsbCompilerError(_("Invalid content for a switch-header"))
                 op = op[0]
                 return self._generate_operation(
                    op.op_code.name, op.params
@@ -68,7 +69,7 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
                 # A regular complex if condition
                 return self._header_cmplx_handler.collect()
 
-        raise SsbCompilerError("Unknown switch operation.")
+        raise SsbCompilerError(_("Unknown switch operation."))
 
     def add(self, obj: any):
         if isinstance(obj, SwitchHeaderDungeonModeCompileHandler) or isinstance(obj, SwitchHeaderRandomCompileHandler) \

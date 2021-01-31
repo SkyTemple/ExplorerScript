@@ -34,6 +34,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.s
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OPS_BRANCH
+from explorerscript.util import _, f
 
 
 class IfHeaderCompileHandler(AbstractCompileHandler):
@@ -56,11 +57,11 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
                 # An operation as condition
                 op = self._header_cmplx_handler.collect()
                 if len(op) != 1:
-                    raise SsbCompilerError("Invalid content for an if-header")
+                    raise SsbCompilerError(_("Invalid content for an if-header"))
                 op = op[0]
                 if op.op_code.name not in OPS_BRANCH.keys():
                     raise SsbCompilerError(
-                        f"Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"
+                        f(_("Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"))
                     )
                 jmp = SsbLabelJumpBlueprint(
                     self.compiler_ctx, self.ctx,
@@ -74,7 +75,7 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
                 tmpl.set_jump_is_positive(is_positive)
                 return tmpl
 
-        raise SsbCompilerError(f"Unknown if operation in line {self.ctx.start.line}.")
+        raise SsbCompilerError(f(_("Unknown if operation in line {self.ctx.start.line}.")))
 
     def add(self, obj: any):
         if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \

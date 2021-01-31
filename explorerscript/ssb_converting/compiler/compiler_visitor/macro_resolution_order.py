@@ -29,6 +29,7 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.error import SsbCompilerError
 from explorerscript.macro import ExplorerScriptMacro
+from explorerscript.util import _, f
 
 
 class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
@@ -85,12 +86,12 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
     def _check_cycles(self):
         for v in self._dependency_graph.vs:
             if any(self._has_path(out_e.target, v) for out_e in v.out_edges()):
-                raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
-                                       f" (for macro '{v['name']}').")
+                raise SsbCompilerError(f(_("Dependency cycle detected while trying to resolve macros"
+                                           " (for macro '{v['name']}').")))
             # Check direct cycles
             if any(v.index == e.target for e in v.out_edges()):
-                raise SsbCompilerError(f"Dependency cycle detected while trying to resolve macros"
-                                       f" (for macro '{v['name']}').")
+                raise SsbCompilerError(f(_("Dependency cycle detected while trying to resolve macros"
+                                           " (for macro '{v['name']}').")))
 
     def _has_path(self, a, b):
         # TODO: can be done more efficiently

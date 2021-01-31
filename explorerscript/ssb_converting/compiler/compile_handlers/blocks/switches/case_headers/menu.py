@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_MENU2, OP_CASE_MENU
+from explorerscript.util import _
 
 
 class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
@@ -39,7 +40,7 @@ class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbLabelJumpBlueprint:
         if self.value is None:
-            raise SsbCompilerError("No value set for if condition.")
+            raise SsbCompilerError(_("No value set for if condition."))
 
         if self.is_menu_2:
             return SsbLabelJumpBlueprint(

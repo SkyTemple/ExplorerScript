@@ -32,7 +32,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbCalcOperator
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CALC_VARIABLE, OPS_FLAG__SET, OPS_FLAG__CALC_VALUE, \
     OPS_FLAG__SET_PERFORMANCE, OPS_FLAG__CALC_BIT
-from explorerscript.util import exps_int
+from explorerscript.util import exps_int, f, _
 
 
 class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
@@ -45,17 +45,18 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.var_target is None:
-            raise SsbCompilerError("No variable for assignment.")
+            raise SsbCompilerError(_("No variable for assignment."))
         if self.operator is None:
-            raise SsbCompilerError("No operator set for assignment.")
+            raise SsbCompilerError(_("No operator set for assignment."))
         if self.value is None:
-            raise SsbCompilerError("No value set for assignment.")
+            raise SsbCompilerError(_("No value set for assignment."))
 
         if self.ctx.INTEGER():
             index = exps_int(str(self.ctx.INTEGER()))
             # CalcBit / SetPerformance
             if self.value_is_a_variable:
-                raise SsbCompilerError(f"value(X) can not be used with index based assignments (line {self.ctx.start.line}).")
+                raise SsbCompilerError(f(_("value(X) can not be used with index based assignments "
+                                           "(line {self.ctx.start.line}).")))
             if str(self.var_target) == self.compiler_ctx.performance_progress_list_var_name:
                 return [self._generate_operation(OPS_FLAG__SET_PERFORMANCE, [index, self.value])]
             return [self._generate_operation(OPS_FLAG__CALC_BIT, [self.var_target, index, self.value])]

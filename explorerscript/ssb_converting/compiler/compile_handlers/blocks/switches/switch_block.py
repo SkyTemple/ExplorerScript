@@ -36,6 +36,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT, SsbLabel, OP_JUMP, \
     OP_SWITCH_SCENARIO, OP_CASE_VALUE, OP_CASE_SCENARIO
+from explorerscript.util import _, f
 
 
 class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
@@ -71,7 +72,8 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
         for h in self._case_handlers:
             h.set_end_label(end_label)
             if h.is_message_case:
-                raise SsbCompilerError(f"A switch case must contain a list of statements (line {self.ctx.start.line}.")
+                raise SsbCompilerError(f(_("A switch case must contain a list of statements "
+                                           "(line {self.ctx.start.line}.")))
             jmp_blueprint = h.get_header_jump_template()
             first = self.compiler_ctx.counter_ops.allocate(1)
             jmp_blueprint.set_index_number(first)
@@ -116,7 +118,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
                 case_ops += ops
         # 3c. Edge case: We expected a next case with ops, but got end of switch instead. Invalid!
         if len(cases_waiting_for_a_block) > 0:
-            raise SsbCompilerError(f"Unexpected switch end (line {self.ctx.start.line})")
+            raise SsbCompilerError(f(_("Unexpected switch end (line {self.ctx.start.line})")))
         # 4. Build ops list
         header_ops = [switch_op]
         for h in self._case_handlers:
@@ -129,7 +131,8 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             return
         if isinstance(obj, DefaultCaseBlockCompileHandler):
             if self._default_handler is not None:
-                raise SsbCompilerError(f"A switch block can only have a single default case (line {self.ctx.start.line}).")
+                raise SsbCompilerError(f(_("A switch block can only have a single default case "
+                                           "(line {self.ctx.start.line}).")))
             self._default_handler = obj
             self._default_handler_index = len(self._case_handlers)
             return

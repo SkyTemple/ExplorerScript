@@ -27,6 +27,7 @@ from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamConstant, SsbOpCode
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_RETURN, OP_JUMP
+from explorerscript.util import f, _
 
 
 class MacroStartSsbLabel(SsbLabel):
@@ -81,7 +82,7 @@ class ExplorerScriptMacro:
         # Check:
         for var_name in self.variables:
             if var_name not in parameters.keys():
-                raise ValueError(f"Value for macro variable {var_name} not provided.")
+                raise ValueError(f(_("Value for macro variable {var_name} not provided.")))
 
         # Macro callstack: Push our outer call
         len_real_ops_in_blueprints = len([o for o in self.blueprints if not isinstance(o, SsbLabel)]) + 1

@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CLEAR, OPS_FLAG__RESET_DUNGEON_RESULT, \
     OPS_FLAG__RESET_SCENARIO
+from explorerscript.util import _
 
 
 class AssignmentResetCompileHandler(AbstractAssignmentCompileHandler):
@@ -39,7 +40,7 @@ class AssignmentResetCompileHandler(AbstractAssignmentCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.scn_var_target is None and not self.ctx.DUNGEON_RESULT():
-            raise SsbCompilerError("No target for reset.")
+            raise SsbCompilerError(_("No target for reset."))
 
         if self.ctx.DUNGEON_RESULT():
             return [self._generate_operation(OPS_FLAG__RESET_DUNGEON_RESULT, [])]

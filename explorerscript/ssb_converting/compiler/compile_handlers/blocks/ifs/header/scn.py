@@ -32,6 +32,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperator
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_SCENARIO_NOW_BEFORE, OP_BRANCH_SCENARIO_BEFORE, \
     OP_BRANCH_SCENARIO_NOW_AFTER, OP_BRANCH_SCENARIO_AFTER, OP_BRANCH_SCENARIO_NOW
 from explorerscript.util import exps_int
+from explorerscript.util import _, f
 
 
 class IfHeaderScnCompileHandler(AbstractCompileHandler):
@@ -42,10 +43,10 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbLabelJumpBlueprint:
         if self.scn_var_target is None:
-            raise SsbCompilerError("No variable for assignment.")
+            raise SsbCompilerError(_("No variable for assignment."))
         if self.operator not in [SsbOperator.EQ, SsbOperator.LE, SsbOperator.LT, SsbOperator.GE, SsbOperator.GT]:
-            raise SsbCompilerError(f"The only supported operators for scn if "
-                                   f"conditions are ==,<,<=,>,>= (line {self.ctx.start.line})")
+            raise SsbCompilerError(f(_("The only supported operators for scn if "
+                                       "conditions are ==,<,<=,>,>= (line {self.ctx.start.line})")))
 
         scn_value = exps_int(str(self.ctx.INTEGER(0)))
         level_value = exps_int(str(self.ctx.INTEGER(1)))

@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_SCENARIO, OP_SWITCH_SCENARIO_LEVEL
 from explorerscript.util import exps_int
+from explorerscript.util import _, f
 
 
 class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
@@ -39,14 +40,14 @@ class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbOperation:
         if self.scn_var_target is None:
-            raise SsbCompilerError("No variable set for scn switch condition.")
+            raise SsbCompilerError(_("No variable set for scn switch condition."))
 
         index = exps_int(str(self.ctx.INTEGER()))
         if index == 0:
             return self._generate_operation(OP_SWITCH_SCENARIO, [self.scn_var_target])
         elif index == 1:
             return self._generate_operation(OP_SWITCH_SCENARIO_LEVEL, [self.scn_var_target])
-        raise SsbCompilerError(f"Index for scn() if condition must be 0 or 1 (line {self.ctx.start.line}).")
+        raise SsbCompilerError(f(_("Index for scn() if condition must be 0 or 1 (line {self.ctx.start.line}).")))
 
     def add(self, obj: any):
         if isinstance(obj, ScnVarCompileHandler):

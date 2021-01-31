@@ -32,6 +32,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.cas
     CaseHeaderOpCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE
+from explorerscript.util import _
 
 
 class CaseHeaderCompileHandler(AbstractCompileHandler):
@@ -54,7 +55,7 @@ class CaseHeaderCompileHandler(AbstractCompileHandler):
                 # A regular complex if condition
                 return self._header_cmplx_handler.collect()
 
-        raise SsbCompilerError("Unknown case operation.")
+        raise SsbCompilerError(_("Unknown case operation."))
 
     def get_header_handler_type(self) -> type(AbstractCompileHandler):
         return type(self._header_cmplx_handler)

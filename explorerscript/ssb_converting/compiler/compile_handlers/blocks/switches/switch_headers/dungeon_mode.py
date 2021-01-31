@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_DUNGEON_MODE
+from explorerscript.util import _
 
 
 class SwitchHeaderDungeonModeCompileHandler(AbstractCompileHandler):
@@ -38,7 +39,7 @@ class SwitchHeaderDungeonModeCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbOperation:
         if self.value is None:
-            raise SsbCompilerError("No dungeon id set for dungeon_mode switch condition.")
+            raise SsbCompilerError(_("No dungeon id set for dungeon_mode switch condition."))
 
         return self._generate_operation(OP_SWITCH_DUNGEON_MODE, [self.value])
 
