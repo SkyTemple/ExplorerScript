@@ -36,7 +36,8 @@ from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, OPS_CTX, OP_JUMP, OP_RETURN, \
-    OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST, OPS_FLAG_ALL
+    OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST, OPS_FLAG_ALL, OP_CALL
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +47,7 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
     _ssb_operations_special_cases_handlers: Dict[Optional[str], Type[AbstractWriteHandler]] = {
         None: SimpleSimpleOpWriteHandler
     }
-    for x in [OP_JUMP, OP_RETURN, OP_END, OP_HOLD]:
+    for x in [OP_JUMP, OP_CALL, OP_RETURN, OP_END, OP_HOLD]:
         _ssb_operations_special_cases_handlers[x] = KeywordSimpleOpWriteHandler
     for x in OPS_CTX:
         _ssb_operations_special_cases_handlers[x] = CtxSimpleOpWriteHandler

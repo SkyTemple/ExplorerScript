@@ -1,4 +1,4 @@
-__version__ = '0.0.7'
+__version__ = '0.1.0'
 from setuptools import setup, find_packages
 
 # README read-in
@@ -18,7 +18,7 @@ setup(
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
         'python-igraph >= 0.8.0',
-        'antlr4-python3-runtime >= 4.8'
+        'antlr4-python3-runtime == 4.8'
     ],
     extras_require={
         'pygments':  ["pygments>=2.6.1"]

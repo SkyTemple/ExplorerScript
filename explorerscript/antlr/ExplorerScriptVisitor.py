@@ -44,6 +44,11 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#call.
+    def visitCall(self, ctx:ExplorerScriptParser.CallContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExplorerScriptParser#macro_call.
     def visitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
         return self.visitChildren(ctx)

@@ -77,10 +77,14 @@ class ExplorerScriptSsbDecompiler:
         # Step 1: Build labels
         resolver = OpsLabelJumpToResolver(self._routine_ops)
         self._routine_ops = list(resolver)
+        has_any_calls = any(any(isinstance(op, SsbLabelJump)
+                                and any(isinstance(x, CallJump) for x in op.markers) for op in rtn)
+                            for rtn in self._routine_ops)
 
         # Step 2: Build and optimize execution graph
         logger.debug("Building base graph...")
-        grapher = SsbGraphMinimizer(self._routine_ops)
+        # If we have any calls, we disable the optimization that stops at ending opcodes.
+        grapher = SsbGraphMinimizer(self._routine_ops, not has_any_calls)
         logger.debug("Built base graph...")
         # Remove redundant labels
         grapher.optimize_paths()

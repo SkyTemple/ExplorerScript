@@ -71,6 +71,15 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#call.
+    def enterCall(self, ctx:ExplorerScriptParser.CallContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#call.
+    def exitCall(self, ctx:ExplorerScriptParser.CallContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#macro_call.
     def enterMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
         pass

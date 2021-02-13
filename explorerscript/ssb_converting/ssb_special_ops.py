@@ -32,6 +32,7 @@ from igraph import Graph, Vertex
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParamConstant
 
 OP_JUMP = 'Jump'
+OP_CALL = 'Call'
 
 OP_BRANCH = 'Branch'
 OP_BRANCH_BIT = 'BranchBit'
@@ -108,21 +109,20 @@ OPS_SWITCH_TEXT_CASE_MAP = {
 
 # A list of ops with jumps to memory offsets, values are the parameter index containing the jump
 OPS_WITH_JUMP_TO_MEM_OFFSET = {
-    #'Call': 0,  TODO: Check
-    #'CancelRecoverCommon': 0,  TODO: Check
     OP_CASE: 1,
     OP_CASE_MENU: 1,
     OP_CASE_MENU2: 1,
     OP_CASE_SCENARIO: 2,
     OP_CASE_VALUE: 2,
     OP_CASE_VARIABLE: 2,
-    # Special case; this OpCode ALWAYS jumps:
+    # Special case; these opcodes ALWAYS jumps:
     OP_JUMP: 0,
+    OP_CALL: 0,
 }
 OPS_WITH_JUMP_TO_MEM_OFFSET.update(OPS_BRANCH)
 
 OPS_ALL_SPECIAL = [
-    OP_JUMP,
+    OP_JUMP, OP_CALL,
 
     OP_BRANCH, OP_BRANCH_BIT, OP_BRANCH_DEBUG, OP_BRANCH_EDIT, OP_BRANCH_PERFORMANCE,
     OP_BRANCH_SCENARIO_NOW, OP_BRANCH_SCENARIO_NOW_AFTER, OP_BRANCH_SCENARIO_NOW_BEFORE,
@@ -190,6 +190,11 @@ class LabelMarker:
 
 class LabelJumpMarker:
     pass
+
+
+class CallJump(LabelJumpMarker):
+    def __str__(self):
+        return f"CALL"
 
 
 class IfStart(LabelJumpMarker):
@@ -413,8 +418,11 @@ def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], rou
             known_labels[old_offset] = label
         new_params = param_list.copy()
         del new_params[jump_param_idx]
-        return SsbLabelJump(
+        jmp = SsbLabelJump(
             SsbOperation(op.offset, op.op_code, new_params),
             label
         )
+        if op.op_code.name == OP_CALL:
+            jmp.markers.append(CallJump())
+        return jmp
     return op

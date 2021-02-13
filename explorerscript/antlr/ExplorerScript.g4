@@ -38,10 +38,11 @@ import_stmt: IMPORT STRING_LITERAL ';';
 macrodef: MACRO IDENTIFIER OPEN_PAREN VARIABLE? (',' VARIABLE)* CLOSE_PAREN func_suite;
 
 stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block | macro_call );
-simple_stmt: (operation | label | cntrl_stmt | jump | assignment) ';';
+simple_stmt: (operation | label | cntrl_stmt | jump | call | assignment) ';';
 
 cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_LOOP;
 jump: JUMP AT IDENTIFIER;
+call: CALL AT IDENTIFIER;
 macro_call: MACRO_CALL OPEN_PAREN arglist? CLOSE_PAREN ';';
 
 // a ctx block needs exactly one simple statement, we enforce this on parser level.
@@ -144,6 +145,7 @@ OP_DIVIDE: '/=';
 OR: '||';
 NOT: 'not';
 JUMP: 'jump';
+CALL: 'call';
 
 IMPORT: 'import';
 MACRO: 'macro';
