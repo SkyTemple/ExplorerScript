@@ -36,6 +36,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump imp
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
+from explorerscript.util import _, f
 
 
 class CtxBlockCompileHandler(AbstractStatementCompileHandler):
@@ -49,9 +50,9 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
         ops = []
         self.ctx: ExplorerScriptParser.Ctx_blockContext
         if self._for_id is None:
-            raise SsbCompilerError("No target ID set for with(){} block.")
+            raise SsbCompilerError(_("No target ID set for with(){} block."))
         if not self._sub_stmt:
-            raise SsbCompilerError("A with(){} block needs exactly one statement.")
+            raise SsbCompilerError(_("A with(){} block needs exactly one statement."))
         for_type = str(self.ctx.ctx_header().CTX_TYPE())
 
         if for_type == 'actor':
@@ -61,12 +62,13 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
         elif for_type == 'performer':
             ops.append(self._generate_operation(OPS_CTX_PERFORMER, [self._for_id]))
         else:
-            raise SsbCompilerError(f"Invalid with(){{}} target type '{for_type}'.")
+            raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
 
         sub_ops = self._sub_stmt.collect()
         if len(sub_ops) != 1:
             raise SsbCompilerError(
-                "A with(){} block needs exactly one binary operation. The handler for it generated multiple operations."
+                _("A with(){} block needs exactly one binary operation. "
+                  "The handler for it generated multiple operations.")
             )
         ops += sub_ops
 
@@ -82,7 +84,7 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
             self._sub_stmt = obj
             return
         if isinstance(obj, LabelCompileHandler):
-            raise SsbCompilerError("A with(){} block can not contain labels.")
+            raise SsbCompilerError(_("A with(){} block can not contain labels."))
 
         # integer_like (for for_id)
         if isinstance(obj, IntegerLikeCompileHandler):
@@ -93,4 +95,4 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
 
     def _check_sub_stmt(self):
         if self._sub_stmt is not None:
-            raise SsbCompilerError("A with(){} block needs exactly one statement.")
+            raise SsbCompilerError(_("A with(){} block needs exactly one statement."))

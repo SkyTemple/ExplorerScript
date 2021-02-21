@@ -22,6 +22,8 @@
 #
 from antlr4.error.ErrorListener import ErrorListener
 
+from explorerscript.util import f, _
+
 
 class AntlrSyntaxError:
     def __init__(self, recognizer, offendingSymbol, line, column, msg, e):
@@ -33,7 +35,7 @@ class AntlrSyntaxError:
         self.e = e
 
     def __str__(self):
-        return f"line {self.line}:{self.column}: {self.msg}"
+        return f(_("line {self.line}:{self.column}: {self.msg}"))
 
 
 class SyntaxErrorListener(ErrorListener):

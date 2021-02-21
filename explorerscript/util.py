@@ -20,6 +20,12 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from inspect import currentframe
+try:
+    import builtins
+    _ = builtins._
+except Exception:
+    _ = lambda a: a
 
 
 def open_utf8(file, mode='r', *args, **kwargs):
@@ -32,3 +38,15 @@ def exps_int(to_convert):
     if isinstance(to_convert, str):
         return int(to_convert, 0)
     return int(to_convert)
+
+
+def f(s):
+    """f-strings as a function, for use with translatable strings: f'{techticks}' == f('{techticks}')"""
+    frame = currentframe().f_back
+    s1 = s.replace("'", "\\'").replace('\n','\\n')
+    try:
+        return eval(f"f'{s1}'", frame.f_locals, frame.f_globals)
+    except SyntaxError as e:
+        if "f-string expression part cannot include a backslash" in str(e):
+            s1 = s.replace('"', '\\"').replace('\n','\\n')
+            return eval(f'f"{s1}"', frame.f_locals, frame.f_globals)

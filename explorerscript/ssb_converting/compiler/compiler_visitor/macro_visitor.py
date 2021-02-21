@@ -31,6 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.macro_def import MacroDefCompileHandler
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
+from explorerscript.util import _
 
 
 class MacroVisitor(ExplorerScriptVisitor):
@@ -74,7 +75,7 @@ class MacroVisitor(ExplorerScriptVisitor):
         return ExplorerScriptMacro(name, variables, blueprints, self.source_map_builder.build())
 
     def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext):
-        raise SsbCompilerError("Macros can not alias.")
+        raise SsbCompilerError(_("Macros can not alias."))
 
     def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext):
         for stmt_ctx in ctx.stmt():

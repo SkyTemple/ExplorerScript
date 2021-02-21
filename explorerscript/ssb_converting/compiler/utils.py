@@ -28,6 +28,8 @@ from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, \
     OP_DUMMY_END, OPS_CTX
+from explorerscript.util import f, _
+
 logger = logging.getLogger(__name__)
 
 
@@ -96,19 +98,19 @@ class CompilerCtx:
     def continue_loop(self, ctx) -> SsbOperation:
         """Handle the continue opcode"""
         if len(self._loops) < 1:
-            raise SsbCompilerError(f"Unexpected continue; in line {ctx.start.line}")
+            raise SsbCompilerError(f(_("Unexpected continue; in line {ctx.start.line}")))
         return self._loops[-1].continue_loop()
 
     def break_loop(self, ctx) -> SsbOperation:
         """Handle the break forever opcode"""
         if len(self._loops) < 1:
-            raise SsbCompilerError(f"Unexpected break_loop; in line {ctx.start.line}")
+            raise SsbCompilerError(f(_("Unexpected break_loop; in line {ctx.start.line}")))
         return self._loops[-1].break_loop()
 
     def break_case(self, ctx) -> SsbOperation:
         """Handle the break opcode"""
         if len(self._switch_cases) < 1:
-            raise SsbCompilerError(f"Unexpected break; in line {ctx.start.line}")
+            raise SsbCompilerError(f(_("Unexpected break; in line {ctx.start.line}")))
         return self._switch_cases[-1].break_case()
 
 

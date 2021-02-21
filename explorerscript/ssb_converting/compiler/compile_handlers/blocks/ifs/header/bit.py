@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_BIT, OP_BRANCH_PERFORMANCE
 from explorerscript.util import exps_int
+from explorerscript.util import _, f
 
 
 class IfHeaderBitCompileHandler(AbstractCompileHandler):
@@ -40,7 +41,7 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
     def collect(self) -> SsbLabelJumpBlueprint:
         self.ctx: ExplorerScriptParser.If_h_bitContext
         if self.var_target is None:
-            raise SsbCompilerError("No variable in if condition.")
+            raise SsbCompilerError(_("No variable in if condition."))
 
         var_target_name = None
         if hasattr(self.var_target, 'name'):
@@ -55,7 +56,8 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
                 OP_BRANCH_PERFORMANCE, [index, 1 if is_simple_positive else 0]
             )
         elif not is_simple_positive:
-            raise SsbCompilerError(f"The variable {var_target_name} can not be used with 'not' (line {self.ctx.start.line}).")
+            raise SsbCompilerError(f(_("The variable {var_target_name} can not be used with 'not' "
+                                       "(line {self.ctx.start.line}).")))
         return SsbLabelJumpBlueprint(
             self.compiler_ctx, self.ctx,
             OP_BRANCH_BIT, [self.var_target, index]

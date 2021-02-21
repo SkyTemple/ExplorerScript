@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.cas
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
+from explorerscript.util import _
 
 
 class CaseBlockCompileHandler(AbstractBlockCompileHandler):
@@ -53,7 +54,7 @@ class CaseBlockCompileHandler(AbstractBlockCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.is_message_case:
-            raise SsbCompilerError("Invalid message switch case call.")
+            raise SsbCompilerError(_("Invalid message switch case call."))
         # get_header_jump_template must be called first.
         self.compiler_ctx.add_switch_case(self)
         retval = self._process_block(False)
@@ -68,7 +69,7 @@ class CaseBlockCompileHandler(AbstractBlockCompileHandler):
 
     def get_text(self) -> SsbOpParam:
         if not self.is_message_case:
-            raise SsbCompilerError("Invalid message switch case call.")
+            raise SsbCompilerError(_("Invalid message switch case call."))
         return self._added_string_handler.collect()
 
     def collect_header_handler(self) -> CaseHeaderCompileHandler:

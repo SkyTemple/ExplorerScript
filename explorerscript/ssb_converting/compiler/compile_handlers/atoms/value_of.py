@@ -28,6 +28,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
+from explorerscript.util import _
 
 
 class ValueOfCompileHandler(AbstractCompileHandler):
@@ -37,7 +38,7 @@ class ValueOfCompileHandler(AbstractCompileHandler):
 
     def collect(self) -> SsbOpParam:
         if self.var_target is None:
-            raise SsbCompilerError("value() without a variable.")
+            raise SsbCompilerError(_("value() without a variable."))
 
         return self.var_target
 

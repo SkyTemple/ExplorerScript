@@ -105,6 +105,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_
     ControlStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
+from explorerscript.util import _
 
 
 T = AbstractCompileHandler
@@ -281,6 +282,6 @@ class StatementVisitor(ExplorerScriptVisitor):
         self._current_handlers.append(compile_handler(ctx, self.compiler_ctx, **kwargs))
         retval = self.visitChildren(ctx)
         h = self._current_handlers.pop()
-        assert id(h.ctx) == id(ctx), "Fatal compilation error: Unexpected compilation handler on stack."
-        assert not isinstance(h, NullCompileHandler), "Fatal compilation error: Stack error."
+        assert id(h.ctx) == id(ctx), _("Fatal compilation error: Unexpected compilation handler on stack.")
+        assert not isinstance(h, NullCompileHandler), _("Fatal compilation error: Stack error.")
         return retval, h

@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
+from explorerscript.util import _
 
 
 class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
@@ -45,7 +46,7 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.is_message_case:
-            raise SsbCompilerError("Invalid message switch case call.")
+            raise SsbCompilerError(_("Invalid message switch case call."))
         self.compiler_ctx.add_switch_case(self)
         retval = self._process_block(False)
         self.compiler_ctx.remove_switch_case()
@@ -59,7 +60,7 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
 
     def get_text(self) -> SsbOpParam:
         if not self.is_message_case:
-            raise SsbCompilerError("Invalid message switch case call.")
+            raise SsbCompilerError(_("Invalid message switch case call."))
         return self._added_string_handler.collect()
 
     def add(self, obj: any):

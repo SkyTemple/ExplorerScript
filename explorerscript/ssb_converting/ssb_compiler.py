@@ -38,7 +38,7 @@ from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalize
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.util import open_utf8
+from explorerscript.util import open_utf8, f, _
 
 logger = logging.getLogger(__name__)
 
@@ -133,13 +133,13 @@ class ExplorerScriptSsbCompiler:
         for subfile_path in self._resolve_imported_file(os.path.dirname(file_name)):
             logger.debug("<%d> Compiling sub-file %s...", id(self), subfile_path)
             if subfile_path in self.recursion_check:
-                raise SsbCompilerError(f"Infinite recursion detected while trying to load "
-                                       f"an ExplorerScript file from {subfile_path}.\n"
-                                       f"Tried loading from: {file_name}.")
+                raise SsbCompilerError(f(_("Infinite recursion detected while trying to load "
+                                           "an ExplorerScript file from {subfile_path}.\n"
+                                           "Tried loading from: {file_name}.")))
             subfile_compiler = self.__class__(self.performance_progress_list_var_name, self.lookup_paths,
                                               recursion_check=self.recursion_check + [file_name])
-            with open_utf8(subfile_path, 'r') as f:
-                subfile_compiler.compile(f.read(), subfile_path, macros_only=True, original_base_file=original_base_file)
+            with open_utf8(subfile_path, 'r') as file:
+                subfile_compiler.compile(file.read(), subfile_path, macros_only=True, original_base_file=original_base_file)
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
         # Sort the list of macros by how they are used
@@ -157,7 +157,9 @@ class ExplorerScriptSsbCompiler:
         if macros_only:
             # Check if the file contains any routines
             if HasRoutinesVisitor().visit(parser.start()):
-                raise SsbCompilerError(f"{os.path.basename(file_name)}: Macro scripts must not contain any routines.")
+                # noinspection PyUnusedLocal
+                fn = os.path.basename(file_name)
+                raise SsbCompilerError(f(_("{fn}: Macro scripts must not contain any routines.")))
             return self
 
         # Start Compiling
@@ -203,21 +205,21 @@ class ExplorerScriptSsbCompiler:
                 # Relative or absolute import
                 abs_path = os.path.realpath(str(PurePath(PurePosixPath(dir_name).joinpath(PurePosixPath(import_file)))))
                 if not os.path.exists(abs_path):
-                    raise SsbCompilerError(f"The file to import ('{import_file}') was not found.")
+                    raise SsbCompilerError(f(_("The file to import ('{import_file}') was not found.")))
             else:
                 # Relative to one of the lookup paths
                 abs_path = None
                 path_parts = import_file.split('/')
                 if '.' in path_parts or '..' in path_parts:
-                    raise SsbCompilerError(f"Invalid import: '{import_file}'. Non absolute/relative "
-                                           f"imports must not contain relative paths.")
+                    raise SsbCompilerError(f(_("Invalid import: '{import_file}'. Non absolute/relative "
+                                               "imports must not contain relative paths.")))
                 for lp in self.lookup_paths:
                     abs_path_c = os.path.realpath(str(PurePath(dir_name).joinpath(PurePosixPath(lp).joinpath(import_file))))
                     if os.path.exists(abs_path_c):
                         abs_path = abs_path_c
                         break
                 if abs_path is None:
-                    raise SsbCompilerError(f"The file to import ('{import_file}') was not found.")
+                    raise SsbCompilerError(f(_("The file to import ('{import_file}') was not found.")))
             fs.append(abs_path)
 
         return fs

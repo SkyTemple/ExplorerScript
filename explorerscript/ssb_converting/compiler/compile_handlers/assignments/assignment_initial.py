@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__INITIAL
+from explorerscript.util import _
 
 
 class AssignmentInitialCompileHandler(AbstractAssignmentCompileHandler):
@@ -38,7 +39,7 @@ class AssignmentInitialCompileHandler(AbstractAssignmentCompileHandler):
 
     def collect(self) -> List[SsbOperation]:
         if self.var_target is None:
-            raise SsbCompilerError("No variable for init.")
+            raise SsbCompilerError(_("No variable for init."))
 
         return [self._generate_operation(OPS_FLAG__INITIAL, [self.var_target])]
 
