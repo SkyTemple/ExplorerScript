@@ -73,7 +73,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             h.set_end_label(end_label)
             if h.is_message_case:
                 raise SsbCompilerError(f(_("A switch case must contain a list of statements "
-                                           "(line {self.ctx.start.line}.")))
+                                           "(line {self.ctx.start.line}).")))
             jmp_blueprint = h.get_header_jump_template()
             first = self.compiler_ctx.counter_ops.allocate(1)
             jmp_blueprint.set_index_number(first)

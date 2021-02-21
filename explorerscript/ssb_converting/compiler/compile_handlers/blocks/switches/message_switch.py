@@ -57,10 +57,10 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
         for h in self._case_handlers:
             if not h.is_message_case:
                 raise SsbCompilerError(f(_("A message_ switch can only contain cases with strings "
-                                           "(line {self.ctx.start.line}.")))
+                                           "(line {self.ctx.start.line}).")))
             header_handler = h.collect_header_handler()
             if header_handler.get_header_handler_type() != IntegerLikeCompileHandler:
-                raise SsbCompilerError(f(_("Invalid case type for message_ switch (line {self.ctx.start.line}.")))
+                raise SsbCompilerError(f(_("Invalid case type for message_ switch (line {self.ctx.start.line}).")))
             string = h.get_text()
             value_blueprint = header_handler.collect()
             # We obviously don't want the bluprint
@@ -69,7 +69,7 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
         if self._default_handler:
             if not self._default_handler.is_message_case:
                 raise SsbCompilerError(
-                    f(_("A message_ switch can only contain cases with strings (line {self.ctx.start.line}.")))
+                    f(_("A message_ switch can only contain cases with strings (line {self.ctx.start.line}).")))
             case_ops.append(self._generate_operation(OP_DEFAULT_TEXT, [self._default_handler.get_text()]))
 
         return [switch_op] + case_ops
