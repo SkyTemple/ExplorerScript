@@ -100,6 +100,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg impo
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.macro_call import MacroCallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import CallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import \
     ControlStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
@@ -125,6 +126,9 @@ class StatementVisitor(ExplorerScriptVisitor):
 
     def visitJump(self, ctx: ExplorerScriptParser.JumpContext):
         return self._push_handler_and_add(ctx, JumpCompileHandler)
+
+    def visitCall(self, ctx: ExplorerScriptParser.JumpContext):
+        return self._push_handler_and_add(ctx, CallCompileHandler)
 
     def visitCtx_block(self, ctx: ExplorerScriptParser.Ctx_blockContext):
         return self._push_handler_and_add(ctx, CtxBlockCompileHandler)

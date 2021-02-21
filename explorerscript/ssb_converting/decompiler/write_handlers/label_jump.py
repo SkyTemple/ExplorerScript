@@ -26,6 +26,7 @@ from typing import Dict, Type, Optional
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.call import CallWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever_break import ForeverBreakWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever_continue import \
     ForeverContinueWriteHandler
@@ -33,7 +34,8 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.if_star
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump import JumpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import LabelJumpMarker, MultiIfStart, IfStart, \
-    SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump, OP_JUMP
+    SwitchStart, ForeverContinue, ForeverBreak, SsbLabelJump, OP_JUMP, CallJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,6 +48,7 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
         SwitchStart: SwitchWriteHandler,
         ForeverContinue: ForeverContinueWriteHandler,
         ForeverBreak: ForeverBreakWriteHandler,
+        CallJump: CallWriteHandler,
         type(None): JumpWriteHandler,
     }
 

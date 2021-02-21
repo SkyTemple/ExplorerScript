@@ -31,7 +31,8 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, SsbLabel, OP_HOLD, \
     OP_JUMP, OPS_BRANCH, IfStart, IfEnd, MultiIfStart, OPS_SWITCH_CASE_MAP, SwitchStart, OPS_CTX, SwitchEnd, \
     SwitchCaseOperation, SwitchFalltrough, ForeverContinue, ForeverBreak, ForeverStart, ForeverEnd, \
-    SsbForeignLabel
+    SsbForeignLabel, CallJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,8 +40,9 @@ sys.setrecursionlimit(10000)
 
 
 class SsbGraphMinimizer:
-    def __init__(self, routine_ops: List[List[SsbOperation]]):
+    def __init__(self, routine_ops: List[List[SsbOperation]], optimize_ending_opcodes=True):
         self._graphs: List[Graph] = []
+        self.optimize_ending_opcodes = optimize_ending_opcodes
         for rtn_id, rtn in enumerate(routine_ops):
             g = Graph(directed=True)
             self._graphs.append(g)
@@ -691,7 +693,7 @@ class SsbGraphMinimizer:
         previous_op = rtn[op_i - 1]
         # If the previous op is one of OPS_CTX, then the immediate control flow will not end,
         # even if we get one of OPS_THAT_END_CONTROL_FLOW.
-        flow_can_not_end = previous_op.op_code.name in OPS_CTX
+        flow_can_not_end = previous_op.op_code.name in OPS_CTX or not self.optimize_ending_opcodes
         op = rtn[op_i]
         real_op = op
         is_label_jump = False
@@ -765,7 +767,9 @@ class SsbGraphMinimizer:
                 marker_str = ""
                 v['fillcolor'] = ''
                 for marker in v['op'].markers:
-                    if isinstance(marker, MultiIfStart):
+                    if isinstance(marker, CallJump):
+                        v['fillcolor'] += '#A3C96D:'
+                    elif isinstance(marker, MultiIfStart):
                         v['fillcolor'] += '#E3BF00:'
                     elif isinstance(marker, IfStart):
                         v['fillcolor'] += '#E36A00:'

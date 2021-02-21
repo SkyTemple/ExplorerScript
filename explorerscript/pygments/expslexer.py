@@ -64,6 +64,7 @@ KEYWORDS = (
     "end",
     "hold",
     "jump",
+    "call",
     "while",
     "for",
     # Weak keywords

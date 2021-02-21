@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import LabelCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import CallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import \
     ControlStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
@@ -75,9 +76,10 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
 
     def add(self, obj: any):
         # supports:
-        # simple_stmt := operation | cntrl_stmt | jump | assignment - For labels a logical error is raised.
+        # simple_stmt := operation | cntrl_stmt | jump | call | assignment - For labels a logical error is raised.
         if isinstance(obj, OperationCompileHandler) or isinstance(obj, ControlStatementCompileHandler) \
-                or isinstance(obj, JumpCompileHandler) or isinstance(obj, AbstractAssignmentCompileHandler):
+                or isinstance(obj, JumpCompileHandler) or isinstance(obj, CallCompileHandler) \
+                or isinstance(obj, AbstractAssignmentCompileHandler):
             self._check_sub_stmt()
             self._sub_stmt = obj
             return
