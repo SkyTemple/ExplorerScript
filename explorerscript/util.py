@@ -41,6 +41,7 @@ def exps_int(to_convert):
 
 
 def f(s):
-    """f-strings as a function, for use with translatable strings: f'{varbiable}' == f('{variable}')"""
+    """f-strings as a function, for use with translatable strings: f'{techticks}' == f('{techticks}')"""
     frame = currentframe().f_back
+    s = s.replace("'", "\\'").replace('\n','\\n')
     return eval(f"f'{s}'", frame.f_locals, frame.f_globals)
