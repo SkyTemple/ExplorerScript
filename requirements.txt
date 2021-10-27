@@ -1,2 +1,2 @@
-python-igraph==0.8.2
+python-igraph==0.9.7
 antlr4-python3-runtime==4.8
