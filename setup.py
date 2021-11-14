@@ -17,7 +17,7 @@ setup(
     long_description_content_type='text/x-rst',
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
-        'python-igraph >= 0.8.0',
+        'igraph >= 0.8.0',
         'antlr4-python3-runtime == 4.8'
     ],
     extras_require={
