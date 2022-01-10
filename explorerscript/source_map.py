@@ -271,17 +271,19 @@ class SourceMap:
         # but that's ok.
         self._mappings = {new_mapping[key]: val for key, val in self._mappings.items() if key in new_mapping}
         self._mappings_macros = {new_mapping[key]: val for key, val in self._mappings_macros.items() if key in new_mapping}
+        max_old_offset = max(new_mapping.keys())
+
         for m in self._mappings_macros.values():
             if m.return_addr:
                 addr = m.return_addr
                 while addr not in new_mapping:
                     # if the return addr opcode was optimized away, we take the next index. TODO: Good idea?
                     addr += 1
-                    if addr > len(self._mappings):
+                    if addr > max_old_offset:
                         addr = None
                         break
                 if addr is not None:
-                    m.return_addr = new_mapping[m.return_addr]
+                    m.return_addr = new_mapping[addr]
 
 
 class SourceMapBuilder:
