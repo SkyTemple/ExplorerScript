@@ -3,7 +3,7 @@ ExplorerScript
 
 |build| |docs| |pypi-version| |pypi-downloads| |pypi-license| |pypi-pyversions| |discord|
 
-.. |build| image:: https://img.shields.io/github/workflow/status/SkyTemple/explorerscript/Build,%20test%20and%20publish
+.. |build| image:: https://img.shields.io/github/actions/workflow/status/SkyTemple/ExplorerScript/build-test-publish.yml
     :target: https://pypi.org/project/explorerscript/
     :alt: Build Status
 
