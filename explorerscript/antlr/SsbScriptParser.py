@@ -1,4 +1,4 @@
-# Generated from SsbScript.g4 by ANTLR 4.8
+# Generated from SsbScript.g4 by ANTLR 4.11.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -8,66 +8,59 @@ if sys.version_info[1] > 5:
 else:
 	from typing.io import TextIO
 
-
 def serializedATN():
-    with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3$")
-        buf.write("\u009e\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
-        buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
-        buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
-        buf.write("\4\24\t\24\3\2\3\2\3\2\3\2\5\2-\n\2\3\3\3\3\3\3\3\4\7")
-        buf.write("\4\63\n\4\f\4\16\4\66\13\4\3\4\3\4\3\5\3\5\3\5\5\5=\n")
-        buf.write("\5\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b")
-        buf.write("\3\b\3\b\3\b\3\t\3\t\3\n\3\n\5\nS\n\n\3\n\3\n\3\13\3\13")
-        buf.write("\3\13\5\13Z\n\13\3\13\3\13\3\f\3\f\6\f`\n\f\r\f\16\fa")
-        buf.write("\3\f\5\fe\n\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\7")
-        buf.write("\16p\n\16\f\16\16\16s\13\16\3\16\5\16v\n\16\3\17\3\17")
-        buf.write("\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\20\3\20\5\20\u0083")
-        buf.write("\n\20\3\21\3\21\3\21\3\22\3\22\5\22\u008a\n\22\3\23\3")
-        buf.write("\23\3\23\3\23\7\23\u0090\n\23\f\23\16\23\u0093\13\23\3")
-        buf.write("\23\5\23\u0096\n\23\3\23\3\23\3\24\3\24\3\24\3\24\3\24")
-        buf.write("\2\2\25\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&\2")
-        buf.write("\3\4\2\16\17\21\21\2\u009a\2,\3\2\2\2\4.\3\2\2\2\6\64")
-        buf.write("\3\2\2\2\b<\3\2\2\2\n>\3\2\2\2\fB\3\2\2\2\16F\3\2\2\2")
-        buf.write("\20N\3\2\2\2\22R\3\2\2\2\24V\3\2\2\2\26]\3\2\2\2\30h\3")
-        buf.write("\2\2\2\32l\3\2\2\2\34w\3\2\2\2\36\u0080\3\2\2\2 \u0084")
-        buf.write("\3\2\2\2\"\u0089\3\2\2\2$\u008b\3\2\2\2&\u0099\3\2\2\2")
-        buf.write("(-\5\20\t\2)-\5\"\22\2*-\5\34\17\2+-\5\4\3\2,(\3\2\2\2")
-        buf.write(",)\3\2\2\2,*\3\2\2\2,+\3\2\2\2-\3\3\2\2\2./\7\34\2\2/")
-        buf.write("\60\7\16\2\2\60\5\3\2\2\2\61\63\5\b\5\2\62\61\3\2\2\2")
-        buf.write("\63\66\3\2\2\2\64\62\3\2\2\2\64\65\3\2\2\2\65\67\3\2\2")
-        buf.write("\2\66\64\3\2\2\2\678\7\2\2\38\7\3\2\2\29=\5\f\7\2:=\5")
-        buf.write("\n\6\2;=\5\16\b\2<9\3\2\2\2<:\3\2\2\2<;\3\2\2\2=\t\3\2")
-        buf.write("\2\2>?\7\7\2\2?@\7\21\2\2@A\5\26\f\2A\13\3\2\2\2BC\7\6")
-        buf.write("\2\2CD\7\16\2\2DE\5\26\f\2E\r\3\2\2\2FG\7\7\2\2GH\7\21")
-        buf.write("\2\2HI\7\5\2\2IJ\7\26\2\2JK\5\20\t\2KL\7\27\2\2LM\5\26")
-        buf.write("\f\2M\17\3\2\2\2NO\t\2\2\2O\21\3\2\2\2PS\5\24\13\2QS\5")
-        buf.write(" \21\2RP\3\2\2\2RQ\3\2\2\2ST\3\2\2\2TU\7\3\2\2U\23\3\2")
-        buf.write("\2\2VW\7\16\2\2WY\7\26\2\2XZ\5\32\16\2YX\3\2\2\2YZ\3\2")
-        buf.write("\2\2Z[\3\2\2\2[\\\7\27\2\2\\\25\3\2\2\2]d\7\36\2\2^`\5")
-        buf.write("\22\n\2_^\3\2\2\2`a\3\2\2\2a_\3\2\2\2ab\3\2\2\2be\3\2")
-        buf.write("\2\2ce\5\30\r\2d_\3\2\2\2dc\3\2\2\2ef\3\2\2\2fg\7\37\2")
-        buf.write("\2g\27\3\2\2\2hi\7\13\2\2ij\7\f\2\2jk\7\3\2\2k\31\3\2")
-        buf.write("\2\2lq\5\2\2\2mn\7\30\2\2np\5\2\2\2om\3\2\2\2ps\3\2\2")
-        buf.write("\2qo\3\2\2\2qr\3\2\2\2ru\3\2\2\2sq\3\2\2\2tv\7\30\2\2")
-        buf.write("ut\3\2\2\2uv\3\2\2\2v\33\3\2\2\2wx\7\r\2\2xy\7 \2\2yz")
-        buf.write("\7\4\2\2z{\7\30\2\2{|\5\36\20\2|}\7\30\2\2}~\5\36\20\2")
-        buf.write("~\177\7!\2\2\177\35\3\2\2\2\u0080\u0082\7\21\2\2\u0081")
-        buf.write("\u0083\7\"\2\2\u0082\u0081\3\2\2\2\u0082\u0083\3\2\2\2")
-        buf.write("\u0083\37\3\2\2\2\u0084\u0085\7\35\2\2\u0085\u0086\7\16")
-        buf.write("\2\2\u0086!\3\2\2\2\u0087\u008a\7\4\2\2\u0088\u008a\5")
-        buf.write("$\23\2\u0089\u0087\3\2\2\2\u0089\u0088\3\2\2\2\u008a#")
-        buf.write("\3\2\2\2\u008b\u008c\7\36\2\2\u008c\u0091\5&\24\2\u008d")
-        buf.write("\u008e\7\30\2\2\u008e\u0090\5&\24\2\u008f\u008d\3\2\2")
-        buf.write("\2\u0090\u0093\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0092")
-        buf.write("\3\2\2\2\u0092\u0095\3\2\2\2\u0093\u0091\3\2\2\2\u0094")
-        buf.write("\u0096\7\30\2\2\u0095\u0094\3\2\2\2\u0095\u0096\3\2\2")
-        buf.write("\2\u0096\u0097\3\2\2\2\u0097\u0098\7\37\2\2\u0098%\3\2")
-        buf.write("\2\2\u0099\u009a\7\16\2\2\u009a\u009b\7\32\2\2\u009b\u009c")
-        buf.write("\7\4\2\2\u009c\'\3\2\2\2\17,\64<RYadqu\u0082\u0089\u0091")
-        buf.write("\u0095")
-        return buf.getvalue()
-
+    return [
+        4,1,34,156,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
+        2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,1,0,1,0,1,0,1,
+        0,3,0,43,8,0,1,1,1,1,1,1,1,2,5,2,49,8,2,10,2,12,2,52,9,2,1,2,1,2,
+        1,3,1,3,1,3,3,3,59,8,3,1,4,1,4,1,4,1,4,1,5,1,5,1,5,1,5,1,6,1,6,1,
+        6,1,6,1,6,1,6,1,6,1,6,1,7,1,7,1,8,1,8,3,8,81,8,8,1,8,1,8,1,9,1,9,
+        1,9,3,9,88,8,9,1,9,1,9,1,10,1,10,4,10,94,8,10,11,10,12,10,95,1,10,
+        3,10,99,8,10,1,10,1,10,1,11,1,11,1,11,1,11,1,12,1,12,1,12,5,12,110,
+        8,12,10,12,12,12,113,9,12,1,12,3,12,116,8,12,1,13,1,13,1,13,1,13,
+        1,13,1,13,1,13,1,13,1,13,1,14,1,14,3,14,129,8,14,1,15,1,15,1,15,
+        1,16,1,16,3,16,136,8,16,1,17,1,17,1,17,1,17,5,17,142,8,17,10,17,
+        12,17,145,9,17,1,17,3,17,148,8,17,1,17,1,17,1,18,1,18,1,18,1,18,
+        1,18,0,0,19,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,
+        0,1,2,0,12,13,15,15,152,0,42,1,0,0,0,2,44,1,0,0,0,4,50,1,0,0,0,6,
+        58,1,0,0,0,8,60,1,0,0,0,10,64,1,0,0,0,12,68,1,0,0,0,14,76,1,0,0,
+        0,16,80,1,0,0,0,18,84,1,0,0,0,20,91,1,0,0,0,22,102,1,0,0,0,24,106,
+        1,0,0,0,26,117,1,0,0,0,28,126,1,0,0,0,30,130,1,0,0,0,32,135,1,0,
+        0,0,34,137,1,0,0,0,36,151,1,0,0,0,38,43,3,14,7,0,39,43,3,32,16,0,
+        40,43,3,26,13,0,41,43,3,2,1,0,42,38,1,0,0,0,42,39,1,0,0,0,42,40,
+        1,0,0,0,42,41,1,0,0,0,43,1,1,0,0,0,44,45,5,26,0,0,45,46,5,12,0,0,
+        46,3,1,0,0,0,47,49,3,6,3,0,48,47,1,0,0,0,49,52,1,0,0,0,50,48,1,0,
+        0,0,50,51,1,0,0,0,51,53,1,0,0,0,52,50,1,0,0,0,53,54,5,0,0,1,54,5,
+        1,0,0,0,55,59,3,10,5,0,56,59,3,8,4,0,57,59,3,12,6,0,58,55,1,0,0,
+        0,58,56,1,0,0,0,58,57,1,0,0,0,59,7,1,0,0,0,60,61,5,5,0,0,61,62,5,
+        15,0,0,62,63,3,20,10,0,63,9,1,0,0,0,64,65,5,4,0,0,65,66,5,12,0,0,
+        66,67,3,20,10,0,67,11,1,0,0,0,68,69,5,5,0,0,69,70,5,15,0,0,70,71,
+        5,3,0,0,71,72,5,20,0,0,72,73,3,14,7,0,73,74,5,21,0,0,74,75,3,20,
+        10,0,75,13,1,0,0,0,76,77,7,0,0,0,77,15,1,0,0,0,78,81,3,18,9,0,79,
+        81,3,30,15,0,80,78,1,0,0,0,80,79,1,0,0,0,81,82,1,0,0,0,82,83,5,1,
+        0,0,83,17,1,0,0,0,84,85,5,12,0,0,85,87,5,20,0,0,86,88,3,24,12,0,
+        87,86,1,0,0,0,87,88,1,0,0,0,88,89,1,0,0,0,89,90,5,21,0,0,90,19,1,
+        0,0,0,91,98,5,28,0,0,92,94,3,16,8,0,93,92,1,0,0,0,94,95,1,0,0,0,
+        95,93,1,0,0,0,95,96,1,0,0,0,96,99,1,0,0,0,97,99,3,22,11,0,98,93,
+        1,0,0,0,98,97,1,0,0,0,99,100,1,0,0,0,100,101,5,29,0,0,101,21,1,0,
+        0,0,102,103,5,9,0,0,103,104,5,10,0,0,104,105,5,1,0,0,105,23,1,0,
+        0,0,106,111,3,0,0,0,107,108,5,22,0,0,108,110,3,0,0,0,109,107,1,0,
+        0,0,110,113,1,0,0,0,111,109,1,0,0,0,111,112,1,0,0,0,112,115,1,0,
+        0,0,113,111,1,0,0,0,114,116,5,22,0,0,115,114,1,0,0,0,115,116,1,0,
+        0,0,116,25,1,0,0,0,117,118,5,11,0,0,118,119,5,30,0,0,119,120,5,2,
+        0,0,120,121,5,22,0,0,121,122,3,28,14,0,122,123,5,22,0,0,123,124,
+        3,28,14,0,124,125,5,31,0,0,125,27,1,0,0,0,126,128,5,15,0,0,127,129,
+        5,32,0,0,128,127,1,0,0,0,128,129,1,0,0,0,129,29,1,0,0,0,130,131,
+        5,27,0,0,131,132,5,12,0,0,132,31,1,0,0,0,133,136,5,2,0,0,134,136,
+        3,34,17,0,135,133,1,0,0,0,135,134,1,0,0,0,136,33,1,0,0,0,137,138,
+        5,28,0,0,138,143,3,36,18,0,139,140,5,22,0,0,140,142,3,36,18,0,141,
+        139,1,0,0,0,142,145,1,0,0,0,143,141,1,0,0,0,143,144,1,0,0,0,144,
+        147,1,0,0,0,145,143,1,0,0,0,146,148,5,22,0,0,147,146,1,0,0,0,147,
+        148,1,0,0,0,148,149,1,0,0,0,149,150,5,29,0,0,150,35,1,0,0,0,151,
+        152,5,12,0,0,152,153,5,24,0,0,153,154,5,2,0,0,154,37,1,0,0,0,13,
+        42,50,58,80,87,95,98,111,115,128,135,143,147
+    ]
 
 class SsbScriptParser ( Parser ):
 
@@ -84,7 +77,7 @@ class SsbScriptParser ( Parser ):
                      "'alias'", "'previous'", "'Position'", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "'('", "')'", 
-                     "','", "':'", "'='", "'+'", "'@'", "'\u00A7'", "'{'", 
+                     "','", "':'", "'='", "'+'", "'@'", "'\\u00A7'", "'{'", 
                      "'}'", "'<'", "'>'", "'.5'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "STRING_LITERAL", "FOR_TARGET", 
@@ -160,7 +153,7 @@ class SsbScriptParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.8")
+        self.checkVersion("4.11.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -168,6 +161,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Pos_argumentContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -211,22 +205,22 @@ class SsbScriptParser ( Parser ):
             self.state = 42
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.VARIABLE, SsbScriptParser.INTEGER]:
+            if token in [12, 13, 15]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 38
                 self.integer_like()
                 pass
-            elif token in [SsbScriptParser.STRING_LITERAL, SsbScriptParser.OPEN_BRACE]:
+            elif token in [2, 28]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 39
                 self.string()
                 pass
-            elif token in [SsbScriptParser.POSITION]:
+            elif token in [11]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 40
                 self.position_marker()
                 pass
-            elif token in [SsbScriptParser.AT]:
+            elif token in [26]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 41
                 self.jump_marker()
@@ -244,6 +238,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Jump_markerContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -289,6 +284,7 @@ class SsbScriptParser ( Parser ):
 
 
     class StartContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -328,7 +324,7 @@ class SsbScriptParser ( Parser ):
             self.state = 50
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==SsbScriptParser.CORO or _la==SsbScriptParser.DEF:
+            while _la==4 or _la==5:
                 self.state = 47
                 self.funcdef()
                 self.state = 52
@@ -347,6 +343,7 @@ class SsbScriptParser ( Parser ):
 
 
     class FuncdefContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -415,6 +412,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Simple_defContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -466,6 +464,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Coro_defContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -517,6 +516,7 @@ class SsbScriptParser ( Parser ):
 
 
     class For_target_defContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -589,6 +589,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Integer_likeContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -626,7 +627,7 @@ class SsbScriptParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 76
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << SsbScriptParser.IDENTIFIER) | (1 << SsbScriptParser.VARIABLE) | (1 << SsbScriptParser.INTEGER))) != 0)):
+            if not(((_la) & ~0x3f) == 0 and ((1 << _la) & 45056) != 0):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -641,6 +642,7 @@ class SsbScriptParser ( Parser ):
 
 
     class StmtContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -677,11 +679,11 @@ class SsbScriptParser ( Parser ):
             self.state = 80
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [SsbScriptParser.IDENTIFIER]:
+            if token in [12]:
                 self.state = 78
                 self.operation()
                 pass
-            elif token in [SsbScriptParser.PARAGRAPH]:
+            elif token in [27]:
                 self.state = 79
                 self.label()
                 pass
@@ -700,6 +702,7 @@ class SsbScriptParser ( Parser ):
 
 
     class OperationContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -746,7 +749,7 @@ class SsbScriptParser ( Parser ):
             self.state = 87
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << SsbScriptParser.STRING_LITERAL) | (1 << SsbScriptParser.POSITION) | (1 << SsbScriptParser.IDENTIFIER) | (1 << SsbScriptParser.VARIABLE) | (1 << SsbScriptParser.INTEGER) | (1 << SsbScriptParser.AT) | (1 << SsbScriptParser.OPEN_BRACE))) != 0):
+            if ((_la) & ~0x3f) == 0 and ((1 << _la) & 335591428) != 0:
                 self.state = 86
                 self.arglist()
 
@@ -763,6 +766,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Func_suiteContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -811,7 +815,7 @@ class SsbScriptParser ( Parser ):
             self.state = 98
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [SsbScriptParser.IDENTIFIER, SsbScriptParser.PARAGRAPH]:
+            if token in [12, 27]:
                 self.state = 93 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -821,11 +825,11 @@ class SsbScriptParser ( Parser ):
                     self.state = 95 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    if not (_la==SsbScriptParser.IDENTIFIER or _la==SsbScriptParser.PARAGRAPH):
+                    if not (_la==12 or _la==27):
                         break
 
                 pass
-            elif token in [SsbScriptParser.ALIAS]:
+            elif token in [9]:
                 self.state = 97
                 self.func_alias()
                 pass
@@ -844,6 +848,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Func_aliasContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -891,6 +896,7 @@ class SsbScriptParser ( Parser ):
 
 
     class ArglistContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -948,7 +954,7 @@ class SsbScriptParser ( Parser ):
             self.state = 115
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==SsbScriptParser.COMMA:
+            if _la==22:
                 self.state = 114
                 self.match(SsbScriptParser.COMMA)
 
@@ -963,6 +969,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Position_markerContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -1039,6 +1046,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Position_marker_argContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -1076,7 +1084,7 @@ class SsbScriptParser ( Parser ):
             self.state = 128
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==SsbScriptParser.POINT_FIVE:
+            if _la==32:
                 self.state = 127
                 self.match(SsbScriptParser.POINT_FIVE)
 
@@ -1091,6 +1099,7 @@ class SsbScriptParser ( Parser ):
 
 
     class LabelContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -1136,6 +1145,7 @@ class SsbScriptParser ( Parser ):
 
 
     class StringContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -1170,12 +1180,12 @@ class SsbScriptParser ( Parser ):
             self.state = 135
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [SsbScriptParser.STRING_LITERAL]:
+            if token in [2]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 133
                 self.match(SsbScriptParser.STRING_LITERAL)
                 pass
-            elif token in [SsbScriptParser.OPEN_BRACE]:
+            elif token in [28]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 134
                 self.lang_string()
@@ -1193,6 +1203,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Lang_stringContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -1258,7 +1269,7 @@ class SsbScriptParser ( Parser ):
             self.state = 147
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==SsbScriptParser.COMMA:
+            if _la==22:
                 self.state = 146
                 self.match(SsbScriptParser.COMMA)
 
@@ -1275,6 +1286,7 @@ class SsbScriptParser ( Parser ):
 
 
     class Lang_string_argumentContext(ParserRuleContext):
+        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
