@@ -40,7 +40,7 @@ class CallCompileHandler(AbstractStatementCompileHandler):
             label = self.compiler_ctx.collected_labels[label_name]
         else:
             label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1, f'proper label, named {label_name}'
+                self.compiler_ctx.counter_labels(), -1, f'proper label, named {label_name}', label_name
             )
             self.compiler_ctx.collected_labels[label_name] = label
         return [self._generate_jump_operation(OP_CALL, [], label)]

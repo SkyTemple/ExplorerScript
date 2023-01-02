@@ -282,7 +282,7 @@ class ForeverEnd(LabelMarker):
 
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
-    def __init__(self, id: int, routine_id: int, debugging_note: str = None):
+    def __init__(self, id: int, routine_id: int, debugging_note: str = None, original_name: str = None):
         #                                                      Params only for debugging
         super().__init__(-1, SsbOpCode(-1, f'ES_LABEL<{id}>'), [id])
         self.id: int = id
@@ -293,6 +293,8 @@ class SsbLabel(SsbOperation):
         # Markers for this label (type of label)
         self.markers: List[LabelMarker] = []
         self.debugging_note = debugging_note
+        # The original name in source code, if applicable
+        self.original_name = original_name
         self.force_write = False
 
     def add_marker(self, m: LabelMarker):

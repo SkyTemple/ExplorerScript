@@ -27,8 +27,11 @@ and replaces jumps by regular opcodes arguments.
 import logging
 from typing import List, Dict
 
+from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
+from explorerscript.util import f, _
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,6 +48,12 @@ class OpsLabelJumpToRemover:
                 if isinstance(op, SsbLabelJump):
                     # Remove the jump and add the label offset as last argument
                     new_op = op.root
+                    if op.label.id not in label_offsets:
+                        label_id = op.label.original_name
+                        if label_id is None:
+                            label_id = f"<internal:{op.label.id}>"
+                        raise SsbCompilerError(f(_("Label {label_id} does not exist, but a jump to it does "
+                                                   "(remove it).")))
                     new_op.params.append(label_offsets[op.label.id])
                     new_rtn_ops.append(new_op)
                 elif isinstance(op, SsbLabel):
