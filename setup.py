@@ -1,4 +1,4 @@
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 from setuptools import setup, find_packages
 
 # README read-in
@@ -17,7 +17,7 @@ setup(
     long_description_content_type='text/x-rst',
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
-        'igraph >= 0.8.0',
+        'igraph >= 0.8.0, < 0.10.5',
         'antlr4-python3-runtime == 4.11.1'
     ],
     extras_require={
