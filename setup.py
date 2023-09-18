@@ -18,7 +18,7 @@ setup(
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
         'igraph >= 0.8.0, < 0.10.5',
-        'antlr4-python3-runtime == 4.11.1'
+        'antlr4-python3-runtime == 4.13.1'
     ],
     extras_require={
         'pygments':  ["pygments>=2.6.1"]
