@@ -33,7 +33,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
 from explorerscript.util import open_utf8
 
 
-def build_ops(ops: List[SsbOperation]):
+def build_ops(ops: list[SsbOperation]):
     out_ops = []
     for op in ops:
         out_op = {"opcode": op.op_code.name, "params": []}
@@ -71,7 +71,7 @@ def build_ops(ops: List[SsbOperation]):
 
 
 def build_routines_json(
-        routine_infos: List[SsbRoutineInfo], named_coroutines: List[str], routine_ops: List[List[SsbOperation]]
+        routine_infos: list[SsbRoutineInfo], named_coroutines: list[str], routine_ops: list[list[SsbOperation]]
 ):
     routines = []
     for info, name, ops in zip(routine_infos, named_coroutines, routine_ops):

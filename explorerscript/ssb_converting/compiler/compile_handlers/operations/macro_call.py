@@ -36,10 +36,10 @@ class MacroCallCompileHandler(AbstractStatementCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self.arg_list_handler: Optional[ArgListCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Macro_callContext
         name = str(self.ctx.MACRO_CALL())[1:]
-        args: List[SsbOpParam] = []
+        args: list[SsbOpParam] = []
         if self.arg_list_handler:
             args = self.arg_list_handler.collect()
         if name not in self.compiler_ctx.macros.keys():

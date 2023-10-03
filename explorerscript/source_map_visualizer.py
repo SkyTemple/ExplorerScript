@@ -31,7 +31,7 @@ class SourceMapVisualizer:
         self.source_code = source_code
         self._source_map = source_map
         # A dict of a list of strings to insert at given lines
-        self._inserts: Dict[int, List[str]] = {}
+        self._inserts: dict[int, list[str]] = {}
 
         # Opcodes
         for opcode_offset, mapping in self._source_map:

@@ -44,7 +44,7 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
     def set_end_label(self, end_label):
         self._end_label = end_label
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.is_message_case:
             raise SsbCompilerError(_("Invalid message switch case call."))
         self.compiler_ctx.add_switch_case(self)

@@ -1,5 +1,4 @@
 # Generated from ExplorerScript.g4 by ANTLR 4.11.1
-# encoding: utf-8
 from antlr4 import *
 from io import StringIO
 import sys
@@ -535,7 +534,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 136
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la - 24)) & ~0x3f) == 0 and ((1 << (_la - 24)) & 6597069766657) != 0:
+            while ((_la - 24) & ~0x3f) == 0 and ((1 << (_la - 24)) & 6597069766657) != 0:
                 self.state = 134
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
@@ -1178,7 +1177,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 195
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la - 63)) & ~0x3f) == 0 and ((1 << (_la - 63)) & 33566209) != 0:
+            if ((_la - 63) & ~0x3f) == 0 and ((1 << (_la - 63)) & 33566209) != 0:
                 self.state = 194
                 self.arglist()
 
@@ -1444,7 +1443,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 229
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 226
                 self.stmt()
                 self.state = 231
@@ -1585,7 +1584,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 260
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 257
                 self.stmt()
                 self.state = 262
@@ -1660,7 +1659,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 270
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 267
                 self.stmt()
                 self.state = 272
@@ -2364,7 +2363,7 @@ class ExplorerScriptParser ( Parser ):
                 self.state = 343
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+                while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                     self.state = 340
                     self.stmt()
                     self.state = 345
@@ -2450,7 +2449,7 @@ class ExplorerScriptParser ( Parser ):
                 self.state = 354
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+                while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                     self.state = 351
                     self.stmt()
                     self.state = 356
@@ -3161,7 +3160,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 413
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 410
                 self.stmt()
                 self.state = 415
@@ -3265,7 +3264,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 429
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 426
                 self.stmt()
                 self.state = 431
@@ -3367,7 +3366,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 445
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
+            while ((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0:
                 self.state = 442
                 self.stmt()
                 self.state = 447
@@ -4574,7 +4573,7 @@ class ExplorerScriptParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 536
             _la = self._input.LA(1)
-            if not((((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 11) != 0):
+            if not(((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 11) != 0):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -4642,7 +4641,7 @@ class ExplorerScriptParser ( Parser ):
             self.state = 541
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la - 63)) & ~0x3f) == 0 and ((1 << (_la - 63)) & 33566209) != 0:
+            if ((_la - 63) & ~0x3f) == 0 and ((1 << (_la - 63)) & 33566209) != 0:
                 self.state = 540
                 self.arglist()
 
@@ -4724,7 +4723,7 @@ class ExplorerScriptParser ( Parser ):
                     self.state = 549 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    if not (((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or (((_la - 73)) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0):
+                    if not (((_la) & ~0x3f) == 0 and ((1 << _la) & 2249618519826104320) != 0 or ((_la - 73) & ~0x3f) == 0 and ((1 << (_la - 73)) & 16399) != 0):
                         break
 
                 pass

@@ -38,7 +38,7 @@ class MacroDefCompileHandler(AbstractFuncdefCompileHandler):
         """Returns the macro name"""
         return str(self.ctx.IDENTIFIER())
 
-    def get_variables(self) -> List[str]:
+    def get_variables(self) -> list[str]:
         vars = []
         for var in self.ctx.VARIABLE():
             vars.append(str(var))

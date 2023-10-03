@@ -30,7 +30,7 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_CALL
 
 
 class CallCompileHandler(AbstractStatementCompileHandler):
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         """
         We generate a label jump (using call) now.
         """

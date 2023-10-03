@@ -42,8 +42,8 @@ class MacroEndSsbLabel(SsbLabel):
 
 
 class ExplorerScriptMacro:
-    def __init__(self, name: str, variables: List[str],
-                 blueprints: List[SsbOperation], source_map: SourceMap):
+    def __init__(self, name: str, variables: list[str],
+                 blueprints: list[SsbOperation], source_map: SourceMap):
         """
         A model for a ExplorerScript macro. Contains the processed (= all sub-macros are already fully processed)
         opcodes by the MacroVisitor and some metadata.
@@ -53,10 +53,10 @@ class ExplorerScriptMacro:
         self.name: str = name
 
         # The names of the variables, in order of definition in the header.
-        self.variables: List[str] = variables
+        self.variables: list[str] = variables
 
         # The Ssb operations that act as a blueprint for this macro
-        self.blueprints: List[SsbOperation] = blueprints
+        self.blueprints: list[SsbOperation] = blueprints
 
         # The absolute path to the ExplorerScript source file that this macro is in.
         # May be not set, if this macro is not in a physical file.
@@ -71,8 +71,8 @@ class ExplorerScriptMacro:
         # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
         self.included__relative_path: Optional[str] = None
 
-    def build(self, op_idx_counter: Counter, lbl_idx_counter: Counter, parameters: Dict[str, SsbOpParam],
-              smb: SourceMapBuilder) -> List[SsbOperation]:
+    def build(self, op_idx_counter: Counter, lbl_idx_counter: Counter, parameters: dict[str, SsbOpParam],
+              smb: SourceMapBuilder) -> list[SsbOperation]:
         """
         Returns new built opcodes for this macro. SsbOpConstants in the blueprints, that have the names of variables,
         are replaced with the values from the parameter dict. The keys for the dict are the names of the variables,
@@ -91,7 +91,7 @@ class ExplorerScriptMacro:
 
         # Add the macro start label if we are processed later as a sub-macro, so that the parent macro can push
         # our ops to the callstack.
-        out_ops: List[SsbOperation] = [MacroStartSsbLabel(
+        out_ops: list[SsbOperation] = [MacroStartSsbLabel(
             lbl_idx_counter(), -1, len_real_ops_in_blueprints, parameter_mapping, f"Macro call {self.name} start label."
         )]
 
@@ -101,7 +101,7 @@ class ExplorerScriptMacro:
         )
 
         # Maps blueprint label ids to new actual labels
-        new_labels: Dict[int, SsbLabel] = {}
+        new_labels: dict[int, SsbLabel] = {}
 
         for blueprint_op in self.blueprints:
             # If this a start / end of a macro, update the macro callstack
@@ -154,7 +154,7 @@ class ExplorerScriptMacro:
         return out_ops
 
     def _build_op(self, op_idx_counter: Counter, blueprint_op: SsbOperation,
-                  smb: SourceMapBuilder, params: Dict[str, SsbOpParam]):
+                  smb: SourceMapBuilder, params: dict[str, SsbOpParam]):
         new_op_idx = op_idx_counter()
         # Maybe this op was also included through a macro, if so just relay the macro source map entry
         potential_macro_sm_entry = self.source_map.get_op_line_and_col__macros(blueprint_op.offset)
@@ -182,7 +182,7 @@ class ExplorerScriptMacro:
             new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params)
         )
 
-    def _process_parameters(self, original_params: List[SsbOpParam], macro_params: Dict[str, SsbOpParam]) -> List[SsbOpParam]:
+    def _process_parameters(self, original_params: list[SsbOpParam], macro_params: dict[str, SsbOpParam]) -> list[SsbOpParam]:
         """
         Returns a copy of original_params,
         where SsbOpConstants that match keys of macro_params are
@@ -200,10 +200,10 @@ class ExplorerScriptMacro:
                 new_params.append(p)
         return new_params
 
-    def _create_parameter_mapping(self, parameters: Dict[str, SsbOpParam]):
+    def _create_parameter_mapping(self, parameters: dict[str, SsbOpParam]):
         return {x: str(y) for x, y in parameters.items()}
 
-    def _replace_in_param_mapping(self, parameter_mapping: Dict[str, Tuple[int, str]], our_parameters: Dict[str, SsbOpParam]):
+    def _replace_in_param_mapping(self, parameter_mapping: dict[str, tuple[int, str]], our_parameters: dict[str, SsbOpParam]):
         our_parameters = self._create_parameter_mapping(our_parameters)
         new_dict = {}
         for p_name, p_value in parameter_mapping.items():

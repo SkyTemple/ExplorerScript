@@ -33,7 +33,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParamLanguageStrin
 class LangStringCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.language_dict: Dict[str, str] = {}
+        self.language_dict: dict[str, str] = {}
 
     def collect(self) -> SsbOpParamLanguageString:
         self.ctx: ExplorerScriptParser.Lang_stringContext

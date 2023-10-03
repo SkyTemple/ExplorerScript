@@ -34,8 +34,8 @@ from explorerscript.util import _, f
 
 class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
     """Sorts a dict of Macros by how macros depend on them, returns a list of macro names"""
-    def __init__(self, in_macros: Dict[str, ExplorerScriptMacro]):
-        self._in_macros: Dict[str, ExplorerScriptMacro] = in_macros
+    def __init__(self, in_macros: dict[str, ExplorerScriptMacro]):
+        self._in_macros: dict[str, ExplorerScriptMacro] = in_macros
         # Values depend on keys:
         self._dependency_graph = Graph(directed=True)
         self._already_added_to_graph = set()
@@ -43,7 +43,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
             self._create_vertex(name)
         self._active_macro_name: Optional[str] = None
 
-    def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> Dict[str, ExplorerScriptMacro]:
+    def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         self.visitChildren(ctx)
         self._check_cycles()
         roots = [v for v in self._dependency_graph.vs if len(v.in_edges()) == 0]

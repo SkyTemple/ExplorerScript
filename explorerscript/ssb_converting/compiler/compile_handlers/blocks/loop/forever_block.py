@@ -30,7 +30,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler):
     """Handles an entire forever block."""
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)
         retval = [self._start_label] + self._process_block(False) + [self._end_label]
         self.compiler_ctx.remove_loop()

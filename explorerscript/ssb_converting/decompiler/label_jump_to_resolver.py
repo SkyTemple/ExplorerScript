@@ -33,10 +33,10 @@ logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToResolver:
-    def __init__(self, routines: List[List[SsbOperation]]):
+    def __init__(self, routines: list[list[SsbOperation]]):
         logger.debug("Constructing labels and jumps...")
         # A mapping of labels: {mem_location: label_name}
-        self.labels: Dict[int, SsbLabel] = {}
+        self.labels: dict[int, SsbLabel] = {}
         self.routines = []
         for routine_id, rtn in enumerate(routines):
             new_rtn_ops = []

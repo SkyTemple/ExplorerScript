@@ -51,14 +51,14 @@ class ExplorerScriptSsbCompiler:
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
     def __init__(self, performance_progress_list_var_name: str,
-                 lookup_paths: List[str] = None, recursion_check: List[str] = None):
+                 lookup_paths: list[str] = None, recursion_check: list[str] = None):
         if lookup_paths is None:
             lookup_paths = []
         if recursion_check is None:
             recursion_check = []
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
-        self.routine_infos: Optional[List[SsbRoutineInfo]] = None
+        self.routine_infos: Optional[list[SsbRoutineInfo]] = None
 
         # Only contains simple SSBOperations, directly representing ops.
         # The operations have no IDs (-1), because the Decompiler has no concept of the game's internal ids.
@@ -66,23 +66,23 @@ class ExplorerScriptSsbCompiler:
         # The list contains no labels.
         # Since the language allows any operations and doesn't do any checks directly, the OpCode names
         # and constants used might be invalid.
-        self.routine_ops: Optional[List[List[SsbOperation]]] = None
+        self.routine_ops: Optional[list[list[SsbOperation]]] = None
 
         # If this script contains coroutines, the value at the index corresponding to self.routine_ops
         # will contain it's name as string.
-        self.named_coroutines: Optional[List[str]] = None
+        self.named_coroutines: Optional[list[str]] = None
 
         # Source map for the compiled ssb routine ops.
         self.source_map: Optional[SourceMap] = None
 
         # The raw file paths in the import headers of the compiled ExplorerScript file.
-        self.imports: List[str] = []
+        self.imports: list[str] = []
 
         # The macros of by this script
-        self.macros: Dict[str, ExplorerScriptMacro] = {}
+        self.macros: dict[str, ExplorerScriptMacro] = {}
 
         # The order of which the macros in this file have to be processed, due to dependencies
-        self.macro_resolution_order: List[str] = []
+        self.macro_resolution_order: list[str] = []
 
         ####
 
@@ -224,7 +224,7 @@ class ExplorerScriptSsbCompiler:
 
         return fs
 
-    def _macros_add_filenames(self, macros: Dict[str, ExplorerScriptMacro],
+    def _macros_add_filenames(self, macros: dict[str, ExplorerScriptMacro],
                               basefile_path: Optional[str], subfile_path: str):
         """Updates path information of all of the macros. See the field descriptions for more details"""
         for macro in macros.values():

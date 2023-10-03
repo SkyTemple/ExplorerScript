@@ -29,7 +29,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOpParamP
 
 
 class ArgListCompileHandler(AbstractCompileHandler):
-    def collect(self) -> List[SsbOpParam]:
+    def collect(self) -> list[SsbOpParam]:
         ret = []
         for i, h in enumerate(self._added_handlers):
             arg = h.collect()

@@ -575,7 +575,7 @@ class SsbGraphMinimizer:
         else:
             breaks = immediate_breaks
 
-        return True, list((b for b in breaks if b not in continues)), continues
+        return True, list(b for b in breaks if b not in continues), continues
 
     def remove_label_markers(self):
         logger.debug("Removing unnecessary labels...")

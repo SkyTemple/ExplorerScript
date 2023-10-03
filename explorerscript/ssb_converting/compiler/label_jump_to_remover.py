@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToRemover:
-    def __init__(self, routines: List[List[SsbOperation]], label_offsets: Dict[int, int]):
+    def __init__(self, routines: list[list[SsbOperation]], label_offsets: dict[int, int]):
         logger.debug("Removing labels - replacing them with opcode jumps...")
         self.routines = []
 

@@ -47,33 +47,33 @@ class SsbScriptCompilerListener(SsbScriptListener):
     """Builds the SSB data structures while listening for parsing events."""
     def __init__(self):
         # The information about routines stored in the ssb.
-        self.routine_infos: List[SsbRoutineInfo] = []
-        self.routine_ops: List[List[SsbOperation]] = []
-        self.named_coroutines: List[str] = []
+        self.routine_infos: list[SsbRoutineInfo] = []
+        self.routine_ops: list[list[SsbOperation]] = []
+        self.named_coroutines: list[str] = []
         # A dict that assigns all collected labels their next opcode id.
-        self.label_offsets: Dict[int, int] = {}
+        self.label_offsets: dict[int, int] = {}
         # Source map
         self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 
         self._is_processing_argument = False
         self._argument_type: ListenerArgType = ListenerArgType.INVALID
-        self._argument_value: Union[int, str, Dict[str, str]] = -1
+        self._argument_value: Union[int, str, dict[str, str]] = -1
 
         self._last_op_line = -1
         self._op_idx_in_current_line = 0
 
-        self._collected_lang_string: Dict[str, str] = {}
+        self._collected_lang_string: dict[str, str] = {}
         self._collected_pos_marker: Optional[SsbOpParamPositionMarker] = None
 
-        self._collected_labels: Dict[str, SsbLabel] = {}
+        self._collected_labels: dict[str, SsbLabel] = {}
         self._label_increment_id = -1
         self._turn_next_op_into_label_jump_for: Optional[SsbLabel] = None
-        self._labels_before_op: List[SsbLabel] = []
+        self._labels_before_op: list[SsbLabel] = []
 
         self._total_number_collected_ops = -1
-        self._collected_ops: List[SsbOperation] = []
+        self._collected_ops: list[SsbOperation] = []
         self._active_routine_id = -1
-        self._collected_params: List[SsbOpParam] = []
+        self._collected_params: list[SsbOpParam] = []
 
     def exitSimple_def(self, ctx: SsbScriptParser.Simple_defContext):
         self._active_routine_id = exps_int(str(ctx.INTEGER()))

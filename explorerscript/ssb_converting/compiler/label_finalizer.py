@@ -33,12 +33,12 @@ class LabelFinalizer:
     Updates the opcodes of all labels and builds a table of them.
     Also removes all jumps that jump to a label right after.
     """
-    def __init__(self, routines: List[List[SsbOperation]]):
+    def __init__(self, routines: list[list[SsbOperation]]):
         logger.debug("Finalizing and optimizing labels...")
         self.routines = []
-        self.label_offsets: Dict[int, int] = {}
+        self.label_offsets: dict[int, int] = {}
 
-        labels_waiting: List[SsbLabel] = []
+        labels_waiting: list[SsbLabel] = []
         for r_id, r in enumerate(routines):
             new_r = []
             self.routines.append(new_r)
@@ -62,7 +62,7 @@ class LabelFinalizer:
                         labels_waiting = []
 
     @classmethod
-    def _labels_after(cls, r: List[SsbOperation], op_i: int, skip_redundant_label_jumps=True) -> List[SsbLabel]:
+    def _labels_after(cls, r: list[SsbOperation], op_i: int, skip_redundant_label_jumps=True) -> list[SsbLabel]:
         """Returns all labels in r after the opcode with index op_i (until the next non-label)."""
         ls = []
         cursor = op_i + 1

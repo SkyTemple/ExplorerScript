@@ -70,7 +70,7 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
         self._init_statement_handler: Optional[AbstractStatementCompileHandler] = None
         self._end_statement_handler: Optional[AbstractStatementCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)
         retval = [
                      self._start_label

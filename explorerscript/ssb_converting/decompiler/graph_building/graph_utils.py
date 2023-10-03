@@ -35,8 +35,8 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
 
 logger = logging.getLogger(__name__)
 
-def find_lowest_and_highest_out_edge(g, vertex, attr) -> Tuple[Edge, Edge]:
-    edges: List[Edge] = [g.es[e] for e in g.incident(vertex, OUT)]
+def find_lowest_and_highest_out_edge(g, vertex, attr) -> tuple[Edge, Edge]:
+    edges: list[Edge] = [g.es[e] for e in g.incident(vertex, OUT)]
     # noinspection PyTypeChecker
     if len(edges) == 0:
         raise ValueError("The vertex has no edges.")
@@ -53,8 +53,8 @@ def find_first_common_next_vertex_in_edges__clear_cache(g: Graph):
 
 
 def find_first_common_next_vertex_in_edges(
-        g, es: List[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: List[int] = None, allow_loop_edges=True
-) -> Union[None, List[Edge]]:
+        g, es: list[Edge], allow_open_branches=False, allow_loops=False, vs_to_not_visit: list[int] = None, allow_loop_edges=True
+) -> Union[None, list[Edge]]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
@@ -96,9 +96,9 @@ def find_first_common_next_vertex_in_edges(
 
 
 def _find_first_common_next_vertex_in_edges__impl(
-        g: Graph, es: List[Set[Union[Edge, None]]], map_of_visited: [List[Dict[int, int]]],
-        allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: List[int] = None, allow_loop_edges=True
-) -> Union[None, List[Edge]]:
+        g: Graph, es: list[set[Union[Edge, None]]], map_of_visited: [list[dict[int, int]]],
+        allow_open_branches: bool, allow_loops: bool, vs_to_not_visit: list[int] = None, allow_loop_edges=True
+) -> Union[None, list[Edge]]:
     """
     :param g: Graph
     :param es: List of edges. An edge can be None, if the end of this part of the tree was reached
@@ -137,7 +137,7 @@ def _find_first_common_next_vertex_in_edges__impl(
 
         # Not found... too bad! Try to go through the path and find it
         # Get next edge for all paths
-        new_es: List[Set[Union[Edge, None]]] = []
+        new_es: list[set[Union[Edge, None]]] = []
         for i, e_set in enumerate(es):
             new_es_entry = set()
             new_es.append(new_es_entry)
@@ -183,8 +183,8 @@ def _find_first_common_next_vertex_in_edges__impl(
 
 
 def find_end_label_in_edges(
-        g, es: List[Edge]
-) -> Union[None, List[Optional[Edge]]]:
+        g, es: list[Edge]
+) -> Union[None, list[Optional[Edge]]]:
     """
     Finds the first vertex with SsbLabel op (actually list of edges that lead to it for each edge in es)
     which is reachable by some edges in es. We search for the ONE vertex joining most of the paths,
@@ -216,7 +216,7 @@ def find_end_label_in_edges(
     vertices_visitied_by_paths_for_e_in_es = []
     labels_visitied_by_paths_for_e_in_es = []
     for e in es:
-        vs = set(v.index for v in g.bfsiter(e.target))
+        vs = {v.index for v in g.bfsiter(e.target)}
 
         # This below is WAY to slow. We instead now check, after building the branch and switch labels, if they
         # are even possible and remove all invalidly if/switch ends.
@@ -253,7 +253,7 @@ def find_end_label_in_edges(
         #                                         vs.remove(vib)
 
         vertices_visitied_by_paths_for_e_in_es.append(vs)
-        labels_visitied_by_paths_for_e_in_es.append(set([v for v in vs if isinstance(g.vs[v]['op'], SsbLabel)]))
+        labels_visitied_by_paths_for_e_in_es.append({v for v in vs if isinstance(g.vs[v]['op'], SsbLabel)})
 
     counter = Counter(labels_visitied_by_paths_for_e_in_es[0])
     for v in labels_visitied_by_paths_for_e_in_es[1:]:
@@ -349,12 +349,12 @@ def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
     return None, None
 
 
-def iterate_switch_edges(v: Vertex) -> Tuple[Edge, List[SwitchCaseOperation], bool]:
+def iterate_switch_edges(v: Vertex) -> tuple[Edge, list[SwitchCaseOperation], bool]:
     """See iterate_switch_edges_using_edges_and_op."""
     return iterate_switch_edges_using_edges_and_op(v.out_edges(), v['op'])
 
 
-def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabelJump) -> Tuple[Edge, List[SwitchCaseOperation], bool]:
+def iterate_switch_edges_using_edges_and_op(case_edges: list[Edge], op: SsbLabelJump) -> tuple[Edge, list[SwitchCaseOperation], bool]:
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 
@@ -417,7 +417,7 @@ def iterate_switch_edges_using_edges_and_op(case_edges: List[Edge], op: SsbLabel
             yield else_edge_candidates[0], [], True
 
 
-def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:
+def reverse_find_edge(e, cb, loop_check: set[Vertex] = None) -> list[Edge]:
     """
     Returns all edges that match the condition, that can be reached by traversing backwards.
     If found, the search is ended at that edge.
@@ -436,9 +436,9 @@ def reverse_find_edge(e, cb, loop_check: Set[Vertex] = None) -> List[Edge]:
 
 
 def get_out_edges_of_subgraph(
-        g: Graph, start: Vertex, to: List[Union[Vertex, int]],
+        g: Graph, start: Vertex, to: list[Union[Vertex, int]],
         path_filter=lambda e, v: True
-) -> Optional[Set[int]]:
+) -> Optional[set[int]]:
     """
     Create a subgraph of the given list of vertices and then find all edges out of this sub-graph and return them
     Removes parts of the subgraph for all vertices for which path_filter returns False. The filter get's the
@@ -450,7 +450,7 @@ def get_out_edges_of_subgraph(
     if len(vertices) == 0:
         # All paths have been filtered out
         return None
-    edges = set(g.get_eid(v1, v2, error=False, directed=False) for v1, v2 in itertools.combinations(vertices, 2))
+    edges = {g.get_eid(v1, v2, error=False, directed=False) for v1, v2 in itertools.combinations(vertices, 2)}
     if -1 in edges:
         edges.remove(-1)
     # Add all out vertices of the vertices above
@@ -462,7 +462,7 @@ def get_out_edges_of_subgraph(
         if g.es[e].target_vertex != start and not path_filter(g.es[e], g.es[e].target_vertex):
             edges.remove(e)
     # Remove all vertices not in subgraph and remove all edges in the original graph = only out edges of this subg.
-    es = set(e.index for e in g.es)
+    es = {e.index for e in g.es}
     #new_g.delete_edges(edges)
     es = es - edges
     #new_g.delete_vertices(set(v.index for v in g.vs) - vertices)
@@ -510,7 +510,7 @@ def any_incoming_edge_is_loop(v: Vertex):
     return False
 
 
-def has_unclosed_blocks(paths: List[List[int]], g: Graph):
+def has_unclosed_blocks(paths: list[list[int]], g: Graph):
     """Returns whether the path contains any unclosed ifs/switches or loops"""
     u_ifs = []
     u_switches = []

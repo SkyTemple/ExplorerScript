@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class LabelJumpWriteHandler(AbstractWriteHandler):
     """Handles writing label jumps (ifs, switches, loops, jumps etc.)."""
 
-    _label_jump_marker_handlers: Dict[LabelJumpMarker, Type[Optional[AbstractWriteHandler]]] = {
+    _label_jump_marker_handlers: dict[LabelJumpMarker, type[Optional[AbstractWriteHandler]]] = {
         MultiIfStart: IfWriteHandler,
         IfStart: IfWriteHandler,
         SwitchStart: SwitchWriteHandler,

@@ -27,7 +27,7 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabel
 
 
 class LabelCompileHandler(AbstractStatementCompileHandler):
-    def collect(self) -> List[SsbLabel]:
+    def collect(self) -> list[SsbLabel]:
         label_name = str(self.ctx.IDENTIFIER())
 
         if label_name in self.compiler_ctx.collected_labels:

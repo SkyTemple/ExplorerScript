@@ -37,23 +37,23 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an entire if block, with it's optional elseif and else sub-blocks."""
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._if_header_handlers: List[IfHeaderCompileHandler] = []
-        self._else_if_handlers: List[ElseIfBlockCompileHandler] = []
+        self._if_header_handlers: list[IfHeaderCompileHandler] = []
+        self._else_if_handlers: list[ElseIfBlockCompileHandler] = []
         self._else_handler: Optional[ElseBlockCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.If_blockContext
-        if_header__allocations: List[int] = []  # list index in ops!
+        if_header__allocations: list[int] = []  # list index in ops!
         if_block__was_output = False
-        elseif_header__allocations: List[List[int]] = []  # list index in ops!
-        elseif_block__was_output: List[bool] = []
+        elseif_header__allocations: list[list[int]] = []  # list index in ops!
+        elseif_block__was_output: list[bool] = []
         # 0. Prepare the end label to insert.
         end_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
         )
         is_positive = self.ctx.NOT() is None
 
-        ops: List[Optional[SsbOperation]] = []
+        ops: list[Optional[SsbOperation]] = []
 
         # 1. Go over all if header ops:
         for h in self._if_header_handlers:

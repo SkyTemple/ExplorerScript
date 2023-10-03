@@ -30,7 +30,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 class ElseBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an else block."""
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         return self._process_block()
 
     def add(self, obj: any):

@@ -117,7 +117,7 @@ class StatementVisitor(ExplorerScriptVisitor):
         self.compiler_ctx = compiler_ctx
         # This stack contains the handlers for the blocks during compilation.
         # The bottom is always the null handler, which raises an assertion error if any method is called.
-        self._current_handlers: List[AbstractCompileHandler] = [
+        self._current_handlers: list[AbstractCompileHandler] = [
             NullCompileHandler(None, self.compiler_ctx), root_handler
         ]
 
@@ -271,13 +271,13 @@ class StatementVisitor(ExplorerScriptVisitor):
     def visitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
         return self._push_handler_and_add(ctx, MacroCallCompileHandler)
 
-    def _push_handler_and_add(self, ctx: ParserRuleContext, compile_handler: Type[AbstractCompileHandler], **kwargs) -> any:
+    def _push_handler_and_add(self, ctx: ParserRuleContext, compile_handler: type[AbstractCompileHandler], **kwargs) -> any:
         """Pushes the handler on the stack, visits the children and when done adds the handler to the parent handler."""
         retval, h = self._push_handler(ctx, compile_handler, **kwargs)
         self._current_handlers[-1].add(h)
         return retval
 
-    def _push_handler(self, ctx: ParserRuleContext, compile_handler: Type[T], **kwargs) -> Tuple[any, T]:
+    def _push_handler(self, ctx: ParserRuleContext, compile_handler: type[T], **kwargs) -> tuple[any, T]:
         """Pushes the handler on the stack, visits the children and returns result and handler."""
         self._current_handlers.append(compile_handler(ctx, self.compiler_ctx, **kwargs))
         retval = self.visitChildren(ctx)

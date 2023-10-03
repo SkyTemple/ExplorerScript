@@ -46,7 +46,7 @@ class SsbScriptSsbCompiler:
     def __init__(self):
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
-        self.routine_infos: Optional[List[SsbRoutineInfo]] = None
+        self.routine_infos: Optional[list[SsbRoutineInfo]] = None
 
         # Only contains simple SSBOperations, directly representing ops.
         # The operations have no IDs (-1), because the Decompiler has no concept of the game's internal ids.
@@ -54,11 +54,11 @@ class SsbScriptSsbCompiler:
         # The list contains no labels.
         # Since the language allows any operations and doesn't do any checks directly, the OpCode names
         # and constants used might be invalid.
-        self.routine_ops: Optional[List[List[SsbOperation]]] = None
+        self.routine_ops: Optional[list[list[SsbOperation]]] = None
 
         # If this script contains coroutines, the value at the index corresponding to self.routine_ops
         # will contain it's name as string.
-        self.named_coroutines: Optional[List[str]] = None
+        self.named_coroutines: Optional[list[str]] = None
 
         # Source map for the compiled ssb routine ops.
         self.source_map: Optional[SourceMap] = None

@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 class SimpleOperationWriteHandler(AbstractWriteHandler):
     """Handles writing regular operations and a few special cases."""
 
-    _ssb_operations_special_cases_handlers: Dict[Optional[str], Type[AbstractWriteHandler]] = {
+    _ssb_operations_special_cases_handlers: dict[Optional[str], type[AbstractWriteHandler]] = {
         None: SimpleSimpleOpWriteHandler
     }
     for x in [OP_JUMP, OP_CALL, OP_RETURN, OP_END, OP_HOLD]:
@@ -65,7 +65,7 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
         """Delegate to specific simple op handler"""
         return self.get_real_handler()(self.start_vertex, self.decompiler, self).write_content()
 
-    def get_real_handler(self) -> Type[AbstractWriteHandler]:
+    def get_real_handler(self) -> type[AbstractWriteHandler]:
         op: SsbOperation = self.start_vertex['op']
         logger.debug("Writing a simple operation (%s)...", op)
         handler = self._ssb_operations_special_cases_handlers[None]
