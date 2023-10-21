@@ -1,0 +1,2 @@
+sphinx_rtd_theme
+. # rtd reads this from one directory down, so "." is the project itself
