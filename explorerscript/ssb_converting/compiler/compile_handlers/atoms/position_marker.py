@@ -34,8 +34,8 @@ class PositionMarkerCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         # position, offset
-        self.x: Optional[Tuple[int, int]] = None
-        self.y: Optional[Tuple[int, int]] = None
+        self.x: Optional[tuple[int, int]] = None
+        self.y: Optional[tuple[int, int]] = None
 
     def collect(self) -> SsbOpParamPositionMarker:
         self.ctx: ExplorerScriptParser.Position_markerContext

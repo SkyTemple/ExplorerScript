@@ -37,7 +37,7 @@ class AssignmentInitialCompileHandler(AbstractAssignmentCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self.var_target: Optional[SsbOpParam] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.var_target is None:
             raise SsbCompilerError(_("No variable for init."))
 

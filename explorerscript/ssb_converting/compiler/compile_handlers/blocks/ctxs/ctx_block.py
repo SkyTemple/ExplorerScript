@@ -46,7 +46,7 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
         self._for_id: Optional[SsbOpParam] = None
         self._sub_stmt = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         ops = []
         self.ctx: ExplorerScriptParser.Ctx_blockContext
         if self._for_id is None:

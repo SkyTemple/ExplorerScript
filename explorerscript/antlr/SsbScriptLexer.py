@@ -181,7 +181,7 @@ class SsbScriptLexer(Lexer):
     SKIP_ = 33
     UNKNOWN_CHAR = 34
 
-    channelNames = [ u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN" ]
+    channelNames = [ "DEFAULT_TOKEN_CHANNEL", "HIDDEN" ]
 
     modeNames = [ "DEFAULT_MODE" ]
 

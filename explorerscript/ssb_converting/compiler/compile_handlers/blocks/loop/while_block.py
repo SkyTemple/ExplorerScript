@@ -56,7 +56,7 @@ class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self._branch_blueprint: Optional[SsbLabelJumpBlueprint] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)
         is_positive = self.ctx.NOT() is None
 

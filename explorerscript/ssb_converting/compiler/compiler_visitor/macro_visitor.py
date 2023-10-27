@@ -37,8 +37,8 @@ from explorerscript.util import _
 class MacroVisitor(ExplorerScriptVisitor):
     """ Collects all macros as Macro models from an ExplorerScript tree. """
     def __init__(
-            self, performance_progress_list_var_name: str, macros: Dict[str, ExplorerScriptMacro],
-            macro_resolution_order: List[str]
+            self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro],
+            macro_resolution_order: list[str]
     ):
         # Global compilation context for the handlers
         self.source_map_builder = SourceMapBuilder()
@@ -50,7 +50,7 @@ class MacroVisitor(ExplorerScriptVisitor):
 
         self._root_handler: Optional[AbstractCompileHandler] = None
 
-    def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> Dict[str, ExplorerScriptMacro]:
+    def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}
         handlers = [child.accept(self) for child in ctx.macrodef()]
         for handler in sorted(handlers, key=lambda h: self.macro_resolution_order.index(h.get_name())):

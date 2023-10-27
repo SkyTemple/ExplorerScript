@@ -42,10 +42,10 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._switch_header_handler: Optional[IntegerLikeCompileHandler] = None
-        self._case_handlers: List[CaseBlockCompileHandler] = []
+        self._case_handlers: list[CaseBlockCompileHandler] = []
         self._default_handler: Optional[DefaultCaseBlockCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Message_switch_blockContext
         if self.ctx.MESSAGE_SWITCH_MONOLOGUE():
             switch_op = self._generate_operation(OP_MESSAGE_SWITCH_MONOLOGUE, [self._switch_header_handler.collect()])

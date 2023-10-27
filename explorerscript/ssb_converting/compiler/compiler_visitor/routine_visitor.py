@@ -38,11 +38,11 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
 
 class RoutineVisitor(ExplorerScriptVisitor):
     """Builds the SSB data structures while visiting the parsing tree."""
-    def __init__(self, performance_progress_list_var_name: str, macros: Dict[str, ExplorerScriptMacro]):
+    def __init__(self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro]):
         # The information about routines stored in the ssb.
-        self.routine_infos: List[SsbRoutineInfo] = []
-        self.routine_ops: List[List[SsbOperation]] = []
-        self.named_coroutines: List[str] = []
+        self.routine_infos: list[SsbRoutineInfo] = []
+        self.routine_ops: list[list[SsbOperation]] = []
+        self.named_coroutines: list[str] = []
         # Source map
         self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 

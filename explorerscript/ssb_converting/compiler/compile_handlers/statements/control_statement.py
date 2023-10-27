@@ -29,7 +29,7 @@ from explorerscript.ssb_converting.ssb_special_ops import OP_HOLD, OP_END, OP_RE
 
 
 class ControlStatementCompileHandler(AbstractStatementCompileHandler):
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         ops = []
         self.ctx: ExplorerScriptParser.Cntrl_stmtContext
         if self.ctx.RETURN():

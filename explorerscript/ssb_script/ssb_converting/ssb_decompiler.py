@@ -38,16 +38,16 @@ class SsbScriptSsbDecompiler:
     into SSBScript. To convert an actual model into this directly,
     see skytemple_files.script.ssb.model.Ssb.to_ssb_script.
     """
-    def __init__(self, routine_infos: List[SsbRoutineInfo], routine_ops: List[List[SsbOperation]], named_coroutines: List[SsbCoroutine]):
+    def __init__(self, routine_infos: list[SsbRoutineInfo], routine_ops: list[list[SsbOperation]], named_coroutines: list[SsbCoroutine]):
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
-        self._named_coroutines: Dict[int, str] = {x.id: x.name for x in named_coroutines}
+        self._named_coroutines: dict[int, str] = {x.id: x.name for x in named_coroutines}
         self._output = ""
         self.indent = 0
         self._line_number = 1
         self._source_map_builder: SourceMapBuilder = None
 
-    def convert(self) -> Tuple[str, SourceMap]:
+    def convert(self) -> tuple[str, SourceMap]:
         logger.debug("Decompiling SSBScript...")
         self._output = ""
         self.indent = 0

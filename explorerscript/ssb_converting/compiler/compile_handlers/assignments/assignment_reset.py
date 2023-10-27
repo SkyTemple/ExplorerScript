@@ -38,7 +38,7 @@ class AssignmentResetCompileHandler(AbstractAssignmentCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self.scn_var_target: Optional[SsbOpParam] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.scn_var_target is None and not self.ctx.DUNGEON_RESULT():
             raise SsbCompilerError(_("No target for reset."))
 

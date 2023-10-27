@@ -66,22 +66,22 @@ class Counter:
 
 class CompilerCtx:
     def __init__(self, counter_ops: Counter, source_map_builder: SourceMapBuilder,
-                 collected_labels: Dict[str, SsbLabel], counter_labels: Counter,
+                 collected_labels: dict[str, SsbLabel], counter_labels: Counter,
                  performance_progress_list_var_name: str,
-                 macros: Dict[str, 'ExplorerScriptMacro']):
+                 macros: dict[str, 'ExplorerScriptMacro']):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
         # A dict that assigns all collected labels their next opcode id.
         self.collected_labels = collected_labels
         self.counter_labels = counter_labels
         # Loaded macros that can be used for macro calls.
-        self.macros: Dict[str, 'ExplorerScriptMacro'] = macros
+        self.macros: dict[str, 'ExplorerScriptMacro'] = macros
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
         # Current handlers for structures that have ending opcodes collected by child handlers
-        self._loops: List['AbstractLoopBlockCompileHandler'] = []
-        self._switch_cases: List[Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']] = []
+        self._loops: list['AbstractLoopBlockCompileHandler'] = []
+        self._switch_cases: list[Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']] = []
 
     def add_loop(self, h: 'AbstractLoopBlockCompileHandler'):
         self._loops.append(h)
@@ -116,11 +116,11 @@ class CompilerCtx:
 
 class SsbLabelJumpBlueprint:
     """A builder for a label jump, to be used when compiling ifs/switches."""
-    def __init__(self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: List[SsbOpParam], jump_is_positive=True):
+    def __init__(self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: list[SsbOpParam], jump_is_positive=True):
         self.compiler_ctx: CompilerCtx = compiler_ctx
         self.ctx = ctx
         self.op_code_name: str = op_code_name
-        self.params: List[SsbOpParam] = params
+        self.params: list[SsbOpParam] = params
         # offset indices for these blueprints can be pre-allocated.
         self.number = None
         # Whether or not this jump is negated (False) or not (True)
@@ -156,7 +156,7 @@ def string_literal(string):
     return str(string)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")
 
 
-def routine_op_offsets_are_ordered(routine_ops: List[List[SsbOperation]]):
+def routine_op_offsets_are_ordered(routine_ops: list[list[SsbOperation]]):
     last_offset = -1
     for routine in routine_ops:
         for op in routine:
@@ -167,7 +167,7 @@ def routine_op_offsets_are_ordered(routine_ops: List[List[SsbOperation]]):
     return True
 
 
-def strip_last_label(routine_ops: List[List[SsbOperation]]):
+def strip_last_label(routine_ops: list[list[SsbOperation]]):
     """
     Checks if the last opcode of a routine is a label, and if so
     removes it. if there are jumps to it, they are removed and replaced with an OP_DUMMY_END.
@@ -213,7 +213,7 @@ def does_op_end_control_flow(op: SsbOperation, previous_op: Optional[SsbOperatio
     return op.op_code.name in OPS_THAT_END_CONTROL_FLOW
 
 
-def _number_of_jumps_to_label(label: SsbLabel, routine: List[SsbOperation]):
+def _number_of_jumps_to_label(label: SsbLabel, routine: list[SsbOperation]):
     counter = 0
     for o in routine:
         if isinstance(o, SsbLabelJump) and o.label == label:

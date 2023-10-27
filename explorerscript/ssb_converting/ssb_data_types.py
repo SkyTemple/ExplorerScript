@@ -151,7 +151,7 @@ class SsbOpParamConstString:
 
 class SsbOpParamLanguageString:
     """A string from the table of strings in an Ssb"""
-    def __init__(self, strings: Dict[str, str]):  # {language_name: string}
+    def __init__(self, strings: dict[str, str]):  # {language_name: string}
         self.strings = strings
         # Because this will print a multiline output, this may specify the original indent of the current
         # line in the converter, may be set by the converter before converting to string
@@ -211,7 +211,7 @@ SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLan
 
 
 class SsbOperation:
-    def __init__(self, offset: int, op_code: SsbOpCode, params: List[SsbOpParam]):
+    def __init__(self, offset: int, op_code: SsbOpCode, params: list[SsbOpParam]):
         self.offset = offset
         self.op_code = op_code
         self.params = params

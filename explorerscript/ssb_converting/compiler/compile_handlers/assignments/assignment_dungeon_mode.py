@@ -38,7 +38,7 @@ class AssignmentDungeonModeCompileHandler(AbstractAssignmentCompileHandler):
         self.var_target: Optional[SsbOpParam] = None
         self.value: Optional[SsbOpParam] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.var_target is None:
             raise SsbCompilerError(_("No variable for dungeon_mode set."))
         if self.value is None:

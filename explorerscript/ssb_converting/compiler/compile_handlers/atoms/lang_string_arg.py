@@ -28,7 +28,7 @@ from explorerscript.ssb_converting.compiler.utils import string_literal
 
 
 class LangStringArgumentCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Tuple[str, str]:  # language, string
+    def collect(self) -> tuple[str, str]:  # language, string
         self.ctx: ExplorerScriptParser.Lang_string_argumentContext
         return str(self.ctx.IDENTIFIER()), string_literal(self.ctx.STRING_LITERAL())
 

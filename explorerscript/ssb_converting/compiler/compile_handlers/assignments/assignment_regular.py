@@ -43,7 +43,7 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
         self.value: Optional[SsbOpParam] = None
         self.value_is_a_variable = False
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.var_target is None:
             raise SsbCompilerError(_("No variable for assignment."))
         if self.operator is None:

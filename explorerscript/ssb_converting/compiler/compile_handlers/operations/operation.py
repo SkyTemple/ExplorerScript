@@ -34,10 +34,10 @@ class OperationCompileHandler(AbstractStatementCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self.arg_list_handler: Optional[ArgListCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.OperationContext
         name = str(self.ctx.IDENTIFIER())
-        args: List[SsbOpParam] = []
+        args: list[SsbOpParam] = []
         if self.arg_list_handler:
             args = self.arg_list_handler.collect()
         return [self._generate_operation(name, args)]

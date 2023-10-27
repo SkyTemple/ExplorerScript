@@ -30,7 +30,7 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
 
 
 class JumpCompileHandler(AbstractStatementCompileHandler):
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         """
         We generate a label jump now. This might be removed & merged with the if/switch-case
         before it (if applicable and only operation in block), in the appropriate parent handler.

@@ -44,11 +44,11 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._switch_header_handler: Optional[SwitchHeaderCompileHandler] = None
-        self._case_handlers: List[CaseBlockCompileHandler] = []
+        self._case_handlers: list[CaseBlockCompileHandler] = []
         self._default_handler_index: int = -1
         self._default_handler: Optional[DefaultCaseBlockCompileHandler] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Switch_blockContext
         # 0. Prepare labels to insert
         default_start_label = SsbLabel(
@@ -58,8 +58,8 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             self.compiler_ctx.counter_labels(), -1, 'entire switch-block end label'
         )
         default_jmp_to_case_block: Optional[SsbLabelJumpBlueprint] = None
-        case_ops: List[SsbOperation] = []
-        default_ops: List[SsbOperation]
+        case_ops: list[SsbOperation] = []
+        default_ops: list[SsbOperation]
 
         # 0b. Switch op
         switch_op = self._switch_header_handler.collect()

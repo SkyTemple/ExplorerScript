@@ -52,7 +52,7 @@ class CaseBlockCompileHandler(AbstractBlockCompileHandler):
             self._header_jump_blueprints = [self._case_header_handler.collect()]
         return self._header_jump_blueprints[0]
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.is_message_case:
             raise SsbCompilerError(_("Invalid message switch case call."))
         # get_header_jump_template must be called first.

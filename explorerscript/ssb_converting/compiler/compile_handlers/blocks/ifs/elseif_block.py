@@ -33,7 +33,7 @@ class ElseIfBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an elseif block."""
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._if_header_handlers: List[IfHeaderCompileHandler] = []
+        self._if_header_handlers: list[IfHeaderCompileHandler] = []
 
     def create_header_jump_templates(self):
         self._header_jump_blueprints = []
@@ -43,7 +43,7 @@ class ElseIfBlockCompileHandler(AbstractBlockCompileHandler):
             self._header_jump_blueprints.append(h.collect())
         return self._header_jump_blueprints
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         # create_header_jump_templates has to be called before!
         return self._process_block()
 

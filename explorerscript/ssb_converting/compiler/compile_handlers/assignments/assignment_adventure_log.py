@@ -37,7 +37,7 @@ class AssignmentAdventureLogCompileHandler(AbstractAssignmentCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self.value: Optional[SsbOpParam] = None
 
-    def collect(self) -> List[SsbOperation]:
+    def collect(self) -> list[SsbOperation]:
         if self.value is None:
             raise SsbCompilerError(_("No value for adventure_log set."))
 

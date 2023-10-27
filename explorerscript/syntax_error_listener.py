@@ -51,4 +51,4 @@ class SyntaxErrorListener(ErrorListener):
         self._syntax_errors.append(AntlrSyntaxError(recognizer, offendingSymbol, line, column, msg, e))
 
     def __str__(self):
-        return '\n'.join((str(e) for e in self.syntax_errors))
+        return '\n'.join(str(e) for e in self.syntax_errors)

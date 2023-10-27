@@ -209,7 +209,7 @@ class IfStart(LabelJumpMarker):
 class MultiIfStart(IfStart):
     def __init__(self, if_id: int, start_ifs):
         super().__init__(if_id)
-        self.original_ssb_ifs_ops: List[SsbOperation] = start_ifs
+        self.original_ssb_ifs_ops: list[SsbOperation] = start_ifs
 
     def __str__(self):
         return f"MIF{' NOT' if self.is_not else ''}({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
@@ -291,7 +291,7 @@ class SsbLabel(SsbOperation):
         # Whether or not this label is referenced from another routine
         self.referenced_from_other_routine = False
         # Markers for this label (type of label)
-        self.markers: List[LabelMarker] = []
+        self.markers: list[LabelMarker] = []
         self.debugging_note = debugging_note
         # The original name in source code, if applicable
         self.original_name = original_name
@@ -360,7 +360,7 @@ class SsbLabelJump(SsbOperation):
         # May be None, if so the connected edges determine the different jumps
         self.label = label
         # Markers for this jump (type of jump)
-        self.markers: List[LabelJumpMarker] = []
+        self.markers: list[LabelJumpMarker] = []
 
     def add_marker(self, m: LabelJumpMarker):
         if len(self.markers) > 0:
@@ -390,7 +390,7 @@ class SwitchCaseOperation:
         return f"{self.switch_index}:{self.index} :: {self.op}"
 
 
-def process_op_for_jump(op: SsbOperation, known_labels: Dict[int, SsbLabel], routine_id: int) -> SsbOperation:
+def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], routine_id: int) -> SsbOperation:
     """
     Processes the operation.
     If it doesn't contain a jump to a memory offset, op is simply returned.

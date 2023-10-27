@@ -28,7 +28,7 @@ from explorerscript.util import exps_int
 
 
 class PositionMarkerArgCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Tuple[int, int]:  # position, offset
+    def collect(self) -> tuple[int, int]:  # position, offset
         self.ctx: ExplorerScriptParser.Position_marker_argContext
         offset = 0
         if self.ctx.POINT_FIVE():

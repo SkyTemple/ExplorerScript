@@ -48,7 +48,7 @@ def parse_pos_mark_arg(arg_str):
     return exps_int(arg_str_arr[0]), 2
 
 
-def read_ops(ops: List[dict]) -> List[SsbOperation]:
+def read_ops(ops: list[dict]) -> list[SsbOperation]:
     out_ops = []
 
     for op in ops:
@@ -88,7 +88,7 @@ def read_ops(ops: List[dict]) -> List[SsbOperation]:
     return out_ops
 
 
-def read_routines(routines: List[dict]) -> Tuple[List[SsbRoutineInfo], List[SsbCoroutine], List[List[SsbOperation]]]:
+def read_routines(routines: list[dict]) -> tuple[list[SsbRoutineInfo], list[SsbCoroutine], list[list[SsbOperation]]]:
     routine_infos = []
     named_coroutines = []
     routine_ops = []

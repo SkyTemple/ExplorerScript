@@ -22,7 +22,8 @@
 #
 import json
 import logging
-from typing import Dict, Tuple, List, Union, Optional, Iterable
+from typing import Dict, Tuple, List, Union, Optional
+from collections.abc import Iterable
 logger = logging.getLogger(__name__)
 
 
@@ -123,8 +124,8 @@ class SourceMapping:
 class MacroSourceMapping(SourceMapping):
     def __init__(self, relpath_included_file: str, macro_name: str,
                  line_number: int, column: int,
-                 called_in: Optional[Tuple[str, int, int]],
-                 return_addr: Optional[int], parameter_mapping: Dict[str, Union[int, str]]):
+                 called_in: Optional[tuple[str, int, int]],
+                 return_addr: Optional[int], parameter_mapping: dict[str, Union[int, str]]):
         super().__init__(line_number, column)
         self.relpath_included_file = relpath_included_file
         self.macro_name = macro_name
@@ -173,10 +174,10 @@ class SourceMap:
     """
     def __init__(
             self,
-            mappings: Dict[int, SourceMapping],
-            position_marks: List[SourceMapPositionMark],
-            mappings_macros: Dict[int, MacroSourceMapping],
-            position_marks_macro: List[Tuple[Optional[str], str, SourceMapPositionMark]]
+            mappings: dict[int, SourceMapping],
+            position_marks: list[SourceMapPositionMark],
+            mappings_macros: dict[int, MacroSourceMapping],
+            position_marks_macro: list[tuple[Optional[str], str, SourceMapPositionMark]]
     ):
         """
         mappings:               Actual main source mappings:
@@ -210,25 +211,22 @@ class SourceMap:
         if op_offset in self._mappings_macros:
             return self._mappings_macros[op_offset]
         
-    def get_position_marks__direct(self) -> List[SourceMapPositionMark]:
+    def get_position_marks__direct(self) -> list[SourceMapPositionMark]:
         return self._position_marks
 
-    def get_position_marks__macros(self) -> List[Tuple[Optional[str], str, SourceMapPositionMark]]:
+    def get_position_marks__macros(self) -> list[tuple[Optional[str], str, SourceMapPositionMark]]:
         return self._position_marks_macro
 
-    def __iter__(self) -> Iterable[Tuple[int, MacroSourceMapping]]:
+    def __iter__(self) -> Iterable[tuple[int, MacroSourceMapping]]:
         """
         Iterates over all source map entries, including the macro entries.
         If it's a macro entry, macro_name is a string.
         """
-        for opcode_offset, entry in self._mappings.items():
-            yield opcode_offset, entry
-        for opcode_offset, entry in self._mappings_macros.items():
-            yield opcode_offset, entry
+        yield from self._mappings.items()
+        yield from self._mappings_macros.items()
 
-    def collect_mappings__macros(self) -> Iterable[Tuple[int, MacroSourceMapping]]:
-        for opcode_offset, entry in self._mappings_macros.items():
-            yield opcode_offset, entry
+    def collect_mappings__macros(self) -> Iterable[tuple[int, MacroSourceMapping]]:
+        yield from self._mappings_macros.items()
 
     def __eq__(self, other):
         if not isinstance(other, SourceMap):
@@ -262,7 +260,7 @@ class SourceMap:
     def create_empty(cls):
         return cls({}, [], {}, [])
 
-    def rewrite_offsets(self, new_mapping: Dict[int, int]):
+    def rewrite_offsets(self, new_mapping: dict[int, int]):
         """
         Replace all opcode offsets (in mappings, macrco mappings, macro return addresses) with new
         offsets. The parameter is a dict mapping old offsets to new offsets.
@@ -293,7 +291,7 @@ class SourceMapBuilder:
         self._mappings_macros = {}
         self._pos_marks_macros = []
         self._next_macro_called_in: Optional[SourceMapping] = None
-        self._macro_context__stack: List[Tuple[int, Dict[str, Union[int, str]]]] = []
+        self._macro_context__stack: list[tuple[int, dict[str, Union[int, str]]]] = []
         #logger.debug("<%d>: Init.", id(self))
 
     def add_opcode(self, op_offset, line_number, column):
@@ -304,7 +302,7 @@ class SourceMapBuilder:
         self._pos_marks.append(position_mark)
         #logger.debug("<%d>: Adding PositionMark: %s", id(self), position_mark)
 
-    def macro_context__push(self, opcode_to_jump_to: int, parameter_mapping: Dict[str, Union[int, str]]):
+    def macro_context__push(self, opcode_to_jump_to: int, parameter_mapping: dict[str, Union[int, str]]):
         """
         Push a new macro return address and parameter mapping to the stack, all added macro ops will
         use what's on the top of the stack.
