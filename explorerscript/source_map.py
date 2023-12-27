@@ -269,6 +269,8 @@ class SourceMap:
         # but that's ok.
         self._mappings = {new_mapping[key]: val for key, val in self._mappings.items() if key in new_mapping}
         self._mappings_macros = {new_mapping[key]: val for key, val in self._mappings_macros.items() if key in new_mapping}
+        if len(new_mapping) < 1:
+            return
         max_old_offset = max(new_mapping.keys())
 
         for m in self._mappings_macros.values():
