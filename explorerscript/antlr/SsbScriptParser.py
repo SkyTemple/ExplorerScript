@@ -1,4 +1,5 @@
-# Generated from SsbScript.g4 by ANTLR 4.11.1
+# Generated from SsbScript.g4 by ANTLR 4.13.1
+# encoding: utf-8
 from antlr4 import *
 from io import StringIO
 import sys
@@ -152,7 +153,7 @@ class SsbScriptParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.11.1")
+        self.checkVersion("4.13.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -626,7 +627,7 @@ class SsbScriptParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 76
             _la = self._input.LA(1)
-            if not(((_la) & ~0x3f) == 0 and ((1 << _la) & 45056) != 0):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 45056) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -748,7 +749,7 @@ class SsbScriptParser ( Parser ):
             self.state = 87
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if ((_la) & ~0x3f) == 0 and ((1 << _la) & 335591428) != 0:
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 335591428) != 0):
                 self.state = 86
                 self.arglist()
 

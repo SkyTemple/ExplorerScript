@@ -1,6 +1,6 @@
-# Generated from ExplorerScript.g4 by ANTLR 4.11.1
+# Generated from ExplorerScript.g4 by ANTLR 4.13.1
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .ExplorerScriptParser import ExplorerScriptParser
 else:
     from ExplorerScriptParser import ExplorerScriptParser
