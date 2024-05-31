@@ -23,10 +23,12 @@
 from enum import Enum, auto
 from typing import Optional, List, Union, Dict
 
+from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.utils import string_literal
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, SsbOpParam, \
-    SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker
+    SsbOpCode, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamConstant, SsbOpParamPositionMarker, \
+    SsbOpParamFixedPoint
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
@@ -36,6 +38,7 @@ from explorerscript.util import exps_int
 class ListenerArgType(Enum):
     INVALID = auto()
     INTEGER = auto()
+    DECIMAL = auto()
     CONSTANT = auto()
     STRING_LITERAL = auto()
     LANGUAGE_STRING = auto()
@@ -180,6 +183,8 @@ class SsbScriptCompilerListener(SsbScriptListener):
             self._collected_params.append(SsbOpParamLanguageString(self._argument_value))
         elif self._argument_type == ListenerArgType.INTEGER:
             self._collected_params.append(self._argument_value)
+        elif self._argument_type == ListenerArgType.DECIMAL:
+            self._collected_params.append(SsbOpParamFixedPoint(self._argument_value))
         elif self._argument_type == ListenerArgType.CONSTANT:
             self._collected_params.append(SsbOpParamConstant(self._argument_value))
         elif self._argument_type == ListenerArgType.POSITION_MARKER:
@@ -196,11 +201,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
     def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext):
         if self._is_processing_argument:
             self._argument_type = ListenerArgType.POSITION_MARKER
-            relative = exps_int(str(ctx.INTEGER()))
-            point_five = ctx.POINT_FIVE()
-            offset = 0
-            if point_five:
-                offset = 2
+            relative, offset = parse_position_marker_arg(ctx)
             if self._collected_pos_marker.x_offset == -1:
                 # We collected the x argument
                 self._collected_pos_marker.x_offset = offset
@@ -215,6 +216,9 @@ class SsbScriptCompilerListener(SsbScriptListener):
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
                 self._argument_value = exps_int(str(ctx.INTEGER()))
+            if ctx.DECIMAL():
+                self._argument_type = ListenerArgType.DECIMAL
+                self._argument_value = str(ctx.DECIMAL())
             elif ctx.IDENTIFIER():
                 self._argument_type = ListenerArgType.CONSTANT
                 self._argument_value = str(ctx.IDENTIFIER())

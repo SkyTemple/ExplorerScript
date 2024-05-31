@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ from typing import Union
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant
+from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant, SsbOpParamFixedPoint
 from explorerscript.util import exps_int
 
 
@@ -34,6 +34,8 @@ class IntegerLikeCompileHandler(AbstractCompileHandler):
         self.ctx: ExplorerScriptParser.Integer_likeContext
         if self.ctx.INTEGER():
             return exps_int(str(self.ctx.INTEGER()))
+        if self.ctx.DECIMAL():
+            return SsbOpParamFixedPoint(str(self.ctx.DECIMAL()))
         if self.ctx.IDENTIFIER():
             return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
         if self.ctx.VARIABLE():
