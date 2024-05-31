@@ -72,8 +72,8 @@ def read_ops(ops: list[dict]) -> list[SsbOperation]:
                 elif param["type"] == "LANG_STRING":
                     params.append(SsbOpParamLanguageString(param["value"]))
                 elif param["type"] == "POSITION_MARK":
-                    x_offset, x_relative = parse_pos_mark_arg(param["value"]["x"])
-                    y_offset, y_relative = parse_pos_mark_arg(param["value"]["y"])
+                    x_relative, x_offset = parse_pos_mark_arg(param["value"]["x"])
+                    y_relative, y_offset = parse_pos_mark_arg(param["value"]["y"])
                     params.append(SsbOpParamPositionMarker(
                         param["value"]["name"],
                         x_offset, y_offset, x_relative, y_relative
