@@ -57,6 +57,11 @@ DECIMAL_LEADING_ZEROS_WHOLE_EXPECTED = [
     SsbOpParamFixedPoint(0, "123"),
     SsbOpParamFixedPoint(SsbOpParamFixedPoint.NegativeZero, "0034")
 ]
+DECIMAL_SUFFIX_ZEROS = """def 0 { foobar(10.0, 0.10); }"""
+DECIMAL_SUFFIX_ZEROS_EXPECTED = [
+    SsbOpParamFixedPoint(10, "0"),
+    SsbOpParamFixedPoint(0, "10")
+]
 
 
 class DecimalTestCase(unittest.TestCase):
@@ -106,6 +111,12 @@ class DecimalTestCase(unittest.TestCase):
 
     def test_decimal_leading_zeros_whole_exps(self):
         self.assertEqual(DECIMAL_LEADING_ZEROS_WHOLE_EXPECTED, self.compile_exps(DECIMAL_LEADING_ZEROS_WHOLE))
+
+    def test_decimal_suffix_zero_ssbscript(self):
+        self.assertEqual(DECIMAL_SUFFIX_ZEROS_EXPECTED, self.compile_ssbscript(DECIMAL_SUFFIX_ZEROS))
+
+    def test_decimal_suffix_zero_whole_exps(self):
+        self.assertEqual(DECIMAL_SUFFIX_ZEROS_EXPECTED, self.compile_exps(DECIMAL_SUFFIX_ZEROS))
 
     def compile_ssbscript(self, src: str):
         compiler = SsbScriptSsbCompiler()
