@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import string
 from enum import Enum
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Literal, Type
 
 
 def escape_quotes(string):
@@ -123,9 +123,15 @@ DIGITS = set(string.digits)
 
 class SsbOpParamFixedPoint:
     """A fixed point number, encoded as a string."""
-    def __init__(self, whole_part: int, fract_part: str):
+    class NegativeZero:
+        pass  # Marker type for negative numbers.
+
+    def __init__(self, whole_part: Union[int, Type[SsbOpParamFixedPoint.NegativeZero]], fract_part: str):
         assert set(fract_part) <= DIGITS
-        self.value = f"{whole_part}.{fract_part}"
+        if whole_part == SsbOpParamFixedPoint.NegativeZero:
+            self.value = f"-0.{fract_part}"
+        else:
+            self.value = f"{whole_part}.{fract_part}"
 
     @classmethod
     def from_float(cls, value: float) -> "SsbOpParamFixedPoint":
@@ -137,9 +143,15 @@ class SsbOpParamFixedPoint:
     def from_str(cls, value: str) -> "SsbOpParamFixedPoint":
         try:
             parts = value.split(".", 1)
+            whole_part = parts[0].rstrip("0")
+            if whole_part == "":
+                whole_part = "0"
+            elif whole_part == "-":
+                whole_part = "-0"
+
+            whole = int(whole_part) if whole_part != "-0" else SsbOpParamFixedPoint.NegativeZero
             if len(parts) == 1:
-                return cls(int(parts[0]), "0")
-            whole = int(parts[0] if parts[0] != "" else "0")
+                return cls(whole, "0")
             fract = parts[1]
             return cls(whole, fract)
         except ValueError as e:
