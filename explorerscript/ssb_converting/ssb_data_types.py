@@ -143,10 +143,10 @@ class SsbOpParamFixedPoint:
     def from_str(cls, value: str) -> "SsbOpParamFixedPoint":
         try:
             parts = value.split(".", 1)
-            whole_part = parts[0].rstrip("0")
+            whole_part = parts[0].lstrip("0")
             if whole_part == "":
                 whole_part = "0"
-            elif whole_part == "-":
+            elif whole_part.rstrip("0") == "-":
                 whole_part = "-0"
 
             whole = int(whole_part) if whole_part != "-0" else SsbOpParamFixedPoint.NegativeZero
