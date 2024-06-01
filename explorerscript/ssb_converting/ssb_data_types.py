@@ -1,7 +1,7 @@
 """Data types used to describe ssb components"""
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 from enum import Enum
 from typing import Dict, Union, List
 
@@ -115,6 +117,42 @@ class SsbRoutineInfo:
         return hash((self.type,  self.linked_to, self.linked_to_name))
 
 
+class SsbOpParamFixedPoint:
+    """A fixed point number, encoded as a string."""
+    def __init__(self, whole_part: int, fract_part: int):
+        assert fract_part >= 0
+        self.value = f"{whole_part}.{fract_part}"
+
+    @classmethod
+    def from_float(cls, value: float) -> "SsbOpParamFixedPoint":
+        slf = cls(0, 0)
+        slf.value = str(value)
+        return slf
+
+    @classmethod
+    def from_str(cls, value: str) -> "SsbOpParamFixedPoint":
+        try:
+            parts = value.split(".", 1)
+            if len(parts) == 1:
+                return cls(int(parts[0]), 0)
+            whole = int(parts[0] if parts[0] != "" else "0")
+            fract = int(parts[1])
+            return cls(whole, fract)
+        except ValueError as e:
+            raise ValueError(f"Invalid fixed point decimal: {value}") from e
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        if not isinstance(other, SsbOpParamFixedPoint):
+            return False
+        return self.value == other.value
+
+
 class SsbOpParamConstant:
     """An actual constant representing an int"""
     def __init__(self, name: str):
@@ -200,6 +238,9 @@ class SsbOpParamPositionMarker:
     def __str__(self):
         return f'Position<\'{self.name}\', {self.x_final}, {self.y_final}>'
 
+    def __repr__(self):
+        return f'SsbOpParamPositionMarker(\'{self.name}\', {self.x_offset}, {self.y_offset}, {self.x_relative}, {self.y_relative})'
+
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamPositionMarker):
             return False
@@ -207,7 +248,10 @@ class SsbOpParamPositionMarker:
                 and self.x_relative == other.x_relative and self.y_relative == other.y_relative
 
 
-SsbOpParam = Union[int, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker]
+SsbOpParam = Union[
+    int, SsbOpParamFixedPoint, SsbOpParamConstant,
+    SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker
+]
 
 
 class SsbOperation:

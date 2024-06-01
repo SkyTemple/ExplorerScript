@@ -88,6 +88,18 @@ Integer
 #######
 Is encoded as an integer.
 
+Fixed point number
+##################
+Is encoded as a JSON object with "type" being "FIXED_POINT"
+and the "value" field being the value.
+
+.. code:: json
+
+    {
+        "type": "FIXED_POINT",
+        "value": "123.456"
+    }
+
 Constant
 ########
 Is encoded as a JSON object with "type" being "CONSTANT"
