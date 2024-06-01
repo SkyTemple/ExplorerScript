@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List
+from typing import List, Any
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import \
     AbstractStatementCompileHandler, AbstractLoopBlockCompileHandler
@@ -32,11 +32,16 @@ class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler):
 
     def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)
-        retval = [self._start_label] + self._process_block(False) + [self._end_label]
+        retval = [
+                     self._start_label
+                 ] + self._process_block(False) + [
+                     self.continue_loop(),
+                     self._end_label
+                 ]
         self.compiler_ctx.remove_loop()
         return retval
 
-    def add(self, obj: any):
+    def add(self, obj: Any):
         if isinstance(obj, AbstractStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)
