@@ -39,10 +39,12 @@ def parse_position_marker_arg(
         decimal_parts = str(ctx.DECIMAL()).split(".")
 
         if len(decimal_parts) == 1:  # .XXXXX
-            dec_part = int(decimal_parts[0].rstrip("0") if decimal_parts[1] != "0" else "0")  # strip 0s of the decimal places
+            dec_part_raw_stripped = decimal_parts[0].rstrip("0")  # strip 0s off the decimal places
+            dec_part = int(dec_part_raw_stripped if dec_part_raw_stripped != "" else "0")
         elif len(decimal_parts) == 2:  # XXXXX.YYYYY
             pos = int(decimal_parts[0] if decimal_parts[0] != "" else "0")
-            dec_part = int(decimal_parts[1].rstrip("0") if decimal_parts[1] != "0" else "0")  # strip 0s of the decimal places
+            dec_part_raw_stripped = decimal_parts[1].rstrip("0")  # strip 0s off the decimal places
+            dec_part = int(dec_part_raw_stripped if dec_part_raw_stripped != "" else "0")
         else:
             raise SsbCompilerError("Logic error in decimal code for 'position marker arg'.")
 

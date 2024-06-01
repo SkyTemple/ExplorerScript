@@ -33,7 +33,7 @@ NO_DECIMAL_EXPECTED = [
 ]
 DECIMAL = """def 0 { foobar(12.34); }"""
 DECIMAL_EXPECTED = [
-    SsbOpParamFixedPoint("12.34")
+    SsbOpParamFixedPoint(12, 34)
 ]
 NEGATIVE_NO_DECIMAL = """def 0 { foobar(-12); }"""
 NEGATIVE_NO_DECIMAL_EXPECTED = [
@@ -41,7 +41,7 @@ NEGATIVE_NO_DECIMAL_EXPECTED = [
 ]
 NEGATIVE_DECIMAL = """def 0 { foobar(-12.34); }"""
 NEGATIVE_DECIMAL_EXPECTED = [
-    SsbOpParamFixedPoint("-12.34")
+    SsbOpParamFixedPoint(-12, 34)
 ]
 
 

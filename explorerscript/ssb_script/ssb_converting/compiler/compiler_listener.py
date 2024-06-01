@@ -184,7 +184,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         elif self._argument_type == ListenerArgType.INTEGER:
             self._collected_params.append(self._argument_value)
         elif self._argument_type == ListenerArgType.DECIMAL:
-            self._collected_params.append(SsbOpParamFixedPoint(self._argument_value))
+            self._collected_params.append(SsbOpParamFixedPoint.from_str(self._argument_value))
         elif self._argument_type == ListenerArgType.CONSTANT:
             self._collected_params.append(SsbOpParamConstant(self._argument_value))
         elif self._argument_type == ListenerArgType.POSITION_MARKER:

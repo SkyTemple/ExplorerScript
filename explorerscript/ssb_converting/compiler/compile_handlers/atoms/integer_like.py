@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
+from typing import Union, Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -30,18 +30,18 @@ from explorerscript.util import exps_int
 
 
 class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant]:
+    def collect(self) -> Union[int, SsbOpParamConstant, SsbOpParamFixedPoint]:
         self.ctx: ExplorerScriptParser.Integer_likeContext
         if self.ctx.INTEGER():
             return exps_int(str(self.ctx.INTEGER()))
         if self.ctx.DECIMAL():
-            return SsbOpParamFixedPoint(str(self.ctx.DECIMAL()))
+            return SsbOpParamFixedPoint.from_str(str(self.ctx.DECIMAL()))
         if self.ctx.IDENTIFIER():
             return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
         if self.ctx.VARIABLE():
             return SsbOpParamConstant(str(self.ctx.VARIABLE()))
         raise SsbCompilerError("Unknown 'integer like'.")
 
-    def add(self, obj: any):
+    def add(self, obj: Any):
         # Doesn't accept anything.
         self._raise_add_error(obj)

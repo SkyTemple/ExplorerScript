@@ -119,12 +119,27 @@ class SsbRoutineInfo:
 
 class SsbOpParamFixedPoint:
     """A fixed point number, encoded as a string."""
-    def __init__(self, value: str):
-        self.value = value
+    def __init__(self, whole_part: int, fract_part: int):
+        assert fract_part >= 0
+        self.value = f"{whole_part}.{fract_part}"
 
     @classmethod
     def from_float(cls, value: float) -> "SsbOpParamFixedPoint":
-        return cls(str(value))
+        slf = cls(0, 0)
+        slf.value = str(value)
+        return slf
+
+    @classmethod
+    def from_str(cls, value: str) -> "SsbOpParamFixedPoint":
+        try:
+            parts = value.split(".", 1)
+            if len(parts) == 1:
+                return cls(int(parts[0]), 0)
+            whole = int(parts[0] if parts[0] != "" else "0")
+            fract = int(parts[1])
+            return cls(whole, fract)
+        except ValueError as e:
+            raise ValueError(f"Invalid fixed point decimal: {value}") from e
 
     def __str__(self):
         return self.value

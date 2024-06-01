@@ -64,7 +64,7 @@ def read_ops(ops: list[dict]) -> list[SsbOperation]:
                 if "type" not in param or "value" not in param:
                     raise ValueError("Invalid param for op.")
                 if param["type"] == "FIXED_POINT":
-                    params.append(SsbOpParamFixedPoint(param["value"]))
+                    params.append(SsbOpParamFixedPoint.from_str(param["value"]))
                 elif param["type"] == "CONSTANT":
                     params.append(SsbOpParamConstant(param["value"]))
                 elif param["type"] == "CONST_STRING":
