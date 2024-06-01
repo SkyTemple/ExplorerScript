@@ -23,6 +23,7 @@
 #
 from __future__ import annotations
 
+import string
 from enum import Enum
 from typing import Dict, Union, List
 
@@ -117,15 +118,18 @@ class SsbRoutineInfo:
         return hash((self.type,  self.linked_to, self.linked_to_name))
 
 
+DIGITS = set(string.digits)
+
+
 class SsbOpParamFixedPoint:
     """A fixed point number, encoded as a string."""
-    def __init__(self, whole_part: int, fract_part: int):
-        assert fract_part >= 0
+    def __init__(self, whole_part: int, fract_part: str):
+        assert set(fract_part) <= DIGITS
         self.value = f"{whole_part}.{fract_part}"
 
     @classmethod
     def from_float(cls, value: float) -> "SsbOpParamFixedPoint":
-        slf = cls(0, 0)
+        slf = cls(0, "0")
         slf.value = str(value)
         return slf
 
@@ -134,9 +138,9 @@ class SsbOpParamFixedPoint:
         try:
             parts = value.split(".", 1)
             if len(parts) == 1:
-                return cls(int(parts[0]), 0)
+                return cls(int(parts[0]), "0")
             whole = int(parts[0] if parts[0] != "" else "0")
-            fract = int(parts[1])
+            fract = parts[1]
             return cls(whole, fract)
         except ValueError as e:
             raise ValueError(f"Invalid fixed point decimal: {value}") from e

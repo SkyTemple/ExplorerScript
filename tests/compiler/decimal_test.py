@@ -33,7 +33,7 @@ NO_DECIMAL_EXPECTED = [
 ]
 DECIMAL = """def 0 { foobar(12.34); }"""
 DECIMAL_EXPECTED = [
-    SsbOpParamFixedPoint(12, 34)
+    SsbOpParamFixedPoint(12, "34")
 ]
 NEGATIVE_NO_DECIMAL = """def 0 { foobar(-12); }"""
 NEGATIVE_NO_DECIMAL_EXPECTED = [
@@ -41,7 +41,11 @@ NEGATIVE_NO_DECIMAL_EXPECTED = [
 ]
 NEGATIVE_DECIMAL = """def 0 { foobar(-12.34); }"""
 NEGATIVE_DECIMAL_EXPECTED = [
-    SsbOpParamFixedPoint(-12, 34)
+    SsbOpParamFixedPoint(-12, "34")
+]
+DECIMAL_LEADING_ZEROS = """def 0 { foobar(12.0034); }"""
+DECIMAL_LEADING_ZEROS_EXPECTED = [
+    SsbOpParamFixedPoint(12, "0034")
 ]
 
 
@@ -72,6 +76,12 @@ class DecimalTestCase(unittest.TestCase):
 
     def test_negative_decimal_exps(self):
         self.assertEqual(NEGATIVE_DECIMAL_EXPECTED, self.compile_exps(NEGATIVE_DECIMAL))
+
+    def test_decimal_leading_zeros_ssbscript(self):
+        self.assertEqual(DECIMAL_LEADING_ZEROS_EXPECTED, self.compile_ssbscript(DECIMAL_LEADING_ZEROS))
+
+    def test_decimal_leading_zeros_exps(self):
+        self.assertEqual(DECIMAL_LEADING_ZEROS_EXPECTED, self.compile_exps(DECIMAL_LEADING_ZEROS))
 
     def compile_ssbscript(self, src: str):
         compiler = SsbScriptSsbCompiler()
