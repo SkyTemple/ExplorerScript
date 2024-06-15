@@ -1,4 +1,4 @@
-__version__ = '0.1.5'
+__version__ = '0.2.0'
 from setuptools import setup, find_packages
 
 # README read-in
@@ -18,7 +18,7 @@ setup(
     url='https://github.com/SkyTemple/ExplorerScript/',
     install_requires=[
         'igraph >= 0.8.0, < 0.10.5',
-        'antlr4-python3-runtime == 4.11.1'
+        'antlr4-python3-runtime == 4.13.1'
     ],
     extras_require={
         'pygments':  ["pygments>=2.6.1"]
@@ -28,7 +28,7 @@ setup(
         expslexer=explorerscript.pygments.expslexer:ExplorerScriptLexer
     ''',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Programming Language :: Python',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.9',

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ from explorerscript.cli import check_settings, SETTINGS_PERFORMANCE_PROGRESS_LIS
 from explorerscript.ssb_converting.compiler.utils import Counter
 from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbOperation, SsbRoutineInfo, \
     DungeonModeConstants, SsbRoutineType, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, \
-    SsbOpParamPositionMarker, SsbOpCode
+    SsbOpParamPositionMarker, SsbOpCode, SsbOpParamFixedPoint
 from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.util import open_utf8, exps_int
 
@@ -63,15 +63,17 @@ def read_ops(ops: list[dict]) -> list[SsbOperation]:
             elif isinstance(param, dict):
                 if "type" not in param or "value" not in param:
                     raise ValueError("Invalid param for op.")
-                if param["type"] == "CONSTANT":
+                if param["type"] == "FIXED_POINT":
+                    params.append(SsbOpParamFixedPoint.from_str(param["value"]))
+                elif param["type"] == "CONSTANT":
                     params.append(SsbOpParamConstant(param["value"]))
                 elif param["type"] == "CONST_STRING":
                     params.append(SsbOpParamConstString(param["value"]))
                 elif param["type"] == "LANG_STRING":
                     params.append(SsbOpParamLanguageString(param["value"]))
                 elif param["type"] == "POSITION_MARK":
-                    x_offset, x_relative = parse_pos_mark_arg(param["value"]["x"])
-                    y_offset, y_relative = parse_pos_mark_arg(param["value"]["y"])
+                    x_relative, x_offset = parse_pos_mark_arg(param["value"]["x"])
+                    y_relative, y_offset = parse_pos_mark_arg(param["value"]["y"])
                     params.append(SsbOpParamPositionMarker(
                         param["value"]["name"],
                         x_offset, y_offset, x_relative, y_relative

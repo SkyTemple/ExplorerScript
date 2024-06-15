@@ -110,7 +110,7 @@ ExplorerScript defines different data types. These are described below.
 Integer
 ~~~~~~~
 A whole number. The size of the integer is not restricted by the
-language. Numbers can be represented in different bases.
+language. Integers can be represented in different bases.
 
 .. code:: ExplorerScript
 
@@ -122,8 +122,28 @@ language. Numbers can be represented in different bases.
 
 .. admonition:: SkyTemple
 
-   All integers are 14-bit signed integers. Some may be represented
-   as 16-bit unsigned values instead.
+   All integers are 15-bit signed integers.
+
+Fixed Point Value
+~~~~~~~~~~~~~~~~~
+A non-integer number with decimal places. The size of the number is not restricted by the
+language. Currently all fixed point values need to be written in base 10.
+
+The language does not restrict the compiler to use actual fixed point values, the compiler may also store
+them as floats, etc. Likewise the compiler does not guarantee any promises about the precision of the
+compiled values. The compiler may error if a value can not be represented.
+
+.. code:: ExplorerScript
+
+    .12
+    1.12
+    -.12
+    -1.12
+
+.. admonition:: SkyTemple
+
+   Valid value ranges are ~-64.0 - 63.996. Decimal values are rounded to the nearest 1/256 increment.
+   This means the lowest values for decimal places is 0, the highest is ~.996 and precision for increments is ~.0039.
 
 Constants
 ~~~~~~~~~

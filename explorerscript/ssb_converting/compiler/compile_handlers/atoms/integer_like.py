@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,26 +20,28 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
+from typing import Union, Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant
+from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant, SsbOpParamFixedPoint
 from explorerscript.util import exps_int
 
 
 class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant]:
+    def collect(self) -> Union[int, SsbOpParamConstant, SsbOpParamFixedPoint]:
         self.ctx: ExplorerScriptParser.Integer_likeContext
         if self.ctx.INTEGER():
             return exps_int(str(self.ctx.INTEGER()))
+        if self.ctx.DECIMAL():
+            return SsbOpParamFixedPoint.from_str(str(self.ctx.DECIMAL()))
         if self.ctx.IDENTIFIER():
             return SsbOpParamConstant(str(self.ctx.IDENTIFIER()))
         if self.ctx.VARIABLE():
             return SsbOpParamConstant(str(self.ctx.VARIABLE()))
         raise SsbCompilerError("Unknown 'integer like'.")
 
-    def add(self, obj: any):
+    def add(self, obj: Any):
         # Doesn't accept anything.
         self._raise_add_error(obj)

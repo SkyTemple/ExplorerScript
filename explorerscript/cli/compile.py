@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ from typing import List
 from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, check_settings, SETTINGS
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, \
-    SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker
+    SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker, SsbOpParamFixedPoint
 from explorerscript.util import open_utf8
 
 
@@ -40,6 +40,11 @@ def build_ops(ops: list[SsbOperation]):
         for param in op.params:
             if isinstance(param, int):
                 out_op["params"].append(param)
+            elif isinstance(param, SsbOpParamFixedPoint):
+                out_op["params"].append({
+                    "type": "FIXED_POINT",
+                    "value": param.value
+                })
             elif isinstance(param, SsbOpParamConstant):
                 out_op["params"].append({
                     "type": "CONSTANT",

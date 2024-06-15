@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,19 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Tuple
+from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.util import exps_int
 
 
 class PositionMarkerArgCompileHandler(AbstractCompileHandler):
     def collect(self) -> tuple[int, int]:  # position, offset
         self.ctx: ExplorerScriptParser.Position_marker_argContext
-        offset = 0
-        if self.ctx.POINT_FIVE():
-            offset = 2
-        pos = exps_int(str(self.ctx.INTEGER()))
+        pos, offset = parse_position_marker_arg(self.ctx)
         return pos, offset
 
-    def add(self, obj: any):
+    def add(self, obj: Any):
         # Doesn't accept anything.
         self._raise_add_error(obj)

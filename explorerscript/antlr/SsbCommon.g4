@@ -42,7 +42,7 @@ for_target_def: DEF INTEGER FOR_TARGET OPEN_PAREN integer_like CLOSE_PAREN func_
 // For ExplorerScript:
 //   Variables and identifier are treated the same in funcdefs but may or may not be different things
 //   in macros, depending on if they are defined in the header or not.
-integer_like: INTEGER | IDENTIFIER | VARIABLE;
+integer_like: DECIMAL | INTEGER | IDENTIFIER | VARIABLE;
 
 stmt: (operation | label) ';';
 operation: IDENTIFIER OPEN_PAREN arglist? CLOSE_PAREN;
@@ -54,7 +54,7 @@ arglist: pos_argument (',' pos_argument)*  (',')?;
 pos_argument: integer_like | string | position_marker;
 
 position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' position_marker_arg CLOSE_SHARP;
-position_marker_arg: INTEGER POINT_FIVE?;
+position_marker_arg: INTEGER | DECIMAL;
 
 label: PARAGRAPH IDENTIFIER;
 
@@ -134,7 +134,11 @@ OPEN_BRACE : '{';
 CLOSE_BRACE : '}';
 OPEN_SHARP : '<';
 CLOSE_SHARP : '>';
-POINT_FIVE : '.5';
+
+DECIMAL
+ : '-'? DIGIT+ '.' DIGIT+
+ | '-'? '.' DIGIT+
+ ;
 
 SKIP_
  : ( LINE_COMMENT | BLOCK_COMMENT | SPACES | LINE_JOINING ) -> skip
