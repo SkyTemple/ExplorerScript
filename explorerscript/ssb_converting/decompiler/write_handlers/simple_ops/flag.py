@@ -64,7 +64,7 @@ class FlagSimpleOpWriteHandler(AbstractWriteHandler):
         elif op.op_code.name == OPS_FLAG__SET:
             self.decompiler.write_stmnt(f"{op.params[0]} = {op.params[1]};")
         elif op.op_code.name == OPS_FLAG__RESET_DUNGEON_RESULT:
-            self.decompiler.write_stmnt(f"reset dungeon_result;")
+            self.decompiler.write_stmnt("reset dungeon_result;")
         elif op.op_code.name == OPS_FLAG__RESET_SCENARIO:
             self.decompiler.write_stmnt(f"reset scn({op.params[0]});")
         elif op.op_code.name == OPS_FLAG__SET_ADVENTURE_LOG:
@@ -87,5 +87,5 @@ class FlagSimpleOpWriteHandler(AbstractWriteHandler):
         elif len(exits) == 0:
             next_vertex = None
         else:
-            raise ValueError(f"After a simple opcode there must be exactly 0 or 1 immediate opcode.")
+            raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex

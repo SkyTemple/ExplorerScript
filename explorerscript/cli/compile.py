@@ -24,7 +24,6 @@ import argparse
 import json
 import os
 import sys
-from typing import List
 
 from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, check_settings, SETTINGS
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler

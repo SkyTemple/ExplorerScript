@@ -51,4 +51,4 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
             # Make sure the forever start block is aware of the next vertex!
             self.decompiler.forever_start_handler_stack[-1].set_vertex_after(exits[0].target_vertex)
             return None
-        raise ValueError(f"After a break_loop there must be exactly 1 immediate opcode.")
+        raise ValueError("After a break_loop there must be exactly 1 immediate opcode.")

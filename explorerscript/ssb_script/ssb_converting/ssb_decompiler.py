@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 import logging
-from typing import List, Dict, Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver

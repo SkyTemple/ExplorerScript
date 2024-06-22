@@ -171,7 +171,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if op.op_code.name == "SwitchScenarioLevel":
             return f"scn({op.params[0]})[1]"
         if op.op_code.name == "SwitchSector":
-            return f"sector()"
+            return "sector()"
         if op.op_code.name == "Switch":
             return f"{op.params[0]}"
         raise ValueError(f"Unknown switch {op.op_code.name}")

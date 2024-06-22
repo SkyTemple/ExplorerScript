@@ -53,7 +53,7 @@ class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
                     op.params[1].indent = self.decompiler.indent
                 self.decompiler.write_stmnt(str(op.params[1]))
         elif op.op_code.name == OP_DEFAULT_TEXT:
-            self.decompiler.write_stmnt(f"default:")
+            self.decompiler.write_stmnt("default:")
             with Blk(self.decompiler, False):
                 if hasattr(op.params[0], "indent"):
                     op.params[0].indent = self.decompiler.indent
@@ -65,5 +65,5 @@ class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
         elif len(exits) == 0:
             next_vertex = None
         else:
-            raise ValueError(f"After a simple opcode there must be exactly 0 or 1 immediate opcode.")
+            raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex

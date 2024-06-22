@@ -20,8 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from collections import OrderedDict
-from typing import Dict, Set, Optional
+from typing import Optional
 
 from igraph import Graph
 

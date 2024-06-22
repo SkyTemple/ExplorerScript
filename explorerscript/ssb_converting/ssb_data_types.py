@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import string
 from enum import Enum
-from typing import Dict, Union, List, Literal, Type
+from typing import Union, Type
 
 
 def escape_quotes(string):

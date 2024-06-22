@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 
-from typing import List, Optional
+from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
@@ -29,7 +29,6 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var impor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import (
-    OPS_FLAG__CLEAR,
     OPS_FLAG__RESET_DUNGEON_RESULT,
     OPS_FLAG__RESET_SCENARIO,
 )

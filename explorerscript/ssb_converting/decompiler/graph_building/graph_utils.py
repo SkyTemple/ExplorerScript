@@ -26,7 +26,7 @@ import logging
 import operator
 from threading import Lock
 from collections import Counter
-from typing import Tuple, List, Union, Dict, Set, Optional
+from typing import Union, Optional
 
 from igraph import Edge, OUT, Vertex, Graph
 

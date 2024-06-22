@@ -121,7 +121,7 @@ class LabelWriteHandler(AbstractWriteHandler):
                 return ForeverWriteHandler(self.start_vertex, self.decompiler, self.parent).write_content()
 
             return exits[0].target_vertex
-        raise ValueError(f"After a label there must be exactly 1 opcode.")
+        raise ValueError("After a label there must be exactly 1 opcode.")
 
     def _write_label(self, label: SsbLabel):
         self.decompiler.write_stmnt(f"§label_{label.id};")

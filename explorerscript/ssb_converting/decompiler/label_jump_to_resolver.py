@@ -26,7 +26,6 @@ and inserts labels at the appropriate locations.
 #  SOFTWARE.
 #
 import logging
-from typing import List, Dict
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel

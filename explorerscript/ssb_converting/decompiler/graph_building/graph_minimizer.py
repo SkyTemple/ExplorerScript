@@ -22,7 +22,6 @@
 #
 import logging
 import sys
-import warnings
 
 from igraph import IN
 

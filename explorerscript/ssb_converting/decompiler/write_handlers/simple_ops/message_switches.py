@@ -30,9 +30,6 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import (
-    OPS_CTX_LIVES,
-    OPS_CTX_OBJECT,
-    OPS_CTX_PERFORMER,
     OP_MESSAGE_SWITCH_TALK,
     OP_MESSAGE_SWITCH_MONOLOGUE,
     OPS_SWITCH_TEXT_CASE_MAP,
@@ -78,7 +75,7 @@ class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
                 ).write_content()
             except NestedBlockDisallowedError:
                 raise ValueError(
-                    f"message_Switch* opcode blocks must not contain opcodes that start any " f"branching code."
+                    "message_Switch* opcode blocks must not contain opcodes that start any " "branching code."
                 )
 
         return next_vertex_after_blk

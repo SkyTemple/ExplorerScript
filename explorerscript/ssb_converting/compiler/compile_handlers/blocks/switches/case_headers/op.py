@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE, OP_CASE_VALUE
+from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE_VALUE
 from explorerscript.util import _
 
 

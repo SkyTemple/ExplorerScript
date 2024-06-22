@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 import logging
-import warnings
 from typing import Optional
 
 from igraph import Vertex

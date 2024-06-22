@@ -28,7 +28,6 @@ from igraph import Vertex
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
-    from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 
 
 class AbstractWriteHandler(ABC):

@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 import logging
-from typing import Dict, List, TYPE_CHECKING, Union, Optional
+from typing import TYPE_CHECKING, Union, Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder

@@ -18,7 +18,6 @@
 
 
 # -- Project information -----------------------------------------------------
-import sys, os
 
 project = "ExplorerScript"
 copyright = "2020, Parakoopa"

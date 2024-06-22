@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from antlr4 import InputStream, CommonTokenStream
 

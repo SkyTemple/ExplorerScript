@@ -20,12 +20,11 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List
+from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
     DefaultCaseBlockCompileHandler,
 )
@@ -36,8 +35,6 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.swi
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import (
-    OP_CASE_TEXT,
-    OP_DEFAULT_TEXT,
     SsbLabel,
     OP_JUMP,
     OP_SWITCH_SCENARIO,

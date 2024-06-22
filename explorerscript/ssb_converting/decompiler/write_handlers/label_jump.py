@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 import logging
-from typing import Dict, Type, Optional
+from typing import Optional
 
 from igraph import Vertex
 
@@ -42,7 +42,6 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     ForeverContinue,
     ForeverBreak,
     SsbLabelJump,
-    OP_JUMP,
     CallJump,
 )
 

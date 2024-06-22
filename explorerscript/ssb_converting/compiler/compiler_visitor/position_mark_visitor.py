@@ -20,7 +20,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
@@ -29,7 +28,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_mark
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
     PositionMarkerArgCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.utils import string_literal, CompilerCtx, Counter
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
 
 

@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 import logging
-from typing import Dict, List
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP

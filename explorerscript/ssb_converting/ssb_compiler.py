@@ -23,7 +23,7 @@
 import logging
 import os
 from pathlib import PurePosixPath, PurePath
-from typing import List, Optional, Dict
+from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.explorerscript_reader import ExplorerScriptReader

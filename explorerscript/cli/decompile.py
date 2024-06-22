@@ -24,7 +24,6 @@ import argparse
 import json
 import os
 import sys
-from typing import Tuple, List, Union
 
 from explorerscript.cli import (
     check_settings,

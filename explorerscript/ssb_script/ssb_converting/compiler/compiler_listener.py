@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 from enum import Enum, auto
-from typing import Optional, List, Union, Dict
+from typing import Optional, Union
 
 from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark

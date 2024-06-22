@@ -51,7 +51,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
 
         exits = self.start_vertex.out_edges()
 
-        self.decompiler.write_stmnt(f"forever")
+        self.decompiler.write_stmnt("forever")
         with Blk(self.decompiler):
             self.decompiler.forever_start_handler_stack.append(self)
             BlockWriteHandler(

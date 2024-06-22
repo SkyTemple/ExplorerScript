@@ -33,7 +33,7 @@ SETTINGS_DMC_OPEN_REQUEST = "open_request"
 
 def check_settings(settings):
     if SETTINGS not in settings:
-        print(f"Settings missing.", file=sys.stderr)
+        print("Settings missing.", file=sys.stderr)
         exit(1)
     settings = settings[SETTINGS]
 

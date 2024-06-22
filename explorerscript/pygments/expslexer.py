@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 
-from pygments.lexer import RegexLexer, include, bygroups, words
+from pygments.lexer import RegexLexer, include, words
 from pygments.token import *
 
 

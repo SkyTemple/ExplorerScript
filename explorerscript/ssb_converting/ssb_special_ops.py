@@ -26,11 +26,11 @@ TODO: These are only valid for Sky-style ssb.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Dict, Union, List, Optional
+from typing import Union, Optional
 
 from igraph import Graph, Vertex
 
-from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParamConstant
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode
 
 OP_JUMP = "Jump"
 OP_CALL = "Call"
@@ -222,7 +222,7 @@ class LabelJumpMarker:
 
 class CallJump(LabelJumpMarker):
     def __str__(self):
-        return f"CALL"
+        return "CALL"
 
 
 class IfStart(LabelJumpMarker):
@@ -289,7 +289,7 @@ class SwitchEnd(LabelMarker):
 
 class SwitchFalltrough(LabelMarker):
     def __str__(self):
-        return f"FALL"
+        return "FALL"
 
 
 class ForeverStart(LabelMarker):

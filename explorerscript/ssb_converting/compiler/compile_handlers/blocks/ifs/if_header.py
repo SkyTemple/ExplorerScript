@@ -35,7 +35,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.o
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
-from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OPS_BRANCH
+from explorerscript.ssb_converting.ssb_special_ops import OPS_BRANCH
 from explorerscript.util import _, f
 
 

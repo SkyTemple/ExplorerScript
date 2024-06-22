@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 import logging
-from typing import Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
@@ -32,7 +31,6 @@ from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer imp
 from explorerscript.ssb_converting.ssb_data_types import (
     SsbCoroutine,
     SsbRoutineInfo,
-    SsbOpParam,
     SsbOperation,
     NUMBER_OF_SPACES_PER_INDENT,
     SsbOpParamPositionMarker,

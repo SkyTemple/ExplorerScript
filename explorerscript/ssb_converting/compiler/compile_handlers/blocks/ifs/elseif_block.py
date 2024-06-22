@@ -20,7 +20,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractBlockCompileHandler,

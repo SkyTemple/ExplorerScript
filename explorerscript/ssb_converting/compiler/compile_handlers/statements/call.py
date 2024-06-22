@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 
-from typing import List
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
