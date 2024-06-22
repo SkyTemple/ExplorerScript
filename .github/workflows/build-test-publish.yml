@@ -2,59 +2,143 @@
 # Deploys to PyPi on "release".
 name: Build, test and publish
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - release
+      - version/*
+    tags:
+      - "*"
+  pull_request: {}
 
 jobs:
-  test:
+  linting:
     runs-on: ubuntu-latest
-    name: Runs tests
+    name: Linting
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with ruff
+      run: ruff check --output-format=github .
+
+  code-formatting:
+    runs-on: ubuntu-latest
+    name: Code Format
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check with ruff
+        run: ruff format --check .
+
+  typechecks:
+    runs-on: ubuntu-latest
+    name: Type checks
     strategy:
-      max-parallel: 5
+      fail-fast: false
       matrix:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - uses: theCapypara/mypy-check@rust-support
+      name: Run type checks
+      with:
+        path: 'explorerscript'
+        mypy_flags: '--config-file mypy.ini --junit-xml mypy-${{ matrix.python-version }}.xml'
+        requirements: '-r requirements.txt'
+        python_version: '${{ matrix.python-version }}'
+    - name: Upload Unit Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyPy Test Results (Python ${{ matrix.python-version }})
+        path: mypy-${{ matrix.python-version }}.xml
+
+  test:
+    runs-on: ubuntu-latest
+    name: Runs tests
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip setuptools
         pip install tox tox-gh-actions
+    - uses: dtolnay/rust-toolchain@stable
     - name: Test with tox
-      run: tox
+      run: tox -- -m "not romtest"
+    - run: mv pytest.xml pytest-${{ matrix.python-version }}.xml
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Pytest Test Results (Python ${{ matrix.python-version }})"
+        path: pytest-${{ matrix.python-version }}.xml
+
+  test-event-file:
+    name: "Publish Test Results Event File"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
+
   build:
-    needs: test
+    needs:
+      - test
+      - typechecks
     runs-on: ubuntu-latest
     name: Build the Python wheel
     steps:
-      # For tags we assume the version in setup.py is correct!
+      # For tags we assume the version in pyproject.toml is correct!
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
       - name: Rewrite version for dev if not tag
         if: "!startsWith(github.ref, 'refs/tags/')"
         run: |
-          perl -i -pe "s/__version__\s*=\s*'(.*?)(rc.*|a.*|post.*)?'/__version__='\1.dev0+${GITHUB_SHA::8}'/" setup.py
+          perl -i -pe "s/version\s*=\s*\"(.*?)(\.rc.*|\.a.*|\.post.*)?\"/version=\"\1.dev0+${GITHUB_SHA::8}\"/" pyproject.toml
       - name: Note version
         run: |
-          echo "PACKAGE_VERSION=$(python3 -- ./setup.py --version)" >> $GITHUB_ENV
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
-      - name: Upgrade pip
-        run: |
-          python -m pip install --upgrade pip
+          echo "PACKAGE_VERSION=$(tomlq '.project.version' pyproject.toml -r)" >> $GITHUB_ENV
       - name: Build Python wheels
         uses: RalfG/python-wheels-manylinux-build@v0.5.0-manylinux2014_x86_64
         with:
           python-versions: 'cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312'
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: dist/*.whl
+
   deploy:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
@@ -62,14 +146,14 @@ jobs:
     name: Deploy wheels to PyPI
     steps:
       - name: Download wheels
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: wheels
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
-      - name: Upgrade pip
+          python-version: "3.11"
+      - name: Upgrade pip and install Twine
         run: |
           python -m pip install --upgrade pip
           pip install twine
