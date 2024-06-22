@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,12 @@ from typing import Optional
 
 from antlr4 import InputStream, CommonTokenStream
 
+from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
+from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.ssb_script.ssb_converting.compiler.compiler_listener import SsbScriptCompilerListener
 from explorerscript.syntax_error_listener import SyntaxErrorListener
 

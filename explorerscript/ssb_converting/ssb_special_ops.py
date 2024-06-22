@@ -6,7 +6,7 @@ TODO: These are only valid for Sky-style ssb.
 
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,6 @@ OPS_ALL_SPECIAL = [
     OP_DEFAULT_TEXT,
 ]
 
-
 # THEORY:
 # Hold doesn't ACTUALLY end the execution, it just freezes the calling object/"thread" forever,
 # until the script is replaced?
@@ -174,13 +173,11 @@ OP_DUMMY_END = OP_RETURN
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
 OPS_THAT_END_CONTROL_FLOW = [OP_JUMP, OP_RETURN, OP_END, OP_HOLD, "JumpCommon", "Destroy"]
 
-
 OPS_CTX_LIVES = "lives"
 OPS_CTX_OBJECT = "object"
 OPS_CTX_PERFORMER = "performer"
 # The next OP after these will be executed in the context of an actor/object/performer
 OPS_CTX = [OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER]
-
 
 OPS_FLAG__CALC_BIT = "flag_CalcBit"
 OPS_FLAG__CALC_VALUE = "flag_CalcValue"

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -67,7 +67,6 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var impor
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ctxs.ctx_block import CtxBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.forever_block import ForeverBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
@@ -81,21 +80,22 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.s
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_block import IfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.for_block import ForBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.forever_block import ForeverBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.while_block import WhileBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import CaseHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import (
     CaseHeaderMenuCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import (
     CaseHeaderOpCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import CaseHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
     DefaultCaseBlockCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.message_switch import (
     MessageSwitchCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_block import (
     SwitchBlockCompileHandler,
 )
@@ -126,7 +126,6 @@ from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.util import _
-
 
 T = AbstractCompileHandler
 

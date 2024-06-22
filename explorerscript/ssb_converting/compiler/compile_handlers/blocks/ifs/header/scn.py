@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -37,8 +37,8 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     OP_BRANCH_SCENARIO_AFTER,
     OP_BRANCH_SCENARIO_NOW,
 )
-from explorerscript.util import exps_int
 from explorerscript.util import _, f
+from explorerscript.util import exps_int
 
 
 class IfHeaderScnCompileHandler(AbstractCompileHandler):

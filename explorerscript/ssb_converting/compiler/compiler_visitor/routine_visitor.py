@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
 #
 from typing import Optional
 
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler

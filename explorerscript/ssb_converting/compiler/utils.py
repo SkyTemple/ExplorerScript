@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,6 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 from explorerscript.util import f, _
 
 logger = logging.getLogger(__name__)
-
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler

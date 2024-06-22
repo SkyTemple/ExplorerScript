@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_SCENARIO
-from explorerscript.util import exps_int
 from explorerscript.util import _
+from explorerscript.util import exps_int
 
 
 class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):

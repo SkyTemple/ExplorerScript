@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var impor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_SCENARIO, OP_SWITCH_SCENARIO_LEVEL
-from explorerscript.util import exps_int
 from explorerscript.util import _, f
+from explorerscript.util import exps_int
 
 
 class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
