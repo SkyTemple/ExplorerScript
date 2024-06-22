@@ -25,6 +25,7 @@ and inserts labels at the appropriate locations.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 import logging
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation

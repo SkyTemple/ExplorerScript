@@ -20,6 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 import sys
 
 SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME = "performance_progress_list_var_name"

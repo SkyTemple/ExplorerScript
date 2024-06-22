@@ -26,6 +26,7 @@ TODO: These are only valid for Sky-style ssb.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 from typing import Union, Optional
 
 from igraph import Graph, Vertex

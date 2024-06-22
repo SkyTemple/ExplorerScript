@@ -294,7 +294,7 @@ class SsbOperation:
         return str(self)
 
     def __str__(self):
-        return f"{self.__class__.__name__}<{str({k:v for k,v in self.__dict__.items()})}>"
+        return f"{self.__class__.__name__}<{str({k: v for k, v in self.__dict__.items()})}>"
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

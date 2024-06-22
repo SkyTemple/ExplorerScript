@@ -25,6 +25,7 @@ and replaces jumps by regular opcodes arguments.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 import logging
 
 from explorerscript.error import SsbCompilerError
