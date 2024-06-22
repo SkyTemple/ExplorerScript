@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import Optional
 
 from igraph import Vertex
 
@@ -52,7 +51,7 @@ logger = logging.getLogger(__name__)
 class LabelJumpWriteHandler(AbstractWriteHandler):
     """Handles writing label jumps (ifs, switches, loops, jumps etc.)."""
 
-    _label_jump_marker_handlers: dict[LabelJumpMarker, type[Optional[AbstractWriteHandler]]] = {
+    _label_jump_marker_handlers: dict[LabelJumpMarker, type[AbstractWriteHandler | None]] = {
         MultiIfStart: IfWriteHandler,
         IfStart: IfWriteHandler,
         SwitchStart: SwitchWriteHandler,

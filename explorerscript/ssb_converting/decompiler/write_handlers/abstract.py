@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from igraph import Vertex
 
@@ -37,7 +37,7 @@ class AbstractWriteHandler(ABC):
     """
 
     def __init__(
-        self, start_vertex: Vertex, decompiler: "ExplorerScriptSsbDecompiler", parent: Optional["AbstractWriteHandler"]
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
     ):
         self.start_vertex = start_vertex
         self.decompiler = decompiler
@@ -46,7 +46,7 @@ class AbstractWriteHandler(ABC):
         self.ended_on_jump = False
 
     @abstractmethod
-    def write_content(self) -> Optional[Vertex]:
+    def write_content(self) -> Vertex | None:
         """
         Writes all operations that this handler is made for, and then
         returns the next vertex to process for the parent handler (if applicable).

@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -35,7 +34,7 @@ from explorerscript.util import _, f
 class MacroCallCompileHandler(AbstractStatementCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_list_handler: Optional[ArgListCompileHandler] = None
+        self.arg_list_handler: ArgListCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Macro_callContext

@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 from enum import Enum, auto
-from typing import Optional, Union
 
 from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
@@ -71,17 +70,17 @@ class SsbScriptCompilerListener(SsbScriptListener):
 
         self._is_processing_argument = False
         self._argument_type: ListenerArgType = ListenerArgType.INVALID
-        self._argument_value: Union[int, str, dict[str, str]] = -1
+        self._argument_value: int | str | dict[str, str] = -1
 
         self._last_op_line = -1
         self._op_idx_in_current_line = 0
 
         self._collected_lang_string: dict[str, str] = {}
-        self._collected_pos_marker: Optional[SsbOpParamPositionMarker] = None
+        self._collected_pos_marker: SsbOpParamPositionMarker | None = None
 
         self._collected_labels: dict[str, SsbLabel] = {}
         self._label_increment_id = -1
-        self._turn_next_op_into_label_jump_for: Optional[SsbLabel] = None
+        self._turn_next_op_into_label_jump_for: SsbLabel | None = None
         self._labels_before_op: list[SsbLabel] = []
 
         self._total_number_collected_ops = -1

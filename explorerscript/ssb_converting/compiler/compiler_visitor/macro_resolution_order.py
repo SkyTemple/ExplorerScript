@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from igraph import Graph
 
@@ -42,7 +41,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         self._already_added_to_graph = set()
         for name in self._in_macros.keys():
             self._create_vertex(name)
-        self._active_macro_name: Optional[str] = None
+        self._active_macro_name: str | None = None
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         self.visitChildren(ctx)

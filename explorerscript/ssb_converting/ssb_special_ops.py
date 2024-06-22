@@ -27,7 +27,6 @@ TODO: These are only valid for Sky-style ssb.
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Union, Optional
 
 from igraph import Graph, Vertex
 
@@ -349,7 +348,7 @@ class SsbLabel(SsbOperation):
         return number_in_vs > max_in_vs
 
     @staticmethod
-    def _find_switch_start_vertex(graph: Graph, switch_id: int) -> Optional[Vertex]:
+    def _find_switch_start_vertex(graph: Graph, switch_id: int) -> Vertex | None:
         for v in graph.vs:
             if "op" not in v.attributes():
                 continue
@@ -375,7 +374,7 @@ class SsbForeignLabel(SsbOperation):
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
 
-    def __init__(self, root: SsbOperation, label: Union[SsbLabel, None]):
+    def __init__(self, root: SsbOperation, label: SsbLabel | None):
         if isinstance(root, SsbLabelJump):
             # SsbLabelJumps can not be nested, that makes no sense. But for convenience, they can be "copied" this way.
             root = root.root

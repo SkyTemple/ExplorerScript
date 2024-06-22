@@ -23,7 +23,6 @@
 from __future__ import annotations
 import logging
 import sys
-from typing import List, Dict, Union, Set, Tuple
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 
@@ -72,8 +71,8 @@ sys.setrecursionlimit(10000)
 
 
 class SsbGraphMinimizer:
-    def __init__(self, routine_ops: List[List[SsbOperation]], optimize_ending_opcodes=True):
-        self._graphs: List[Graph] = []
+    def __init__(self, routine_ops: list[list[SsbOperation]], optimize_ending_opcodes=True):
+        self._graphs: list[Graph] = []
         self.optimize_ending_opcodes = optimize_ending_opcodes
         for rtn_id, rtn in enumerate(routine_ops):
             g = Graph(directed=True)
@@ -82,7 +81,7 @@ class SsbGraphMinimizer:
                 # Should not happen
                 continue
             # Map of label id -> id of opcode in routine
-            label_indices: Dict[int, int] = {}
+            label_indices: dict[int, int] = {}
             for i, op in enumerate(rtn):
                 v = g.add_vertex(i, label=None, op=op, style="solid", shape="ellipse")
                 if isinstance(op, SsbLabel):
@@ -615,7 +614,7 @@ class SsbGraphMinimizer:
                             had_to_restart = True
                             break
 
-    def _build_loops__try_loop(self, start: Vertex) -> Tuple[bool, Union[List[Edge], None], Union[List[Edge], None]]:
+    def _build_loops__try_loop(self, start: Vertex) -> tuple[bool, list[Edge] | None, list[Edge] | None]:
         """
         Try to find a loopable section of the graph starting at v.
         If found, the second entry of the returned tuple contains breaking points and the third all required continue
@@ -733,7 +732,7 @@ class SsbGraphMinimizer:
                         vs_to_delete.add(v)
             g.delete_vertices(vs_to_delete)
 
-    def _get_edges(self, g: Graph, rtn: List[SsbOperation], rtn_id: int, label_indices: Dict[int, int]):
+    def _get_edges(self, g: Graph, rtn: list[SsbOperation], rtn_id: int, label_indices: dict[int, int]):
         """
         Get the edges for the graph g by a list of SsbOperations. Will branch at SsbLabelJumps.
         """
@@ -788,11 +787,11 @@ class SsbGraphMinimizer:
     def _get_edges__add_edge(
         self,
         g: Graph,
-        rtn: List[SsbOperation],
+        rtn: list[SsbOperation],
         rtn_id: int,
-        label_indices: Dict[int, int],
+        label_indices: dict[int, int],
         op_i: int,
-        already_visited: Set[int],
+        already_visited: set[int],
         flow_level=0,
     ):
         nxt_stack = [(flow_level, op_i)]
@@ -811,13 +810,13 @@ class SsbGraphMinimizer:
                 nxt_stack.insert(0, (flow_level, nxt))
 
     def _get_edges__get_next_for(
-        self, g, rtn: List[SsbOperation], rtn_id: int, flow_level: int, label_indices: Dict[int, int], op_i: int
-    ) -> List[Tuple[int, int]]:
+        self, g, rtn: list[SsbOperation], rtn_id: int, flow_level: int, label_indices: dict[int, int], op_i: int
+    ) -> list[tuple[int, int]]:
         """
         Returns a list of next opcodes to visit from this opcode and
         their flow level (flow_level for normal continue; flow_level + 1 for jump)
         """
-        next_ops: List[Tuple[int, int]] = []
+        next_ops: list[tuple[int, int]] = []
 
         previous_op = rtn[op_i - 1]
         # If the previous op is one of OPS_CTX, then the immediate control flow will not end,
@@ -926,7 +925,7 @@ class SsbGraphMinimizer:
             for op in e["switch_ops"]:
                 e["label"] += f"\n[{op.switch_index}:{op.index}:{op.op.op_code.name}]"
 
-    def get_graphs(self) -> List[Graph]:
+    def get_graphs(self) -> list[Graph]:
         return self._graphs
 
     # Additional utility transformations for debugging:

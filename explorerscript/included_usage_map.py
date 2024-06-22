@@ -48,7 +48,7 @@ class IncludedUsageMap:
                     os.path.abspath(os.path.join(dirname_base_abs_file_path, mapping.relpath_included_file))
                 )
 
-    def __sub__(self, other) -> "IncludedUsageMapDiff":
+    def __sub__(self, other) -> IncludedUsageMapDiff:
         """Subtract two maps. The result is IncludedUsageMapDiff."""
         if not isinstance(other, IncludedUsageMap):
             return NotImplemented

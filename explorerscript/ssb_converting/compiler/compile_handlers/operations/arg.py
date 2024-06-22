@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Union, Optional
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -34,9 +33,9 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 class ArgCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_handler: Optional[
-            Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]
-        ] = None
+        self.arg_handler: None | (
+            IntegerLikeCompileHandler | StringCompileHandler | PositionMarkerCompileHandler
+        ) = None
 
     def collect(self) -> SsbOpParam:
         return self.arg_handler.collect()

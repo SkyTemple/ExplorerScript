@@ -23,7 +23,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter
@@ -61,7 +60,7 @@ class ExplorerScriptMacro:
 
         # The absolute path to the ExplorerScript source file that this macro is in.
         # May be not set, if this macro is not in a physical file.
-        self.included__absolute_path: Optional[str] = None
+        self.included__absolute_path: str | None = None
 
         # The original source map builder, that will be used to insert the proper macro source map entries
         # when building the macro
@@ -70,7 +69,7 @@ class ExplorerScriptMacro:
         # The relative path to this file from the file that includes it.
         # May not be set if not applicable (for macros in the originally requested file it is None).
         # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
-        self.included__relative_path: Optional[str] = None
+        self.included__relative_path: str | None = None
 
     def build(
         self,

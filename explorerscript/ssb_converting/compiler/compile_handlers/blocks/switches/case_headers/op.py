@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -39,8 +38,8 @@ from explorerscript.util import _
 class CaseHeaderOpCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.operator: Optional[SsbOperator] = None
-        self.value: Optional[SsbOpParam] = None
+        self.operator: SsbOperator | None = None
+        self.value: SsbOpParam | None = None
         self.value_is_a_variable = False
 
     def collect(self) -> SsbLabelJumpBlueprint:

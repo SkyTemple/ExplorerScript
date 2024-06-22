@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 
-from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -36,7 +35,7 @@ from explorerscript.util import _
 class SwitchHeaderDungeonModeCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.value: Optional[SsbOpParam] = None
+        self.value: SsbOpParam | None = None
 
     def collect(self) -> SsbOperation:
         if self.value is None:

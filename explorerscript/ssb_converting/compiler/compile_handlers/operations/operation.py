@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
@@ -33,7 +32,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpPara
 class OperationCompileHandler(AbstractStatementCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_list_handler: Optional[ArgListCompileHandler] = None
+        self.arg_list_handler: ArgListCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.OperationContext

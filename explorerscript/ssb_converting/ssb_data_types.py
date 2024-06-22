@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import string
 from enum import Enum
-from typing import Union, Type
+from typing import Union
 
 
 def escape_quotes(string):
@@ -128,7 +128,7 @@ class SsbOpParamFixedPoint:
     class NegativeZero:
         pass  # Marker type for negative numbers.
 
-    def __init__(self, whole_part: Union[int, Type[SsbOpParamFixedPoint.NegativeZero]], fract_part: str):
+    def __init__(self, whole_part: int | type[SsbOpParamFixedPoint.NegativeZero], fract_part: str):
         assert set(fract_part) <= DIGITS
         if whole_part == SsbOpParamFixedPoint.NegativeZero:
             self.value = f"-0.{fract_part}"
@@ -136,13 +136,13 @@ class SsbOpParamFixedPoint:
             self.value = f"{whole_part}.{fract_part}"
 
     @classmethod
-    def from_float(cls, value: float) -> "SsbOpParamFixedPoint":
+    def from_float(cls, value: float) -> SsbOpParamFixedPoint:
         slf = cls(0, "0")
         slf.value = str(value)
         return slf
 
     @classmethod
-    def from_str(cls, value: str) -> "SsbOpParamFixedPoint":
+    def from_str(cls, value: str) -> SsbOpParamFixedPoint:
         try:
             parts = value.split(".", 1)
             whole_part = parts[0].lstrip("0")

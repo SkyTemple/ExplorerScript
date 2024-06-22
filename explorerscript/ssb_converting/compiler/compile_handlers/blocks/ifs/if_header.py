@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -43,7 +42,7 @@ from explorerscript.util import _, f
 class IfHeaderCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._header_cmplx_handler: Optional[AbstractCompileHandler] = None
+        self._header_cmplx_handler: AbstractCompileHandler | None = None
         self._is_positive = True
 
     def set_positive(self, positive):

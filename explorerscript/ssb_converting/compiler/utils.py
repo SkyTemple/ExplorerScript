@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 import logging
-from typing import TYPE_CHECKING, Union, Optional
+from typing import TYPE_CHECKING
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
@@ -79,7 +79,7 @@ class CompilerCtx:
         collected_labels: dict[str, SsbLabel],
         counter_labels: Counter,
         performance_progress_list_var_name: str,
-        macros: dict[str, "ExplorerScriptMacro"],
+        macros: dict[str, ExplorerScriptMacro],
     ):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
@@ -87,21 +87,21 @@ class CompilerCtx:
         self.collected_labels = collected_labels
         self.counter_labels = counter_labels
         # Loaded macros that can be used for macro calls.
-        self.macros: dict[str, "ExplorerScriptMacro"] = macros
+        self.macros: dict[str, ExplorerScriptMacro] = macros
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
         # Current handlers for structures that have ending opcodes collected by child handlers
-        self._loops: list["AbstractLoopBlockCompileHandler"] = []
-        self._switch_cases: list[Union["DefaultCaseBlockCompileHandler", "CaseBlockCompileHandler"]] = []
+        self._loops: list[AbstractLoopBlockCompileHandler] = []
+        self._switch_cases: list[DefaultCaseBlockCompileHandler | CaseBlockCompileHandler] = []
 
-    def add_loop(self, h: "AbstractLoopBlockCompileHandler"):
+    def add_loop(self, h: AbstractLoopBlockCompileHandler):
         self._loops.append(h)
 
     def remove_loop(self):
         self._loops.pop()
 
-    def add_switch_case(self, h: Union["DefaultCaseBlockCompileHandler", "CaseBlockCompileHandler"]):
+    def add_switch_case(self, h: DefaultCaseBlockCompileHandler | CaseBlockCompileHandler):
         self._switch_cases.append(h)
 
     def remove_switch_case(self):
@@ -214,7 +214,7 @@ def strip_last_label(routine_ops: list[list[SsbOperation]]):
     return returned_routine_ops
 
 
-def does_op_end_control_flow(op: SsbOperation, previous_op: Optional[SsbOperation]) -> bool:
+def does_op_end_control_flow(op: SsbOperation, previous_op: SsbOperation | None) -> bool:
     if previous_op is not None and previous_op.op_code.name in OPS_CTX:
         return False
     if isinstance(op, SsbLabelJump):

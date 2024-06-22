@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
@@ -51,7 +50,7 @@ class MacroVisitor(ExplorerScriptVisitor):
         )
         self.macro_resolution_order = macro_resolution_order
 
-        self._root_handler: Optional[AbstractCompileHandler] = None
+        self._root_handler: AbstractCompileHandler | None = None
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}

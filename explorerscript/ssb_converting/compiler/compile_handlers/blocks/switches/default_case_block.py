@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
@@ -40,10 +39,10 @@ class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
 
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._added_string_handler: Optional[StringCompileHandler] = None
+        self._added_string_handler: StringCompileHandler | None = None
         self.is_message_case = False
         # The end of the switch
-        self._end_label: Optional[SsbLabel] = None
+        self._end_label: SsbLabel | None = None
 
     def set_end_label(self, end_label):
         self._end_label = end_label

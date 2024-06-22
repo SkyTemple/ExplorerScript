@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -47,9 +46,9 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
 
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._switch_header_handler: Optional[IntegerLikeCompileHandler] = None
+        self._switch_header_handler: IntegerLikeCompileHandler | None = None
         self._case_handlers: list[CaseBlockCompileHandler] = []
-        self._default_handler: Optional[DefaultCaseBlockCompileHandler] = None
+        self._default_handler: DefaultCaseBlockCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Message_switch_blockContext

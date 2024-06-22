@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import Optional
 
 from igraph import Vertex
 
@@ -56,7 +55,7 @@ logger = logging.getLogger(__name__)
 class SimpleOperationWriteHandler(AbstractWriteHandler):
     """Handles writing regular operations and a few special cases."""
 
-    _ssb_operations_special_cases_handlers: dict[Optional[str], type[AbstractWriteHandler]] = {
+    _ssb_operations_special_cases_handlers: dict[str | None, type[AbstractWriteHandler]] = {
         None: SimpleSimpleOpWriteHandler
     }
     for x in [OP_JUMP, OP_CALL, OP_RETURN, OP_END, OP_HOLD]:

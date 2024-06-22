@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
@@ -54,7 +53,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
         )
 
         self._active_routine_id = -1
-        self._root_handler: Optional[AbstractCompileHandler] = None
+        self._root_handler: AbstractCompileHandler | None = None
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
         # Are not visited.

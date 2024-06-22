@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -36,7 +35,7 @@ from explorerscript.util import _
 class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx, is_menu_2: bool):
         super().__init__(ctx, compiler_ctx)
-        self.value: Optional[SsbOpParam] = None
+        self.value: SsbOpParam | None = None
         self.is_menu_2 = is_menu_2
 
     def collect(self) -> SsbLabelJumpBlueprint:

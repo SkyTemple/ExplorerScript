@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import Optional
 
 from antlr4 import InputStream, CommonTokenStream
 
@@ -49,7 +48,7 @@ class SsbScriptSsbCompiler:
     def __init__(self):
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
-        self.routine_infos: Optional[list[SsbRoutineInfo]] = None
+        self.routine_infos: list[SsbRoutineInfo] | None = None
 
         # Only contains simple SSBOperations, directly representing ops.
         # The operations have no IDs (-1), because the Decompiler has no concept of the game's internal ids.
@@ -57,14 +56,14 @@ class SsbScriptSsbCompiler:
         # The list contains no labels.
         # Since the language allows any operations and doesn't do any checks directly, the OpCode names
         # and constants used might be invalid.
-        self.routine_ops: Optional[list[list[SsbOperation]]] = None
+        self.routine_ops: list[list[SsbOperation]] | None = None
 
         # If this script contains coroutines, the value at the index corresponding to self.routine_ops
         # will contain it's name as string.
-        self.named_coroutines: Optional[list[str]] = None
+        self.named_coroutines: list[str] | None = None
 
         # Source map for the compiled ssb routine ops.
-        self.source_map: Optional[SourceMap] = None
+        self.source_map: SourceMap | None = None
 
     def compile(self, ssb_script_src: str):
         """

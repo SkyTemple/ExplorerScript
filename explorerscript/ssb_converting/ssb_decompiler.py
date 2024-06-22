@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import List, Dict
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
@@ -56,9 +55,9 @@ class ExplorerScriptSsbDecompiler:
 
     def __init__(
         self,
-        routine_infos: List[SsbRoutineInfo],
-        routine_ops: List[List[SsbOperation]],
-        named_coroutines: List[SsbCoroutine],
+        routine_infos: list[SsbRoutineInfo],
+        routine_ops: list[list[SsbOperation]],
+        named_coroutines: list[SsbCoroutine],
         performance_progress_list_var_name: str,
         dungeon_mode_constants: DungeonModeConstants,
     ):
@@ -71,7 +70,7 @@ class ExplorerScriptSsbDecompiler:
         """
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
-        self.named_coroutines: Dict[int, str] = {x.id: x.name for x in named_coroutines}
+        self.named_coroutines: dict[int, str] = {x.id: x.name for x in named_coroutines}
         self._output = ""
         self.indent = 0
         self._line_number = 1
@@ -80,7 +79,7 @@ class ExplorerScriptSsbDecompiler:
         self.performance_progress_list_var_name = performance_progress_list_var_name
         self.dungeon_mode_constants = dungeon_mode_constants
         # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
-        self.forever_start_handler_stack: List[ForeverWriteHandler] = []
+        self.forever_start_handler_stack: list[ForeverWriteHandler] = []
 
     def convert(self) -> tuple[str, SourceMap]:
         logger.debug("Decompiling ExplorerScript...")

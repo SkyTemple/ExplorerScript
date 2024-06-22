@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractLoopBlockCompileHandler,
@@ -68,9 +67,9 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
         self._initial_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} initial label"
         )
-        self._branch_blueprint: Optional[SsbLabelJumpBlueprint] = None
-        self._init_statement_handler: Optional[AbstractStatementCompileHandler] = None
-        self._end_statement_handler: Optional[AbstractStatementCompileHandler] = None
+        self._branch_blueprint: SsbLabelJumpBlueprint | None = None
+        self._init_statement_handler: AbstractStatementCompileHandler | None = None
+        self._end_statement_handler: AbstractStatementCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)

@@ -21,7 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Union, Any
+from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -31,7 +31,7 @@ from explorerscript.util import exps_int
 
 
 class IntegerLikeCompileHandler(AbstractCompileHandler):
-    def collect(self) -> Union[int, SsbOpParamConstant, SsbOpParamFixedPoint]:
+    def collect(self) -> int | SsbOpParamConstant | SsbOpParamFixedPoint:
         self.ctx: ExplorerScriptParser.Integer_likeContext
         if self.ctx.INTEGER():
             return exps_int(str(self.ctx.INTEGER()))

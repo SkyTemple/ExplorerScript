@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Union, Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -34,9 +33,9 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstString, 
 class StringCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.lang_string_handler: Optional[LangStringCompileHandler] = None
+        self.lang_string_handler: LangStringCompileHandler | None = None
 
-    def collect(self) -> Union[SsbOpParamLanguageString, SsbOpParamConstString]:
+    def collect(self) -> SsbOpParamLanguageString | SsbOpParamConstString:
         self.ctx: ExplorerScriptParser.StringContext
         if self.ctx.STRING_LITERAL():
             return SsbOpParamConstString(string_literal(self.ctx.STRING_LITERAL()))

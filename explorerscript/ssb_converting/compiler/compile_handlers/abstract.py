@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
@@ -63,7 +62,7 @@ class AbstractCompileHandler(ABC):
         return self._register_operation(SsbOperation(self.compiler_ctx.counter_ops(), SsbOpCode(-1, op_name), params))
 
     def _generate_jump_operation(
-        self, op_name: str, params: list[SsbOpParam], label: Optional[SsbLabel], none_allowed=False
+        self, op_name: str, params: list[SsbOpParam], label: SsbLabel | None, none_allowed=False
     ):
         if not none_allowed:
             assert label is not None
@@ -107,8 +106,8 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         # The processed jumps
         self.processed_header_jumps: list[SsbLabelJump] = []
         self._added_handlers: list[AbstractStatementCompileHandler] = []
-        self.start_label: Optional[SsbLabel] = None
-        self.end_label: Optional[SsbLabel] = None
+        self.start_label: SsbLabel | None = None
+        self.end_label: SsbLabel | None = None
 
     def _process_block(self, insert_the_jump_if_needed=True) -> list[SsbOperation]:
         """

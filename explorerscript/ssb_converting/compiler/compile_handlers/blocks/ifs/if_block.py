@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
@@ -43,7 +42,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         super().__init__(ctx, compiler_ctx)
         self._if_header_handlers: list[IfHeaderCompileHandler] = []
         self._else_if_handlers: list[ElseIfBlockCompileHandler] = []
-        self._else_handler: Optional[ElseBlockCompileHandler] = None
+        self._else_handler: ElseBlockCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.If_blockContext
@@ -55,7 +54,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "entire if-block end label")
         is_positive = self.ctx.NOT() is None
 
-        ops: list[Optional[SsbOperation]] = []
+        ops: list[SsbOperation | None] = []
 
         # 1. Go over all if header ops:
         for h in self._if_header_handlers:

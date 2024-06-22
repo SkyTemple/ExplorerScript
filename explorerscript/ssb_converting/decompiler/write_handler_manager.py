@@ -43,7 +43,7 @@ class WriteHandlerManager:
     def get_for(
         cls,
         v: Vertex,
-        decompiler: "ExplorerScriptSsbDecompiler",
+        decompiler: ExplorerScriptSsbDecompiler,
         parent: AbstractWriteHandler,
         vertex_that_started_block: Vertex,
         is_first_vertex_of_block: bool,

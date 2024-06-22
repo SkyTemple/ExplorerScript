@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import Optional
 
 from igraph import Vertex
 
@@ -42,7 +41,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         self.m: ForeverStart = None
         self.ended_on_jump = True
         # Since the break_loop does NOT have to be on the exact next level, we use a stack system instead!
-        self._vertex_after_forever: Optional[Vertex] = None
+        self._vertex_after_forever: Vertex | None = None
 
     def write_content(self):
         op: SsbLabelJump = self.start_vertex["op"]

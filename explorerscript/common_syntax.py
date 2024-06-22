@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Union
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
@@ -30,7 +29,7 @@ from explorerscript.util import exps_int, _
 
 
 def parse_position_marker_arg(
-    ctx: Union[ExplorerScriptParser.Position_marker_argContext, SsbScriptParser.Position_marker_argContext],
+    ctx: ExplorerScriptParser.Position_marker_argContext | SsbScriptParser.Position_marker_argContext,
 ):
     offset = 0
     pos = 0

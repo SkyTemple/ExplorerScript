@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 
-from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
@@ -37,7 +36,7 @@ from explorerscript.util import exps_int
 class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.var_target: Optional[SsbOpParam] = None
+        self.var_target: SsbOpParam | None = None
 
     def collect(self) -> list[SsbOperation]:
         if self.var_target is None:

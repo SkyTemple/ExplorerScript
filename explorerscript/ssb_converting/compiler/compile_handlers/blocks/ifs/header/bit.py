@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -37,7 +36,7 @@ from explorerscript.util import exps_int
 class IfHeaderBitCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.var_target: Optional[SsbOpParam] = None
+        self.var_target: SsbOpParam | None = None
 
     def collect(self) -> SsbLabelJumpBlueprint:
         self.ctx: ExplorerScriptParser.If_h_bitContext

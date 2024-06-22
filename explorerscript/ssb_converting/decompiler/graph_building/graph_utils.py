@@ -27,7 +27,6 @@ import logging
 import operator
 from collections import Counter
 from threading import Lock
-from typing import Union, Optional
 
 from igraph import Edge, OUT, Vertex, Graph
 
@@ -69,7 +68,7 @@ def find_first_common_next_vertex_in_edges(
     allow_loops=False,
     vs_to_not_visit: list[int] = None,
     allow_loop_edges=True,
-) -> Union[None, list[Edge]]:
+) -> None | list[Edge]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)
     which is reachable by all edges in es.
@@ -112,13 +111,13 @@ def find_first_common_next_vertex_in_edges(
 
 def _find_first_common_next_vertex_in_edges__impl(
     g: Graph,
-    es: list[set[Union[Edge, None]]],
+    es: list[set[Edge | None]],
     map_of_visited: [list[dict[int, int]]],
     allow_open_branches: bool,
     allow_loops: bool,
     vs_to_not_visit: list[int] = None,
     allow_loop_edges=True,
-) -> Union[None, list[Edge]]:
+) -> None | list[Edge]:
     """
     :param g: Graph
     :param es: List of edges. An edge can be None, if the end of this part of the tree was reached
@@ -157,7 +156,7 @@ def _find_first_common_next_vertex_in_edges__impl(
 
         # Not found... too bad! Try to go through the path and find it
         # Get next edge for all paths
-        new_es: list[set[Union[Edge, None]]] = []
+        new_es: list[set[Edge | None]] = []
         for i, e_set in enumerate(es):
             new_es_entry = set()
             new_es.append(new_es_entry)
@@ -201,7 +200,7 @@ def _find_first_common_next_vertex_in_edges__impl(
         es = new_es
 
 
-def find_end_label_in_edges(g, es: list[Edge]) -> Union[None, list[Optional[Edge]]]:
+def find_end_label_in_edges(g, es: list[Edge]) -> None | list[Edge | None]:
     """
     Finds the first vertex with SsbLabel op (actually list of edges that lead to it for each edge in es)
     which is reachable by some edges in es. We search for the ONE vertex joining most of the paths,
@@ -459,8 +458,8 @@ def reverse_find_edge(e, cb, loop_check: set[Vertex] = None) -> list[Edge]:
 
 
 def get_out_edges_of_subgraph(
-    g: Graph, start: Vertex, to: list[Union[Vertex, int]], path_filter=lambda e, v: True
-) -> Optional[set[int]]:
+    g: Graph, start: Vertex, to: list[Vertex | int], path_filter=lambda e, v: True
+) -> set[int] | None:
     """
     Create a subgraph of the given list of vertices and then find all edges out of this sub-graph and return them
     Removes parts of the subgraph for all vertices for which path_filter returns False. The filter get's the
@@ -520,7 +519,7 @@ def get_all_vertices_between(g, start, target, path_filter=lambda e, v: True):
     return vs_on_the_way_to_target
 
 
-def find_switch_end_label(g: Graph, switch_id: int) -> Optional[Vertex]:
+def find_switch_end_label(g: Graph, switch_id: int) -> Vertex | None:
     for v in g.vs:
         if isinstance(v["op"], SsbLabel) and any(
             isinstance(m, SwitchEnd) and m.switch_id == switch_id for m in v["op"].markers

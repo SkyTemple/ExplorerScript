@@ -22,7 +22,6 @@
 #
 from __future__ import annotations
 import logging
-from typing import Optional
 
 from igraph import Vertex
 
@@ -65,12 +64,12 @@ class BlockWriteHandler(AbstractWriteHandler):
         # graph has no reachable vertices anymore.
         self.check_end_block = check_end_block
         # This will contain the handler for the last operation written by this block, after write_content.
-        self.last_handler_in_block: Optional[AbstractWriteHandler] = None
+        self.last_handler_in_block: AbstractWriteHandler | None = None
         # If True, an exception is raised if the block contains any opcodes that would start another sub-block
         self._disallow_nested = disallow_nested
 
         self.vertex_that_started_block = vertex_that_started_block
-        self.last_vertex: Optional[Vertex] = None
+        self.last_vertex: Vertex | None = None
 
     def write_content(self):
         should_continue = True

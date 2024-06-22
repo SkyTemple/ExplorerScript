@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Optional
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -48,7 +47,7 @@ class CtxBlockCompileHandler(AbstractStatementCompileHandler):
 
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._for_id: Optional[SsbOpParam] = None
+        self._for_id: SsbOpParam | None = None
         self._sub_stmt = None
 
     def collect(self) -> list[SsbOperation]:
