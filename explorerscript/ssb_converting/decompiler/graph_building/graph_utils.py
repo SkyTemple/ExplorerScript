@@ -24,8 +24,8 @@ import functools
 import itertools
 import logging
 import operator
-from threading import Lock
 from collections import Counter
+from threading import Lock
 from typing import Union, Optional
 
 from igraph import Edge, OUT, Vertex, Graph
@@ -170,7 +170,6 @@ def _find_first_common_next_vertex_in_edges__impl(
                         # Potential endless recursion situation. Abort.
                         new_es_entry.add(None)
                         continue
-                v_es_tmp = v.out_edges()
                 v_es = []
                 for e in v_es:
                     if e.index in g.es:

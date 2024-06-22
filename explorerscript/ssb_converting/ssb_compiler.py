@@ -183,7 +183,7 @@ class ExplorerScriptSsbCompiler:
             # Check if the file contains any routines
             if HasRoutinesVisitor().visit(parser.start()):
                 # noinspection PyUnusedLocal
-                fn = os.path.basename(file_name)
+                fn = os.path.basename(file_name)  # noqa
                 raise SsbCompilerError(f(_("{fn}: Macro scripts must not contain any routines.")))
             return self
 

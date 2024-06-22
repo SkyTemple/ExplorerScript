@@ -32,6 +32,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_data_types import SsbOperator
 from explorerscript.ssb_converting.ssb_special_ops import (
     SsbLabelJump,
     SwitchStart,
@@ -39,7 +40,6 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     OP_SWITCH_DUNGEON_MODE,
 )
 from explorerscript.ssb_converting.util import Blk
-from explorerscript.ssb_converting.ssb_data_types import SsbOperator
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +104,6 @@ class SwitchWriteHandler(AbstractWriteHandler):
                                 self.start_vertex,
                                 check_end_block=self.check_end_block,
                             )
-                            end_vertex = handler.write_content()
                             if (
                                 not isinstance(handler.last_handler_in_block, LabelWriteHandler)
                                 or not handler.last_handler_in_block.switch_fell_through

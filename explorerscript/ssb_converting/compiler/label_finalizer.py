@@ -57,9 +57,9 @@ class LabelFinalizer:
 
                     if not op_was_removed:
                         new_r.append(op)
-                        for l in labels_waiting:
-                            l.offset = op.offset
-                            self.label_offsets[l.id] = l.offset
+                        for label in labels_waiting:
+                            label.offset = op.offset
+                            self.label_offsets[label.id] = label.offset
                         labels_waiting = []
 
     @classmethod

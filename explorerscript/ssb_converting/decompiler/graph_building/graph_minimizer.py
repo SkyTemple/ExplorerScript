@@ -22,10 +22,24 @@
 #
 import logging
 import sys
+from typing import List, Dict, Union, Set, Tuple
 
-from igraph import IN
+from igraph import IN, Edge, OUT, Vertex, Graph
 
-from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import *
+from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import (
+    any_incoming_edge_is_loop,
+    find_first_common_next_vertex_in_edges,
+    find_first_common_next_vertex_in_edges__clear_cache,
+    find_first_label_vertex_with_marker_that_matches_condition,
+    find_lowest_and_highest_out_edge,
+    get_all_vertices_between,
+    get_out_edges_of_subgraph,
+    has_unclosed_blocks,
+    is_loop,
+    is_reachable_when_removing,
+    iterate_switch_edges,
+    reverse_find_edge,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import (
     SsbLabelJump,
@@ -52,7 +66,6 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 )
 
 logger = logging.getLogger(__name__)
-
 
 sys.setrecursionlimit(10000)
 
@@ -261,8 +274,6 @@ class SsbGraphMinimizer:
                         original_op_v_at_else = v_at_else["op"]
                         v_if_id = original_op_v.get_marker().if_id
                         v_at_else_if_id = original_op_v_at_else.get_marker().if_id
-                        original_op_v_is_not = original_op_v.get_marker().is_not
-                        original_op_v_at_else_is_not = original_op_v_at_else.get_marker().is_not
                         if first_run:
                             # v op:                         Turn into SsbMultiIfStart
                             #                               and add original v op and v_at_else op to original_ssb_ifs
@@ -610,8 +621,11 @@ class SsbGraphMinimizer:
         markers.
         """
         continues = [e for e in start.in_edges() if e["loop"]]
+
         # Make sure the loop doesn't cross any existing loops
-        path_filter = lambda e, v: not any_incoming_edge_is_loop(v)
+        def path_filter(e, v):
+            return not any_incoming_edge_is_loop(v)
+
         immediate_breaks = get_out_edges_of_subgraph(start.graph, start, [c.source for c in continues], path_filter)
         if immediate_breaks is None:
             return False, None, None

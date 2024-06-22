@@ -21,13 +21,13 @@
 #  SOFTWARE.
 #
 import logging
+from typing import List, Dict
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
+from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
 from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.routine import RoutineWriteHandler
-from explorerscript.ssb_converting.ssb_special_ops import *
-from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.ssb_data_types import (
     SsbCoroutine,
     SsbRoutineInfo,
@@ -35,6 +35,12 @@ from explorerscript.ssb_converting.ssb_data_types import (
     NUMBER_OF_SPACES_PER_INDENT,
     SsbOpParamPositionMarker,
     DungeonModeConstants,
+)
+from explorerscript.ssb_converting.ssb_special_ops import (
+    SsbLabelJump,
+    CallJump,
+    ForeverBreak,
+    ForeverContinue,
 )
 
 logger = logging.getLogger(__name__)

@@ -22,8 +22,7 @@
 #
 
 from pygments.lexer import RegexLexer, include, words
-from pygments.token import *
-
+from pygments.token import Comment, Name, String, Text, Number
 
 KEYWORDS = (
     "import",

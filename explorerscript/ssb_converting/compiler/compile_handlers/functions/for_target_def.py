@@ -39,7 +39,7 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
         integer_like = self._linked_to_target
         try:
             linked_to = exps_int(integer_like)
-        except:
+        except ValueError:
             linked_to_name = integer_like.name
 
         if str(self.ctx.FOR_TARGET()) == "for_actor":

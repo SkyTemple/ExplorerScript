@@ -23,6 +23,8 @@
 from enum import Enum, auto
 from typing import Optional, Union
 
+from explorerscript.antlr.SsbScriptListener import SsbScriptListener
+from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.utils import string_literal
@@ -39,8 +41,6 @@ from explorerscript.ssb_converting.ssb_data_types import (
     SsbOpParamFixedPoint,
 )
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
-from explorerscript.antlr.SsbScriptListener import SsbScriptListener
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.util import exps_int
 
 
@@ -111,7 +111,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         integer_like = str(ctx.integer_like().children[0])
         try:
             linked_to = exps_int(integer_like)
-        except:
+        except ValueError:
             linked_to_name = integer_like
 
         if str(ctx.FOR_TARGET()) == "for_actor":

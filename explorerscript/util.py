@@ -27,7 +27,9 @@ try:
 
     _ = builtins._
 except Exception:
-    _ = lambda a: a
+
+    def _(a):
+        return a
 
 
 def open_utf8(file, mode="r", *args, **kwargs):
