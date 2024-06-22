@@ -23,8 +23,10 @@
 from typing import List, Optional, Tuple
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractBlockCompileHandler,
+    AbstractStatementCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
@@ -35,6 +37,7 @@ from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 
 class IfBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an entire if block, with it's optional elseif and else sub-blocks."""
+
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._if_header_handlers: list[IfHeaderCompileHandler] = []
@@ -48,9 +51,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         elseif_header__allocations: list[list[int]] = []  # list index in ops!
         elseif_block__was_output: list[bool] = []
         # 0. Prepare the end label to insert.
-        end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'entire if-block end label'
-        )
+        end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "entire if-block end label")
         is_positive = self.ctx.NOT() is None
 
         ops: list[Optional[SsbOperation]] = []

@@ -30,6 +30,7 @@ from explorerscript.syntax_error_listener import SyntaxErrorListener
 
 class ExplorerScriptReader:
     """Constructs a parsing tree out of ExplorerScript source code."""
+
     def __init__(self, source_code: str):
         self.source_code = source_code
         self.parser = None

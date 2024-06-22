@@ -25,6 +25,7 @@ import logging
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,7 +37,7 @@ class ForeverContinueWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         """Print a continue (if not implicit) and end"""
-        logger.debug("Handling a continue; (%s)...", self.start_vertex['op'])
+        logger.debug("Handling a continue; (%s)...", self.start_vertex["op"])
         if len(self.decompiler.forever_start_handler_stack) < 1:
             # We REALLY shouldn't land here, if we are outside of a loop, but sometimes loop detection still
             # raises some "false positives" and builds loops that have break statements reachable from outside
@@ -44,7 +45,7 @@ class ForeverContinueWriteHandler(AbstractWriteHandler):
             logger.warning("While decompiling, tried to generate continue; outside loop!")
             raise FallbackToJump()
         if not self._continue_is_implicit():
-            self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
+            self.decompiler.source_map_add_opcode(self.start_vertex["op"].offset)
             self.decompiler.write_stmnt("continue;  // may be redundant")
         return None
 

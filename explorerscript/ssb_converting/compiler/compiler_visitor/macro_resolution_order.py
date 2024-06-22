@@ -34,6 +34,7 @@ from explorerscript.util import _, f
 
 class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
     """Sorts a dict of Macros by how macros depend on them, returns a list of macro names"""
+
     def __init__(self, in_macros: dict[str, ExplorerScriptMacro]):
         self._in_macros: dict[str, ExplorerScriptMacro] = in_macros
         # Values depend on keys:
@@ -51,9 +52,9 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         for v in roots:
             resolution_order_local = []
             for sv in self._dependency_graph.bfsiter(v.index):
-                if sv['name'] in resolution_order:
-                    resolution_order.remove(sv['name'])
-                resolution_order_local.append(sv['name'])
+                if sv["name"] in resolution_order:
+                    resolution_order.remove(sv["name"])
+                resolution_order_local.append(sv["name"])
             resolution_order += resolution_order_local
         return resolution_order
 
@@ -86,12 +87,14 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
     def _check_cycles(self):
         for v in self._dependency_graph.vs:
             if any(self._has_path(out_e.target, v) for out_e in v.out_edges()):
-                raise SsbCompilerError(f(_("Dependency cycle detected while trying to resolve macros"
-                                           " (for macro '{v['name']}').")))
+                raise SsbCompilerError(
+                    f(_("Dependency cycle detected while trying to resolve macros" " (for macro '{v['name']}')."))
+                )
             # Check direct cycles
             if any(v.index == e.target for e in v.out_edges()):
-                raise SsbCompilerError(f(_("Dependency cycle detected while trying to resolve macros"
-                                           " (for macro '{v['name']}').")))
+                raise SsbCompilerError(
+                    f(_("Dependency cycle detected while trying to resolve macros" " (for macro '{v['name']}')."))
+                )
 
     def _has_path(self, a, b):
         # TODO: can be done more efficiently

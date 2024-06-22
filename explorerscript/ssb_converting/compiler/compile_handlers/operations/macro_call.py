@@ -46,10 +46,14 @@ class MacroCallCompileHandler(AbstractStatementCompileHandler):
             raise SsbCompilerError(f(_("Macro {name} not found.")))
         macro = self.compiler_ctx.macros[name]
 
-        self.compiler_ctx.source_map_builder.next_macro_opcode_called_in(None, self.ctx.start.line - 1, self.ctx.start.column)
+        self.compiler_ctx.source_map_builder.next_macro_opcode_called_in(
+            None, self.ctx.start.line - 1, self.ctx.start.column
+        )
         return macro.build(
-            self.compiler_ctx.counter_ops, self.compiler_ctx.counter_labels,
-            dict(zip(macro.variables, args)), self.compiler_ctx.source_map_builder
+            self.compiler_ctx.counter_ops,
+            self.compiler_ctx.counter_labels,
+            dict(zip(macro.variables, args)),
+            self.compiler_ctx.source_map_builder,
         )
 
     def add(self, obj: any):

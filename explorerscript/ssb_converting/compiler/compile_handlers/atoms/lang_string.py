@@ -24,8 +24,9 @@ from typing import Dict
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import \
-    LangStringArgumentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import (
+    LangStringArgumentCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamLanguageString
 

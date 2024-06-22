@@ -27,6 +27,7 @@ from explorerscript.ssb_converting.compiler.utils import string_literal
 
 class ImportVisitor(ExplorerScriptVisitor):
     """Returns the list of files to import from an ExplorerScript parsing tree."""
+
     def __init__(self):
         pass
 

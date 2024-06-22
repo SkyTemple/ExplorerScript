@@ -22,8 +22,10 @@
 #
 from typing import List, Any
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import \
-    AbstractStatementCompileHandler, AbstractLoopBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractStatementCompileHandler,
+    AbstractLoopBlockCompileHandler,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
@@ -32,12 +34,7 @@ class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler):
 
     def collect(self) -> list[SsbOperation]:
         self.compiler_ctx.add_loop(self)
-        retval = [
-                     self._start_label
-                 ] + self._process_block(False) + [
-                     self.continue_loop(),
-                     self._end_label
-                 ]
+        retval = [self._start_label] + self._process_block(False) + [self.continue_loop(), self._end_label]
         self.compiler_ctx.remove_loop()
         return retval
 

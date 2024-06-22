@@ -22,8 +22,10 @@
 #
 from typing import List, Optional
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractLoopBlockCompileHandler,
+    AbstractStatementCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
@@ -52,6 +54,7 @@ class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
     - Jump to START_LABEL
     - END_LABEL
     """
+
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._branch_blueprint: Optional[SsbLabelJumpBlueprint] = None
@@ -61,29 +64,22 @@ class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
         is_positive = self.ctx.NOT() is None
 
         if is_positive:
-            check_label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} check label'
+            check_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} check label")
+            block_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block label")
+            retval = (
+                [self._start_label, self._generate_jump_operation(OP_JUMP, [], check_label), block_label]
+                + self._process_block(False)
+                + [check_label, self._branch_blueprint.build_for(block_label), self._end_label]
             )
-            block_label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block label'
-            )
-            retval = [
-                         self._start_label,
-                         self._generate_jump_operation(OP_JUMP, [], check_label),
-                         block_label
-                     ] + self._process_block(False) + [
-                         check_label,
-                         self._branch_blueprint.build_for(block_label),
-                         self._end_label
-                     ]
         else:
-            retval = [
-                         self._start_label,
-                         self._branch_blueprint.build_for(self._end_label),
-                     ] + self._process_block(False) + [
-                         self._generate_jump_operation(OP_JUMP, [], self._start_label),
-                         self._end_label
-                     ]
+            retval = (
+                [
+                    self._start_label,
+                    self._branch_blueprint.build_for(self._end_label),
+                ]
+                + self._process_block(False)
+                + [self._generate_jump_operation(OP_JUMP, [], self._start_label), self._end_label]
+            )
         self.compiler_ctx.remove_loop()
         return retval
 

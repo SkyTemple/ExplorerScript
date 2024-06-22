@@ -26,10 +26,12 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import \
-    CaseHeaderMenuCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import \
-    CaseHeaderOpCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import (
+    CaseHeaderMenuCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import (
+    CaseHeaderOpCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE
 from explorerscript.util import _
@@ -48,8 +50,7 @@ class CaseHeaderCompileHandler(AbstractCompileHandler):
             if isinstance(self._header_cmplx_handler, IntegerLikeCompileHandler):
                 # Case
                 return SsbLabelJumpBlueprint(
-                   self.compiler_ctx, self.ctx,
-                   OP_CASE, [self._header_cmplx_handler.collect()]
+                    self.compiler_ctx, self.ctx, OP_CASE, [self._header_cmplx_handler.collect()]
                 )
             else:
                 # A regular complex if condition
@@ -61,8 +62,11 @@ class CaseHeaderCompileHandler(AbstractCompileHandler):
         return type(self._header_cmplx_handler)
 
     def add(self, obj: any):
-        if isinstance(obj, CaseHeaderMenuCompileHandler) or isinstance(obj, CaseHeaderOpCompileHandler) \
-                or isinstance(obj, IntegerLikeCompileHandler):
+        if (
+            isinstance(obj, CaseHeaderMenuCompileHandler)
+            or isinstance(obj, CaseHeaderOpCompileHandler)
+            or isinstance(obj, IntegerLikeCompileHandler)
+        ):
             self._header_cmplx_handler = obj
             return
         self._raise_add_error(obj)

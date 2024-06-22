@@ -35,12 +35,10 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
 
         # Build parameter string
-        params = ", ".join(
-            [self._single_param_to_string(param) for param in op.params]
-        )
+        params = ", ".join([self._single_param_to_string(param) for param in op.params])
 
         # Build position mark source maps
         for param in op.params:
@@ -59,6 +57,6 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
         return next_vertex
 
     def _single_param_to_string(self, param: SsbOpParam):
-        if hasattr(param, 'indent'):
+        if hasattr(param, "indent"):
             param.indent = self.decompiler.indent
         return str(param)

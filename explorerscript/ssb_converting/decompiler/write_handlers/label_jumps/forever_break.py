@@ -25,6 +25,7 @@ import logging
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,8 +37,8 @@ class ForeverBreakWriteHandler(AbstractWriteHandler):
 
     def write_content(self):
         """Print a break and end"""
-        logger.debug("Handling a break_loop; (%s)...", self.start_vertex['op'])
-        self.decompiler.source_map_add_opcode(self.start_vertex['op'].offset)
+        logger.debug("Handling a break_loop; (%s)...", self.start_vertex["op"])
+        self.decompiler.source_map_add_opcode(self.start_vertex["op"].offset)
         self.decompiler.write_stmnt("break_loop;")
         exits = self.start_vertex.out_edges()
         if len(exits) == 1:

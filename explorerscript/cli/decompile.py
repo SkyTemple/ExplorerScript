@@ -26,13 +26,30 @@ import os
 import sys
 from typing import Tuple, List, Union
 
-from explorerscript.cli import check_settings, SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, SETTINGS, \
-    SETTINGS_DUNGEON_MODE_CONSTANTS, SETTINGS_DMC_OPEN, SETTINGS_DMC_CLOSED, SETTINGS_DMC_REQUEST, \
-    SETTINGS_DMC_OPEN_REQUEST
+from explorerscript.cli import (
+    check_settings,
+    SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME,
+    SETTINGS,
+    SETTINGS_DUNGEON_MODE_CONSTANTS,
+    SETTINGS_DMC_OPEN,
+    SETTINGS_DMC_CLOSED,
+    SETTINGS_DMC_REQUEST,
+    SETTINGS_DMC_OPEN_REQUEST,
+)
 from explorerscript.ssb_converting.compiler.utils import Counter
-from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbOperation, SsbRoutineInfo, \
-    DungeonModeConstants, SsbRoutineType, SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, \
-    SsbOpParamPositionMarker, SsbOpCode, SsbOpParamFixedPoint
+from explorerscript.ssb_converting.ssb_data_types import (
+    SsbCoroutine,
+    SsbOperation,
+    SsbRoutineInfo,
+    DungeonModeConstants,
+    SsbRoutineType,
+    SsbOpParamConstant,
+    SsbOpParamConstString,
+    SsbOpParamLanguageString,
+    SsbOpParamPositionMarker,
+    SsbOpCode,
+    SsbOpParamFixedPoint,
+)
 from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.util import open_utf8, exps_int
 
@@ -40,10 +57,10 @@ counter = Counter()
 
 
 def parse_pos_mark_arg(arg_str):
-    arg_str_arr = arg_str.split('.')
+    arg_str_arr = arg_str.split(".")
     if len(arg_str_arr) < 2:
         return exps_int(arg_str), 0
-    if arg_str_arr[1] != '5' or len(arg_str_arr) > 2:
+    if arg_str_arr[1] != "5" or len(arg_str_arr) > 2:
         raise ValueError("Invalid position mark")
     return exps_int(arg_str_arr[0]), 2
 
@@ -74,18 +91,15 @@ def read_ops(ops: list[dict]) -> list[SsbOperation]:
                 elif param["type"] == "POSITION_MARK":
                     x_relative, x_offset = parse_pos_mark_arg(param["value"]["x"])
                     y_relative, y_offset = parse_pos_mark_arg(param["value"]["y"])
-                    params.append(SsbOpParamPositionMarker(
-                        param["value"]["name"],
-                        x_offset, y_offset, x_relative, y_relative
-                    ))
+                    params.append(
+                        SsbOpParamPositionMarker(param["value"]["name"], x_offset, y_offset, x_relative, y_relative)
+                    )
                 else:
                     raise ValueError("Invalid param for op.")
             else:
                 raise ValueError("Invalid param for op.")
 
-        out_ops.append(SsbOperation(
-            counter(), SsbOpCode(-1, op["opcode"]), params
-        ))
+        out_ops.append(SsbOperation(counter(), SsbOpCode(-1, op["opcode"]), params))
 
     return out_ops
 
@@ -151,12 +165,18 @@ def read_routines(routines: list[dict]) -> tuple[list[SsbRoutineInfo], list[SsbC
     return routine_infos, named_coroutines, routine_ops
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Decompile a JSON representation of PMD EoS SSB into ExplorerScript.')
-    parser.add_argument('ssb_path', metavar='SSB_JSON_PATH',
-                        help='SSB JSON to decompile, including the compiler settings.')
-    parser.add_argument('--source-map', dest='source_map', default=None, metavar='PATH',
-                        help='If specified, output a source map at that location.')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Decompile a JSON representation of PMD EoS SSB into ExplorerScript.")
+    parser.add_argument(
+        "ssb_path", metavar="SSB_JSON_PATH", help="SSB JSON to decompile, including the compiler settings."
+    )
+    parser.add_argument(
+        "--source-map",
+        dest="source_map",
+        default=None,
+        metavar="PATH",
+        help="If specified, output a source map at that location.",
+    )
 
     args = parser.parse_args()
 
@@ -164,7 +184,7 @@ if __name__ == '__main__':
         print("JSON file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open_utf8(args.ssb_path, 'r') as f:
+    with open_utf8(args.ssb_path, "r") as f:
         ssb_file = json.load(f)
 
     check_settings(ssb_file)
@@ -173,18 +193,22 @@ if __name__ == '__main__':
 
     dmodes = ssb_file[SETTINGS][SETTINGS_DUNGEON_MODE_CONSTANTS]
     decompiler = ExplorerScriptSsbDecompiler(
-        routine_infos, routine_ops, named_coroutines,
+        routine_infos,
+        routine_ops,
+        named_coroutines,
         ssb_file[SETTINGS][SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME],
         DungeonModeConstants(
-            dmodes[SETTINGS_DMC_CLOSED], dmodes[SETTINGS_DMC_OPEN],
-            dmodes[SETTINGS_DMC_REQUEST], dmodes[SETTINGS_DMC_OPEN_REQUEST]
-        )
+            dmodes[SETTINGS_DMC_CLOSED],
+            dmodes[SETTINGS_DMC_OPEN],
+            dmodes[SETTINGS_DMC_REQUEST],
+            dmodes[SETTINGS_DMC_OPEN_REQUEST],
+        ),
     )
 
     exps_src, source_map = decompiler.convert()
 
     if args.source_map is not None:
-        with open_utf8(args.source_map, 'w') as f:
+        with open_utf8(args.source_map, "w") as f:
             f.write(source_map.serialize())
 
     print(exps_src)

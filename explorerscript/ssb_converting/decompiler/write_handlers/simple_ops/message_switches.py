@@ -23,12 +23,20 @@
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, \
-    NestedBlockDisallowedError
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
+    AbstractWriteHandler,
+    NestedBlockDisallowedError,
+)
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER, \
-    OP_MESSAGE_SWITCH_TALK, OP_MESSAGE_SWITCH_MONOLOGUE, OPS_SWITCH_TEXT_CASE_MAP
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_CTX_LIVES,
+    OPS_CTX_OBJECT,
+    OPS_CTX_PERFORMER,
+    OP_MESSAGE_SWITCH_TALK,
+    OP_MESSAGE_SWITCH_MONOLOGUE,
+    OPS_SWITCH_TEXT_CASE_MAP,
+)
 from explorerscript.ssb_converting.util import Blk
 
 
@@ -41,9 +49,9 @@ class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
         self.have_written_at_least_one_child = False
 
     def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
         self.op_name = op.op_code.name
-        
+
         self.decompiler.source_map_add_opcode(op.offset)
         if len(op.params) != 1:
             raise ValueError(f"Error reading operation for {self.op_name} ({op}). Must have exactly one argument.")
@@ -61,18 +69,22 @@ class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
         with Blk(self.decompiler):
             try:
                 next_vertex_after_blk = BlockWriteHandler(
-                    exits[0].target_vertex, self.decompiler, self, self.start_vertex,
+                    exits[0].target_vertex,
+                    self.decompiler,
+                    self,
+                    self.start_vertex,
                     check_end_block=self.check_end_block,
-                    disallow_nested=True
+                    disallow_nested=True,
                 ).write_content()
             except NestedBlockDisallowedError:
-                raise ValueError(f"message_Switch* opcode blocks must not contain opcodes that start any "
-                                 f"branching code.")
+                raise ValueError(
+                    f"message_Switch* opcode blocks must not contain opcodes that start any " f"branching code."
+                )
 
         return next_vertex_after_blk
 
     def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler):
-        next_op: SsbOperation = next_handler.start_vertex['op']
+        next_op: SsbOperation = next_handler.start_vertex["op"]
         if next_op.op_code.name not in OPS_SWITCH_TEXT_CASE_MAP[self.op_name]:
             if not self.have_written_at_least_one_child:
                 raise ValueError("A message_Switch* must have at least one case or default.")

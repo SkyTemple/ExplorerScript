@@ -26,6 +26,7 @@ from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 
 class HasRoutinesVisitor(ExplorerScriptVisitor):
     """Visitor that returns whether or not the ExplorerScript tree contains any routines."""
+
     def __init__(self):
         pass
 

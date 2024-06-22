@@ -40,6 +40,7 @@ class AntlrSyntaxError:
 
 class SyntaxErrorListener(ErrorListener):
     """General purpose error listener for Antlr"""
+
     def __init__(self):
         self._syntax_errors = []
 
@@ -51,4 +52,4 @@ class SyntaxErrorListener(ErrorListener):
         self._syntax_errors.append(AntlrSyntaxError(recognizer, offendingSymbol, line, column, msg, e))
 
     def __str__(self):
-        return '\n'.join(str(e) for e in self.syntax_errors)
+        return "\n".join(str(e) for e in self.syntax_errors)

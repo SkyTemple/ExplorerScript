@@ -24,8 +24,9 @@ from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import \
-    ConditionalOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
+    ConditionalOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
@@ -50,11 +51,10 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         if self.value_is_a_variable:
             # CaseVariable
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_CASE_VARIABLE, [self.operator.value, self.value]
+                self.compiler_ctx, self.ctx, OP_CASE_VARIABLE, [self.operator.value, self.value]
             )
 
-        #if self.operator == SsbOperator.EQ:
+        # if self.operator == SsbOperator.EQ:
         #    # Case
         #    return SsbLabelJumpBlueprint(
         #        self.compiler_ctx, self.ctx,
@@ -62,10 +62,7 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         #    )
 
         # CaseValue
-        return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_CASE_VALUE, [self.operator.value, self.value]
-        )
+        return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_VALUE, [self.operator.value, self.value])
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

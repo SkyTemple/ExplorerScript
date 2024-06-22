@@ -23,8 +23,10 @@
 from typing import Optional, List
 
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import \
-    AbstractStatementCompileHandler, AbstractBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractStatementCompileHandler,
+    AbstractBlockCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
@@ -34,6 +36,7 @@ from explorerscript.util import _
 
 class DefaultCaseBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles a default block."""
+
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._added_string_handler: Optional[StringCompileHandler] = None

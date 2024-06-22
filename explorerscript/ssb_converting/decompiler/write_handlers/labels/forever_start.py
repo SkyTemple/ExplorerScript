@@ -29,6 +29,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, ForeverStart
 from explorerscript.ssb_converting.util import Blk
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +44,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         self._vertex_after_forever: Optional[Vertex] = None
 
     def write_content(self):
-        op: SsbLabelJump = self.start_vertex['op']
+        op: SsbLabelJump = self.start_vertex["op"]
         logger.debug("Writing a forever-block (%s)...", op)
         m: ForeverStart = [m for m in op.markers if isinstance(m, ForeverStart)][0]
         self.m = m
@@ -54,8 +55,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         with Blk(self.decompiler):
             self.decompiler.forever_start_handler_stack.append(self)
             BlockWriteHandler(
-                exits[0].target_vertex, self.decompiler, self, self.start_vertex,
-                check_end_block=self.check_end_block
+                exits[0].target_vertex, self.decompiler, self, self.start_vertex, check_end_block=self.check_end_block
             ).write_content()
             self.decompiler.forever_start_handler_stack.pop()
             return self._vertex_after_forever
@@ -68,6 +68,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
         A loop should end either if there are no vertices left (duh!) or if the end-forever label is reached.
         """
         from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
+
         if isinstance(next_handler, LabelWriteHandler):
             lwh = next_handler
 

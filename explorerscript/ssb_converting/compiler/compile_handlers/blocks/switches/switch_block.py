@@ -26,21 +26,30 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import \
-    DefaultCaseBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import \
-    CaseBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_header import \
-    SwitchHeaderCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
+    DefaultCaseBlockCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_header import (
+    SwitchHeaderCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT, SsbLabel, OP_JUMP, \
-    OP_SWITCH_SCENARIO, OP_CASE_VALUE, OP_CASE_SCENARIO
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OP_CASE_TEXT,
+    OP_DEFAULT_TEXT,
+    SsbLabel,
+    OP_JUMP,
+    OP_SWITCH_SCENARIO,
+    OP_CASE_VALUE,
+    OP_CASE_SCENARIO,
+)
 from explorerscript.util import _, f
 
 
 class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
     """Handles an entire switch block, with all it's cases."""
+
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._switch_header_handler: Optional[SwitchHeaderCompileHandler] = None
@@ -51,12 +60,8 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
     def collect(self) -> list[SsbOperation]:
         self.ctx: ExplorerScriptParser.Switch_blockContext
         # 0. Prepare labels to insert
-        default_start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'switch default start label'
-        )
-        end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, 'entire switch-block end label'
-        )
+        default_start_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "switch default start label")
+        end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "entire switch-block end label")
         default_jmp_to_case_block: Optional[SsbLabelJumpBlueprint] = None
         case_ops: list[SsbOperation] = []
         default_ops: list[SsbOperation]
@@ -72,8 +77,9 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
         for h in self._case_handlers:
             h.set_end_label(end_label)
             if h.is_message_case:
-                raise SsbCompilerError(f(_("A switch case must contain a list of statements "
-                                           "(line {self.ctx.start.line}).")))
+                raise SsbCompilerError(
+                    f(_("A switch case must contain a list of statements " "(line {self.ctx.start.line})."))
+                )
             jmp_blueprint = h.get_header_jump_template()
             first = self.compiler_ctx.counter_ops.allocate(1)
             jmp_blueprint.set_index_number(first)
@@ -88,10 +94,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             default_ops = []
             # Insert a jump blueprint for now, note it, and if it comes up later during 3b,
             # process it like explained there.
-            default_jmp_to_case_block = SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_JUMP, []
-            )
+            default_jmp_to_case_block = SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_JUMP, [])
             self._case_handlers.insert(self._default_handler_index, self._default_handler)
         else:
             # 2c. If no default: Create a default block with just one jump to end label
@@ -131,8 +134,9 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             return
         if isinstance(obj, DefaultCaseBlockCompileHandler):
             if self._default_handler is not None:
-                raise SsbCompilerError(f(_("A switch block can only have a single default case "
-                                           "(line {self.ctx.start.line}).")))
+                raise SsbCompilerError(
+                    f(_("A switch block can only have a single default case " "(line {self.ctx.start.line})."))
+                )
             self._default_handler = obj
             self._default_handler_index = len(self._case_handlers)
             return

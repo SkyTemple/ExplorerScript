@@ -36,7 +36,7 @@ class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if op.op_code.name == OP_RETURN:
             self._write_return()

@@ -28,6 +28,7 @@ from igraph import Vertex
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbForeignLabel, SsbLabelJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,19 +38,24 @@ if TYPE_CHECKING:
 
 class WriteHandlerManager:
     """Class that retrieves the handlers for vertices in a ExplorerScript graph."""
+
     @classmethod
-    def get_for(cls,
-                v: Vertex, decompiler: 'ExplorerScriptSsbDecompiler', parent: AbstractWriteHandler,
-                vertex_that_started_block: Vertex, is_first_vertex_of_block: bool
-                ) -> AbstractWriteHandler:
+    def get_for(
+        cls,
+        v: Vertex,
+        decompiler: "ExplorerScriptSsbDecompiler",
+        parent: AbstractWriteHandler,
+        vertex_that_started_block: Vertex,
+        is_first_vertex_of_block: bool,
+    ) -> AbstractWriteHandler:
         from explorerscript.ssb_converting.decompiler.write_handlers.foreign_label import ForeignLabelWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.label_jump import LabelJumpWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
 
-        if 'op' not in v.attributes():
+        if "op" not in v.attributes():
             raise ValueError(f"Invalid Ssb vertex: {v}")
-        op: SsbOperation = v['op']
+        op: SsbOperation = v["op"]
         if isinstance(op, SsbLabel):
             return LabelWriteHandler(v, decompiler, parent, vertex_that_started_block, is_first_vertex_of_block)
         if isinstance(op, SsbForeignLabel):

@@ -43,14 +43,8 @@ class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
             raise SsbCompilerError(_("No value set for if condition."))
 
         if self.is_menu_2:
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_CASE_MENU2, [self.value]
-            )
-        return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_CASE_MENU, [self.value]
-        )
+            return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU2, [self.value])
+        return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU, [self.value])
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

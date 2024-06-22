@@ -25,6 +25,7 @@ from explorerscript.syntax_error_listener import AntlrSyntaxError
 
 class ParseError(Exception):
     """A syntax error during the parsing of SSBScript or ExplorerScript."""
+
     def __init__(self, error: AntlrSyntaxError):
         self.error = error
 

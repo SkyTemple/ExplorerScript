@@ -1,4 +1,5 @@
 """Data types used to describe ssb components"""
+
 #  MIT License
 #
 #  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
@@ -33,7 +34,7 @@ def escape_quotes(string):
 
 
 def escape_newlines(string):
-    return string.replace('\n', '\\n')
+    return string.replace("\n", "\\n")
 
 
 class SsbRoutineType(Enum):
@@ -115,7 +116,7 @@ class SsbRoutineInfo:
         return self.type == other.type and self.linked_to == other.linked_to
 
     def __hash__(self):
-        return hash((self.type,  self.linked_to, self.linked_to_name))
+        return hash((self.type, self.linked_to, self.linked_to_name))
 
 
 DIGITS = set(string.digits)
@@ -123,6 +124,7 @@ DIGITS = set(string.digits)
 
 class SsbOpParamFixedPoint:
     """A fixed point number, encoded as a string."""
+
     class NegativeZero:
         pass  # Marker type for negative numbers.
 
@@ -171,6 +173,7 @@ class SsbOpParamFixedPoint:
 
 class SsbOpParamConstant:
     """An actual constant representing an int"""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -188,6 +191,7 @@ class SsbOpParamConstant:
 
 class SsbOpParamConstString:
     """A string constant from the table of string constants in an Ssb"""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -195,7 +199,7 @@ class SsbOpParamConstString:
         return f"'{escape_newlines(escape_quotes(self.name))}'"
 
     def __repr__(self):
-        return f'str({str(self)})'
+        return f"str({str(self)})"
 
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamConstString):
@@ -205,6 +209,7 @@ class SsbOpParamConstString:
 
 class SsbOpParamLanguageString:
     """A string from the table of strings in an Ssb"""
+
     def __init__(self, strings: dict[str, str]):  # {language_name: string}
         self.strings = strings
         # Because this will print a multiline output, this may specify the original indent of the current
@@ -212,12 +217,12 @@ class SsbOpParamLanguageString:
         self.indent = 0
 
     def __str__(self):
-        string = '{\n'
+        string = "{\n"
         for language, lang_string in self.strings.items():
-            string += ' ' * ((self.indent + 1) * NUMBER_OF_SPACES_PER_INDENT)
+            string += " " * ((self.indent + 1) * NUMBER_OF_SPACES_PER_INDENT)
             string += f'{language}="{escape_newlines(escape_quotes(lang_string))}",\n'
-        string += ' ' * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
-        string += '}'
+        string += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
+        string += "}"
         return string
 
     def __eq__(self, other):
@@ -228,6 +233,7 @@ class SsbOpParamLanguageString:
 
 class SsbOpParamPositionMarker:
     """Actually a tuple of four SSB binary parameters encoded as one positon marker"""
+
     def __init__(self, name: str, x_offset: int, y_offset: int, x_relative: int, y_relative: int):
         self.name = name
         self.x_offset = x_offset
@@ -237,36 +243,44 @@ class SsbOpParamPositionMarker:
 
     @property
     def x_final(self):
-        x_offset_marker = ''
+        x_offset_marker = ""
         if self.x_offset > 1:
             # TODO: The offset parameter is a bit weird, check if this is actually the case:
-            x_offset_marker = '.5'
-        return f'{self.x_relative}{x_offset_marker}'
+            x_offset_marker = ".5"
+        return f"{self.x_relative}{x_offset_marker}"
 
     @property
     def y_final(self):
-        y_offset_marker = ''
+        y_offset_marker = ""
         if self.y_offset > 1:
             # TODO: The offset parameter is a bit weird, check if this is actually the case:
-            y_offset_marker = '.5'
-        return f'{self.y_relative}{y_offset_marker}'
+            y_offset_marker = ".5"
+        return f"{self.y_relative}{y_offset_marker}"
 
     def __str__(self):
-        return f'Position<\'{self.name}\', {self.x_final}, {self.y_final}>'
+        return f"Position<'{self.name}', {self.x_final}, {self.y_final}>"
 
     def __repr__(self):
-        return f'SsbOpParamPositionMarker(\'{self.name}\', {self.x_offset}, {self.y_offset}, {self.x_relative}, {self.y_relative})'
+        return f"SsbOpParamPositionMarker('{self.name}', {self.x_offset}, {self.y_offset}, {self.x_relative}, {self.y_relative})"
 
     def __eq__(self, other):
         if not isinstance(other, SsbOpParamPositionMarker):
             return False
-        return self.x_offset == other.x_offset and self.y_offset == other.y_offset \
-                and self.x_relative == other.x_relative and self.y_relative == other.y_relative
+        return (
+            self.x_offset == other.x_offset
+            and self.y_offset == other.y_offset
+            and self.x_relative == other.x_relative
+            and self.y_relative == other.y_relative
+        )
 
 
 SsbOpParam = Union[
-    int, SsbOpParamFixedPoint, SsbOpParamConstant,
-    SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker
+    int,
+    SsbOpParamFixedPoint,
+    SsbOpParamConstant,
+    SsbOpParamConstString,
+    SsbOpParamLanguageString,
+    SsbOpParamPositionMarker,
 ]
 
 
@@ -290,17 +304,18 @@ class SsbOperation:
 
 class SsbOperator(Enum):
     """Operator parameter used in Branch and Switch operations."""
-    FALSE = 0, 'FALSE'
-    TRUE = 1, 'TRUE'
-    EQ = 2, '=='
-    GT = 3, '>'
-    LT = 4, '<'
-    GE = 5, '>='
-    LE = 6, '<='
-    NOT = 7, '!='
-    AND = 8, '&'
-    XOR = 9, '^'
-    BIT_SET = 10, '&<<'
+
+    FALSE = 0, "FALSE"
+    TRUE = 1, "TRUE"
+    EQ = 2, "=="
+    GT = 3, ">"
+    LT = 4, "<"
+    GE = 5, ">="
+    LE = 6, "<="
+    NOT = 7, "!="
+    AND = 8, "&"
+    XOR = 9, "^"
+    BIT_SET = 10, "&<<"
 
     def __new__(cls, *args, **kwargs):
         obj = object.__new__(cls)
@@ -321,11 +336,12 @@ class SsbOperator(Enum):
 
 class SsbCalcOperator(Enum):
     """Operator parameter used in flag_Calc* operations."""
-    ASSIGN = 0, '='
-    MINUS = 1, '-='
-    PLUS = 2, '+='
-    MULTIPLY = 3, '*='
-    DIVIDE = 4, '/='
+
+    ASSIGN = 0, "="
+    MINUS = 1, "-="
+    PLUS = 2, "+="
+    MULTIPLY = 3, "*="
+    DIVIDE = 4, "/="
 
     def __new__(cls, *args, **kwargs):
         obj = object.__new__(cls)

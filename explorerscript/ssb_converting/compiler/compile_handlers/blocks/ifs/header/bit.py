@@ -44,7 +44,7 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
             raise SsbCompilerError(_("No variable in if condition."))
 
         var_target_name = None
-        if hasattr(self.var_target, 'name'):
+        if hasattr(self.var_target, "name"):
             var_target_name = self.var_target.name
 
         index = exps_int(str(self.ctx.INTEGER()))
@@ -52,16 +52,13 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
 
         if var_target_name == self.compiler_ctx.performance_progress_list_var_name:
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_PERFORMANCE, [index, 1 if is_simple_positive else 0]
+                self.compiler_ctx, self.ctx, OP_BRANCH_PERFORMANCE, [index, 1 if is_simple_positive else 0]
             )
         elif not is_simple_positive:
-            raise SsbCompilerError(f(_("The variable {var_target_name} can not be used with 'not' "
-                                       "(line {self.ctx.start.line}).")))
-        return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_BRANCH_BIT, [self.var_target, index]
-        )
+            raise SsbCompilerError(
+                f(_("The variable {var_target_name} can not be used with 'not' " "(line {self.ctx.start.line})."))
+            )
+        return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_BIT, [self.var_target, index])
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

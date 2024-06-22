@@ -35,6 +35,7 @@ class MacrosImportsTestCase(unittest.TestCase):
     TODO: We should do more actual checking of the result, instead of just checking
           if it works.
     """
+
     def test_simple1(self):
         self.assert_can_compile("test_simple1")
 
@@ -79,9 +80,7 @@ class MacrosImportsTestCase(unittest.TestCase):
 
     def compile(self, fixture_name):
         fixture_path = self.__fixture_path(fixture_name)
-        compiler = ExplorerScriptSsbCompiler(
-            "N/A", []
-        )
+        compiler = ExplorerScriptSsbCompiler("N/A", [])
         with open(fixture_path) as f:
             exps_source = f.read()
         compiler.compile(exps_source, fixture_path)
@@ -89,11 +88,13 @@ class MacrosImportsTestCase(unittest.TestCase):
     @staticmethod
     def __fixture_path(fixture_name):
         return os.path.abspath(
-            os.path.join(os.path.dirname(__file__),
-                         os.pardir,
-                         'fixtures',
-                         'compiler',
-                         'macros_imports_test',
-                         fixture_name,
-                         'main.exps')
+            os.path.join(
+                os.path.dirname(__file__),
+                os.pardir,
+                "fixtures",
+                "compiler",
+                "macros_imports_test",
+                fixture_name,
+                "main.exps",
+            )
         )

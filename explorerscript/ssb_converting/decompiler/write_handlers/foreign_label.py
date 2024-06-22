@@ -26,22 +26,32 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbForeignLabel
+
 logger = logging.getLogger(__name__)
+
 
 class ForeignLabelWriteHandler(AbstractWriteHandler):
     """Handles writing foreign labels (references to labels in other routines)."""
-    def __init__(self, start_vertex: Vertex, decompiler, parent, vertex_that_started_block: Vertex, is_first_vertex_of_block: bool):
+
+    def __init__(
+        self,
+        start_vertex: Vertex,
+        decompiler,
+        parent,
+        vertex_that_started_block: Vertex,
+        is_first_vertex_of_block: bool,
+    ):
         super().__init__(start_vertex, decompiler, parent)
         self.vertex_that_started_block = vertex_that_started_block
         self.is_first_vertex_of_block = is_first_vertex_of_block
 
     def write_content(self):
-        op: SsbForeignLabel = self.start_vertex['op']
+        op: SsbForeignLabel = self.start_vertex["op"]
         logger.debug("Handling a foreign label (%s)...", op)
         exits = self.start_vertex.out_edges()
         assert len(exits) == 0
         # See note in LabelWriteHandler.
-        previous_vertex_op = self.vertex_that_started_block['op'] if self.is_first_vertex_of_block else None
+        previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None
         # We definitely need to print that
         self.decompiler.write_label_jump(op.label.id, previous_vertex_op)
         return None

@@ -27,18 +27,37 @@ from typing import Optional
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, \
-    NestedBlockDisallowedError
-from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, SsbLabel, SsbLabelJump, \
-    SsbForeignLabel, OP_HOLD, OP_END, OP_RETURN, OP_DUMMY_END
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
+    AbstractWriteHandler,
+    NestedBlockDisallowedError,
+)
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_THAT_END_CONTROL_FLOW,
+    SsbLabel,
+    SsbLabelJump,
+    SsbForeignLabel,
+    OP_HOLD,
+    OP_END,
+    OP_RETURN,
+    OP_DUMMY_END,
+)
+
 logger = logging.getLogger(__name__)
 
 
 class BlockWriteHandler(AbstractWriteHandler):
     """Writes one block of output for ExplorerScript using an entry point vertex (the first in this block)."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent, vertex_that_started_block: Vertex, *,
-                 check_end_block=None, disallow_nested=False):
+    def __init__(
+        self,
+        start_vertex: Vertex,
+        decompiler,
+        parent,
+        vertex_that_started_block: Vertex,
+        *,
+        check_end_block=None,
+        disallow_nested=False,
+    ):
         super().__init__(start_vertex, decompiler, parent)
         self._next_vertex: Vertex = start_vertex
         # Optional callback to check if the block should be ended
@@ -71,11 +90,14 @@ class BlockWriteHandler(AbstractWriteHandler):
 
             # Make sure, that the _disallow_nested restriction is honored.
             # TODO: pretty hard-coded at the moment.
-            if self._disallow_nested and self.last_handler_in_block.__class__.__name__ != 'SimpleOperationWriteHandler':
+            if self._disallow_nested and self.last_handler_in_block.__class__.__name__ != "SimpleOperationWriteHandler":
                 raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
             # noinspection PyUnresolvedReferences
             # : (last_handler_in_block must be SimpleOperationWriteHandler in this case)
-            if self._disallow_nested and self.last_handler_in_block.get_real_handler().__name__ == 'CtxSimpleOpWriteHandler':
+            if (
+                self._disallow_nested
+                and self.last_handler_in_block.get_real_handler().__name__ == "CtxSimpleOpWriteHandler"
+            ):
                 raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
 
             previous_vertex = self._next_vertex
@@ -88,12 +110,16 @@ class BlockWriteHandler(AbstractWriteHandler):
             if previous_vertex is None:
                 # ???
                 raise ValueError("Found end of branch, but no previous op...?")
-            if previous_vertex['op'].op_code.name not in OPS_THAT_END_CONTROL_FLOW \
-                    and not isinstance(previous_vertex['op'], SsbLabelJump) \
-                    and not isinstance(previous_vertex['op'], SsbLabel) \
-                    and not isinstance(previous_vertex['op'], SsbForeignLabel):
+            if (
+                previous_vertex["op"].op_code.name not in OPS_THAT_END_CONTROL_FLOW
+                and not isinstance(previous_vertex["op"], SsbLabelJump)
+                and not isinstance(previous_vertex["op"], SsbLabel)
+                and not isinstance(previous_vertex["op"], SsbForeignLabel)
+            ):
                 # All branches must end with something that ends their control flow
-                logger.warning(f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch.")
+                logger.warning(
+                    f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch."
+                )
                 if OP_DUMMY_END == OP_RETURN:
                     self.decompiler.write_return()
                 elif OP_DUMMY_END == OP_END:

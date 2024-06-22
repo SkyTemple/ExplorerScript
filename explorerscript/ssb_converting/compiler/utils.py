@@ -26,8 +26,13 @@ from typing import Dict, List, TYPE_CHECKING, Union, Optional
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, \
-    OP_DUMMY_END, OPS_CTX
+from explorerscript.ssb_converting.ssb_special_ops import (
+    SsbLabel,
+    SsbLabelJump,
+    OPS_THAT_END_CONTROL_FLOW,
+    OP_DUMMY_END,
+    OPS_CTX,
+)
 from explorerscript.util import f, _
 
 logger = logging.getLogger(__name__)
@@ -35,10 +40,12 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler
-    from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import \
-        CaseBlockCompileHandler
-    from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import \
-        DefaultCaseBlockCompileHandler
+    from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import (
+        CaseBlockCompileHandler,
+    )
+    from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
+        DefaultCaseBlockCompileHandler,
+    )
     from explorerscript.macro import ExplorerScriptMacro
 
 
@@ -65,31 +72,36 @@ class Counter:
 
 
 class CompilerCtx:
-    def __init__(self, counter_ops: Counter, source_map_builder: SourceMapBuilder,
-                 collected_labels: dict[str, SsbLabel], counter_labels: Counter,
-                 performance_progress_list_var_name: str,
-                 macros: dict[str, 'ExplorerScriptMacro']):
+    def __init__(
+        self,
+        counter_ops: Counter,
+        source_map_builder: SourceMapBuilder,
+        collected_labels: dict[str, SsbLabel],
+        counter_labels: Counter,
+        performance_progress_list_var_name: str,
+        macros: dict[str, "ExplorerScriptMacro"],
+    ):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
         # A dict that assigns all collected labels their next opcode id.
         self.collected_labels = collected_labels
         self.counter_labels = counter_labels
         # Loaded macros that can be used for macro calls.
-        self.macros: dict[str, 'ExplorerScriptMacro'] = macros
+        self.macros: dict[str, "ExplorerScriptMacro"] = macros
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
         # Current handlers for structures that have ending opcodes collected by child handlers
-        self._loops: list['AbstractLoopBlockCompileHandler'] = []
-        self._switch_cases: list[Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']] = []
+        self._loops: list["AbstractLoopBlockCompileHandler"] = []
+        self._switch_cases: list[Union["DefaultCaseBlockCompileHandler", "CaseBlockCompileHandler"]] = []
 
-    def add_loop(self, h: 'AbstractLoopBlockCompileHandler'):
+    def add_loop(self, h: "AbstractLoopBlockCompileHandler"):
         self._loops.append(h)
 
     def remove_loop(self):
         self._loops.pop()
 
-    def add_switch_case(self, h: Union['DefaultCaseBlockCompileHandler', 'CaseBlockCompileHandler']):
+    def add_switch_case(self, h: Union["DefaultCaseBlockCompileHandler", "CaseBlockCompileHandler"]):
         self._switch_cases.append(h)
 
     def remove_switch_case(self):
@@ -116,7 +128,10 @@ class CompilerCtx:
 
 class SsbLabelJumpBlueprint:
     """A builder for a label jump, to be used when compiling ifs/switches."""
-    def __init__(self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: list[SsbOpParam], jump_is_positive=True):
+
+    def __init__(
+        self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: list[SsbOpParam], jump_is_positive=True
+    ):
         self.compiler_ctx: CompilerCtx = compiler_ctx
         self.ctx = ctx
         self.op_code_name: str = op_code_name
@@ -139,16 +154,8 @@ class SsbLabelJumpBlueprint:
         if not number:
             number = self.compiler_ctx.counter_ops()
 
-        self.compiler_ctx.source_map_builder.add_opcode(
-            number, self.ctx.start.line - 1, self.ctx.start.column
-        )
-        return SsbLabelJump(
-            SsbOperation(
-                number,
-                SsbOpCode(-1, self.op_code_name),
-                self.params
-            ), label
-        )
+        self.compiler_ctx.source_map_builder.add_opcode(number, self.ctx.start.line - 1, self.ctx.start.column)
+        return SsbLabelJump(SsbOperation(number, SsbOpCode(-1, self.op_code_name), self.params), label)
 
 
 def string_literal(string):
@@ -197,7 +204,9 @@ def strip_last_label(routine_ops: list[list[SsbOperation]]):
                             if _number_of_jumps_to_label(op, routine) > 1:
                                 op_before_ends_control_flow = False
                         else:
-                            op_before_ends_control_flow = does_op_end_control_flow(op, routine[op_i - 1] if op_i > 0 else None)
+                            op_before_ends_control_flow = does_op_end_control_flow(
+                                op, routine[op_i - 1] if op_i > 0 else None
+                            )
                 routine = [x for i, x in enumerate(routine) if i not in indices_to_remove]
             returned_routine_ops.append(routine)
         else:

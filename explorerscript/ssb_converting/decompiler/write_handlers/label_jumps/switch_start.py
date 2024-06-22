@@ -24,16 +24,23 @@ import logging
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import iterate_switch_edges_using_edges_and_op, \
-    find_switch_end_label
+from explorerscript.ssb_converting.decompiler.graph_building.graph_utils import (
+    iterate_switch_edges_using_edges_and_op,
+    find_switch_end_label,
+)
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SwitchStart, \
-    OPS_THAT_END_CONTROL_FLOW, OP_SWITCH_DUNGEON_MODE
+from explorerscript.ssb_converting.ssb_special_ops import (
+    SsbLabelJump,
+    SwitchStart,
+    OPS_THAT_END_CONTROL_FLOW,
+    OP_SWITCH_DUNGEON_MODE,
+)
 from explorerscript.ssb_converting.util import Blk
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,12 +52,10 @@ class SwitchWriteHandler(AbstractWriteHandler):
         self.ended_on_jump = True
 
     def write_content(self):
-        op: SsbLabelJump = self.start_vertex['op']
+        op: SsbLabelJump = self.start_vertex["op"]
         m: SwitchStart = op.get_marker()
         self.decompiler.source_map_add_opcode(op.offset)
-        self.decompiler.write_stmnt(
-            f"switch ( {self._switch_header_for(op.root)} )"
-        )
+        self.decompiler.write_stmnt(f"switch ( {self._switch_header_for(op.root)} )")
         is_switch_dungeon_mode = op.root.op_code.name == OP_SWITCH_DUNGEON_MODE
 
         exits = self.start_vertex.out_edges()
@@ -58,7 +63,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
         already_printed_edges = set()
         logger.debug("Handling a switch (%s)...", op)
 
-        if len(exits) == 1 and (exits[0]['switch_ops'] is None or len(exits[0]['switch_ops']) == 0):
+        if len(exits) == 1 and (exits[0]["switch_ops"] is None or len(exits[0]["switch_ops"]) == 0):
             # Not a real switch (empty body menu or special process)
             logger.debug("switch was empty.")
             self.decompiler.write_stmnt(" { }", False)
@@ -93,13 +98,22 @@ class SwitchWriteHandler(AbstractWriteHandler):
                             already_printed_edges.add(e)
                             # Print a switch case branch
                             handler = BlockWriteHandler(
-                                e.target_vertex, self.decompiler, self, self.start_vertex,
-                                check_end_block=self.check_end_block
+                                e.target_vertex,
+                                self.decompiler,
+                                self,
+                                self.start_vertex,
+                                check_end_block=self.check_end_block,
                             )
                             end_vertex = handler.write_content()
-                            if not isinstance(handler.last_handler_in_block, LabelWriteHandler) or not handler.last_handler_in_block.switch_fell_through:
+                            if (
+                                not isinstance(handler.last_handler_in_block, LabelWriteHandler)
+                                or not handler.last_handler_in_block.switch_fell_through
+                            ):
                                 root_op_before = self._get_root_op(handler.last_vertex)
-                                if not handler.last_handler_in_block.ended_on_jump and (root_op_before is None or root_op_before.op_code.name not in OPS_THAT_END_CONTROL_FLOW):
+                                if not handler.last_handler_in_block.ended_on_jump and (
+                                    root_op_before is None
+                                    or root_op_before.op_code.name not in OPS_THAT_END_CONTROL_FLOW
+                                ):
                                     self.decompiler.write_stmnt("break;")
 
             next_vertex = find_switch_end_label(self.start_vertex.graph, m.switch_id)
@@ -118,12 +132,12 @@ class SwitchWriteHandler(AbstractWriteHandler):
             lwh = next_handler
 
             if len(lwh.ended_switches) > 0:
-                if self.start_vertex['op'].get_marker().switch_id in lwh.ended_switches:
+                if self.start_vertex["op"].get_marker().switch_id in lwh.ended_switches:
                     return False
-                #else:
+                # else:
                 #    raise ValueError("An unexpected switch was ended while waiting for switch to end.")
 
-            #if len(lwh.ended_loops) > 0 or len(lwh.ended_ifs) > 0:
+            # if len(lwh.ended_loops) > 0 or len(lwh.ended_ifs) > 0:
             #    raise ValueError("An invalid if or loop was ended while waiting for a switch end.")
         return True
 
@@ -131,50 +145,61 @@ class SwitchWriteHandler(AbstractWriteHandler):
     def _switch_header_for(op: SsbOperation):
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name in [
-            'message_SwitchMenu', 'message_SwitchMenu2', 'SwitchDirection', 'SwitchDirectionLives',
-            'SwitchDirectionLives2', 'SwitchDirectionMark', 'SwitchLives', 'SwitchValue', 'SwitchVariable',
-            'main_EnterAdventure', 'main_EnterRescueUser', 'main_EnterTraining', 'main_EnterTraining2', 'message_Menu',
-            'ProcessSpecial'
+            "message_SwitchMenu",
+            "message_SwitchMenu2",
+            "SwitchDirection",
+            "SwitchDirectionLives",
+            "SwitchDirectionLives2",
+            "SwitchDirectionMark",
+            "SwitchLives",
+            "SwitchValue",
+            "SwitchVariable",
+            "main_EnterAdventure",
+            "main_EnterRescueUser",
+            "main_EnterTraining",
+            "main_EnterTraining2",
+            "message_Menu",
+            "ProcessSpecial",
         ]:
             return f'{op.op_code.name}({", ".join([str(x) for x in op.params])})'
         if op.op_code.name == OP_SWITCH_DUNGEON_MODE:
-            return f'dungeon_mode({op.params[0]})'
-        if op.op_code.name == 'SwitchRandom':
-            return f'random({op.params[0]})'
-        if op.op_code.name == 'SwitchScenario':
-            return f'scn({op.params[0]})[0]'
-        if op.op_code.name == 'SwitchScenarioLevel':
-            return f'scn({op.params[0]})[1]'
-        if op.op_code.name == 'SwitchSector':
-            return f'sector()'
-        if op.op_code.name == 'Switch':
-            return f'{op.params[0]}'
+            return f"dungeon_mode({op.params[0]})"
+        if op.op_code.name == "SwitchRandom":
+            return f"random({op.params[0]})"
+        if op.op_code.name == "SwitchScenario":
+            return f"scn({op.params[0]})[0]"
+        if op.op_code.name == "SwitchScenarioLevel":
+            return f"scn({op.params[0]})[1]"
+        if op.op_code.name == "SwitchSector":
+            return f"sector()"
+        if op.op_code.name == "Switch":
+            return f"{op.params[0]}"
         raise ValueError(f"Unknown switch {op.op_code.name}")
 
     def _case_header_for(self, op: SsbOperation, is_switch_dungeon_mode):
         # TODO: More error checking for parameters would probably be a good idea
-        if op.op_code.name == 'Case':
+        if op.op_code.name == "Case":
             if is_switch_dungeon_mode:
-                return f'{self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[0])}'
-            return f'{op.params[0]}'
-        if op.op_code.name == 'CaseMenu':
-            if hasattr(op.params[0], 'indent'):
+                return f"{self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[0])}"
+            return f"{op.params[0]}"
+        if op.op_code.name == "CaseMenu":
+            if hasattr(op.params[0], "indent"):
                 op.params[0].indent = self.decompiler.indent
-            return f'menu({op.params[0]})'
-        if op.op_code.name == 'CaseMenu2':
-            return f'menu2({op.params[0]})'
-        if op.op_code.name == 'CaseScenario':
+            return f"menu({op.params[0]})"
+        if op.op_code.name == "CaseMenu2":
+            return f"menu2({op.params[0]})"
+        if op.op_code.name == "CaseScenario":
             # TODO: This will convert them into CaseValues. Might cause issues.
-            return f'{SsbOperator(op.params[0]).notation} {op.params[1]}'
-        if op.op_code.name == 'CaseValue':
-            return f'{SsbOperator(op.params[0]).notation} {op.params[1]}'
-        if op.op_code.name == 'CaseVariable':
-            return f'{SsbOperator(op.params[0]).notation} value({op.params[1]})'
+            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"
+        if op.op_code.name == "CaseValue":
+            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"
+        if op.op_code.name == "CaseVariable":
+            return f"{SsbOperator(op.params[0]).notation} value({op.params[1]})"
         raise ValueError(f"Unknown switch-case {op.op_code.name}")
 
     def _get_root_op(self, v):
         if v is None:
             return None
-        if isinstance(v['op'], SsbLabelJump):
-            return v['op'].root
-        return v['op']
+        if isinstance(v["op"], SsbLabelJump):
+            return v["op"].root
+        return v["op"]

@@ -24,6 +24,7 @@
 
 class Blk:
     """Utility context manager for managing indents."""
+
     def __init__(self, reader, braces=True):
         self.reader = reader
         self.braces = braces
@@ -31,9 +32,9 @@ class Blk:
     def __enter__(self):
         self.reader.indent += 1
         if self.braces:
-            self.reader.write_stmnt(' {', False)
+            self.reader.write_stmnt(" {", False)
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.reader.indent -= 1
         if self.braces:
-            self.reader.write_stmnt('}', True)
+            self.reader.write_stmnt("}", True)

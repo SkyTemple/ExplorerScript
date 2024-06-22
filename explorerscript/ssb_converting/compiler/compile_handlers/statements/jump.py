@@ -40,9 +40,7 @@ class JumpCompileHandler(AbstractStatementCompileHandler):
         if label_name in self.compiler_ctx.collected_labels:
             label = self.compiler_ctx.collected_labels[label_name]
         else:
-            label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1, f'proper label, named {label_name}', label_name
-            )
+            label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"proper label, named {label_name}", label_name)
             self.compiler_ctx.collected_labels[label_name] = label
         return [self._generate_jump_operation(OP_JUMP, [], label)]
 

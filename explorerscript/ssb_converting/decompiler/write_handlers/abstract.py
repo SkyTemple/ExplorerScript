@@ -36,7 +36,10 @@ class AbstractWriteHandler(ABC):
     Handles the writing of a single operation, statement, block, routine, etc.
     The start vertex is passed by the parent handler to specify where this handler should begin.
     """
-    def __init__(self, start_vertex: Vertex, decompiler: 'ExplorerScriptSsbDecompiler', parent: Optional['AbstractWriteHandler']):
+
+    def __init__(
+        self, start_vertex: Vertex, decompiler: "ExplorerScriptSsbDecompiler", parent: Optional["AbstractWriteHandler"]
+    ):
         self.start_vertex = start_vertex
         self.decompiler = decompiler
         # Parent write handler.
@@ -59,4 +62,5 @@ class NestedBlockDisallowedError(Exception):
 class FallbackToJump(Exception):
     """Raised when a label jump write handler can not do
     it's task and the default jump handler should be used instead."""
+
     pass

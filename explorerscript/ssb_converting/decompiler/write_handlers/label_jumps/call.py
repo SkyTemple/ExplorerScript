@@ -26,6 +26,7 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,11 +37,10 @@ class CallWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self):
-        logger.debug("Handling a call; (%s)...", self.start_vertex['op'])
-        op: SsbLabelJump = self.start_vertex['op']
+        logger.debug("Handling a call; (%s)...", self.start_vertex["op"])
+        op: SsbLabelJump = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         self.decompiler.write_stmnt(f"call @label_{op.label.id};")
         exits = self.start_vertex.out_edges()
-        assert 3 > len(exits) > 0, f"A call must have exactly one or two points to jump to, " \
-                                   f"has {len(exits)}."
+        assert 3 > len(exits) > 0, f"A call must have exactly one or two points to jump to, " f"has {len(exits)}."
         return exits[0].target_vertex

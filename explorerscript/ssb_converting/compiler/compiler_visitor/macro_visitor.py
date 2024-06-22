@@ -35,16 +35,18 @@ from explorerscript.util import _
 
 
 class MacroVisitor(ExplorerScriptVisitor):
-    """ Collects all macros as Macro models from an ExplorerScript tree. """
+    """Collects all macros as Macro models from an ExplorerScript tree."""
+
     def __init__(
-            self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro],
-            macro_resolution_order: list[str]
+        self,
+        performance_progress_list_var_name: str,
+        macros: dict[str, ExplorerScriptMacro],
+        macro_resolution_order: list[str],
     ):
         # Global compilation context for the handlers
         self.source_map_builder = SourceMapBuilder()
         self.compiler_ctx = CompilerCtx(
-            Counter(), self.source_map_builder, {}, Counter(),
-            performance_progress_list_var_name, macros.copy()
+            Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name, macros.copy()
         )
         self.macro_resolution_order = macro_resolution_order
 

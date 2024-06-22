@@ -3,6 +3,7 @@ Registry of special known ssb operations for the decompiler and some code to han
 ExplorerScript only maps ssb opcodes by name.
 TODO: These are only valid for Sky-style ssb.
 """
+
 #  MIT License
 #
 #  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
@@ -31,76 +32,76 @@ from igraph import Graph, Vertex
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParamConstant
 
-OP_JUMP = 'Jump'
-OP_CALL = 'Call'
+OP_JUMP = "Jump"
+OP_CALL = "Call"
 
-OP_BRANCH = 'Branch'
-OP_BRANCH_BIT = 'BranchBit'
-OP_BRANCH_DEBUG = 'BranchDebug'
-OP_BRANCH_EDIT = 'BranchEdit'
-OP_BRANCH_PERFORMANCE = 'BranchPerformance'
-OP_BRANCH_SCENARIO_NOW = 'BranchScenarioNow'
-OP_BRANCH_SCENARIO_NOW_AFTER = 'BranchScenarioNowAfter'
-OP_BRANCH_SCENARIO_NOW_BEFORE = 'BranchScenarioNowBefore'
-OP_BRANCH_SCENARIO_AFTER = 'BranchScenarioAfter'
-OP_BRANCH_SCENARIO_BEFORE = 'BranchScenarioBefore'
-OP_BRANCH_VALUE = 'BranchValue'
-OP_BRANCH_VARIABLE = 'BranchVariable'
-OP_BRANCH_VARIATION = 'BranchVariation'
+OP_BRANCH = "Branch"
+OP_BRANCH_BIT = "BranchBit"
+OP_BRANCH_DEBUG = "BranchDebug"
+OP_BRANCH_EDIT = "BranchEdit"
+OP_BRANCH_PERFORMANCE = "BranchPerformance"
+OP_BRANCH_SCENARIO_NOW = "BranchScenarioNow"
+OP_BRANCH_SCENARIO_NOW_AFTER = "BranchScenarioNowAfter"
+OP_BRANCH_SCENARIO_NOW_BEFORE = "BranchScenarioNowBefore"
+OP_BRANCH_SCENARIO_AFTER = "BranchScenarioAfter"
+OP_BRANCH_SCENARIO_BEFORE = "BranchScenarioBefore"
+OP_BRANCH_VALUE = "BranchValue"
+OP_BRANCH_VARIABLE = "BranchVariable"
+OP_BRANCH_VARIATION = "BranchVariation"
 
 OPS_BRANCH = {
     OP_BRANCH: 2,
     OP_BRANCH_BIT: 2,
     OP_BRANCH_DEBUG: 1,
     OP_BRANCH_EDIT: 1,
-    'BranchExecuteSub': 1,
+    "BranchExecuteSub": 1,
     OP_BRANCH_PERFORMANCE: 2,
     OP_BRANCH_SCENARIO_NOW: 3,
     OP_BRANCH_SCENARIO_NOW_AFTER: 3,
     OP_BRANCH_SCENARIO_NOW_BEFORE: 3,
     OP_BRANCH_SCENARIO_AFTER: 3,
     OP_BRANCH_SCENARIO_BEFORE: 3,
-    'BranchSum': 3,
+    "BranchSum": 3,
     OP_BRANCH_VALUE: 3,
     OP_BRANCH_VARIABLE: 3,
     OP_BRANCH_VARIATION: 1,
 }
 
-OP_CASE = 'Case'
-OP_CASE_MENU = 'CaseMenu'
-OP_CASE_MENU2 = 'CaseMenu2'
-OP_CASE_VALUE = 'CaseValue'
-OP_CASE_VARIABLE = 'CaseVariable'
-OP_CASE_SCENARIO = 'CaseScenario'
+OP_CASE = "Case"
+OP_CASE_MENU = "CaseMenu"
+OP_CASE_MENU2 = "CaseMenu2"
+OP_CASE_VALUE = "CaseValue"
+OP_CASE_VARIABLE = "CaseVariable"
+OP_CASE_SCENARIO = "CaseScenario"
 
-OP_SWITCH = 'Switch'
-OP_SWITCH_SECTOR = 'SwitchSector'
-OP_SWITCH_SCENARIO = 'SwitchScenario'
-OP_SWITCH_RANDOM = 'SwitchRandom'
-OP_SWITCH_SCENARIO_LEVEL = 'SwitchScenarioLevel'
-OP_SWITCH_DUNGEON_MODE = 'SwitchDungeonMode'
+OP_SWITCH = "Switch"
+OP_SWITCH_SECTOR = "SwitchSector"
+OP_SWITCH_SCENARIO = "SwitchScenario"
+OP_SWITCH_RANDOM = "SwitchRandom"
+OP_SWITCH_SCENARIO_LEVEL = "SwitchScenarioLevel"
+OP_SWITCH_DUNGEON_MODE = "SwitchDungeonMode"
 OPS_REGULAR_CASES = [OP_CASE, OP_CASE_VALUE, OP_CASE_VARIABLE, OP_CASE_SCENARIO]
 OPS_SWITCH_CASE_MAP = {
-    'message_SwitchMenu': [OP_CASE_MENU, OP_CASE_MENU2],
-    'message_SwitchMenu2': [OP_CASE_MENU, OP_CASE_MENU2],
+    "message_SwitchMenu": [OP_CASE_MENU, OP_CASE_MENU2],
+    "message_SwitchMenu2": [OP_CASE_MENU, OP_CASE_MENU2],
     OP_SWITCH: OPS_REGULAR_CASES,
     OP_SWITCH_SECTOR: OPS_REGULAR_CASES,
-    'ProcessSpecial': OPS_REGULAR_CASES,
-    'message_Menu': OPS_REGULAR_CASES,
+    "ProcessSpecial": OPS_REGULAR_CASES,
+    "message_Menu": OPS_REGULAR_CASES,
     OP_SWITCH_SCENARIO: OPS_REGULAR_CASES,
     OP_SWITCH_RANDOM: OPS_REGULAR_CASES,
     OP_SWITCH_SCENARIO_LEVEL: OPS_REGULAR_CASES,
     OP_SWITCH_DUNGEON_MODE: OPS_REGULAR_CASES,
-    'main_EnterAdventure': OPS_REGULAR_CASES,
-    'main_EnterRescueUser': OPS_REGULAR_CASES,
-    'main_EnterTraining': OPS_REGULAR_CASES,
-    'main_EnterTraining2': OPS_REGULAR_CASES
+    "main_EnterAdventure": OPS_REGULAR_CASES,
+    "main_EnterRescueUser": OPS_REGULAR_CASES,
+    "main_EnterTraining": OPS_REGULAR_CASES,
+    "main_EnterTraining2": OPS_REGULAR_CASES,
 }
 
-OP_MESSAGE_SWITCH_TALK = 'message_SwitchTalk'
-OP_MESSAGE_SWITCH_MONOLOGUE = 'message_SwitchMonologue'
-OP_CASE_TEXT = 'CaseText'
-OP_DEFAULT_TEXT = 'DefaultText'
+OP_MESSAGE_SWITCH_TALK = "message_SwitchTalk"
+OP_MESSAGE_SWITCH_MONOLOGUE = "message_SwitchMonologue"
+OP_CASE_TEXT = "CaseText"
+OP_DEFAULT_TEXT = "DefaultText"
 OPS_SWITCH_TEXT_CASE_CASES_LIST = [OP_CASE_TEXT, OP_DEFAULT_TEXT]
 OPS_SWITCH_TEXT_CASE_MAP = {
     OP_MESSAGE_SWITCH_TALK: OPS_SWITCH_TEXT_CASE_CASES_LIST,
@@ -122,16 +123,37 @@ OPS_WITH_JUMP_TO_MEM_OFFSET = {
 OPS_WITH_JUMP_TO_MEM_OFFSET.update(OPS_BRANCH)
 
 OPS_ALL_SPECIAL = [
-    OP_JUMP, OP_CALL,
-
-    OP_BRANCH, OP_BRANCH_BIT, OP_BRANCH_DEBUG, OP_BRANCH_EDIT, OP_BRANCH_PERFORMANCE,
-    OP_BRANCH_SCENARIO_NOW, OP_BRANCH_SCENARIO_NOW_AFTER, OP_BRANCH_SCENARIO_NOW_BEFORE,
-    OP_BRANCH_SCENARIO_AFTER, OP_BRANCH_SCENARIO_BEFORE,
-    OP_BRANCH_VALUE, OP_BRANCH_VARIABLE, OP_BRANCH_VARIATION,
-    OP_CASE, OP_CASE_MENU, OP_CASE_MENU2, OP_CASE_VALUE, OP_CASE_VARIABLE, OP_CASE_SCENARIO,
-
-    OP_SWITCH, OP_SWITCH_SECTOR, OP_SWITCH_SCENARIO, OP_SWITCH_RANDOM, OP_SWITCH_SCENARIO_LEVEL,
-    OP_SWITCH_DUNGEON_MODE, OP_MESSAGE_SWITCH_TALK, OP_MESSAGE_SWITCH_MONOLOGUE, OP_CASE_TEXT, OP_DEFAULT_TEXT
+    OP_JUMP,
+    OP_CALL,
+    OP_BRANCH,
+    OP_BRANCH_BIT,
+    OP_BRANCH_DEBUG,
+    OP_BRANCH_EDIT,
+    OP_BRANCH_PERFORMANCE,
+    OP_BRANCH_SCENARIO_NOW,
+    OP_BRANCH_SCENARIO_NOW_AFTER,
+    OP_BRANCH_SCENARIO_NOW_BEFORE,
+    OP_BRANCH_SCENARIO_AFTER,
+    OP_BRANCH_SCENARIO_BEFORE,
+    OP_BRANCH_VALUE,
+    OP_BRANCH_VARIABLE,
+    OP_BRANCH_VARIATION,
+    OP_CASE,
+    OP_CASE_MENU,
+    OP_CASE_MENU2,
+    OP_CASE_VALUE,
+    OP_CASE_VARIABLE,
+    OP_CASE_SCENARIO,
+    OP_SWITCH,
+    OP_SWITCH_SECTOR,
+    OP_SWITCH_SCENARIO,
+    OP_SWITCH_RANDOM,
+    OP_SWITCH_SCENARIO_LEVEL,
+    OP_SWITCH_DUNGEON_MODE,
+    OP_MESSAGE_SWITCH_TALK,
+    OP_MESSAGE_SWITCH_MONOLOGUE,
+    OP_CASE_TEXT,
+    OP_DEFAULT_TEXT,
 ]
 
 
@@ -141,46 +163,52 @@ OPS_ALL_SPECIAL = [
 # After Hold we can assume the execution flow is stopped, but sometimes there's also still another token of
 # OPS_THAT_END_CONTROL_FLOW after it, and we should probably include that when reading in ssb.
 # TODO: in some cases Hold might actually be able to continue and also be used that way!
-OP_HOLD = 'Hold'
-OP_RETURN = 'Return'
-OP_END = 'End'
+OP_HOLD = "Hold"
+OP_RETURN = "Return"
+OP_END = "End"
 # The opcode to insert if a control flow ending opcode needs to be inserted
 OP_DUMMY_END = OP_RETURN
 
 # These ops end the control flow in the current routine
 # (usually by jumping somewhere else and NOT "automatically" returining.)
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
-OPS_THAT_END_CONTROL_FLOW = [
-    OP_JUMP, OP_RETURN, OP_END, OP_HOLD, 'JumpCommon', 'Destroy'
-]
+OPS_THAT_END_CONTROL_FLOW = [OP_JUMP, OP_RETURN, OP_END, OP_HOLD, "JumpCommon", "Destroy"]
 
 
-OPS_CTX_LIVES = 'lives'
-OPS_CTX_OBJECT = 'object'
-OPS_CTX_PERFORMER = 'performer'
+OPS_CTX_LIVES = "lives"
+OPS_CTX_OBJECT = "object"
+OPS_CTX_PERFORMER = "performer"
 # The next OP after these will be executed in the context of an actor/object/performer
 OPS_CTX = [OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER]
 
 
-OPS_FLAG__CALC_BIT             = 'flag_CalcBit'
-OPS_FLAG__CALC_VALUE           = 'flag_CalcValue'
-OPS_FLAG__CALC_VARIABLE        = 'flag_CalcVariable'
-OPS_FLAG__CLEAR                = 'flag_Clear'
-OPS_FLAG__INITIAL              = 'flag_Initial'
-OPS_FLAG__SET                  = 'flag_Set'
-OPS_FLAG__RESET_DUNGEON_RESULT = 'flag_ResetDungeonResult'
-OPS_FLAG__RESET_SCENARIO       = 'flag_ResetScenario'
-OPS_FLAG__SET_ADVENTURE_LOG    = 'flag_SetAdventureLog'
-OPS_FLAG__SET_DUNGEON_MODE     = 'flag_SetDungeonMode'
-#OPS_FLAG__SET_DUNGEON_RESULT  = 'flag_SetDungeonResult'
-OPS_FLAG__SET_PERFORMANCE      = 'flag_SetPerformance'
-OPS_FLAG__SET_SCENARIO         = 'flag_SetScenario'
+OPS_FLAG__CALC_BIT = "flag_CalcBit"
+OPS_FLAG__CALC_VALUE = "flag_CalcValue"
+OPS_FLAG__CALC_VARIABLE = "flag_CalcVariable"
+OPS_FLAG__CLEAR = "flag_Clear"
+OPS_FLAG__INITIAL = "flag_Initial"
+OPS_FLAG__SET = "flag_Set"
+OPS_FLAG__RESET_DUNGEON_RESULT = "flag_ResetDungeonResult"
+OPS_FLAG__RESET_SCENARIO = "flag_ResetScenario"
+OPS_FLAG__SET_ADVENTURE_LOG = "flag_SetAdventureLog"
+OPS_FLAG__SET_DUNGEON_MODE = "flag_SetDungeonMode"
+# OPS_FLAG__SET_DUNGEON_RESULT  = 'flag_SetDungeonResult'
+OPS_FLAG__SET_PERFORMANCE = "flag_SetPerformance"
+OPS_FLAG__SET_SCENARIO = "flag_SetScenario"
 
 OPS_FLAG_ALL = [
-    OPS_FLAG__CALC_BIT, OPS_FLAG__CALC_VALUE, OPS_FLAG__CALC_VARIABLE, OPS_FLAG__CLEAR,
-    OPS_FLAG__INITIAL, OPS_FLAG__SET, OPS_FLAG__RESET_DUNGEON_RESULT, OPS_FLAG__RESET_SCENARIO,
-    OPS_FLAG__SET_ADVENTURE_LOG, OPS_FLAG__SET_DUNGEON_MODE, OPS_FLAG__SET_PERFORMANCE,
-    OPS_FLAG__SET_SCENARIO
+    OPS_FLAG__CALC_BIT,
+    OPS_FLAG__CALC_VALUE,
+    OPS_FLAG__CALC_VARIABLE,
+    OPS_FLAG__CLEAR,
+    OPS_FLAG__INITIAL,
+    OPS_FLAG__SET,
+    OPS_FLAG__RESET_DUNGEON_RESULT,
+    OPS_FLAG__RESET_SCENARIO,
+    OPS_FLAG__SET_ADVENTURE_LOG,
+    OPS_FLAG__SET_DUNGEON_MODE,
+    OPS_FLAG__SET_PERFORMANCE,
+    OPS_FLAG__SET_SCENARIO,
 ]
 
 
@@ -282,9 +310,10 @@ class ForeverEnd(LabelMarker):
 
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
+
     def __init__(self, id: int, routine_id: int, debugging_note: str = None, original_name: str = None):
         #                                                      Params only for debugging
-        super().__init__(-1, SsbOpCode(-1, f'ES_LABEL<{id}>'), [id])
+        super().__init__(-1, SsbOpCode(-1, f"ES_LABEL<{id}>"), [id])
         self.id: int = id
         # Routine id this label lies in
         self.routine_id = routine_id
@@ -303,7 +332,7 @@ class SsbLabel(SsbOperation):
     def needs_to_be_printed(self, my_vertex_index: int, number_in_vs: int, graph: Graph):
         """If the number of incoming vertices is bigger than max_in_vs, then we need to print this label"""
         # TODO: There are still issues with this logic, we just output all for now (except switch fallthroughs!)
-        return not(any([isinstance(m, SwitchFalltrough) for m in self.markers]))
+        return not (any([isinstance(m, SwitchFalltrough) for m in self.markers]))
         if self.force_write or my_vertex_index == 0 or self.referenced_from_other_routine:
             # If the label is the root vertex or referenced from another routine we NEED to output it!
             return True
@@ -324,10 +353,10 @@ class SsbLabel(SsbOperation):
     @staticmethod
     def _find_switch_start_vertex(graph: Graph, switch_id: int) -> Optional[Vertex]:
         for v in graph.vs:
-            if 'op' not in v.attributes():
+            if "op" not in v.attributes():
                 continue
-            if isinstance(v['op'], SsbLabelJump):
-                for m in v['op'].markers:
+            if isinstance(v["op"], SsbLabelJump):
+                for m in v["op"].markers:
                     if isinstance(m, SwitchStart) and m.switch_id == switch_id:
                         return v
         return None
@@ -338,14 +367,16 @@ class SsbLabel(SsbOperation):
 
 class SsbForeignLabel(SsbOperation):
     """A reference to a label in another routine"""
+
     def __init__(self, label: SsbLabel):
         #                                                              Params only for debugging
-        super().__init__(-1, SsbOpCode(-1, f'ES_FOREIGN<{label.id}>'), [label.id])
+        super().__init__(-1, SsbOpCode(-1, f"ES_FOREIGN<{label.id}>"), [label.id])
         self.label = label
 
 
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
+
     def __init__(self, root: SsbOperation, label: Union[SsbLabel, None]):
         if isinstance(root, SsbLabelJump):
             # SsbLabelJumps can not be nested, that makes no sense. But for convenience, they can be "copied" this way.
@@ -355,7 +386,7 @@ class SsbLabelJump(SsbOperation):
         else:
             label_id = -1
         #                                                                             Params only for debugging
-        super().__init__(root.offset, SsbOpCode(-1, f'ES_JUMP<{root.op_code.name}>'), [label_id])
+        super().__init__(root.offset, SsbOpCode(-1, f"ES_JUMP<{root.op_code.name}>"), [label_id])
         self.root = root
         # May be None, if so the connected edges determine the different jumps
         self.label = label
@@ -380,7 +411,8 @@ class SsbLabelJump(SsbOperation):
 
 
 class SwitchCaseOperation:
-    """ For marking the edge of a switch. """
+    """For marking the edge of a switch."""
+
     def __init__(self, switch_index: int, index: int, op: SsbOperation):
         self.switch_index = switch_index
         self.index = index
@@ -405,7 +437,9 @@ def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], rou
         param_list = op.params if isinstance(op.params, list) else list(op.params.values())
         jump_param_idx = OPS_WITH_JUMP_TO_MEM_OFFSET[op.op_code.name]
         if len(param_list) < jump_param_idx:
-            raise ValueError(f"The parameters for the OpCode {op.op_code.name} must contain a jump address at index {jump_param_idx}.")
+            raise ValueError(
+                f"The parameters for the OpCode {op.op_code.name} must contain a jump address at index {jump_param_idx}."
+            )
         old_offset = param_list[jump_param_idx]
         if old_offset in known_labels:
             label = known_labels[old_offset]
@@ -420,10 +454,7 @@ def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], rou
             known_labels[old_offset] = label
         new_params = param_list.copy()
         del new_params[jump_param_idx]
-        jmp = SsbLabelJump(
-            SsbOperation(op.offset, op.op_code, new_params),
-            label
-        )
+        jmp = SsbLabelJump(SsbOperation(op.offset, op.op_code, new_params), label)
         if op.op_code.name == OP_CALL:
             jmp.markers.append(CallJump())
         return jmp

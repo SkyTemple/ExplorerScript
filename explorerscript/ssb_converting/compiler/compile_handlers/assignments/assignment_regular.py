@@ -24,14 +24,20 @@ from typing import List, Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import \
-    AssignOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import (
+    AssignOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbCalcOperator
-from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CALC_VARIABLE, OPS_FLAG__SET, OPS_FLAG__CALC_VALUE, \
-    OPS_FLAG__SET_PERFORMANCE, OPS_FLAG__CALC_BIT
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_FLAG__CALC_VARIABLE,
+    OPS_FLAG__SET,
+    OPS_FLAG__CALC_VALUE,
+    OPS_FLAG__SET_PERFORMANCE,
+    OPS_FLAG__CALC_BIT,
+)
 from explorerscript.util import exps_int, f, _
 
 
@@ -55,15 +61,18 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
             index = exps_int(str(self.ctx.INTEGER()))
             # CalcBit / SetPerformance
             if self.value_is_a_variable:
-                raise SsbCompilerError(f(_("value(X) can not be used with index based assignments "
-                                           "(line {self.ctx.start.line}).")))
+                raise SsbCompilerError(
+                    f(_("value(X) can not be used with index based assignments " "(line {self.ctx.start.line})."))
+                )
             if str(self.var_target) == self.compiler_ctx.performance_progress_list_var_name:
                 return [self._generate_operation(OPS_FLAG__SET_PERFORMANCE, [index, self.value])]
             return [self._generate_operation(OPS_FLAG__CALC_BIT, [self.var_target, index, self.value])]
 
         # CalcValue / CalcVariable / Set
         if self.value_is_a_variable:
-            return [self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator.value, self.value])]
+            return [
+                self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator.value, self.value])
+            ]
         if self.operator == SsbCalcOperator.ASSIGN:
             return [self._generate_operation(OPS_FLAG__SET, [self.var_target, self.value])]
         return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator.value, self.value])]

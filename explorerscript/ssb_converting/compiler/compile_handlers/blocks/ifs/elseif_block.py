@@ -22,8 +22,10 @@
 #
 from typing import List, Optional
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractBlockCompileHandler,
+    AbstractStatementCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
@@ -31,6 +33,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 class ElseIfBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an elseif block."""
+
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._if_header_handlers: list[IfHeaderCompileHandler] = []

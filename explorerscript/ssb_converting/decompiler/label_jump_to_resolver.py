@@ -2,6 +2,7 @@
 Resolves the offsets of memory jump instructions in a list of ssb routines to label jumps
 and inserts labels at the appropriate locations.
 """
+
 #  MIT License
 #
 #  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
@@ -29,6 +30,7 @@ from typing import List, Dict
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel
+
 logger = logging.getLogger(__name__)
 
 

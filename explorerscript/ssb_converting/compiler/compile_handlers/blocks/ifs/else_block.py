@@ -23,13 +23,16 @@
 from typing import List
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractBlockCompileHandler,
+    AbstractStatementCompileHandler,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
 class ElseBlockCompileHandler(AbstractBlockCompileHandler):
     """Handles an else block."""
+
     def collect(self) -> list[SsbOperation]:
         return self._process_block()
 

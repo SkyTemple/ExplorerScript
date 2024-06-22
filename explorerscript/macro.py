@@ -1,4 +1,5 @@
 """Model representation of a single ExplorerScript macro function."""
+
 #  MIT License
 #
 #  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
@@ -42,8 +43,7 @@ class MacroEndSsbLabel(SsbLabel):
 
 
 class ExplorerScriptMacro:
-    def __init__(self, name: str, variables: list[str],
-                 blueprints: list[SsbOperation], source_map: SourceMap):
+    def __init__(self, name: str, variables: list[str], blueprints: list[SsbOperation], source_map: SourceMap):
         """
         A model for a ExplorerScript macro. Contains the processed (= all sub-macros are already fully processed)
         opcodes by the MacroVisitor and some metadata.
@@ -71,8 +71,13 @@ class ExplorerScriptMacro:
         # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
         self.included__relative_path: Optional[str] = None
 
-    def build(self, op_idx_counter: Counter, lbl_idx_counter: Counter, parameters: dict[str, SsbOpParam],
-              smb: SourceMapBuilder) -> list[SsbOperation]:
+    def build(
+        self,
+        op_idx_counter: Counter,
+        lbl_idx_counter: Counter,
+        parameters: dict[str, SsbOpParam],
+        smb: SourceMapBuilder,
+    ) -> list[SsbOperation]:
         """
         Returns new built opcodes for this macro. SsbOpConstants in the blueprints, that have the names of variables,
         are replaced with the values from the parameter dict. The keys for the dict are the names of the variables,
@@ -91,14 +96,18 @@ class ExplorerScriptMacro:
 
         # Add the macro start label if we are processed later as a sub-macro, so that the parent macro can push
         # our ops to the callstack.
-        out_ops: list[SsbOperation] = [MacroStartSsbLabel(
-            lbl_idx_counter(), -1, len_real_ops_in_blueprints, parameter_mapping, f"Macro call {self.name} start label."
-        )]
+        out_ops: list[SsbOperation] = [
+            MacroStartSsbLabel(
+                lbl_idx_counter(),
+                -1,
+                len_real_ops_in_blueprints,
+                parameter_mapping,
+                f"Macro call {self.name} start label.",
+            )
+        ]
 
         # End label, also for sub-macros and when we are processing a return statement
-        end_label = MacroEndSsbLabel(
-            lbl_idx_counter(), -1, f"Macro call {self.name} end label."
-        )
+        end_label = MacroEndSsbLabel(lbl_idx_counter(), -1, f"Macro call {self.name} end label.")
 
         # Maps blueprint label ids to new actual labels
         new_labels: dict[int, SsbLabel] = {}
@@ -106,25 +115,23 @@ class ExplorerScriptMacro:
         for blueprint_op in self.blueprints:
             # If this a start / end of a macro, update the macro callstack
             if isinstance(blueprint_op, MacroStartSsbLabel):
-                smb.macro_context__push(op_idx_counter.count + blueprint_op.length_of_macro,
-                                        self._replace_in_param_mapping(blueprint_op.parameter_mapping, parameters))
+                smb.macro_context__push(
+                    op_idx_counter.count + blueprint_op.length_of_macro,
+                    self._replace_in_param_mapping(blueprint_op.parameter_mapping, parameters),
+                )
             elif isinstance(blueprint_op, MacroEndSsbLabel):
                 smb.macro_context__pop()
 
             if isinstance(blueprint_op, SsbLabel):
                 if blueprint_op.id not in new_labels.keys():
                     # Copy the label with a new proper index
-                    new_labels[blueprint_op.id] = self._copy_blueprint_label(
-                        lbl_idx_counter, blueprint_op
-                    )
+                    new_labels[blueprint_op.id] = self._copy_blueprint_label(lbl_idx_counter, blueprint_op)
                     new_labels[blueprint_op.id].markers = blueprint_op.markers.copy()
                 out_ops.append(new_labels[blueprint_op.id])
             elif isinstance(blueprint_op, SsbLabelJump):
                 if blueprint_op.label.id not in new_labels.keys():
                     # Copy the label with a new proper index
-                    new_labels[blueprint_op.label.id] = self._copy_blueprint_label(
-                        lbl_idx_counter, blueprint_op.label
-                    )
+                    new_labels[blueprint_op.label.id] = self._copy_blueprint_label(lbl_idx_counter, blueprint_op.label)
                     new_labels[blueprint_op.label.id].markers = blueprint_op.label.markers.copy()
                 new_root = self._build_op(op_idx_counter, blueprint_op.root, smb, parameters)
                 new_jumps = SsbLabelJump(new_root, new_labels[blueprint_op.label.id])
@@ -133,11 +140,9 @@ class ExplorerScriptMacro:
             elif blueprint_op.op_code.name == OP_RETURN:
                 # Process return: Exit the macro instead
                 replacement_blueprint_op = SsbOperation(blueprint_op.offset, SsbOpCode(-1, OP_JUMP), [])
-                out_ops.append(SsbLabelJump(
-                    self._build_op(
-                        op_idx_counter, replacement_blueprint_op, smb, parameters
-                    ), end_label
-                ))
+                out_ops.append(
+                    SsbLabelJump(self._build_op(op_idx_counter, replacement_blueprint_op, smb, parameters), end_label)
+                )
             else:
                 out_ops.append(self._build_op(op_idx_counter, blueprint_op, smb, parameters))
         for pos_mark in self.source_map.get_position_marks__direct():
@@ -153,8 +158,9 @@ class ExplorerScriptMacro:
 
         return out_ops
 
-    def _build_op(self, op_idx_counter: Counter, blueprint_op: SsbOperation,
-                  smb: SourceMapBuilder, params: dict[str, SsbOpParam]):
+    def _build_op(
+        self, op_idx_counter: Counter, blueprint_op: SsbOperation, smb: SourceMapBuilder, params: dict[str, SsbOpParam]
+    ):
         new_op_idx = op_idx_counter()
         # Maybe this op was also included through a macro, if so just relay the macro source map entry
         potential_macro_sm_entry = self.source_map.get_op_line_and_col__macros(blueprint_op.offset)
@@ -171,18 +177,22 @@ class ExplorerScriptMacro:
                     # ... or the field was already set by another macro, we can just take it
                     called_in_filename = potential_macro_sm_entry.called_in[0]
                 smb.next_macro_opcode_called_in(called_in_filename, *potential_macro_sm_entry.called_in[1:])
-            smb.add_macro_opcode(new_op_idx, file_path,
-                                 potential_macro_sm_entry.macro_name, potential_macro_sm_entry.line,
-                                 potential_macro_sm_entry.column)
+            smb.add_macro_opcode(
+                new_op_idx,
+                file_path,
+                potential_macro_sm_entry.macro_name,
+                potential_macro_sm_entry.line,
+                potential_macro_sm_entry.column,
+            )
         else:
             # Nope, it wasn't:
             mapping = self.source_map.get_op_line_and_col__direct(blueprint_op.offset)
             smb.add_macro_opcode(new_op_idx, self.included__relative_path, self.name, mapping.line, mapping.column)
-        return SsbOperation(
-            new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params)
-        )
+        return SsbOperation(new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params))
 
-    def _process_parameters(self, original_params: list[SsbOpParam], macro_params: dict[str, SsbOpParam]) -> list[SsbOpParam]:
+    def _process_parameters(
+        self, original_params: list[SsbOpParam], macro_params: dict[str, SsbOpParam]
+    ) -> list[SsbOpParam]:
         """
         Returns a copy of original_params,
         where SsbOpConstants that match keys of macro_params are
@@ -203,7 +213,9 @@ class ExplorerScriptMacro:
     def _create_parameter_mapping(self, parameters: dict[str, SsbOpParam]):
         return {x: str(y) for x, y in parameters.items()}
 
-    def _replace_in_param_mapping(self, parameter_mapping: dict[str, tuple[int, str]], our_parameters: dict[str, SsbOpParam]):
+    def _replace_in_param_mapping(
+        self, parameter_mapping: dict[str, tuple[int, str]], our_parameters: dict[str, SsbOpParam]
+    ):
         our_parameters = self._create_parameter_mapping(our_parameters)
         new_dict = {}
         for p_name, p_value in parameter_mapping.items():
@@ -216,15 +228,13 @@ class ExplorerScriptMacro:
     def _copy_blueprint_label(self, lbl_idx_counter: Counter, blueprint_op: SsbLabel):
         if isinstance(blueprint_op, MacroStartSsbLabel):
             return MacroStartSsbLabel(
-                lbl_idx_counter(), -1, blueprint_op.length_of_macro,
+                lbl_idx_counter(),
+                -1,
+                blueprint_op.length_of_macro,
                 blueprint_op.parameter_mapping,
-                blueprint_op.debugging_note
+                blueprint_op.debugging_note,
             )
         elif isinstance(blueprint_op, MacroEndSsbLabel):
-            return MacroEndSsbLabel(
-                lbl_idx_counter(), -1, blueprint_op.debugging_note
-            )
+            return MacroEndSsbLabel(lbl_idx_counter(), -1, blueprint_op.debugging_note)
         else:
-            return SsbLabel(
-                lbl_idx_counter(), -1, blueprint_op.debugging_note
-            )
+            return SsbLabel(lbl_idx_counter(), -1, blueprint_op.debugging_note)

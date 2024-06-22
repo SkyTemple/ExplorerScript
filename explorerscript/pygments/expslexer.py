@@ -81,40 +81,41 @@ KEYWORDS = (
 # TODO: Not finished and pretty lazy atm.
 class ExplorerScriptLexer(RegexLexer):
     """ExplorerScript as a (very) simple Pygments Lexer, mainly for use with Sphinx."""
-    name = 'ExplorerScript'
-    aliases = ['explorerscript', 'exps']
-    filenames = ['*.exps']
+
+    name = "ExplorerScript"
+    aliases = ["explorerscript", "exps"]
+    filenames = ["*.exps"]
 
     tokens = {
-        'comments': [
-            (r'/\*.*?\*/', Comment.Multiline),
-            (r'//.*?\n', Comment.Single),
+        "comments": [
+            (r"/\*.*?\*/", Comment.Multiline),
+            (r"//.*?\n", Comment.Single),
         ],
-        'root': [
-            (words(KEYWORDS, suffix=r'\b'), Name.Builtin),
-            include('comments'),
-            (r'\$[a-zA-Z_][0-9a-zA-Z_]*', Name.Variable),
-            (r'§[a-zA-Z_][0-9a-zA-Z_]*', Name.Label),
-            (r'@[a-zA-Z_][0-9a-zA-Z_]*', Name.Decorator),
-            (r'[a-zA-Z_][0-9a-zA-Z_]*', Name),
-            include('numbers'),
-            ('"', String, 'dq_string'),
-            ('\'', String, 'sq_string'),
-            (r'.', Text),
+        "root": [
+            (words(KEYWORDS, suffix=r"\b"), Name.Builtin),
+            include("comments"),
+            (r"\$[a-zA-Z_][0-9a-zA-Z_]*", Name.Variable),
+            (r"§[a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
+            (r"@[a-zA-Z_][0-9a-zA-Z_]*", Name.Decorator),
+            (r"[a-zA-Z_][0-9a-zA-Z_]*", Name),
+            include("numbers"),
+            ('"', String, "dq_string"),
+            ("'", String, "sq_string"),
+            (r".", Text),
         ],
-        'numbers': [
-            (r'.5', Number.Float),
-            (r'0[0-7]+j?', Number.Oct),
-            (r'0[bB][01]+', Number.Bin),
-            (r'0[xX][a-fA-F0-9]+', Number.Hex),
-            (r'\d+', Number.Integer)
+        "numbers": [
+            (r".5", Number.Float),
+            (r"0[0-7]+j?", Number.Oct),
+            (r"0[bB][01]+", Number.Bin),
+            (r"0[xX][a-fA-F0-9]+", Number.Hex),
+            (r"\d+", Number.Integer),
         ],
-        'dq_string': [
+        "dq_string": [
             ('[^"]+', String),
-            ('"', String, '#pop'),
+            ('"', String, "#pop"),
         ],
-        'sq_string': [
-            ('[^\']+', String),
-            ('\'', String, '#pop'),
-        ]
+        "sq_string": [
+            ("[^']+", String),
+            ("'", String, "#pop"),
+        ],
     }

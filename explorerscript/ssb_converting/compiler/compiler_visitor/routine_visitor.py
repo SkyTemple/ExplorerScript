@@ -38,6 +38,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
 
 class RoutineVisitor(ExplorerScriptVisitor):
     """Builds the SSB data structures while visiting the parsing tree."""
+
     def __init__(self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro]):
         # The information about routines stored in the ssb.
         self.routine_infos: list[SsbRoutineInfo] = []
@@ -68,8 +69,9 @@ class RoutineVisitor(ExplorerScriptVisitor):
         self._enlarge_routine_info()
 
         self.visitChildren(ctx)
-        self.routine_infos[self._active_routine_id], \
-            self.routine_ops[self._active_routine_id] = self._root_handler.collect()
+        self.routine_infos[self._active_routine_id], self.routine_ops[self._active_routine_id] = (
+            self._root_handler.collect()
+        )
 
     def visitCoro_def(self, ctx: ExplorerScriptParser.Coro_defContext):
         self._root_handler = CoroDefCompileHandler(ctx, self.compiler_ctx)
@@ -77,9 +79,11 @@ class RoutineVisitor(ExplorerScriptVisitor):
         self._enlarge_routine_info()
 
         self.visitChildren(ctx)
-        self.named_coroutines[self._active_routine_id], \
-            self.routine_infos[self._active_routine_id], \
-            self.routine_ops[self._active_routine_id] = self._root_handler.collect()
+        (
+            self.named_coroutines[self._active_routine_id],
+            self.routine_infos[self._active_routine_id],
+            self.routine_ops[self._active_routine_id],
+        ) = self._root_handler.collect()
 
     def visitFor_target_def(self, ctx: ExplorerScriptParser.For_target_defContext):
         self._root_handler = ForTargetDefCompileHandler(ctx, self.compiler_ctx)
@@ -87,8 +91,9 @@ class RoutineVisitor(ExplorerScriptVisitor):
         self._enlarge_routine_info()
 
         self.visitChildren(ctx)
-        self.routine_infos[self._active_routine_id], \
-            self.routine_ops[self._active_routine_id] = self._root_handler.collect()
+        self.routine_infos[self._active_routine_id], self.routine_ops[self._active_routine_id] = (
+            self._root_handler.collect()
+        )
 
     def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext):
         return []

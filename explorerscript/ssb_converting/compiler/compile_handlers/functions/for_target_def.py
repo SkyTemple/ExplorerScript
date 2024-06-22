@@ -42,9 +42,9 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
         except:
             linked_to_name = integer_like.name
 
-        if str(self.ctx.FOR_TARGET()) == 'for_actor':
+        if str(self.ctx.FOR_TARGET()) == "for_actor":
             routine_info = SsbRoutineInfo(SsbRoutineType.ACTOR, linked_to, linked_to_name)
-        elif str(self.ctx.FOR_TARGET()) == 'for_object':
+        elif str(self.ctx.FOR_TARGET()) == "for_object":
             routine_info = SsbRoutineInfo(SsbRoutineType.OBJECT, linked_to, linked_to_name)
         else:
             routine_info = SsbRoutineInfo(SsbRoutineType.PERFORMER, linked_to, linked_to_name)

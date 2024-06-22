@@ -21,16 +21,18 @@
 #  SOFTWARE.
 #
 from inspect import currentframe
+
 try:
     import builtins
+
     _ = builtins._
 except Exception:
     _ = lambda a: a
 
 
-def open_utf8(file, mode='r', *args, **kwargs):
+def open_utf8(file, mode="r", *args, **kwargs):
     """Like open, but always uses the utf-8 encoding, on all platforms."""
-    return open(file, mode, *args, encoding='utf-8', **kwargs)
+    return open(file, mode, *args, encoding="utf-8", **kwargs)
 
 
 def exps_int(to_convert):
@@ -43,10 +45,10 @@ def exps_int(to_convert):
 def f(s):
     """f-strings as a function, for use with translatable strings: f'{techticks}' == f('{techticks}')"""
     frame = currentframe().f_back
-    s1 = s.replace("'", "\\'").replace('\n','\\n')
+    s1 = s.replace("'", "\\'").replace("\n", "\\n")
     try:
         return eval(f"f'{s1}'", frame.f_locals, frame.f_globals)
     except SyntaxError as e:
         if "f-string expression part cannot include a backslash" in str(e):
-            s1 = s.replace('"', '\\"').replace('\n','\\n')
+            s1 = s.replace('"', '\\"').replace("\n", "\\n")
             return eval(f'f"{s1}"', frame.f_locals, frame.f_globals)

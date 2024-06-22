@@ -29,7 +29,7 @@ from explorerscript.util import exps_int, _
 
 
 def parse_position_marker_arg(
-        ctx: Union[ExplorerScriptParser.Position_marker_argContext, SsbScriptParser.Position_marker_argContext]
+    ctx: Union[ExplorerScriptParser.Position_marker_argContext, SsbScriptParser.Position_marker_argContext],
 ):
     offset = 0
     pos = 0

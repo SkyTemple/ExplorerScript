@@ -21,4 +21,4 @@
 #  SOFTWARE.
 #
 
-EXPLORERSCRIPT_EXT = '.exps'
+EXPLORERSCRIPT_EXT = ".exps"

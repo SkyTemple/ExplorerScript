@@ -26,10 +26,12 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import \
-    IfHeaderNegatableCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
-    IfHeaderOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import (
+    IfHeaderNegatableCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import (
+    IfHeaderOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
@@ -63,10 +65,7 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
                     raise SsbCompilerError(
                         f(_("Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"))
                     )
-                jmp = SsbLabelJumpBlueprint(
-                    self.compiler_ctx, self.ctx,
-                    op.op_code.name, op.params
-                )
+                jmp = SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, op.op_code.name, op.params)
                 jmp.set_jump_is_positive(is_positive)
                 return jmp
             else:
@@ -78,9 +77,13 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
         raise SsbCompilerError(f(_("Unknown if operation in line {self.ctx.start.line}).")))
 
     def add(self, obj: any):
-        if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \
-                or isinstance(obj, IfHeaderNegatableCompileHandler) \
-                or isinstance(obj, IfHeaderScnCompileHandler) or isinstance(obj, OperationCompileHandler):
+        if (
+            isinstance(obj, IfHeaderBitCompileHandler)
+            or isinstance(obj, IfHeaderOperatorCompileHandler)
+            or isinstance(obj, IfHeaderNegatableCompileHandler)
+            or isinstance(obj, IfHeaderScnCompileHandler)
+            or isinstance(obj, OperationCompileHandler)
+        ):
             self._header_cmplx_handler = obj
             return
         self._raise_add_error(obj)

@@ -44,6 +44,9 @@ expslexer = "explorerscript.pygments.expslexer:ExplorerScriptLexer"
 
 [tool.ruff]
 line-length = 120
+extend-exclude = [
+    "explorerscript/antlr/*"
+]
 
 [tools.ruff.lint]
 select = [ "W", "E", "F", "ARG"]

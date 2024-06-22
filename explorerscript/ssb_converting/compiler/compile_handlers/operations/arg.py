@@ -33,13 +33,19 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 class ArgCompileHandler(AbstractCompileHandler):
     def __init__(self, ctx, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_handler: Optional[Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]] = None
+        self.arg_handler: Optional[
+            Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]
+        ] = None
 
     def collect(self) -> SsbOpParam:
         return self.arg_handler.collect()
 
     def add(self, obj: any):
-        if isinstance(obj, IntegerLikeCompileHandler) or isinstance(obj, StringCompileHandler) or isinstance(obj, PositionMarkerCompileHandler):
+        if (
+            isinstance(obj, IntegerLikeCompileHandler)
+            or isinstance(obj, StringCompileHandler)
+            or isinstance(obj, PositionMarkerCompileHandler)
+        ):
             self.arg_handler = obj
             return
         self._raise_add_error(obj)

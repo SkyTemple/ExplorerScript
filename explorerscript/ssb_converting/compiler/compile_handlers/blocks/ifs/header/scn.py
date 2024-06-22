@@ -24,13 +24,19 @@ from typing import Optional
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import \
-    ConditionalOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
+    ConditionalOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var import ScnVarCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperator
-from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_SCENARIO_NOW_BEFORE, OP_BRANCH_SCENARIO_BEFORE, \
-    OP_BRANCH_SCENARIO_NOW_AFTER, OP_BRANCH_SCENARIO_AFTER, OP_BRANCH_SCENARIO_NOW
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OP_BRANCH_SCENARIO_NOW_BEFORE,
+    OP_BRANCH_SCENARIO_BEFORE,
+    OP_BRANCH_SCENARIO_NOW_AFTER,
+    OP_BRANCH_SCENARIO_AFTER,
+    OP_BRANCH_SCENARIO_NOW,
+)
 from explorerscript.util import exps_int
 from explorerscript.util import _, f
 
@@ -45,35 +51,39 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
         if self.scn_var_target is None:
             raise SsbCompilerError(_("No variable for assignment."))
         if self.operator not in [SsbOperator.EQ, SsbOperator.LE, SsbOperator.LT, SsbOperator.GE, SsbOperator.GT]:
-            raise SsbCompilerError(f(_("The only supported operators for scn if "
-                                       "conditions are ==,<,<=,>,>= (line {self.ctx.start.line})")))
+            raise SsbCompilerError(
+                f(
+                    _(
+                        "The only supported operators for scn if "
+                        "conditions are ==,<,<=,>,>= (line {self.ctx.start.line})"
+                    )
+                )
+            )
 
         scn_value = exps_int(str(self.ctx.INTEGER(0)))
         level_value = exps_int(str(self.ctx.INTEGER(1)))
 
         if self.operator == SsbOperator.LE:
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_SCENARIO_NOW_BEFORE, [self.scn_var_target, scn_value, level_value]
+                self.compiler_ctx,
+                self.ctx,
+                OP_BRANCH_SCENARIO_NOW_BEFORE,
+                [self.scn_var_target, scn_value, level_value],
             )
         if self.operator == SsbOperator.LT:
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_SCENARIO_BEFORE, [self.scn_var_target, scn_value, level_value]
+                self.compiler_ctx, self.ctx, OP_BRANCH_SCENARIO_BEFORE, [self.scn_var_target, scn_value, level_value]
             )
         if self.operator == SsbOperator.GE:
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_SCENARIO_NOW_AFTER, [self.scn_var_target, scn_value, level_value]
+                self.compiler_ctx, self.ctx, OP_BRANCH_SCENARIO_NOW_AFTER, [self.scn_var_target, scn_value, level_value]
             )
         if self.operator == SsbOperator.GT:
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_SCENARIO_AFTER, [self.scn_var_target, scn_value, level_value]
+                self.compiler_ctx, self.ctx, OP_BRANCH_SCENARIO_AFTER, [self.scn_var_target, scn_value, level_value]
             )
         return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_BRANCH_SCENARIO_NOW, [self.scn_var_target, scn_value, level_value]
+            self.compiler_ctx, self.ctx, OP_BRANCH_SCENARIO_NOW, [self.scn_var_target, scn_value, level_value]
         )
 
     def add(self, obj: any):

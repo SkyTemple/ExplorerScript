@@ -1,7 +1,8 @@
 """
 Opposite of decompiler.label_jump_to_resolver -> Removes LabelJumps and Labels
 and replaces jumps by regular opcodes arguments.
- """
+"""
+
 #  MIT License
 #
 #  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
@@ -52,8 +53,9 @@ class OpsLabelJumpToRemover:
                         label_id = op.label.original_name
                         if label_id is None:
                             label_id = f"<internal:{op.label.id}>"
-                        raise SsbCompilerError(f(_("Label {label_id} does not exist, but a jump to it does "
-                                                   "(remove it).")))
+                        raise SsbCompilerError(
+                            f(_("Label {label_id} does not exist, but a jump to it does " "(remove it)."))
+                        )
                     new_op.params.append(label_offsets[op.label.id])
                     new_rtn_ops.append(new_op)
                 elif isinstance(op, SsbLabel):

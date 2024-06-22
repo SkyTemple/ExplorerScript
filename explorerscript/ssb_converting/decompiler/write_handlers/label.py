@@ -26,14 +26,29 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
-from explorerscript.ssb_converting.ssb_special_ops import SwitchFalltrough, SsbLabel, IfEnd, SwitchEnd, ForeverStart, \
-    ForeverEnd
+from explorerscript.ssb_converting.ssb_special_ops import (
+    SwitchFalltrough,
+    SsbLabel,
+    IfEnd,
+    SwitchEnd,
+    ForeverStart,
+    ForeverEnd,
+)
+
 logger = logging.getLogger(__name__)
 
 
 class LabelWriteHandler(AbstractWriteHandler):
     """Handles writing labels."""
-    def __init__(self, start_vertex: Vertex, decompiler, parent, vertex_that_started_block: Vertex, is_first_vertex_of_block: bool):
+
+    def __init__(
+        self,
+        start_vertex: Vertex,
+        decompiler,
+        parent,
+        vertex_that_started_block: Vertex,
+        is_first_vertex_of_block: bool,
+    ):
         super().__init__(start_vertex, decompiler, parent)
         self.vertex_that_started_block = vertex_that_started_block
         self.is_first_vertex_of_block = is_first_vertex_of_block
@@ -50,7 +65,7 @@ class LabelWriteHandler(AbstractWriteHandler):
         # Whether or not this had a switch fallthrough
         self.switch_fell_through = False
 
-        op: SsbLabel = self.start_vertex['op']
+        op: SsbLabel = self.start_vertex["op"]
 
         # Let's set the attributes of this handler based on the markers.
         for m in op.markers:
@@ -66,7 +81,7 @@ class LabelWriteHandler(AbstractWriteHandler):
                 self.ended_loops.append(m.loop_id)
 
     def write_content(self):
-        op: SsbLabel = self.start_vertex['op']
+        op: SsbLabel = self.start_vertex["op"]
         logger.debug("Handling a label (%s)...", op)
         needs_to_be_printed = op.needs_to_be_printed(
             self.start_vertex.index, len(self.start_vertex.in_edges()), self.start_vertex.graph
@@ -87,7 +102,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             # We are at the end, since we already printed this entire branch somewhere else.
             # If we aren't the first vertex in this block, then the operation before this was a simple
             # one, we can set previous_vertex to None then and just print a jump statement.
-            previous_vertex_op = self.vertex_that_started_block['op'] if self.is_first_vertex_of_block else None
+            previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None
             self.decompiler.write_label_jump(op.id, previous_vertex_op)
             self.ended_on_jump = True
             logger.debug("Wrote the label!")
@@ -109,5 +124,5 @@ class LabelWriteHandler(AbstractWriteHandler):
         raise ValueError(f"After a label there must be exactly 1 opcode.")
 
     def _write_label(self, label: SsbLabel):
-        self.decompiler.write_stmnt(f'§label_{label.id};')
+        self.decompiler.write_stmnt(f"§label_{label.id};")
         self.decompiler.labels_already_printed.append(label.id)

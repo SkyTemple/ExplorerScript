@@ -27,82 +27,103 @@ from antlr4 import ParserRuleContext
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_adventure_log import \
-    AssignmentAdventureLogCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_clear import \
-    AssignmentClearCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_dungeon_mode import \
-    AssignmentDungeonModeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_initial import \
-    AssignmentInitialCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_regular import \
-    AssignmentRegularCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_reset import \
-    AssignmentResetCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_scenario import \
-    AssignmentScenarioCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import \
-    AssignOperatorCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import \
-    ConditionalOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_adventure_log import (
+    AssignmentAdventureLogCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_clear import (
+    AssignmentClearCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_dungeon_mode import (
+    AssignmentDungeonModeCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_initial import (
+    AssignmentInitialCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_regular import (
+    AssignmentRegularCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_reset import (
+    AssignmentResetCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.assignments.assignment_scenario import (
+    AssignmentScenarioCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import (
+    AssignOperatorCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
+    ConditionalOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import LabelCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string import LangStringCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import \
-    LangStringArgumentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import (
+    LangStringArgumentCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import \
-    PositionMarkerArgCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
+    PositionMarkerArgCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var import ScnVarCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ctxs.ctx_block import CtxBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.forever_block import \
-    ForeverBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.forever_block import ForeverBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import \
-    IfHeaderNegatableCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
-    IfHeaderOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import (
+    IfHeaderNegatableCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import (
+    IfHeaderOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_block import IfBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.for_block import ForBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.loop.while_block import WhileBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import \
-    CaseHeaderMenuCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import \
-    CaseHeaderOpCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import \
-    CaseHeaderCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import \
-    DefaultCaseBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.message_switch import \
-    MessageSwitchCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import \
-    CaseBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_block import \
-    SwitchBlockCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_header import \
-    SwitchHeaderCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.dungeon_mode import \
-    SwitchHeaderDungeonModeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.random import \
-    SwitchHeaderRandomCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.scn import \
-    SwitchHeaderScnCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.sector import \
-    SwitchHeaderSectorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import (
+    CaseHeaderMenuCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.op import (
+    CaseHeaderOpCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import CaseHeaderCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
+    DefaultCaseBlockCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.message_switch import (
+    MessageSwitchCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_block import (
+    SwitchBlockCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_header import (
+    SwitchHeaderCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.dungeon_mode import (
+    SwitchHeaderDungeonModeCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.random import (
+    SwitchHeaderRandomCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.scn import (
+    SwitchHeaderScnCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.sector import (
+    SwitchHeaderSectorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.null import NullCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.macro_call import MacroCallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import CallCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import \
-    ControlStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import (
+    ControlStatementCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.util import _
@@ -113,12 +134,14 @@ T = AbstractCompileHandler
 
 class StatementVisitor(ExplorerScriptVisitor):
     """This listener collects a single statements from a routine / macro."""
+
     def __init__(self, root_handler: AbstractCompileHandler, compiler_ctx: CompilerCtx):
         self.compiler_ctx = compiler_ctx
         # This stack contains the handlers for the blocks during compilation.
         # The bottom is always the null handler, which raises an assertion error if any method is called.
         self._current_handlers: list[AbstractCompileHandler] = [
-            NullCompileHandler(None, self.compiler_ctx), root_handler
+            NullCompileHandler(None, self.compiler_ctx),
+            root_handler,
         ]
 
     def visitCntrl_stmt(self, ctx: ExplorerScriptParser.Cntrl_stmtContext):
@@ -268,10 +291,12 @@ class StatementVisitor(ExplorerScriptVisitor):
     def visitLang_string_argument(self, ctx: ExplorerScriptParser.Lang_string_argumentContext):
         return self._push_handler_and_add(ctx, LangStringArgumentCompileHandler)
 
-    def visitMacro_call(self, ctx:ExplorerScriptParser.Macro_callContext):
+    def visitMacro_call(self, ctx: ExplorerScriptParser.Macro_callContext):
         return self._push_handler_and_add(ctx, MacroCallCompileHandler)
 
-    def _push_handler_and_add(self, ctx: ParserRuleContext, compile_handler: type[AbstractCompileHandler], **kwargs) -> any:
+    def _push_handler_and_add(
+        self, ctx: ParserRuleContext, compile_handler: type[AbstractCompileHandler], **kwargs
+    ) -> any:
         """Pushes the handler on the stack, visits the children and when done adds the handler to the parent handler."""
         retval, h = self._push_handler(ctx, compile_handler, **kwargs)
         self._current_handlers[-1].add(h)

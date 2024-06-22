@@ -29,14 +29,26 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.ctx import CtxSimpleOpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.flag import FlagSimpleOpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.keyword import KeywordSimpleOpWriteHandler
-from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import \
-    MesageSwitchSimpleOpWriteHandler
-from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches_cases import \
-    MesageSwitchCasesSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import (
+    MesageSwitchSimpleOpWriteHandler,
+)
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches_cases import (
+    MesageSwitchCasesSimpleOpWriteHandler,
+)
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, OPS_CTX, OP_JUMP, OP_RETURN, \
-    OP_END, OP_HOLD, OPS_SWITCH_TEXT_CASE_MAP, OPS_SWITCH_TEXT_CASE_CASES_LIST, OPS_FLAG_ALL, OP_CALL
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_THAT_END_CONTROL_FLOW,
+    OPS_CTX,
+    OP_JUMP,
+    OP_RETURN,
+    OP_END,
+    OP_HOLD,
+    OPS_SWITCH_TEXT_CASE_MAP,
+    OPS_SWITCH_TEXT_CASE_CASES_LIST,
+    OPS_FLAG_ALL,
+    OP_CALL,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +78,7 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
         return self.get_real_handler()(self.start_vertex, self.decompiler, self).write_content()
 
     def get_real_handler(self) -> type[AbstractWriteHandler]:
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
         logger.debug("Writing a simple operation (%s)...", op)
         handler = self._ssb_operations_special_cases_handlers[None]
         for h_types, h in self._ssb_operations_special_cases_handlers.items():

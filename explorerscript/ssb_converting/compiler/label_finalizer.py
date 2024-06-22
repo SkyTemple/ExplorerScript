@@ -25,6 +25,7 @@ from typing import Dict, List
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,6 +34,7 @@ class LabelFinalizer:
     Updates the opcodes of all labels and builds a table of them.
     Also removes all jumps that jump to a label right after.
     """
+
     def __init__(self, routines: list[list[SsbOperation]]):
         logger.debug("Finalizing and optimizing labels...")
         self.routines = []

@@ -50,8 +50,10 @@ class ExplorerScriptSsbCompiler:
     skytemple_files.script.ssb.script_compiler.ScriptCompiler and
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
-    def __init__(self, performance_progress_list_var_name: str,
-                 lookup_paths: list[str] = None, recursion_check: list[str] = None):
+
+    def __init__(
+        self, performance_progress_list_var_name: str, lookup_paths: list[str] = None, recursion_check: list[str] = None
+    ):
         if lookup_paths is None:
             lookup_paths = []
         if recursion_check is None:
@@ -111,7 +113,13 @@ class ExplorerScriptSsbCompiler:
         :raises: SsbCompilerError: On logical compiling errors
         :raises: ValueError: On misc. unexpected compilation errors
         """
-        logger.debug("<%d> Compiling ExplorerScript (-> %s)... - Macros only:%d, base:%s", id(self), file_name, macros_only, original_base_file)
+        logger.debug(
+            "<%d> Compiling ExplorerScript (-> %s)... - Macros only:%d, base:%s",
+            id(self),
+            file_name,
+            macros_only,
+            original_base_file,
+        )
         self.routine_infos = None
         self.routine_ops = None
         self.named_coroutines = None
@@ -133,13 +141,24 @@ class ExplorerScriptSsbCompiler:
         for subfile_path in self._resolve_imported_file(os.path.dirname(file_name)):
             logger.debug("<%d> Compiling sub-file %s...", id(self), subfile_path)
             if subfile_path in self.recursion_check:
-                raise SsbCompilerError(f(_("Infinite recursion detected while trying to load "
-                                           "an ExplorerScript file from {subfile_path}.\n"
-                                           "Tried loading from: {file_name}.")))
-            subfile_compiler = self.__class__(self.performance_progress_list_var_name, self.lookup_paths,
-                                              recursion_check=self.recursion_check + [file_name])
-            with open_utf8(subfile_path, 'r') as file:
-                subfile_compiler.compile(file.read(), subfile_path, macros_only=True, original_base_file=original_base_file)
+                raise SsbCompilerError(
+                    f(
+                        _(
+                            "Infinite recursion detected while trying to load "
+                            "an ExplorerScript file from {subfile_path}.\n"
+                            "Tried loading from: {file_name}."
+                        )
+                    )
+                )
+            subfile_compiler = self.__class__(
+                self.performance_progress_list_var_name,
+                self.lookup_paths,
+                recursion_check=self.recursion_check + [file_name],
+            )
+            with open_utf8(subfile_path, "r") as file:
+                subfile_compiler.compile(
+                    file.read(), subfile_path, macros_only=True, original_base_file=original_base_file
+                )
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
         # Sort the list of macros by how they are used
@@ -149,9 +168,15 @@ class ExplorerScriptSsbCompiler:
         # Loads and compiles modules in base file
         # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).
         logger.debug("<%d> Compiling macros...", id(self))
-        self.macros.update(self._macros_add_filenames(MacroVisitor(
-            self.performance_progress_list_var_name, self.macros, self.macro_resolution_order
-        ).visit(tree), None, file_name))
+        self.macros.update(
+            self._macros_add_filenames(
+                MacroVisitor(self.performance_progress_list_var_name, self.macros, self.macro_resolution_order).visit(
+                    tree
+                ),
+                None,
+                file_name,
+            )
+        )
 
         # Check if macros_only
         if macros_only:
@@ -166,9 +191,7 @@ class ExplorerScriptSsbCompiler:
         try:
             try:
                 logger.debug("<%d> Compiling routines...", id(self))
-                compiler_visitor = RoutineVisitor(
-                    self.performance_progress_list_var_name, self.macros
-                )
+                compiler_visitor = RoutineVisitor(self.performance_progress_list_var_name, self.macros)
                 compiler_visitor.visit(tree)
             except Exception as ex:
                 # due to the stack nature of the decompile visitor, we get many stack exceptions after raising
@@ -184,9 +207,7 @@ class ExplorerScriptSsbCompiler:
         # Copy from listener / remove labels and label jumps
         label_finalizer = LabelFinalizer(strip_last_label(compiler_visitor.routine_ops))
 
-        self.routine_ops = OpsLabelJumpToRemover(
-            label_finalizer.routines, label_finalizer.label_offsets
-        ).routines
+        self.routine_ops = OpsLabelJumpToRemover(label_finalizer.routines, label_finalizer.label_offsets).routines
         self.routine_infos = compiler_visitor.routine_infos
         self.named_coroutines = compiler_visitor.named_coroutines
         self.source_map = compiler_visitor.source_map_builder.build()
@@ -201,7 +222,7 @@ class ExplorerScriptSsbCompiler:
         """
         fs = []
         for import_file in self.imports:
-            if import_file.startswith('.') or import_file.startswith('/'):
+            if import_file.startswith(".") or import_file.startswith("/"):
                 # Relative or absolute import
                 abs_path = os.path.realpath(str(PurePath(PurePosixPath(dir_name).joinpath(PurePosixPath(import_file)))))
                 if not os.path.exists(abs_path):
@@ -209,12 +230,20 @@ class ExplorerScriptSsbCompiler:
             else:
                 # Relative to one of the lookup paths
                 abs_path = None
-                path_parts = import_file.split('/')
-                if '.' in path_parts or '..' in path_parts:
-                    raise SsbCompilerError(f(_("Invalid import: '{import_file}'. Non absolute/relative "
-                                               "imports must not contain relative paths.")))
+                path_parts = import_file.split("/")
+                if "." in path_parts or ".." in path_parts:
+                    raise SsbCompilerError(
+                        f(
+                            _(
+                                "Invalid import: '{import_file}'. Non absolute/relative "
+                                "imports must not contain relative paths."
+                            )
+                        )
+                    )
                 for lp in self.lookup_paths:
-                    abs_path_c = os.path.realpath(str(PurePath(dir_name).joinpath(PurePosixPath(lp).joinpath(import_file))))
+                    abs_path_c = os.path.realpath(
+                        str(PurePath(dir_name).joinpath(PurePosixPath(lp).joinpath(import_file)))
+                    )
                     if os.path.exists(abs_path_c):
                         abs_path = abs_path_c
                         break
@@ -224,8 +253,9 @@ class ExplorerScriptSsbCompiler:
 
         return fs
 
-    def _macros_add_filenames(self, macros: dict[str, ExplorerScriptMacro],
-                              basefile_path: Optional[str], subfile_path: str):
+    def _macros_add_filenames(
+        self, macros: dict[str, ExplorerScriptMacro], basefile_path: Optional[str], subfile_path: str
+    ):
         """Updates path information of all of the macros. See the field descriptions for more details"""
         for macro in macros.values():
             macro.included__absolute_path = subfile_path

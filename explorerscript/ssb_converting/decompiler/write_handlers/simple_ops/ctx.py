@@ -23,8 +23,10 @@
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, \
-    NestedBlockDisallowedError
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
+    AbstractWriteHandler,
+    NestedBlockDisallowedError,
+)
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
@@ -38,7 +40,7 @@ class CtxSimpleOpWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if len(op.params) != 1:
             raise ValueError(f"Error reading operation for {op.op_code.name} ({op}). Must have exactly one argument.")
@@ -58,13 +60,17 @@ class CtxSimpleOpWriteHandler(AbstractWriteHandler):
         with Blk(self.decompiler):
             try:
                 next_vertex_after_blk = BlockWriteHandler(
-                    exits[0].target_vertex, self.decompiler, self, self.start_vertex,
+                    exits[0].target_vertex,
+                    self.decompiler,
+                    self,
+                    self.start_vertex,
                     check_end_block=Once(),  # Only output one.
-                    disallow_nested=True
+                    disallow_nested=True,
                 ).write_content()
             except NestedBlockDisallowedError:
-                raise ValueError(f"lives/performer/object blocks must contain opcodes that don't start any "
-                                 f"branching code.")
+                raise ValueError(
+                    f"lives/performer/object blocks must contain opcodes that don't start any " f"branching code."
+                )
 
         return next_vertex_after_blk
 

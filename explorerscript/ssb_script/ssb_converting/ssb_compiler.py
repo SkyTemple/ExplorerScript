@@ -33,6 +33,7 @@ from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.ssb_script.ssb_converting.compiler.compiler_listener import SsbScriptCompilerListener
 from explorerscript.syntax_error_listener import SyntaxErrorListener
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,6 +44,7 @@ class SsbScriptSsbCompiler:
     skytemple_files.script.ssb.script_compiler.ScriptCompiler and
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
+
     def __init__(self):
         # The information about routines stored in the ssb.
         # linked_to may be -1. In this case linked_to_name is set to the named target.
@@ -93,7 +95,9 @@ class SsbScriptSsbCompiler:
             raise ParseError(error_listener.syntax_errors[0])
 
         # Copy from listener / remove labels and label jumps
-        self.routine_ops = OpsLabelJumpToRemover(compiler_listener.routine_ops, compiler_listener.label_offsets).routines
+        self.routine_ops = OpsLabelJumpToRemover(
+            compiler_listener.routine_ops, compiler_listener.label_offsets
+        ).routines
         self.routine_infos = compiler_listener.routine_infos
         self.named_coroutines = compiler_listener.named_coroutines
         self.source_map = compiler_listener.source_map_builder.build()

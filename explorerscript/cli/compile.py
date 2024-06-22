@@ -28,8 +28,16 @@ from typing import List
 
 from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, check_settings, SETTINGS
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
-from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbRoutineType, \
-    SsbOpParamConstant, SsbOpParamConstString, SsbOpParamLanguageString, SsbOpParamPositionMarker, SsbOpParamFixedPoint
+from explorerscript.ssb_converting.ssb_data_types import (
+    SsbRoutineInfo,
+    SsbOperation,
+    SsbRoutineType,
+    SsbOpParamConstant,
+    SsbOpParamConstString,
+    SsbOpParamLanguageString,
+    SsbOpParamPositionMarker,
+    SsbOpParamFixedPoint,
+)
 from explorerscript.util import open_utf8
 
 
@@ -41,34 +49,17 @@ def build_ops(ops: list[SsbOperation]):
             if isinstance(param, int):
                 out_op["params"].append(param)
             elif isinstance(param, SsbOpParamFixedPoint):
-                out_op["params"].append({
-                    "type": "FIXED_POINT",
-                    "value": param.value
-                })
+                out_op["params"].append({"type": "FIXED_POINT", "value": param.value})
             elif isinstance(param, SsbOpParamConstant):
-                out_op["params"].append({
-                    "type": "CONSTANT",
-                    "value": param.name
-                })
+                out_op["params"].append({"type": "CONSTANT", "value": param.name})
             elif isinstance(param, SsbOpParamConstString):
-                out_op["params"].append({
-                    "type": "CONST_STRING",
-                    "value": param.name
-                })
+                out_op["params"].append({"type": "CONST_STRING", "value": param.name})
             elif isinstance(param, SsbOpParamLanguageString):
-                out_op["params"].append({
-                    "type": "LANG_STRING",
-                    "value": param.strings
-                })
+                out_op["params"].append({"type": "LANG_STRING", "value": param.strings})
             elif isinstance(param, SsbOpParamPositionMarker):
-                out_op["params"].append({
-                    "type": "POSITION_MARK",
-                    "value": {
-                        "name": param.name,
-                        "x": param.x_final,
-                        "y": param.y_final
-                    }
-                })
+                out_op["params"].append(
+                    {"type": "POSITION_MARK", "value": {"name": param.name, "x": param.x_final, "y": param.y_final}}
+                )
             else:
                 raise ValueError("Invalid parameter.")
         out_ops.append(out_op)
@@ -76,7 +67,7 @@ def build_ops(ops: list[SsbOperation]):
 
 
 def build_routines_json(
-        routine_infos: list[SsbRoutineInfo], named_coroutines: list[str], routine_ops: list[list[SsbOperation]]
+    routine_infos: list[SsbRoutineInfo], named_coroutines: list[str], routine_ops: list[list[SsbOperation]]
 ):
     routines = []
     for info, name, ops in zip(routine_infos, named_coroutines, routine_ops):
@@ -86,29 +77,43 @@ def build_routines_json(
         elif info.type == SsbRoutineType.GENERIC:
             routine = {"type": "GENERIC"}
         elif info.type == SsbRoutineType.ACTOR:
-            routine = {"type": "ACTOR",
-                       "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name}
+            routine = {
+                "type": "ACTOR",
+                "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+            }
         elif info.type == SsbRoutineType.OBJECT:
-            routine = {"type": "OBJECT",
-                       "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name}
+            routine = {
+                "type": "OBJECT",
+                "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+            }
         elif info.type == SsbRoutineType.PERFORMER:
-            routine = {"type": "PERFORMER",
-                       "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name}
+            routine = {
+                "type": "PERFORMER",
+                "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+            }
         routine["ops"] = build_ops(ops)
         routines.append(routine)
     return routines
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Compile ExplorerScript to a JSON representation of PMD EoS SSB.')
-    parser.add_argument('exps_source', metavar='SOURCE_FILE',
-                        help='ExplorerScript source file to compile.')
-    parser.add_argument('--settings', dest='settings', metavar='PATH', required=True,
-                        help='The JSON file containing the settings for the compiler.')
-    parser.add_argument('--lookup', dest='lookup_paths', nargs='*', metavar='PATH',
-                        help='Lookup paths.')
-    parser.add_argument('--source-map', dest='source_map', default=None, metavar='PATH',
-                        help='If specified, output a source map at that location.')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Compile ExplorerScript to a JSON representation of PMD EoS SSB.")
+    parser.add_argument("exps_source", metavar="SOURCE_FILE", help="ExplorerScript source file to compile.")
+    parser.add_argument(
+        "--settings",
+        dest="settings",
+        metavar="PATH",
+        required=True,
+        help="The JSON file containing the settings for the compiler.",
+    )
+    parser.add_argument("--lookup", dest="lookup_paths", nargs="*", metavar="PATH", help="Lookup paths.")
+    parser.add_argument(
+        "--source-map",
+        dest="source_map",
+        default=None,
+        metavar="PATH",
+        help="If specified, output a source map at that location.",
+    )
 
     args = parser.parse_args()
 
@@ -116,7 +121,7 @@ if __name__ == '__main__':
         print("Settings file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open_utf8(args.settings, 'r') as f:
+    with open_utf8(args.settings, "r") as f:
         settings = json.load(f)
 
     check_settings(settings)
@@ -126,7 +131,7 @@ if __name__ == '__main__':
         print("ExplorerScript source file does not exist.", file=sys.stderr)
         exit(1)
 
-    with open_utf8(args.exps_source, 'r') as f:
+    with open_utf8(args.exps_source, "r") as f:
         exps_source = f.read()
 
     lookup_paths = args.lookup_paths
@@ -135,18 +140,18 @@ if __name__ == '__main__':
 
     compiler = ExplorerScriptSsbCompiler(
         settings[SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME],
-        [os.path.abspath(os.path.join(os.getcwd(), p)) for p in lookup_paths]
+        [os.path.abspath(os.path.join(os.getcwd(), p)) for p in lookup_paths],
     )
 
     compiler.compile(exps_source, os.path.abspath(os.path.join(os.getcwd(), args.exps_source)))
 
     output_dict = {
         "settings": settings,
-        "routines": build_routines_json(compiler.routine_infos, compiler.named_coroutines, compiler.routine_ops)
+        "routines": build_routines_json(compiler.routine_infos, compiler.named_coroutines, compiler.routine_ops),
     }
 
     if args.source_map is not None:
-        with open_utf8(args.source_map, 'w') as f:
+        with open_utf8(args.source_map, "w") as f:
             f.write(compiler.source_map.serialize())
 
     print(json.dumps(output_dict))

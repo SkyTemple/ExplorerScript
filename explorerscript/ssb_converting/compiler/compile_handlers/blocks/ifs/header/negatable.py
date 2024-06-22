@@ -39,19 +39,12 @@ class IfHeaderNegatableCompileHandler(AbstractCompileHandler):
     def collect(self) -> SsbLabelJumpBlueprint:
         is_simple_positive = self.ctx.NOT() is None
         if self.ctx.DEBUG():
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_DEBUG, [1 if is_simple_positive else 0]
-            )
+            return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_DEBUG, [1 if is_simple_positive else 0])
         if self.ctx.EDIT():
-            return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_EDIT, [1 if is_simple_positive else 0]
-            )
+            return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_EDIT, [1 if is_simple_positive else 0])
         if self.ctx.VARIATION():
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_BRANCH_VARIATION, [1 if is_simple_positive else 0]
+                self.compiler_ctx, self.ctx, OP_BRANCH_VARIATION, [1 if is_simple_positive else 0]
             )
 
     def add(self, obj: any):

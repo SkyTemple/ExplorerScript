@@ -23,8 +23,10 @@
 from typing import Optional, List
 
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import \
-    AbstractStatementCompileHandler, AbstractBlockCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractStatementCompileHandler,
+    AbstractBlockCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import CaseHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx

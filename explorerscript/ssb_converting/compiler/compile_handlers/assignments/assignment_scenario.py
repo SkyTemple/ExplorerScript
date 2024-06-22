@@ -42,8 +42,12 @@ class AssignmentScenarioCompileHandler(AbstractAssignmentCompileHandler):
         if self.var_target is None:
             raise SsbCompilerError(_("No variable for assignment set."))
 
-        return [self._generate_operation(OPS_FLAG__SET_SCENARIO,
-                                         [self.var_target, exps_int(str(self.ctx.INTEGER(0))), exps_int(str(self.ctx.INTEGER(1)))])]
+        return [
+            self._generate_operation(
+                OPS_FLAG__SET_SCENARIO,
+                [self.var_target, exps_int(str(self.ctx.INTEGER(0))), exps_int(str(self.ctx.INTEGER(1)))],
+            )
+        ]
 
     def add(self, obj: any):
         if isinstance(obj, IntegerLikeCompileHandler):

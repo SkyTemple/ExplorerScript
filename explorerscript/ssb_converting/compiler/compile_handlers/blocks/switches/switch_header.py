@@ -26,14 +26,18 @@ from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.dungeon_mode import \
-    SwitchHeaderDungeonModeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.random import \
-    SwitchHeaderRandomCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.scn import \
-    SwitchHeaderScnCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.sector import \
-    SwitchHeaderSectorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.dungeon_mode import (
+    SwitchHeaderDungeonModeCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.random import (
+    SwitchHeaderRandomCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.scn import (
+    SwitchHeaderScnCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.sector import (
+    SwitchHeaderSectorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
@@ -53,18 +57,14 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
         if self._header_cmplx_handler:
             if isinstance(self._header_cmplx_handler, IntegerLikeCompileHandler):
                 # Switch
-                return self._generate_operation(
-                   OP_SWITCH, [self._header_cmplx_handler.collect()]
-                )
+                return self._generate_operation(OP_SWITCH, [self._header_cmplx_handler.collect()])
             elif isinstance(self._header_cmplx_handler, OperationCompileHandler):
                 # An operation as condition
                 op = self._header_cmplx_handler.collect()
                 if len(op) != 1:
                     raise SsbCompilerError(_("Invalid content for a switch-header"))
                 op = op[0]
-                return self._generate_operation(
-                   op.op_code.name, op.params
-                )
+                return self._generate_operation(op.op_code.name, op.params)
             else:
                 # A regular complex if condition
                 return self._header_cmplx_handler.collect()
@@ -72,9 +72,14 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
         raise SsbCompilerError(_("Unknown switch operation."))
 
     def add(self, obj: any):
-        if isinstance(obj, SwitchHeaderDungeonModeCompileHandler) or isinstance(obj, SwitchHeaderRandomCompileHandler) \
-                or isinstance(obj, SwitchHeaderScnCompileHandler) or isinstance(obj, SwitchHeaderSectorCompileHandler) \
-                or isinstance(obj, IntegerLikeCompileHandler) or isinstance(obj, OperationCompileHandler):
+        if (
+            isinstance(obj, SwitchHeaderDungeonModeCompileHandler)
+            or isinstance(obj, SwitchHeaderRandomCompileHandler)
+            or isinstance(obj, SwitchHeaderScnCompileHandler)
+            or isinstance(obj, SwitchHeaderSectorCompileHandler)
+            or isinstance(obj, IntegerLikeCompileHandler)
+            or isinstance(obj, OperationCompileHandler)
+        ):
             self._header_cmplx_handler = obj
             return
         self._raise_add_error(obj)

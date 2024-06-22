@@ -23,8 +23,9 @@
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
-from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import \
-    MesageSwitchSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import (
+    MesageSwitchSimpleOpWriteHandler,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT
 from explorerscript.ssb_converting.util import Blk
@@ -37,7 +38,7 @@ class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+        op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
 
         # The parent handler MUST be a simple block handler -> block handler
@@ -46,15 +47,15 @@ class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
             raise ValueError("Message switch cases are only allowed as children of message switches.")
 
         if op.op_code.name == OP_CASE_TEXT:
-            self.decompiler.write_stmnt(f'case {op.params[0]}:')
+            self.decompiler.write_stmnt(f"case {op.params[0]}:")
             with Blk(self.decompiler, False):
-                if hasattr(op.params[1], 'indent'):
+                if hasattr(op.params[1], "indent"):
                     op.params[1].indent = self.decompiler.indent
                 self.decompiler.write_stmnt(str(op.params[1]))
         elif op.op_code.name == OP_DEFAULT_TEXT:
-            self.decompiler.write_stmnt(f'default:')
+            self.decompiler.write_stmnt(f"default:")
             with Blk(self.decompiler, False):
-                if hasattr(op.params[0], 'indent'):
+                if hasattr(op.params[0], "indent"):
                     op.params[0].indent = self.decompiler.indent
                 self.decompiler.write_stmnt(str(op.params[0]))
 

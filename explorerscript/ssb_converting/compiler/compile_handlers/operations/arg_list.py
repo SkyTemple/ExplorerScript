@@ -36,11 +36,20 @@ class ArgListCompileHandler(AbstractCompileHandler):
             ret.append(arg)
             if isinstance(arg, SsbOpParamPositionMarker):
                 # Collect position marker source map entries
-                self.compiler_ctx.source_map_builder.add_position_mark(SourceMapPositionMark(
-                    # Antlr line ids are 1-indexed.
-                    self.ctx.start.line - 1, self.ctx.start.column, self.ctx.stop.line - 1, self.ctx.stop.column,
-                    arg.name, arg.x_offset, arg.y_offset, arg.x_relative, arg.y_relative
-                ))
+                self.compiler_ctx.source_map_builder.add_position_mark(
+                    SourceMapPositionMark(
+                        # Antlr line ids are 1-indexed.
+                        self.ctx.start.line - 1,
+                        self.ctx.start.column,
+                        self.ctx.stop.line - 1,
+                        self.ctx.stop.column,
+                        arg.name,
+                        arg.x_offset,
+                        arg.y_offset,
+                        arg.x_relative,
+                        arg.y_relative,
+                    )
+                )
         return ret
 
     def add(self, obj: any):

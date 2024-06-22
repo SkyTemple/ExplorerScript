@@ -42,8 +42,8 @@ def check_settings(settings):
         exit(1)
 
     if SETTINGS_DUNGEON_MODE_CONSTANTS not in settings or not all(
-            x in settings[SETTINGS_DUNGEON_MODE_CONSTANTS] for x in [SETTINGS_DMC_OPEN, SETTINGS_DMC_CLOSED,
-                                                                     SETTINGS_DMC_REQUEST, SETTINGS_DMC_OPEN_REQUEST]
+        x in settings[SETTINGS_DUNGEON_MODE_CONSTANTS]
+        for x in [SETTINGS_DMC_OPEN, SETTINGS_DMC_CLOSED, SETTINGS_DMC_REQUEST, SETTINGS_DMC_OPEN_REQUEST]
     ):
         print(f"'{SETTINGS_DUNGEON_MODE_CONSTANTS}' missing in settings or malformed.", file=sys.stderr)
         exit(1)

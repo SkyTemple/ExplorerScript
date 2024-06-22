@@ -25,10 +25,18 @@ from typing import List, Dict, Tuple
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
-from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation, SsbCoroutine, SsbRoutineType, \
-    SsbOpParam, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker
+from explorerscript.ssb_converting.ssb_data_types import (
+    SsbRoutineInfo,
+    SsbOperation,
+    SsbCoroutine,
+    SsbRoutineType,
+    SsbOpParam,
+    NUMBER_OF_SPACES_PER_INDENT,
+    SsbOpParamPositionMarker,
+)
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, SsbLabel
 from explorerscript.ssb_converting.util import Blk
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,7 +46,13 @@ class SsbScriptSsbDecompiler:
     into SSBScript. To convert an actual model into this directly,
     see skytemple_files.script.ssb.model.Ssb.to_ssb_script.
     """
-    def __init__(self, routine_infos: list[SsbRoutineInfo], routine_ops: list[list[SsbOperation]], named_coroutines: list[SsbCoroutine]):
+
+    def __init__(
+        self,
+        routine_infos: list[SsbRoutineInfo],
+        routine_ops: list[list[SsbOperation]],
+        named_coroutines: list[SsbCoroutine],
+    ):
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
         self._named_coroutines: dict[int, str] = {x.id: x.name for x in named_coroutines}
@@ -59,7 +73,11 @@ class SsbScriptSsbDecompiler:
         self._routine_ops = list(resolver)
 
         for r_id, (r_info, r_ops) in enumerate(zip(self._routine_infos, self._routine_ops)):
-            logger.debug("Decompiling (%d, %s)...", r_id, self._named_coroutines[r_id] if r_id in self._named_coroutines else None)
+            logger.debug(
+                "Decompiling (%d, %s)...",
+                r_id,
+                self._named_coroutines[r_id] if r_id in self._named_coroutines else None,
+            )
             self._write_routine_header(r_id, r_info)
             with Blk(self):
                 if len(r_ops) == 0:
@@ -99,9 +117,7 @@ class SsbScriptSsbDecompiler:
             orig_params = real_op.params.values()
 
         # Build parameter string
-        params = ", ".join(
-            [self._single_param_to_string(param) for param in orig_params]
-        )
+        params = ", ".join([self._single_param_to_string(param) for param in orig_params])
         # Add label marker to parameter string, if needed
         if isinstance(op, SsbLabelJump):
             if len(orig_params) > 0:
@@ -111,18 +127,24 @@ class SsbScriptSsbDecompiler:
         for param in orig_params:
             if isinstance(param, SsbOpParamPositionMarker):
                 cn = self.indent * NUMBER_OF_SPACES_PER_INDENT
-                self._source_map_builder.add_position_mark(SourceMapPositionMark(
-                    line_number=self._line_number, column_number=cn,
-                    end_line_number=self._line_number, end_column_number=cn + len(self._single_param_to_string(param)),
-                    name=param.name,
-                    x_offset=param.x_offset, y_offset=param.y_offset,
-                    x_relative=param.x_relative, y_relative=param.y_relative
-                ))
+                self._source_map_builder.add_position_mark(
+                    SourceMapPositionMark(
+                        line_number=self._line_number,
+                        column_number=cn,
+                        end_line_number=self._line_number,
+                        end_column_number=cn + len(self._single_param_to_string(param)),
+                        name=param.name,
+                        x_offset=param.x_offset,
+                        y_offset=param.y_offset,
+                        x_relative=param.x_relative,
+                        y_relative=param.y_relative,
+                    )
+                )
         self._source_map_builder.add_opcode(op.offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
         self.write_stmnt(f"{real_op.op_code.name}({params});")
 
     def _single_param_to_string(self, param: SsbOpParam):
-        if hasattr(param, 'indent'):
+        if hasattr(param, "indent"):
             param.indent = self.indent
         return str(param)
 
@@ -130,7 +152,7 @@ class SsbScriptSsbDecompiler:
         """Write a simple single line statement"""
         if line:
             self._write_line()
-        self._line_number += stmnt.count('\n')
+        self._line_number += stmnt.count("\n")
         self._output += stmnt
 
     def _write_line(self):
