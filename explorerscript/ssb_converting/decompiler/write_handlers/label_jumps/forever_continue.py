@@ -23,11 +23,14 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 

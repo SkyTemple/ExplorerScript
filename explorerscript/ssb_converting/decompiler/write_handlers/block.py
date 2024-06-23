@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, TypeAlias
+from typing import Callable, TypeAlias, TYPE_CHECKING
 
 from igraph import Vertex
 
@@ -32,8 +32,6 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
     AbstractWriteHandler,
     NestedBlockDisallowedError,
 )
-from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_THAT_END_CONTROL_FLOW,
     SsbLabel,
@@ -46,6 +44,9 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 )
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 CheckEndBlockCallable: TypeAlias = Callable[["BlockWriteHandler", "AbstractWriteHandler"], bool]
 
@@ -86,6 +87,8 @@ class BlockWriteHandler(AbstractWriteHandler):
         self.last_vertex = None
 
     def write_content(self) -> Vertex:
+        from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
+
         previous_vertex = None
         is_first_vertex = True
         while self._next_vertex is not None:
@@ -100,17 +103,15 @@ class BlockWriteHandler(AbstractWriteHandler):
                 if not should_continue:
                     break
 
-            # Make sure, that the _disallow_nested restriction is honored.
-            # TODO: pretty hard-coded at the moment.
-            if self._disallow_nested and self.last_handler_in_block.__class__.__name__ != "SimpleOperationWriteHandler":
-                raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
-            # (last_handler_in_block must be SimpleOperationWriteHandler in this case)
-            assert isinstance(self.last_handler_in_block, SimpleOperationWriteHandler)
-            if (
-                self._disallow_nested
-                and self.last_handler_in_block.get_real_handler().__name__ == "CtxSimpleOpWriteHandler"
-            ):
-                raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
+            if self._disallow_nested:
+                # Make sure, that the _disallow_nested restriction is honored.
+                # TODO: pretty hard-coded at the moment.
+                if self.last_handler_in_block.__class__.__name__ != "SimpleOperationWriteHandler":
+                    raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
+                # (last_handler_in_block must be SimpleOperationWriteHandler in this case)
+                assert isinstance(self.last_handler_in_block, SimpleOperationWriteHandler)
+                if self.last_handler_in_block.get_real_handler().__name__ == "CtxSimpleOpWriteHandler":
+                    raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
 
             previous_vertex = self._next_vertex
             self._next_vertex = self.last_handler_in_block.write_content()

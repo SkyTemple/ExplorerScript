@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from igraph import Vertex, Edge
 
@@ -31,9 +32,11 @@ from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockW
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import IfStart, SsbLabelJump, MultiIfStart, SsbLabel, IfEnd
 from explorerscript.ssb_converting.util import Blk
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 

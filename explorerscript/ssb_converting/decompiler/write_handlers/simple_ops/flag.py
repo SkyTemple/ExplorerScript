@@ -22,11 +22,12 @@
 #
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbCalcOperator
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_FLAG__CALC_BIT,
     OPS_FLAG__CALC_VALUE,
@@ -41,6 +42,9 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_FLAG__SET_PERFORMANCE,
     OPS_FLAG__SET_SCENARIO,
 )
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class FlagSimpleOpWriteHandler(AbstractWriteHandler):

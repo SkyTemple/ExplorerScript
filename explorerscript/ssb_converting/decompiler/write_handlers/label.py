@@ -23,12 +23,12 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     SwitchFalltrough,
     SsbLabel,
@@ -37,6 +37,9 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     ForeverStart,
     ForeverEnd,
 )
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 

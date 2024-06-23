@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
@@ -30,9 +32,11 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
 from explorerscript.ssb_converting.util import Blk
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class CtxSimpleOpWriteHandler(AbstractWriteHandler):

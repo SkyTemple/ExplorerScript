@@ -45,9 +45,12 @@ def open_utf8(file, mode="r", *args, **kwargs):  # type: ignore
 
 def exps_int(to_convert: str | SupportsInt | SupportsIndex) -> int:
     """Converts to integer, auto-detecting the base (if string)."""
-    if isinstance(to_convert, str):
-        return int(to_convert, 0)
-    return int(to_convert)
+    try:
+        if isinstance(to_convert, str):
+            return int(to_convert, 0)
+        return int(to_convert)
+    except TypeError as e:
+        raise ValueError("Invalid value for conversion to ExplorerScript integer") from e
 
 
 def f(s: str) -> str:  # type: ignore

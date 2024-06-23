@@ -118,8 +118,8 @@ class SwitchBlockCompileHandler(
                     assert default_jmp_to_case_block is not None
                     default_ops = [default_jmp_to_case_block.build_for(start_label)]
                 for h_waiting in cases_waiting_for_a_block:
-                    assert default_jmp_to_case_block is not None
                     if isinstance(h_waiting, DefaultCaseBlockCompileHandler):
+                        assert default_jmp_to_case_block is not None
                         default_ops = [default_jmp_to_case_block.build_for(start_label)]
                     else:
                         h_waiting.set_processed_header_jumps(

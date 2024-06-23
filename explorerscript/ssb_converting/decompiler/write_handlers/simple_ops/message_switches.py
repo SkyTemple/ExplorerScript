@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
@@ -30,13 +32,15 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OP_MESSAGE_SWITCH_TALK,
     OP_MESSAGE_SWITCH_MONOLOGUE,
     OPS_SWITCH_TEXT_CASE_MAP,
 )
 from explorerscript.ssb_converting.util import Blk
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):

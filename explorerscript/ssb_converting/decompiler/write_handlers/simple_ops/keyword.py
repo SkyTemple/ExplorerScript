@@ -22,12 +22,16 @@
 #
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import OP_RETURN, OP_END, OP_HOLD
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class KeywordSimpleOpWriteHandler(AbstractWriteHandler):

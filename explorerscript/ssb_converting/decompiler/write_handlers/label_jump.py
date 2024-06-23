@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import logging
-from typing import ClassVar
+from typing import ClassVar, TYPE_CHECKING
 
 from igraph import Vertex
 
@@ -36,7 +36,6 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.if_start import IfWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump import JumpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
-from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     LabelJumpMarker,
     MultiIfStart,
@@ -47,6 +46,9 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     SsbLabelJump,
     CallJump,
 )
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 
