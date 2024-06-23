@@ -21,10 +21,12 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import argparse
 import json
 import os
 import sys
+from typing import TypedDict, Any, Required
 
 from explorerscript.cli import (
     check_settings,
@@ -49,6 +51,7 @@ from explorerscript.ssb_converting.ssb_data_types import (
     SsbOpParamPositionMarker,
     SsbOpCode,
     SsbOpParamFixedPoint,
+    SsbOpParam,
 )
 from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.util import open_utf8, exps_int
@@ -56,7 +59,24 @@ from explorerscript.util import open_utf8, exps_int
 counter = Counter()
 
 
-def parse_pos_mark_arg(arg_str):
+class OpDict(TypedDict):
+    params: list[ParamDict]
+    opcode: str
+
+
+class ParamDict(TypedDict):
+    type: str
+    value: Any  # TODO
+
+
+class RoutineDict(TypedDict, total=False):
+    type: Required[str]
+    ops: Required[list[OpDict]]
+    name: str
+    target_id: str
+
+
+def parse_pos_mark_arg(arg_str: str) -> tuple[int, int]:
     arg_str_arr = arg_str.split(".")
     if len(arg_str_arr) < 2:
         return exps_int(arg_str), 0
@@ -65,15 +85,15 @@ def parse_pos_mark_arg(arg_str):
     return exps_int(arg_str_arr[0]), 2
 
 
-def read_ops(ops: list[dict]) -> list[SsbOperation]:
-    out_ops = []
+def read_ops(ops: list[OpDict]) -> list[SsbOperation]:
+    out_ops: list[SsbOperation] = []
 
     for op in ops:
         if "params" not in op:
             raise ValueError("Params for an op not set.")
         if "opcode" not in op:
             raise ValueError("Opcode for an op not set.")
-        params = []
+        params: list[SsbOpParam] = []
         for param in op["params"]:
             if isinstance(param, int):
                 params.append(param)
@@ -104,7 +124,9 @@ def read_ops(ops: list[dict]) -> list[SsbOperation]:
     return out_ops
 
 
-def read_routines(routines: list[dict]) -> tuple[list[SsbRoutineInfo], list[SsbCoroutine], list[list[SsbOperation]]]:
+def read_routines(
+    routines: list[RoutineDict],
+) -> tuple[list[SsbRoutineInfo], list[SsbCoroutine], list[list[SsbOperation]]]:
     routine_infos = []
     named_coroutines = []
     routine_ops = []

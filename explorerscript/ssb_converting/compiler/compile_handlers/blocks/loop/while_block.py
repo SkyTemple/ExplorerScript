@@ -22,9 +22,16 @@
 #
 from __future__ import annotations
 
+from typing import cast
+
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
-    AbstractLoopBlockCompileHandler,
+    AbstractComplexLoopBlockCompileHandler,
     AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
+    AnyLoopBlockCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
@@ -32,7 +39,12 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
 
 
-class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
+class WhileBlockCompileHandler(
+    AbstractComplexLoopBlockCompileHandler[
+        ExplorerScriptParser.While_blockContext,
+        "AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler",
+    ]
+):
     """
     Compiles a while loop:
     In the positive case: A forever loop with a Branch operation in the end, that checks if the loop should run,
@@ -55,13 +67,14 @@ class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
     - END_LABEL
     """
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    def __init__(self, ctx: ExplorerScriptParser.While_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._branch_blueprint: SsbLabelJumpBlueprint | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(self)
+        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
         is_positive = self.ctx.NOT() is None
+        assert self._branch_blueprint is not None
 
         if is_positive:
             check_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} check label")
@@ -83,11 +96,11 @@ class WhileBlockCompileHandler(AbstractLoopBlockCompileHandler):
         self.compiler_ctx.remove_loop()
         return retval
 
-    def add(self, obj: any):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler) -> None:
         if isinstance(obj, IfHeaderCompileHandler):
             self._branch_blueprint = obj.collect()
             return
-        if isinstance(obj, AbstractStatementCompileHandler):
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             self._added_handlers.append(obj)
             return
         self._raise_add_error(obj)

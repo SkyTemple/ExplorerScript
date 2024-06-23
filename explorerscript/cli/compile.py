@@ -21,10 +21,12 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import argparse
 import json
 import os
 import sys
+from typing import TypedDict, Required
 
 from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, check_settings, SETTINGS
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
@@ -41,10 +43,27 @@ from explorerscript.ssb_converting.ssb_data_types import (
 from explorerscript.util import open_utf8
 
 
-def build_ops(ops: list[SsbOperation]):
-    out_ops = []
+class SsbParamDict(TypedDict):
+    type: str
+    value: int | float | str | dict[str, str]
+
+
+class OpDict(TypedDict):
+    opcode: str
+    params: list[int | SsbParamDict]
+
+
+class RoutineDict(TypedDict, total=False):
+    type: Required[str]
+    name: str
+    target_id: int | str | None
+    ops: Required[list[OpDict]]
+
+
+def build_ops(ops: list[SsbOperation]) -> list[OpDict]:
+    out_ops: list[OpDict] = []
     for op in ops:
-        out_op = {"opcode": op.op_code.name, "params": []}
+        out_op: OpDict = {"opcode": op.op_code.name, "params": []}
         for param in op.params:
             if isinstance(param, int):
                 out_op["params"].append(param)
@@ -68,30 +87,34 @@ def build_ops(ops: list[SsbOperation]):
 
 def build_routines_json(
     routine_infos: list[SsbRoutineInfo], named_coroutines: list[str], routine_ops: list[list[SsbOperation]]
-):
-    routines = []
+) -> list[RoutineDict]:
+    routines: list[RoutineDict] = []
     for info, name, ops in zip(routine_infos, named_coroutines, routine_ops):
-        routine = {}
+        routine: RoutineDict
         if info.type == SsbRoutineType.COROUTINE:
-            routine = {"type": "COROUTINE", "name": name}
+            routine = {"type": "COROUTINE", "name": name, "ops": build_ops(ops)}
         elif info.type == SsbRoutineType.GENERIC:
-            routine = {"type": "GENERIC"}
+            routine = {"type": "GENERIC", "ops": build_ops(ops)}
         elif info.type == SsbRoutineType.ACTOR:
             routine = {
                 "type": "ACTOR",
                 "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+                "ops": build_ops(ops),
             }
         elif info.type == SsbRoutineType.OBJECT:
             routine = {
                 "type": "OBJECT",
                 "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+                "ops": build_ops(ops),
             }
         elif info.type == SsbRoutineType.PERFORMER:
             routine = {
                 "type": "PERFORMER",
                 "target_id": info.linked_to if info.linked_to is not -1 else info.linked_to_name,
+                "ops": build_ops(ops),
             }
-        routine["ops"] = build_ops(ops)
+        else:
+            raise ValueError(f"invalid routine type {info.type}")
         routines.append(routine)
     return routines
 
@@ -145,6 +168,10 @@ if __name__ == "__main__":
 
     compiler.compile(exps_source, os.path.abspath(os.path.join(os.getcwd(), args.exps_source)))
 
+    assert compiler.routine_infos is not None
+    assert compiler.named_coroutines is not None
+    assert compiler.routine_ops is not None
+    assert compiler.source_map is not None
     output_dict = {
         "settings": settings,
         "routines": build_routines_json(compiler.routine_infos, compiler.named_coroutines, compiler.routine_ops),

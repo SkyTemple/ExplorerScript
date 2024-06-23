@@ -28,7 +28,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
 
 
-class ConditionalOperatorCompileHandler(AbstractCompileHandler):
+class ConditionalOperatorCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Conditional_operatorContext, None]):
     def collect(self) -> SsbOperator:
         self.ctx: ExplorerScriptParser.Conditional_operatorContext
         if self.ctx.OP_FALSE():
@@ -55,6 +55,6 @@ class ConditionalOperatorCompileHandler(AbstractCompileHandler):
             return SsbOperator.BIT_SET
         raise SsbCompilerError("Unknown conditional operator.")
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         # Doesn't accept anything.
         self._raise_add_error(obj)

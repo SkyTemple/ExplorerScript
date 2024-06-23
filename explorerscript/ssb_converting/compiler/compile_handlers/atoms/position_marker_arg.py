@@ -21,19 +21,17 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 
 
-class PositionMarkerArgCompileHandler(AbstractCompileHandler):
+class PositionMarkerArgCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Position_marker_argContext, None]):
     def collect(self) -> tuple[int, int]:  # position, offset
-        self.ctx: ExplorerScriptParser.Position_marker_argContext
         pos, offset = parse_position_marker_arg(self.ctx)
         return pos, offset
 
-    def add(self, obj: Any):
+    def add(self, obj: None) -> None:
         # Doesn't accept anything.
         self._raise_add_error(obj)

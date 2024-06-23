@@ -22,20 +22,26 @@
 #
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_script.ssb_converting.ssb_decompiler import SsbScriptSsbDecompiler
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
 
 class Blk:
     """Utility context manager for managing indents."""
 
-    def __init__(self, reader, braces=True):
+    def __init__(self, reader: SsbScriptSsbDecompiler | ExplorerScriptSsbDecompiler, braces: bool = True):
         self.reader = reader
         self.braces = braces
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         self.reader.indent += 1
         if self.braces:
             self.reader.write_stmnt(" {", False)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:  # type: ignore
         self.reader.indent -= 1
         if self.braces:
             self.reader.write_stmnt("}", True)

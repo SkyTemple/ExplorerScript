@@ -22,6 +22,9 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
@@ -34,9 +37,13 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE_VALUE
 from explorerscript.util import _
 
+_SupportedHandlers: TypeAlias = Union[
+    IntegerLikeCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler
+]
 
-class CaseHeaderOpCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class CaseHeaderOpCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.operator: SsbOperator | None = None
         self.value: SsbOpParam | None = None
@@ -64,7 +71,7 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         # CaseValue
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_VALUE, [self.operator.value, self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             # (integer_like[1] | value_of) -> var to set to
             self.value = obj.collect()

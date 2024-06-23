@@ -30,20 +30,19 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, string_lit
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstString, SsbOpParamLanguageString
 
 
-class StringCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class StringCompileHandler(AbstractCompileHandler[ExplorerScriptParser.StringContext, LangStringCompileHandler]):
+    def __init__(self, ctx: ExplorerScriptParser.StringContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.lang_string_handler: LangStringCompileHandler | None = None
 
     def collect(self) -> SsbOpParamLanguageString | SsbOpParamConstString:
-        self.ctx: ExplorerScriptParser.StringContext
         if self.ctx.STRING_LITERAL():
             return SsbOpParamConstString(string_literal(self.ctx.STRING_LITERAL()))
         if self.lang_string_handler:
             return self.lang_string_handler.collect()
         raise SsbCompilerError("Invalid string, neither literal nor language string")
 
-    def add(self, obj: any):
+    def add(self, obj: LangStringCompileHandler) -> None:
         if isinstance(obj, LangStringCompileHandler):
             self.lang_string_handler = obj
             return

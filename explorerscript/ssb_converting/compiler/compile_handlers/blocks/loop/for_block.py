@@ -22,9 +22,16 @@
 #
 from __future__ import annotations
 
+from typing import cast
+
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
-    AbstractLoopBlockCompileHandler,
     AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
+    AbstractLoopBlockCompileHandler,
+    AnyLoopBlockCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
@@ -32,7 +39,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_JUMP, SsbLabel
 
 
-class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
+class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParser.For_blockContext]):
     """
     Compiles a for loop.
     It has three parts:
@@ -58,7 +65,7 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
     - END_LABEL
     """
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    def __init__(self, ctx: ExplorerScriptParser.For_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._block_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block label")
         self._new_run_label = SsbLabel(
@@ -68,11 +75,16 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
             self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} initial label"
         )
         self._branch_blueprint: SsbLabelJumpBlueprint | None = None
-        self._init_statement_handler: AbstractStatementCompileHandler | None = None
-        self._end_statement_handler: AbstractStatementCompileHandler | None = None
+        self._init_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
+        self._end_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(self)
+        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
+        assert (
+            self._init_statement_handler is not None
+            and self._end_statement_handler is not None
+            and self._branch_blueprint is not None
+        )
         retval = (
             [self._start_label]
             + self._init_statement_handler.collect()
@@ -85,8 +97,8 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
         self.compiler_ctx.remove_loop()
         return retval
 
-    def add(self, obj: any):
-        if isinstance(obj, AbstractStatementCompileHandler):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             if self._init_statement_handler is None:
                 self._init_statement_handler = obj
             elif self._end_statement_handler is None:

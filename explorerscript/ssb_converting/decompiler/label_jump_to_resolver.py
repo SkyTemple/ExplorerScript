@@ -26,7 +26,9 @@ and inserts labels at the appropriate locations.
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
+from typing import Generator
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel
@@ -35,18 +37,21 @@ logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToResolver:
+    # A mapping of labels: {mem_location: label_name}
+    labels: dict[int, SsbLabel]
+    routines: list[list[SsbOperation]]
+
     def __init__(self, routines: list[list[SsbOperation]]):
         logger.debug("Constructing labels and jumps...")
-        # A mapping of labels: {mem_location: label_name}
-        self.labels: dict[int, SsbLabel] = {}
+        self.labels = {}
         self.routines = []
         for routine_id, rtn in enumerate(routines):
-            new_rtn_ops = []
+            new_rtn_ops: list[SsbOperation] = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
                 new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id))
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[list[SsbOperation], None, None]:
         rtn_iterator = iter(self.routines)
         try:
             while True:
@@ -55,7 +60,7 @@ class OpsLabelJumpToResolver:
         except StopIteration:
             return
 
-    def _iter_routine(self, rtn):
+    def _iter_routine(self, rtn: list[SsbOperation]) -> Generator[SsbOperation, None, None]:
         op_iterator = iter(rtn)
         try:
             while True:

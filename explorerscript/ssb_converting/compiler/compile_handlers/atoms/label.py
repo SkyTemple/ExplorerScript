@@ -22,12 +22,14 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel
 
 
-class LabelCompileHandler(AbstractStatementCompileHandler):
-    def collect(self) -> list[SsbLabel]:
+class LabelCompileHandler(AbstractStatementCompileHandler[ExplorerScriptParser.LabelContext]):
+    def collect(self) -> list[SsbOperation]:
         label_name = str(self.ctx.IDENTIFIER())
 
         if label_name in self.compiler_ctx.collected_labels:
@@ -38,6 +40,6 @@ class LabelCompileHandler(AbstractStatementCompileHandler):
 
         return [label]
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         # Doesn't accept anything.
         self._raise_add_error(obj)

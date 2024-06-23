@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
@@ -34,6 +35,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockW
 from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     SsbLabelJump,
     SwitchStart,
@@ -48,13 +50,16 @@ logger = logging.getLogger(__name__)
 class SwitchWriteHandler(AbstractWriteHandler):
     """Handles writing switches."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
         self.ended_on_jump = True
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbLabelJump = self.start_vertex["op"]
-        m: SwitchStart = op.get_marker()
+        m = op.get_marker()
+        assert isinstance(m, SwitchStart)
         self.decompiler.source_map_add_opcode(op.offset)
         self.decompiler.write_stmnt(f"switch ( {self._switch_header_for(op.root)} )")
         is_switch_dungeon_mode = op.root.op_code.name == OP_SWITCH_DUNGEON_MODE
@@ -110,6 +115,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
                                 or not handler.last_handler_in_block.switch_fell_through
                             ):
                                 root_op_before = self._get_root_op(handler.last_vertex)
+                                assert handler.last_handler_in_block is not None
                                 if not handler.last_handler_in_block.ended_on_jump and (
                                     root_op_before is None
                                     or root_op_before.op_code.name not in OPS_THAT_END_CONTROL_FLOW
@@ -123,7 +129,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
 
             return None
 
-    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler):
+    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler) -> bool:
         """
         A switch should end either if there are no vertices left (duh!) or if the end-switch label is reached.
         This method also makes logical checks: No other if or switch or loop may be ended directly in this sub-block.
@@ -142,7 +148,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
         return True
 
     @staticmethod
-    def _switch_header_for(op: SsbOperation):
+    def _switch_header_for(op: SsbOperation) -> str:
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name in [
             "message_SwitchMenu",
@@ -176,11 +182,11 @@ class SwitchWriteHandler(AbstractWriteHandler):
             return f"{op.params[0]}"
         raise ValueError(f"Unknown switch {op.op_code.name}")
 
-    def _case_header_for(self, op: SsbOperation, is_switch_dungeon_mode):
+    def _case_header_for(self, op: SsbOperation, is_switch_dungeon_mode: bool) -> str:
         # TODO: More error checking for parameters would probably be a good idea
         if op.op_code.name == "Case":
             if is_switch_dungeon_mode:
-                return f"{self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[0])}"
+                return f"{self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[0])}"  # type: ignore
             return f"{op.params[0]}"
         if op.op_code.name == "CaseMenu":
             if hasattr(op.params[0], "indent"):
@@ -190,14 +196,14 @@ class SwitchWriteHandler(AbstractWriteHandler):
             return f"menu2({op.params[0]})"
         if op.op_code.name == "CaseScenario":
             # TODO: This will convert them into CaseValues. Might cause issues.
-            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"
+            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"  # type: ignore
         if op.op_code.name == "CaseValue":
-            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"
+            return f"{SsbOperator(op.params[0]).notation} {op.params[1]}"  # type: ignore
         if op.op_code.name == "CaseVariable":
-            return f"{SsbOperator(op.params[0]).notation} value({op.params[1]})"
+            return f"{SsbOperator(op.params[0]).notation} value({op.params[1]})"  # type: ignore
         raise ValueError(f"Unknown switch-case {op.op_code.name}")
 
-    def _get_root_op(self, v):
+    def _get_root_op(self, v: Vertex) -> SsbOperation | None:
         if v is None:
             return None
         if isinstance(v["op"], SsbLabelJump):

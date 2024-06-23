@@ -22,14 +22,15 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_SECTOR
 
 
-class SwitchHeaderSectorCompileHandler(AbstractCompileHandler):
+class SwitchHeaderSectorCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Switch_h_sectorContext, None]):
     def collect(self) -> SsbOperation:
         return self._generate_operation(OP_SWITCH_SECTOR, [])
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         self._raise_add_error(obj)

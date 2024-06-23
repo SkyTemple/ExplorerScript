@@ -22,9 +22,11 @@
 #
 from __future__ import annotations
 
+from typing import Union
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
     DefaultCaseBlockCompileHandler,
@@ -43,19 +45,22 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 )
 from explorerscript.util import _, f
 
+_SupportedHandlers = Union[CaseBlockCompileHandler, DefaultCaseBlockCompileHandler, SwitchHeaderCompileHandler]
 
-class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
+
+class SwitchBlockCompileHandler(
+    AbstractComplexStatementCompileHandler[ExplorerScriptParser.Switch_blockContext, _SupportedHandlers]
+):
     """Handles an entire switch block, with all it's cases."""
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._switch_header_handler: SwitchHeaderCompileHandler | None = None
-        self._case_handlers: list[CaseBlockCompileHandler] = []
+        self._case_handlers: list[CaseBlockCompileHandler | DefaultCaseBlockCompileHandler] = []
         self._default_handler_index: int = -1
         self._default_handler: DefaultCaseBlockCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.ctx: ExplorerScriptParser.Switch_blockContext
         # 0. Prepare labels to insert
         default_start_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "switch default start label")
         end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "entire switch-block end label")
@@ -64,6 +69,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
         default_ops: list[SsbOperation]
 
         # 0b. Switch op
+        assert self._switch_header_handler is not None
         switch_op = self._switch_header_handler.collect()
 
         # If there is no default and also no cases... we really don't need anything.
@@ -77,6 +83,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
                 raise SsbCompilerError(
                     f(_("A switch case must contain a list of statements " "(line {self.ctx.start.line})."))
                 )
+            assert isinstance(h, CaseBlockCompileHandler)
             jmp_blueprint = h.get_header_jump_template()
             first = self.compiler_ctx.counter_ops.allocate(1)
             jmp_blueprint.set_index_number(first)
@@ -86,7 +93,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
                 jmp_blueprint.op_code_name = OP_CASE_SCENARIO
 
         # 2. Default block (first because default is after no case op branched)
-        if self._default_handler:
+        if self._default_handler is not None:
             self._default_handler.set_end_label(end_label)
             default_ops = []
             # Insert a jump blueprint for now, note it, and if it comes up later during 3b,
@@ -105,14 +112,18 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             else:
                 # 3a. If the case has operations: Collect case sub-block ops
                 ops = h.collect()
+                start_label = h.get_start_label()
+                assert start_label is not None
                 if isinstance(h, DefaultCaseBlockCompileHandler):
-                    default_ops = [default_jmp_to_case_block.build_for(h.get_start_label())]
+                    assert default_jmp_to_case_block is not None
+                    default_ops = [default_jmp_to_case_block.build_for(start_label)]
                 for h_waiting in cases_waiting_for_a_block:
+                    assert default_jmp_to_case_block is not None
                     if isinstance(h_waiting, DefaultCaseBlockCompileHandler):
-                        default_ops = [default_jmp_to_case_block.build_for(h.get_start_label())]
+                        default_ops = [default_jmp_to_case_block.build_for(start_label)]
                     else:
                         h_waiting.set_processed_header_jumps(
-                            [h_waiting.get_header_jump_template().build_for(h.get_start_label())]
+                            [h_waiting.get_header_jump_template().build_for(start_label)]
                         )
                 cases_waiting_for_a_block = []
                 case_ops += ops
@@ -125,7 +136,7 @@ class SwitchBlockCompileHandler(AbstractStatementCompileHandler):
             header_ops += h.get_processed_header_jumps()
         return header_ops + [default_start_label] + default_ops + case_ops + [end_label]
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, CaseBlockCompileHandler):
             self._case_handlers.append(obj)
             return

@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import functools
 import itertools
 import logging
@@ -44,7 +45,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 logger = logging.getLogger(__name__)
 
 
-def find_lowest_and_highest_out_edge(g, vertex, attr) -> tuple[Edge, Edge]:
+def find_lowest_and_highest_out_edge(g: Graph, vertex: Vertex, attr: str) -> tuple[Edge, Edge]:
     edges: list[Edge] = [g.es[e] for e in g.incident(vertex, OUT)]
     # noinspection PyTypeChecker
     if len(edges) == 0:
@@ -53,21 +54,21 @@ def find_lowest_and_highest_out_edge(g, vertex, attr) -> tuple[Edge, Edge]:
 
 
 cache_lock = Lock()
-find_first_common_next_vertex_in_edges_cache = {}
+find_first_common_next_vertex_in_edges_cache: dict[int, dict[str, list[Edge]]] = {}
 
 
-def find_first_common_next_vertex_in_edges__clear_cache(g: Graph):
+def find_first_common_next_vertex_in_edges__clear_cache(g: Graph) -> None:
     with cache_lock:
         find_first_common_next_vertex_in_edges_cache[id(g)] = {}
 
 
 def find_first_common_next_vertex_in_edges(
-    g,
+    g: Graph,
     es: list[Edge],
-    allow_open_branches=False,
-    allow_loops=False,
-    vs_to_not_visit: list[int] = None,
-    allow_loop_edges=True,
+    allow_open_branches: bool = False,
+    allow_loops: bool = False,
+    vs_to_not_visit: list[int] | None = None,
+    allow_loop_edges: bool = True,
 ) -> None | list[Edge]:
     """
     Finds the first vertex (actually list of edges that lead to it for each edge in es)

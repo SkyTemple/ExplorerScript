@@ -21,11 +21,13 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +35,12 @@ logger = logging.getLogger(__name__)
 class ForeverContinueWriteHandler(AbstractWriteHandler):
     """Handles writing loop continue statements."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         """Print a continue (if not implicit) and end"""
         logger.debug("Handling a continue; (%s)...", self.start_vertex["op"])
         if len(self.decompiler.forever_start_handler_stack) < 1:
@@ -50,6 +54,6 @@ class ForeverContinueWriteHandler(AbstractWriteHandler):
             self.decompiler.write_stmnt("continue;  // may be redundant")
         return None
 
-    def _continue_is_implicit(self):
+    def _continue_is_implicit(self) -> bool:
         # TODO: Not implemented, is probably not really possible, unless we do a multi-pass solution.
         return False

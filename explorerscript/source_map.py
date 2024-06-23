@@ -21,15 +21,27 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import json
 import logging
 from collections.abc import Iterable
+from typing import Mapping, Any
 
 logger = logging.getLogger(__name__)
 
 
 class SourceMapPositionMark:
     """A position mark encoded in the source code of SSBScript / ExplorerScript."""
+
+    line_number: int
+    column_number: int
+    end_line_number: int
+    end_column_number: int
+    name: str
+    x_offset: int
+    y_offset: int
+    x_relative: int
+    y_relative: int
 
     def __init__(
         self,
@@ -59,7 +71,7 @@ class SourceMapPositionMark:
         Returns the x position with offset, in tiles, as float or int
         See also skytemple_files.script.ssa.position.
         """
-        offset = 0
+        offset: int | float = 0
         if self.x_offset == 2 or self.x_offset == 3:
             offset = 0.5
         elif self.x_offset >= 4:
@@ -72,24 +84,24 @@ class SourceMapPositionMark:
         Returns the x position with offset, in tiles, as float or int
         See also skytemple_files.script.ssa.position.
         """
-        offset = 0
+        offset: int | float = 0
         if self.y_offset == 2 or self.y_offset == 3:
             offset = 0.5
         elif self.y_offset >= 4:
             offset = 2
         return self.y_relative + offset
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"SourceMapPositionMark<"
             f'"{self.name}" @{self.line_number}:{self.column_number}->{self.end_line_number}:{self.end_column_number} - '
             f"{self.x_relative}:{self.x_offset}, {self.y_relative}:{self.y_offset}>)"
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SourceMapPositionMark):
             return False
         return (
@@ -104,7 +116,7 @@ class SourceMapPositionMark:
             and self.y_relative == other.y_relative
         )
 
-    def serialize(self) -> list:
+    def serialize(self) -> list[Any]:
         return [
             self.line_number,
             self.column_number,
@@ -118,7 +130,7 @@ class SourceMapPositionMark:
         ]
 
     @classmethod
-    def deserialize(cls, data_list) -> SourceMapPositionMark:
+    def deserialize(cls, data_list: list[Any]) -> SourceMapPositionMark:
         return SourceMapPositionMark(
             line_number=data_list[0],
             column_number=data_list[1],
@@ -137,29 +149,40 @@ class SourceMapping:
         self.line = line_number
         self.column = column
 
-    def serialize(self) -> list:
+    def serialize(self) -> list[Any]:
         return [self.line, self.column]
 
     @classmethod
-    def deserialize(cls, data_list) -> SourceMapping:
+    def deserialize(cls, data_list: list[Any]) -> SourceMapping:
         return SourceMapping(data_list[0], data_list[1])
 
 
 class MacroSourceMapping(SourceMapping):
+    relpath_included_file: str | None
+    macro_name: str
+    # If this is the first operation in a Macro, this field contains the line number and column
+    # of the Macro call
+    # Tuple contains relative_included_file, line number, column number of the call file.
+    called_in: tuple[str | None, int, int] | None
+    # The opcode address to jump to when stepping out of this macro
+    return_addr: int | None
+    # The mapping of parameter values for the current macro context, only for informational
+    # purposes. Contains the string representation or integer value
+    parameter_mapping: Mapping[str, int | str]
+
     def __init__(
         self,
-        relpath_included_file: str,
+        relpath_included_file: str | None,
         macro_name: str,
         line_number: int,
         column: int,
-        called_in: tuple[str, int, int] | None,
+        called_in: tuple[str | None, int, int] | None,
         return_addr: int | None,
-        parameter_mapping: dict[str, int | str],
+        parameter_mapping: Mapping[str, int | str],
     ):
         super().__init__(line_number, column)
         self.relpath_included_file = relpath_included_file
         self.macro_name = macro_name
-        self.return_addr = return_addr
         # If this is the first operation in a Macro, this field contains the line number and column
         # of the Macro call
         # Tuple contains relative_included_file, line number, column number of the call file.
@@ -170,7 +193,7 @@ class MacroSourceMapping(SourceMapping):
         # purposes. Contains the string representation or integer value
         self.parameter_mapping = parameter_mapping
 
-    def serialize(self) -> list:
+    def serialize(self) -> list[Any]:
         return [
             self.relpath_included_file,
             self.macro_name,
@@ -182,7 +205,7 @@ class MacroSourceMapping(SourceMapping):
         ]
 
     @classmethod
-    def deserialize(cls, data_list) -> MacroSourceMapping:
+    def deserialize(cls, data_list: list[Any]) -> MacroSourceMapping:
         return MacroSourceMapping(
             data_list[0], data_list[1], data_list[2], data_list[3], data_list[4], data_list[5], data_list[6]
         )
@@ -208,6 +231,11 @@ class SourceMap:
     This also provides information about position marks used in the source file.
     """
 
+    mappings: dict[int, SourceMapping]
+    position_marks: list[SourceMapPositionMark]
+    mappings_macros: dict[int, MacroSourceMapping]
+    position_marks_macro: list[tuple[str | None, str, SourceMapPositionMark]]
+
     def __init__(
         self,
         mappings: dict[int, SourceMapping],
@@ -230,7 +258,7 @@ class SourceMap:
         self._position_marks_macro = position_marks_macro
 
     @property
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return len(self._mappings) == 0
 
     def get_op_line_and_col(self, op_offset: int) -> SourceMapping | None:
@@ -238,14 +266,17 @@ class SourceMap:
             return self._mappings[op_offset]
         if op_offset in self._mappings_macros:
             return self._mappings_macros[op_offset]
+        return None
 
     def get_op_line_and_col__direct(self, op_offset: int) -> SourceMapping | None:
         if op_offset in self._mappings:
             return self._mappings[op_offset]
+        return None
 
     def get_op_line_and_col__macros(self, op_offset: int) -> MacroSourceMapping | None:
         if op_offset in self._mappings_macros:
             return self._mappings_macros[op_offset]
+        return None
 
     def get_position_marks__direct(self) -> list[SourceMapPositionMark]:
         return self._position_marks
@@ -253,7 +284,7 @@ class SourceMap:
     def get_position_marks__macros(self) -> list[tuple[str | None, str, SourceMapPositionMark]]:
         return self._position_marks_macro
 
-    def __iter__(self) -> Iterable[tuple[int, MacroSourceMapping]]:
+    def __iter__(self) -> Iterable[tuple[int, SourceMapping]]:
         """
         Iterates over all source map entries, including the macro entries.
         If it's a macro entry, macro_name is a string.
@@ -264,15 +295,15 @@ class SourceMap:
     def collect_mappings__macros(self) -> Iterable[tuple[int, MacroSourceMapping]]:
         yield from self._mappings_macros.items()
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SourceMap):
             return False
         return self._mappings == other._mappings and self._position_marks == other._position_marks
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.serialize()
 
-    def serialize(self, pretty=False) -> str:
+    def serialize(self, pretty: bool = False) -> str:
         return json.dumps(
             {
                 "map": {int(x): m.serialize() for x, m in self._mappings.items()},
@@ -296,10 +327,10 @@ class SourceMap:
         )
 
     @classmethod
-    def create_empty(cls):
+    def create_empty(cls) -> SourceMap:
         return cls({}, [], {}, [])
 
-    def rewrite_offsets(self, new_mapping: dict[int, int]):
+    def rewrite_offsets(self, new_mapping: dict[int, int]) -> None:
         """
         Replace all opcode offsets (in mappings, macrco mappings, macro return addresses) with new
         offsets. The parameter is a dict mapping old offsets to new offsets.
@@ -316,10 +347,10 @@ class SourceMap:
 
         for m in self._mappings_macros.values():
             if m.return_addr:
-                addr = m.return_addr
+                addr: int | None = m.return_addr
                 while addr not in new_mapping:
                     # if the return addr opcode was optimized away, we take the next index. TODO: Good idea?
-                    addr += 1
+                    addr += 1  # type: ignore
                     if addr > max_old_offset:
                         addr = None
                         break
@@ -328,44 +359,62 @@ class SourceMap:
 
 
 class SourceMapBuilder:
-    def __init__(self):
+    _mappings: dict[int, SourceMapping]
+    _pos_marks: list[SourceMapPositionMark]
+    _mappings_macros: dict[int, MacroSourceMapping]
+    _pos_marks_macros: list[tuple[str | None, str, SourceMapPositionMark]]
+    _next_macro_called_in: tuple[str | None, int, int] | None
+    _macro_context__stack: list[tuple[int, Mapping[str, int | str]]]
+
+    def __init__(self) -> None:
         self._mappings = {}
         self._pos_marks = []
         self._mappings_macros = {}
         self._pos_marks_macros = []
-        self._next_macro_called_in: SourceMapping | None = None
-        self._macro_context__stack: list[tuple[int, dict[str, int | str]]] = []
+        self._next_macro_called_in = None
+        self._macro_context__stack = []
         # logger.debug("<%d>: Init.", id(self))
 
-    def add_opcode(self, op_offset, line_number, column):
+    def add_opcode(self, op_offset: int, line_number: int, column: int) -> SourceMapBuilder:
         self._mappings[op_offset] = SourceMapping(line_number, column)
         # logger.debug("<%d>: Adding opcode: %d -> %d, %d", id(self), op_offset, line_number, column)
+        return self
 
-    def add_position_mark(self, position_mark: SourceMapPositionMark):
+    def add_position_mark(self, position_mark: SourceMapPositionMark) -> SourceMapBuilder:
         self._pos_marks.append(position_mark)
         # logger.debug("<%d>: Adding PositionMark: %s", id(self), position_mark)
+        return self
 
-    def macro_context__push(self, opcode_to_jump_to: int, parameter_mapping: dict[str, int | str]):
+    def macro_context__push(
+        self, opcode_to_jump_to: int, parameter_mapping: Mapping[str, int | str]
+    ) -> SourceMapBuilder:
         """
         Push a new macro return address and parameter mapping to the stack, all added macro ops will
         use what's on the top of the stack.
         """
         self._macro_context__stack.append((opcode_to_jump_to, parameter_mapping))
         # logger.debug("<%d>: -- PUSH MACRO CTX --> [%d, %s]", id(self), opcode_to_jump_to, parameter_mapping)
+        return self
 
-    def macro_context__pop(self):
+    def macro_context__pop(self) -> SourceMapBuilder:
         """
         Pop a macro context from the stack.
         """
         self._macro_context__stack.pop()
         # logger.debug("<%d>: <-- POP MACRO CTX", id(self))
+        return self
 
-    def next_macro_opcode_called_in(self, if_incl_rel_path: str | None, line_number, column):
+    def next_macro_opcode_called_in(
+        self, if_incl_rel_path: str | None, line_number: int, column: int
+    ) -> SourceMapBuilder:
         """Mark the next added macro opcode as being called in this line/column. This marks a macro call."""
         self._next_macro_called_in = (if_incl_rel_path, line_number, column)
         # logger.debug("<%d>: Marked next macro opcode as called in %s:%d, %d", id(self), str(if_incl_rel_path), line_number, column)
+        return self
 
-    def add_macro_opcode(self, op_offset, if_incl_rel_path: str | None, macro_name: str, line_number, column):
+    def add_macro_opcode(
+        self, op_offset: int, if_incl_rel_path: str | None, macro_name: str, line_number: int, column: int
+    ) -> SourceMapBuilder:
         """
         Add an operation that has it's source code in a macro.
         If the macro is in a different file, if_incl_rel_path should contain the relative path to this file
@@ -385,13 +434,15 @@ class SourceMapBuilder:
         self._mappings_macros[op_offset] = MacroSourceMapping(
             if_incl_rel_path, macro_name, line_number, column, called_in, return_addr, parameter_mapping
         )
+        return self
 
     def add_macro_position_mark(
         self, if_incl_rel_path: str | None, macro_name: str, position_mark: SourceMapPositionMark
-    ):
+    ) -> SourceMapBuilder:
         """Add a position mark, that has it's source code in a macro. See notes for add_macro_opcode"""
         self._pos_marks_macros.append((if_incl_rel_path, macro_name, position_mark))
         # logger.debug("<%d>: Adding Macro PositionMark: %s:%s - %s", id(self), if_incl_rel_path, macro_name, position_mark)
+        return self
 
-    def build(self):
+    def build(self) -> SourceMap:
         return SourceMap(self._mappings, self._pos_marks, self._mappings_macros, self._pos_marks_macros)

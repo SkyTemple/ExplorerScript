@@ -1,3 +1,4 @@
+# type: ignore
 #  MIT License
 #
 #  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors

@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 from explorerscript.syntax_error_listener import AntlrSyntaxError
 
 
@@ -30,7 +31,7 @@ class ParseError(Exception):
     def __init__(self, error: AntlrSyntaxError):
         self.error = error
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.error)
 
 

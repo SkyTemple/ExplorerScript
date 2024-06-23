@@ -21,7 +21,9 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
+from typing import ClassVar
 
 from igraph import Vertex
 
@@ -34,6 +36,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.forever
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.if_start import IfWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.jump import JumpWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.label_jumps.switch_start import SwitchWriteHandler
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     LabelJumpMarker,
     MultiIfStart,
@@ -51,7 +54,7 @@ logger = logging.getLogger(__name__)
 class LabelJumpWriteHandler(AbstractWriteHandler):
     """Handles writing label jumps (ifs, switches, loops, jumps etc.)."""
 
-    _label_jump_marker_handlers: dict[LabelJumpMarker, type[AbstractWriteHandler | None]] = {
+    _label_jump_marker_handlers: ClassVar[dict[type[LabelJumpMarker | None], type[AbstractWriteHandler]]] = {
         MultiIfStart: IfWriteHandler,
         IfStart: IfWriteHandler,
         SwitchStart: SwitchWriteHandler,
@@ -61,7 +64,9 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
         type(None): JumpWriteHandler,
     }
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
         m = self.start_vertex["op"].get_marker()
         self.ended_on_jump = (
@@ -69,7 +74,7 @@ class LabelJumpWriteHandler(AbstractWriteHandler):
             and self._label_jump_marker_handlers[type(m)] == JumpWriteHandler
         )
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         """Delegates to the handlers in .label_jump"""
         op: SsbLabelJump = self.start_vertex["op"]
         logger.debug("Handling a label jump (%s)...", op)

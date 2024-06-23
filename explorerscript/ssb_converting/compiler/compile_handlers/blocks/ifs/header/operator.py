@@ -22,6 +22,9 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
@@ -34,9 +37,13 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_VARIABLE, OP_BRANCH, OP_BRANCH_VALUE
 from explorerscript.util import _
 
+_SupportedHandler: TypeAlias = Union[
+    IntegerLikeCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler
+]
 
-class IfHeaderOperatorCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class IfHeaderOperatorCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h_opContext, _SupportedHandler]):
+    def __init__(self, ctx: ExplorerScriptParser.If_h_opContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
         self.operator: SsbOperator | None = None
@@ -64,7 +71,7 @@ class IfHeaderOperatorCompileHandler(AbstractCompileHandler):
             self.compiler_ctx, self.ctx, OP_BRANCH_VALUE, [self.var_target, self.operator.value, self.value]
         )
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             if self.var_target is None:
                 # integer_like[0] -> variable

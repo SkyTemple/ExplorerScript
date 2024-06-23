@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 import os
 from pathlib import PurePosixPath, PurePath
@@ -51,56 +52,73 @@ class ExplorerScriptSsbCompiler:
     skytemple_files.script.ssb.handler.SsbHandler.serialize.
     """
 
+    # The information about routines stored in the ssb.
+    # linked_to may be -1. In this case linked_to_name is set to the named target.
+    routine_infos: list[SsbRoutineInfo] | None
+
+    # Only contains simple SSBOperations, directly representing ops.
+    # The operations have no IDs (-1), because the Decompiler has no concept of the game's internal ids.
+    # OpCode offsets are calculated by list index [globally unique across all routines]!
+    # The list contains no labels.
+    # Since the language allows any operations and doesn't do any checks directly, the OpCode names
+    # and constants used might be invalid.
+    routine_ops: list[list[SsbOperation]] | None
+
+    # If this script contains coroutines, the value at the index corresponding to self.routine_ops
+    # will contain it's name as string.
+    named_coroutines: list[str] | None
+
+    # Source map for the compiled ssb routine ops.
+    source_map: SourceMap | None
+
+    # The raw file paths in the import headers of the compiled ExplorerScript file.
+    imports: list[str]
+
+    # The macros of by this script
+    macros: dict[str, ExplorerScriptMacro]
+
+    # The order of which the macros in this file have to be processed, due to dependencies
+    macro_resolution_order: list[str]
+
+    ####
+
+    # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
+    performance_progress_list_var_name: str
+
+    # A list of directories to search for imports. The paths are searched in order and the first match is taken.
+    # Unlike the import statement paths, this is expected to be a set of platform specific paths (Windows or Unix
+    # style depending on the current platform)
+    lookup_paths: list[str]
+
+    # A list of absolute paths of files that were already 'import'ed. If the compiler tries to import one of these
+    # files again, an SsbCompilerError is raised.
+    recursion_check: list[str]
+
     def __init__(
-        self, performance_progress_list_var_name: str, lookup_paths: list[str] = None, recursion_check: list[str] = None
+        self,
+        performance_progress_list_var_name: str,
+        lookup_paths: list[str] | None = None,
+        recursion_check: list[str] | None = None,
     ):
         if lookup_paths is None:
             lookup_paths = []
         if recursion_check is None:
             recursion_check = []
-        # The information about routines stored in the ssb.
-        # linked_to may be -1. In this case linked_to_name is set to the named target.
-        self.routine_infos: list[SsbRoutineInfo] | None = None
-
-        # Only contains simple SSBOperations, directly representing ops.
-        # The operations have no IDs (-1), because the Decompiler has no concept of the game's internal ids.
-        # OpCode offsets are calculated by list index [globally unique across all routines]!
-        # The list contains no labels.
-        # Since the language allows any operations and doesn't do any checks directly, the OpCode names
-        # and constants used might be invalid.
-        self.routine_ops: list[list[SsbOperation]] | None = None
-
-        # If this script contains coroutines, the value at the index corresponding to self.routine_ops
-        # will contain it's name as string.
-        self.named_coroutines: list[str] | None = None
-
-        # Source map for the compiled ssb routine ops.
-        self.source_map: SourceMap | None = None
-
-        # The raw file paths in the import headers of the compiled ExplorerScript file.
+        self.routine_infos = None
+        self.routine_ops = None
+        self.named_coroutines = None
+        self.source_map = None
         self.imports: list[str] = []
-
-        # The macros of by this script
         self.macros: dict[str, ExplorerScriptMacro] = {}
-
-        # The order of which the macros in this file have to be processed, due to dependencies
         self.macro_resolution_order: list[str] = []
 
-        ####
-
-        # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
         self.performance_progress_list_var_name: str = performance_progress_list_var_name
-
-        # A list of directories to search for imports. The paths are searched in order and the first match is taken.
-        # Unlike the import statement paths, this is expected to be a set of platform specific paths (Windows or Unix
-        # style depending on the current platform)
         self.lookup_paths = lookup_paths
-
-        # A list of absolute paths of files that were already 'import'ed. If the compiler tries to import one of these
-        # files again, an SsbCompilerError is raised.
         self.recursion_check = recursion_check
 
-    def compile(self, explorerscript_src: str, file_name: str, macros_only=False, original_base_file=None):
+    def compile(
+        self, explorerscript_src: str, file_name: str, macros_only: bool = False, original_base_file: str | None = None
+    ) -> ExplorerScriptSsbCompiler:
         """
         After compiling, the components are present in this object's attributes.
 
@@ -197,7 +215,7 @@ class ExplorerScriptSsbCompiler:
                 # due to the stack nature of the decompile visitor, we get many stack exceptions after raising
                 # the first. Raise the last exception in the context chain.
                 while ex.__context__ is not None:
-                    ex = ex.__context__
+                    ex = ex.__context__  # type: ignore
                 raise ex
         except AssertionError as e:
             raise ValueError(str(e)) from e
@@ -215,12 +233,12 @@ class ExplorerScriptSsbCompiler:
         # Done!
         return self
 
-    def _resolve_imported_file(self, dir_name):
+    def _resolve_imported_file(self, dir_name: str) -> list[str]:
         """
         Returns the full paths to all imports specified in self.imports.
         If any file can not be found, raises an SsbCompilerError.
         """
-        fs = []
+        fs: list[str] = []
         for import_file in self.imports:
             if import_file.startswith(".") or import_file.startswith("/"):
                 # Relative or absolute import
@@ -249,13 +267,14 @@ class ExplorerScriptSsbCompiler:
                         break
                 if abs_path is None:
                     raise SsbCompilerError(f(_("The file to import ('{import_file}') was not found.")))
+            assert abs_path is not None
             fs.append(abs_path)
 
         return fs
 
     def _macros_add_filenames(
         self, macros: dict[str, ExplorerScriptMacro], basefile_path: str | None, subfile_path: str
-    ):
+    ) -> dict[str, ExplorerScriptMacro]:
         """Updates path information of all of the macros. See the field descriptions for more details"""
         for macro in macros.values():
             macro.included__absolute_path = subfile_path

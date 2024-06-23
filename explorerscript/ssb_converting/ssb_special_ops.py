@@ -28,9 +28,11 @@ TODO: These are only valid for Sky-style ssb.
 #
 from __future__ import annotations
 
+import warnings
+
 from igraph import Graph, Vertex
 
-from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpCode, SsbOpParam
 
 OP_JUMP = "Jump"
 OP_CALL = "Call"
@@ -218,115 +220,142 @@ class LabelJumpMarker:
 
 
 class CallJump(LabelJumpMarker):
-    def __str__(self):
+    def __str__(self) -> str:
         return "CALL"
 
 
 class IfStart(LabelJumpMarker):
+    if_id: int
+    is_not: bool
+
     def __init__(self, if_id: int):
         self.if_id = if_id
         self.is_not = False
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"IF{' NOT' if self.is_not else ''}({self.if_id})"
 
 
 class MultiIfStart(IfStart):
-    def __init__(self, if_id: int, start_ifs):
-        super().__init__(if_id)
-        self.original_ssb_ifs_ops: list[SsbOperation] = start_ifs
+    original_ssb_ifs_ops: list[SsbOperation]
 
-    def __str__(self):
+    def __init__(self, if_id: int, start_ifs: list[SsbOperation]):
+        super().__init__(if_id)
+        self.original_ssb_ifs_ops = start_ifs
+
+    def __str__(self) -> str:
         return f"MIF{' NOT' if self.is_not else ''}({self.if_id}[{len(self.original_ssb_ifs_ops)}])"
 
-    def add_if(self, ssb_if: SsbOperation):
+    def add_if(self, ssb_if: SsbOperation) -> None:
         """Add the ORIGINAL opcodes (NOT SsbLabelJump, but their ROOT) to this list of ifs."""
         self.original_ssb_ifs_ops.append(ssb_if)
 
 
 class SwitchStart(LabelJumpMarker):
+    switch_id: int
+
     def __init__(self, switch_id: int):
         self.switch_id = switch_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"SWITCH({self.switch_id})"
 
 
 class ForeverContinue(LabelJumpMarker):
+    loop_id: int
+
     def __init__(self, loop_id: int):
         self.loop_id = loop_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"LOOP_CONTINUE({self.loop_id})"
 
 
 class ForeverBreak(LabelJumpMarker):
+    loop_id: int
+
     def __init__(self, loop_id: int):
         self.loop_id = loop_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"LOOP_BREAK({self.loop_id})"
 
 
 class IfEnd(LabelMarker):
+    if_id: int
+
     def __init__(self, if_id: int):
         self.if_id = if_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"IF({self.if_id})"
 
 
 class SwitchEnd(LabelMarker):
+    switch_id: int
+
     def __init__(self, switch_id: int):
         self.switch_id = switch_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"SWITCH({self.switch_id})"
 
 
 class SwitchFalltrough(LabelMarker):
-    def __str__(self):
+    def __str__(self) -> str:
         return "FALL"
 
 
 class ForeverStart(LabelMarker):
+    loop_id: int
+
     def __init__(self, loop_id: int):
         self.loop_id = loop_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"LOOP({self.loop_id})"
 
 
 class ForeverEnd(LabelMarker):
+    loop_id: int
+
     def __init__(self, loop_id: int):
         self.loop_id = loop_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"END_LOOP({self.loop_id})"
 
 
 class SsbLabel(SsbOperation):
     """A label that other operations can jump to"""
 
-    def __init__(self, id: int, routine_id: int, debugging_note: str = None, original_name: str = None):
+    id: int
+    # Routine id this label lies in
+    routine_id: int
+    # Whether or not this label is referenced from another routine
+    referenced_from_other_routine: bool
+    # Markers for this label (type of label)
+    markers: list[LabelMarker]
+    debugging_note: str | None
+    # The original name in source code, if applicable
+    original_name: str | None
+    force_write: bool
+
+    def __init__(self, id: int, routine_id: int, debugging_note: str | None = None, original_name: str | None = None):
         #                                                      Params only for debugging
         super().__init__(-1, SsbOpCode(-1, f"ES_LABEL<{id}>"), [id])
-        self.id: int = id
-        # Routine id this label lies in
+        self.id = id
         self.routine_id = routine_id
-        # Whether or not this label is referenced from another routine
         self.referenced_from_other_routine = False
-        # Markers for this label (type of label)
         self.markers: list[LabelMarker] = []
         self.debugging_note = debugging_note
-        # The original name in source code, if applicable
         self.original_name = original_name
         self.force_write = False
 
-    def add_marker(self, m: LabelMarker):
+    def add_marker(self, m: LabelMarker) -> None:
         self.markers.append(m)
 
-    def needs_to_be_printed(self, my_vertex_index: int, number_in_vs: int, graph: Graph):
+    def needs_to_be_printed(self, my_vertex_index: int, number_in_vs: int, graph: Graph) -> bool:
         """If the number of incoming vertices is bigger than max_in_vs, then we need to print this label"""
         # TODO: There are still issues with this logic, we just output all for now (except switch fallthroughs!)
         return not (any([isinstance(m, SwitchFalltrough) for m in self.markers]))
@@ -358,7 +387,7 @@ class SsbLabel(SsbOperation):
                         return v
         return None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}<id={self.id}, note={self.debugging_note}, markers={self.markers}>"
 
 
@@ -374,6 +403,12 @@ class SsbForeignLabel(SsbOperation):
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
 
+    root: SsbOperation
+    # May be None, if so the connected edges determine the different jumps
+    label: SsbLabel | None
+    # Markers for this jump (type of jump)
+    markers: list[LabelJumpMarker]
+
     def __init__(self, root: SsbOperation, label: SsbLabel | None):
         if isinstance(root, SsbLabelJump):
             # SsbLabelJumps can not be nested, that makes no sense. But for convenience, they can be "copied" this way.
@@ -385,22 +420,20 @@ class SsbLabelJump(SsbOperation):
         #                                                                             Params only for debugging
         super().__init__(root.offset, SsbOpCode(-1, f"ES_JUMP<{root.op_code.name}>"), [label_id])
         self.root = root
-        # May be None, if so the connected edges determine the different jumps
         self.label = label
-        # Markers for this jump (type of jump)
-        self.markers: list[LabelJumpMarker] = []
+        self.markers = []
 
-    def add_marker(self, m: LabelJumpMarker):
+    def add_marker(self, m: LabelJumpMarker) -> None:
         if len(self.markers) > 0:
             raise ValueError("Jumps can currently only have one or zero markers.")
         self.markers.append(m)
 
-    def remove_marker(self):
+    def remove_marker(self) -> None:
         """Remove the first (and only) marker if exists."""
         if len(self.markers) > 0:
             del self.markers[0]
 
-    def get_marker(self):
+    def get_marker(self) -> LabelJumpMarker | None:
         """Returns the first (and only) marker if exists, otherwise None."""
         if len(self.markers) > 0:
             return self.markers[0]
@@ -415,7 +448,7 @@ class SwitchCaseOperation:
         self.index = index
         self.op = op
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.switch_index}:{self.index} :: {self.op}"
 
 
@@ -431,13 +464,25 @@ def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], rou
                     Then: see above for "if found".
     """
     if op.op_code.name in OPS_WITH_JUMP_TO_MEM_OFFSET.keys():
-        param_list = op.params if isinstance(op.params, list) else list(op.params.values())
+        param_list: list[SsbOpParam]
+        if isinstance(op.params, list):
+            param_list = op.params
+        elif isinstance(op.params, dict):
+            # TODO: This should never be able to be the case...? Raise a deprecation warning and remove at some point.
+            warnings.warn(
+                "An opcode's params were a dict, not a list when processing for jump. "
+                "This is deprecated, use a proper list instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            param_list = list(op.params.values())
         jump_param_idx = OPS_WITH_JUMP_TO_MEM_OFFSET[op.op_code.name]
         if len(param_list) < jump_param_idx:
             raise ValueError(
                 f"The parameters for the OpCode {op.op_code.name} must contain a jump address at index {jump_param_idx}."
             )
         old_offset = param_list[jump_param_idx]
+        assert isinstance(old_offset, int)
         if old_offset in known_labels:
             label = known_labels[old_offset]
             if routine_id != label.routine_id:

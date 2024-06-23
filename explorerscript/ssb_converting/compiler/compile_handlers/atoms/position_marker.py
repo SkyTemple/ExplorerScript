@@ -31,21 +31,23 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, string_lit
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
 
 
-class PositionMarkerCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class PositionMarkerCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Position_markerContext, PositionMarkerArgCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Position_markerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         # position, offset
         self.x: tuple[int, int] | None = None
         self.y: tuple[int, int] | None = None
 
     def collect(self) -> SsbOpParamPositionMarker:
-        self.ctx: ExplorerScriptParser.Position_markerContext
         name = string_literal(self.ctx.STRING_LITERAL())
+        assert self.x is not None and self.y is not None
         return SsbOpParamPositionMarker(
             name=name, x_offset=self.x[1], y_offset=self.y[1], x_relative=self.x[0], y_relative=self.y[0]
         )
 
-    def add(self, obj: any):
+    def add(self, obj: PositionMarkerArgCompileHandler) -> None:
         if isinstance(obj, PositionMarkerArgCompileHandler):
             if self.x is None:
                 self.x = obj.collect()

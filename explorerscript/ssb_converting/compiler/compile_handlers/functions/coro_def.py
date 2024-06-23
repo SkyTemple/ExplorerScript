@@ -21,12 +21,16 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
+from typing import Any
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 
 
-class CoroDefCompileHandler(AbstractFuncdefCompileHandler):
-    def collect(self) -> any:
+class CoroDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.Coro_defContext]):
+    def collect(self) -> Any:
         """Collects name of the coroutine, routine info and operations."""
         return str(self.ctx.IDENTIFIER()), SsbRoutineInfo(SsbRoutineType.COROUTINE, 0), self.collect_ops()
 

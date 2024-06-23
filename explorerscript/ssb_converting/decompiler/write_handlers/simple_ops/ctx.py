@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
 from explorerscript.ssb_converting.util import Blk
 
@@ -37,10 +38,12 @@ from explorerscript.ssb_converting.util import Blk
 class CtxSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing lives, object and actor statements."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if len(op.params) != 1:
@@ -77,10 +80,12 @@ class CtxSimpleOpWriteHandler(AbstractWriteHandler):
 
 
 class Once:
-    def __init__(self):
+    called: bool
+
+    def __init__(self) -> None:
         self.called = False
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs):  # type: ignore
         called_before = self.called
         self.called = True
         return not called_before

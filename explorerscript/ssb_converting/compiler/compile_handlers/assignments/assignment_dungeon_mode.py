@@ -22,9 +22,9 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractIntegerAssignmentCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
@@ -32,8 +32,10 @@ from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_DUNGEON_
 from explorerscript.util import _
 
 
-class AssignmentDungeonModeCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentDungeonModeCompileHandler(
+    AbstractIntegerAssignmentCompileHandler[ExplorerScriptParser.Assignment_dungeon_modeContext]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_dungeon_modeContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
         self.value: SsbOpParam | None = None
@@ -46,7 +48,7 @@ class AssignmentDungeonModeCompileHandler(AbstractAssignmentCompileHandler):
 
         return [self._generate_operation(OPS_FLAG__SET_DUNGEON_MODE, [self.var_target, self.value])]
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             if self.var_target is None:
                 self.var_target = obj.collect()

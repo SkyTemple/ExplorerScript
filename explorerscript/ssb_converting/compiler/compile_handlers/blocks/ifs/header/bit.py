@@ -33,13 +33,14 @@ from explorerscript.util import _, f
 from explorerscript.util import exps_int
 
 
-class IfHeaderBitCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class IfHeaderBitCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.If_h_bitContext, IntegerLikeCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.If_h_bitContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
 
     def collect(self) -> SsbLabelJumpBlueprint:
-        self.ctx: ExplorerScriptParser.If_h_bitContext
         if self.var_target is None:
             raise SsbCompilerError(_("No variable in if condition."))
 
@@ -60,7 +61,7 @@ class IfHeaderBitCompileHandler(AbstractCompileHandler):
             )
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_BIT, [self.var_target, index])
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.var_target = obj.collect()
             return

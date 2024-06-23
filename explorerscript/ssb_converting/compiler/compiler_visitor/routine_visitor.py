@@ -22,11 +22,13 @@
 #
 from __future__ import annotations
 
+from typing import cast
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.coro_def import CoroDefCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.for_target_def import ForTargetDefCompileHandler
@@ -39,31 +41,43 @@ from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOper
 class RoutineVisitor(ExplorerScriptVisitor):
     """Builds the SSB data structures while visiting the parsing tree."""
 
+    # The information about routines stored in the ssb.
+    routine_infos: list[SsbRoutineInfo]
+    routine_ops: list[list[SsbOperation]]
+    named_coroutines: list[str]
+    # Source map
+    source_map_builder: SourceMapBuilder
+
+    # Global compilation context for the handlers
+    compiler_ctx: CompilerCtx
+
+    _active_routine_id: int
+    _root_handler: (
+        ForTargetDefCompileHandler | CoroDefCompileHandler | SimpleDefCompileHandler | IntegerLikeCompileHandler | None
+    )
+
     def __init__(self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro]):
-        # The information about routines stored in the ssb.
-        self.routine_infos: list[SsbRoutineInfo] = []
-        self.routine_ops: list[list[SsbOperation]] = []
-        self.named_coroutines: list[str] = []
-        # Source map
+        self.routine_infos = []
+        self.routine_ops = []
+        self.named_coroutines = []
         self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 
-        # Global compilation context for the handlers
         self.compiler_ctx = CompilerCtx(
             Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name, macros
         )
 
         self._active_routine_id = -1
-        self._root_handler: AbstractCompileHandler | None = None
+        self._root_handler = None
 
-    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
+    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> None:
         # Are not visited.
         return
 
-    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
+    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext) -> None:
         # Are not visited.
         return
 
-    def visitSimple_def(self, ctx: ExplorerScriptParser.Simple_defContext):
+    def visitSimple_def(self, ctx: ExplorerScriptParser.Simple_defContext) -> None:
         self._root_handler = SimpleDefCompileHandler(ctx, self.compiler_ctx)
         self._active_routine_id = self._root_handler.get_new_routine_id(self._active_routine_id)
         self._enlarge_routine_info()
@@ -73,7 +87,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
             self._root_handler.collect()
         )
 
-    def visitCoro_def(self, ctx: ExplorerScriptParser.Coro_defContext):
+    def visitCoro_def(self, ctx: ExplorerScriptParser.Coro_defContext) -> None:
         self._root_handler = CoroDefCompileHandler(ctx, self.compiler_ctx)
         self._active_routine_id = self._root_handler.get_new_routine_id(self._active_routine_id)
         self._enlarge_routine_info()
@@ -85,7 +99,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
             self.routine_ops[self._active_routine_id],
         ) = self._root_handler.collect()
 
-    def visitFor_target_def(self, ctx: ExplorerScriptParser.For_target_defContext):
+    def visitFor_target_def(self, ctx: ExplorerScriptParser.For_target_defContext) -> None:
         self._root_handler = ForTargetDefCompileHandler(ctx, self.compiler_ctx)
         self._active_routine_id = self._root_handler.get_new_routine_id(self._active_routine_id)
         self._enlarge_routine_info()
@@ -95,20 +109,22 @@ class RoutineVisitor(ExplorerScriptVisitor):
             self._root_handler.collect()
         )
 
-    def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext):
+    def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext) -> list[SsbOperation]:
         return []
 
-    def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext):
+    def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
+        assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(self._root_handler, self.compiler_ctx))
+            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
 
-    def visitInteger_like(self, ctx: ExplorerScriptParser.Integer_likeContext):
+    def visitInteger_like(self, ctx: ExplorerScriptParser.Integer_likeContext) -> None:
+        assert isinstance(self._root_handler, ForTargetDefCompileHandler)
         self._root_handler.add(IntegerLikeCompileHandler(ctx, self.compiler_ctx))
 
-    def _enlarge_routine_info(self):
+    def _enlarge_routine_info(self) -> None:
         if len(self.routine_infos) - 1 < self._active_routine_id:
             needed = self._active_routine_id - len(self.routine_infos) + 1
             for i in range(0, needed):
-                self.routine_infos.append(None)
+                self.routine_infos.append(None)  # type: ignore
                 self.routine_ops.append([])
-                self.named_coroutines.append([])
+                self.named_coroutines.append([])  # type: ignore

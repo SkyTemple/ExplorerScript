@@ -30,7 +30,7 @@ from explorerscript.util import exps_int, _
 
 def parse_position_marker_arg(
     ctx: ExplorerScriptParser.Position_marker_argContext | SsbScriptParser.Position_marker_argContext,
-):
+) -> tuple[int, int]:
     offset = 0
     pos = 0
     if ctx.INTEGER():

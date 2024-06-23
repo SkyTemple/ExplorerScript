@@ -22,6 +22,9 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
@@ -40,9 +43,11 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 from explorerscript.util import _, f
 from explorerscript.util import exps_int
 
+_SupportedHandler: TypeAlias = Union[ScnVarCompileHandler, ConditionalOperatorCompileHandler]
 
-class IfHeaderScnCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class IfHeaderScnCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h_scnContext, _SupportedHandler]):
+    def __init__(self, ctx: ExplorerScriptParser.If_h_scnContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.scn_var_target: SsbOpParam | None = None
         self.operator: SsbOperator | None = None
@@ -86,7 +91,7 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler):
             self.compiler_ctx, self.ctx, OP_BRANCH_SCENARIO_NOW, [self.scn_var_target, scn_value, level_value]
         )
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandler) -> None:
         if isinstance(obj, ScnVarCompileHandler):
             self.scn_var_target = obj.collect()
             return

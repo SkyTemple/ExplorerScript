@@ -21,11 +21,13 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, FallbackToJump
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +35,12 @@ logger = logging.getLogger(__name__)
 class ForeverBreakWriteHandler(AbstractWriteHandler):
     """Handles writing loop breaks."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         """Print a break and end"""
         logger.debug("Handling a break_loop; (%s)...", self.start_vertex["op"])
         self.decompiler.source_map_add_opcode(self.start_vertex["op"].offset)

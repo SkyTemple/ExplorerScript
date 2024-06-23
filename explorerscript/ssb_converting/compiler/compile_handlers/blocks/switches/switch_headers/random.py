@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -32,8 +32,10 @@ from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_RANDOM
 from explorerscript.util import _
 
 
-class SwitchHeaderRandomCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class SwitchHeaderRandomCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Switch_h_randomContext, IntegerLikeCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_h_randomContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.value: SsbOpParam | None = None
 
@@ -43,7 +45,7 @@ class SwitchHeaderRandomCompileHandler(AbstractCompileHandler):
 
         return self._generate_operation(OP_SWITCH_RANDOM, [self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

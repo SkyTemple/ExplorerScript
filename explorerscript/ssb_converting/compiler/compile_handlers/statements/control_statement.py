@@ -28,10 +28,9 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_HOLD, OP_END, OP_RETURN
 
 
-class ControlStatementCompileHandler(AbstractStatementCompileHandler):
+class ControlStatementCompileHandler(AbstractStatementCompileHandler[ExplorerScriptParser.Cntrl_stmtContext]):
     def collect(self) -> list[SsbOperation]:
         ops = []
-        self.ctx: ExplorerScriptParser.Cntrl_stmtContext
         if self.ctx.RETURN():
             ops.append(self._generate_operation(OP_RETURN, []))
         elif self.ctx.END():
@@ -47,6 +46,6 @@ class ControlStatementCompileHandler(AbstractStatementCompileHandler):
 
         return ops
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         # supports no added handlers
         self._raise_add_error(obj)

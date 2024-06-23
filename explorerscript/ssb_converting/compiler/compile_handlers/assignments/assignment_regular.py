@@ -22,6 +22,7 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import (
@@ -41,8 +42,13 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 from explorerscript.util import exps_int, f, _
 
 
-class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentRegularCompileHandler(
+    AbstractAssignmentCompileHandler[
+        ExplorerScriptParser.Assignment_regularContext,
+        "IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler",
+    ]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_regularContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
         self.operator: SsbCalcOperator | None = None
@@ -77,7 +83,7 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
             return [self._generate_operation(OPS_FLAG__SET, [self.var_target, self.value])]
         return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator.value, self.value])]
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler) -> None:
         # assign_operator -> operator
         if isinstance(obj, IntegerLikeCompileHandler):
             if self.var_target is None:

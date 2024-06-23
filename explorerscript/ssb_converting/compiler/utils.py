@@ -21,8 +21,11 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING
+
+from antlr4 import ParserRuleContext
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
@@ -39,7 +42,7 @@ from explorerscript.util import f, _
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler
+    from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyLoopBlockCompileHandler
     from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import (
         CaseBlockCompileHandler,
     )
@@ -50,14 +53,16 @@ if TYPE_CHECKING:
 
 
 class Counter:
-    def __init__(self):
+    count: int
+
+    def __init__(self) -> None:
         self.count = 0
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs):  # type: ignore
         self.count += 1
         return self.count
 
-    def allocate(self, how_many: int):
+    def allocate(self, how_many: int) -> int:
         """
         Pre-allocate a certain number of opcodes for the counter, this will increase
         the counter by the given amount and return the first allocated number.
@@ -67,11 +72,25 @@ class Counter:
         return first
 
     @property
-    def next_id(self):
+    def next_id(self) -> int:
         return self.count + 1
 
 
 class CompilerCtx:
+    counter_ops: Counter
+    source_map_builder: SourceMapBuilder
+    # A dict that assigns all collected labels their next opcode id.
+    collected_labels: dict[str, SsbLabel]
+    counter_labels: Counter
+    # Loaded macros that can be used for macro calls.
+    macros: dict[str, ExplorerScriptMacro]
+
+    performance_progress_list_var_name: str
+
+    # Current handlers for structures that have ending opcodes collected by child handlers
+    _loops: list[AnyLoopBlockCompileHandler]
+    _switch_cases: list[DefaultCaseBlockCompileHandler | CaseBlockCompileHandler]
+
     def __init__(
         self,
         counter_ops: Counter,
@@ -83,43 +102,40 @@ class CompilerCtx:
     ):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
-        # A dict that assigns all collected labels their next opcode id.
         self.collected_labels = collected_labels
         self.counter_labels = counter_labels
-        # Loaded macros that can be used for macro calls.
-        self.macros: dict[str, ExplorerScriptMacro] = macros
+        self.macros = macros
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
-        # Current handlers for structures that have ending opcodes collected by child handlers
-        self._loops: list[AbstractLoopBlockCompileHandler] = []
-        self._switch_cases: list[DefaultCaseBlockCompileHandler | CaseBlockCompileHandler] = []
+        self._loops = []
+        self._switch_cases = []
 
-    def add_loop(self, h: AbstractLoopBlockCompileHandler):
+    def add_loop(self, h: AnyLoopBlockCompileHandler) -> None:
         self._loops.append(h)
 
-    def remove_loop(self):
+    def remove_loop(self) -> None:
         self._loops.pop()
 
-    def add_switch_case(self, h: DefaultCaseBlockCompileHandler | CaseBlockCompileHandler):
+    def add_switch_case(self, h: DefaultCaseBlockCompileHandler | CaseBlockCompileHandler) -> None:
         self._switch_cases.append(h)
 
-    def remove_switch_case(self):
+    def remove_switch_case(self) -> None:
         self._switch_cases.pop()
 
-    def continue_loop(self, ctx) -> SsbOperation:
+    def continue_loop(self, ctx: ParserRuleContext) -> SsbOperation:
         """Handle the continue opcode"""
         if len(self._loops) < 1:
             raise SsbCompilerError(f(_("Unexpected continue; in line {ctx.start.line}")))
         return self._loops[-1].continue_loop()
 
-    def break_loop(self, ctx) -> SsbOperation:
+    def break_loop(self, ctx: ParserRuleContext) -> SsbOperation:
         """Handle the break forever opcode"""
         if len(self._loops) < 1:
             raise SsbCompilerError(f(_("Unexpected break_loop; in line {ctx.start.line}")))
         return self._loops[-1].break_loop()
 
-    def break_case(self, ctx) -> SsbOperation:
+    def break_case(self, ctx: ParserRuleContext) -> SsbOperation:
         """Handle the break opcode"""
         if len(self._switch_cases) < 1:
             raise SsbCompilerError(f(_("Unexpected break; in line {ctx.start.line}")))
@@ -129,8 +145,20 @@ class CompilerCtx:
 class SsbLabelJumpBlueprint:
     """A builder for a label jump, to be used when compiling ifs/switches."""
 
+    compiler_ctx: CompilerCtx
+    ctx: ParserRuleContext
+    op_code_name: str
+    params: list[SsbOpParam]
+    number: int | None
+    jump_is_positive: bool
+
     def __init__(
-        self, compiler_ctx: CompilerCtx, ctx, op_code_name: str, params: list[SsbOpParam], jump_is_positive=True
+        self,
+        compiler_ctx: CompilerCtx,
+        ctx: ParserRuleContext,
+        op_code_name: str,
+        params: list[SsbOpParam],
+        jump_is_positive: bool = True,
     ):
         self.compiler_ctx: CompilerCtx = compiler_ctx
         self.ctx = ctx
@@ -141,29 +169,29 @@ class SsbLabelJumpBlueprint:
         # Whether or not this jump is negated (False) or not (True)
         self.jump_is_positive = jump_is_positive
 
-    def set_index_number(self, number):
+    def set_index_number(self, number: int) -> None:
         self.number = number
 
-    def set_jump_is_positive(self, val):
+    def set_jump_is_positive(self, val: bool) -> None:
         self.jump_is_positive = val
 
-    def build_for(self, label: SsbLabel):
+    def build_for(self, label: SsbLabel) -> SsbLabelJump:
         """Create a new jump operation for the given label. Counters will be increased, souce map updated."""
         assert label is not None
         number = self.number
-        if not number:
+        if number is None:
             number = self.compiler_ctx.counter_ops()
 
         self.compiler_ctx.source_map_builder.add_opcode(number, self.ctx.start.line - 1, self.ctx.start.column)
         return SsbLabelJump(SsbOperation(number, SsbOpCode(-1, self.op_code_name), self.params), label)
 
 
-def string_literal(string):
+def string_literal(string: str) -> str:
     # TODO: Very naive "escaping" atm.
     return str(string)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")
 
 
-def routine_op_offsets_are_ordered(routine_ops: list[list[SsbOperation]]):
+def routine_op_offsets_are_ordered(routine_ops: list[list[SsbOperation]]) -> bool:
     last_offset = -1
     for routine in routine_ops:
         for op in routine:
@@ -174,7 +202,7 @@ def routine_op_offsets_are_ordered(routine_ops: list[list[SsbOperation]]):
     return True
 
 
-def strip_last_label(routine_ops: list[list[SsbOperation]]):
+def strip_last_label(routine_ops: list[list[SsbOperation]]) -> list[list[SsbOperation]]:
     """
     Checks if the last opcode of a routine is a label, and if so
     removes it. if there are jumps to it, they are removed and replaced with an OP_DUMMY_END.
@@ -222,7 +250,7 @@ def does_op_end_control_flow(op: SsbOperation, previous_op: SsbOperation | None)
     return op.op_code.name in OPS_THAT_END_CONTROL_FLOW
 
 
-def _number_of_jumps_to_label(label: SsbLabel, routine: list[SsbOperation]):
+def _number_of_jumps_to_label(label: SsbLabel, routine: list[SsbOperation]) -> int:
     counter = 0
     for o in routine:
         if isinstance(o, SsbLabelJump) and o.label == label:

@@ -22,9 +22,9 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractIntegerAssignmentCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
@@ -32,8 +32,10 @@ from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_ADVENTUR
 from explorerscript.util import _
 
 
-class AssignmentAdventureLogCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentAdventureLogCompileHandler(
+    AbstractIntegerAssignmentCompileHandler[ExplorerScriptParser.Assignment_adv_logContext]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_adv_logContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.value: SsbOpParam | None = None
 
@@ -43,7 +45,7 @@ class AssignmentAdventureLogCompileHandler(AbstractAssignmentCompileHandler):
 
         return [self._generate_operation(OPS_FLAG__SET_ADVENTURE_LOG, [self.value])]
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

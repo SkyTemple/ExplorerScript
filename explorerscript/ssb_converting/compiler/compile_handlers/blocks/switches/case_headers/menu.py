@@ -22,6 +22,9 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -31,9 +34,11 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_MENU2, OP_CASE_MENU
 from explorerscript.util import _
 
+_SupportedHandlers: TypeAlias = Union[IntegerLikeCompileHandler, StringCompileHandler]
 
-class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx, is_menu_2: bool):
+
+class CaseHeaderMenuCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx, is_menu_2: bool):
         super().__init__(ctx, compiler_ctx)
         self.value: SsbOpParam | None = None
         self.is_menu_2 = is_menu_2
@@ -46,7 +51,7 @@ class CaseHeaderMenuCompileHandler(AbstractCompileHandler):
             return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU2, [self.value])
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU, [self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

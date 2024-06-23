@@ -26,16 +26,19 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import OP_RETURN, OP_END, OP_HOLD
 
 
 class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing simple opcodes that have special keyword representations in ExplorerScript."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if op.op_code.name == OP_RETURN:
@@ -55,11 +58,11 @@ class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
             raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex
 
-    def _write_return(self):
+    def _write_return(self) -> None:
         self.decompiler.write_return()
 
-    def _write_end(self):
+    def _write_end(self) -> None:
         self.decompiler.write_end()
 
-    def _write_hold(self):
+    def _write_hold(self) -> None:
         self.decompiler.write_hold()

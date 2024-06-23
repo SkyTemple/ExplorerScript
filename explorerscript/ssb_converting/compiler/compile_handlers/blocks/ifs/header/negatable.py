@@ -22,21 +22,23 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_DEBUG, OP_BRANCH_EDIT, OP_BRANCH_VARIATION
 
 
-class IfHeaderNegatableCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class IfHeaderNegatableCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h_negatableContext, None]):
+    def __init__(self, ctx: ExplorerScriptParser.If_h_negatableContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
         self.operator: SsbOperator | None = None
         self.value: SsbOpParam | None = None
         self.value_is_a_variable = False
 
-    def collect(self) -> SsbLabelJumpBlueprint:
+    # TODO: Typing is weird.
+    def collect(self) -> SsbLabelJumpBlueprint:  # type: ignore
         is_simple_positive = self.ctx.NOT() is None
         if self.ctx.DEBUG():
             return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_DEBUG, [1 if is_simple_positive else 0])
@@ -47,5 +49,5 @@ class IfHeaderNegatableCompileHandler(AbstractCompileHandler):
                 self.compiler_ctx, self.ctx, OP_BRANCH_VARIATION, [1 if is_simple_positive else 0]
             )
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         self._raise_add_error(obj)

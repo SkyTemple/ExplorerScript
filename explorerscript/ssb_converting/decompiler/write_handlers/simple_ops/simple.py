@@ -26,15 +26,18 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamPositionMarker
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing regular opcodes."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
 
         # Build parameter string
@@ -56,7 +59,7 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
             raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex
 
-    def _single_param_to_string(self, param: SsbOpParam):
+    def _single_param_to_string(self, param: SsbOpParam) -> str:
         if hasattr(param, "indent"):
             param.indent = self.decompiler.indent
         return str(param)

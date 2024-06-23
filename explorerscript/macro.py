@@ -32,7 +32,14 @@ from explorerscript.util import f, _
 
 
 class MacroStartSsbLabel(SsbLabel):
-    def __init__(self, id: int, routine_id: int, length_of_macro: int, parameter_mapping, debugging_note: str = None):
+    def __init__(
+        self,
+        id: int,
+        routine_id: int,
+        length_of_macro: int,
+        parameter_mapping: dict[str, str],
+        debugging_note: str | None = None,
+    ):
         super().__init__(id, routine_id, debugging_note)
         self.length_of_macro = length_of_macro
         self.parameter_mapping = parameter_mapping
@@ -43,33 +50,39 @@ class MacroEndSsbLabel(SsbLabel):
 
 
 class ExplorerScriptMacro:
+    # The name of the macro
+    name: str
+
+    # The names of the variables, in order of definition in the header.
+    variables: list[str]
+
+    # The Ssb operations that act as a blueprint for this macro
+    blueprints: list[SsbOperation]
+
+    # The absolute path to the ExplorerScript source file that this macro is in.
+    # May be not set, if this macro is not in a physical file.
+    included__absolute_path: str | None
+
+    # The original source map builder, that will be used to insert the proper macro source map entries
+    # when building the macro
+    source_map: SourceMap
+
+    # The relative path to this file from the file that includes it.
+    # May not be set if not applicable (for macros in the originally requested file it is None).
+    # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
+    included__relative_path: str | None
+
     def __init__(self, name: str, variables: list[str], blueprints: list[SsbOperation], source_map: SourceMap):
         """
         A model for a ExplorerScript macro. Contains the processed (= all sub-macros are already fully processed)
         opcodes by the MacroVisitor and some metadata.
         """
-
-        # The name of the macro
-        self.name: str = name
-
-        # The names of the variables, in order of definition in the header.
-        self.variables: list[str] = variables
-
-        # The Ssb operations that act as a blueprint for this macro
-        self.blueprints: list[SsbOperation] = blueprints
-
-        # The absolute path to the ExplorerScript source file that this macro is in.
-        # May be not set, if this macro is not in a physical file.
-        self.included__absolute_path: str | None = None
-
-        # The original source map builder, that will be used to insert the proper macro source map entries
-        # when building the macro
+        self.name = name
+        self.variables = variables
+        self.blueprints = blueprints
+        self.included__absolute_path = None
         self.source_map: SourceMap = source_map
-
-        # The relative path to this file from the file that includes it.
-        # May not be set if not applicable (for macros in the originally requested file it is None).
-        # This is useful for source maps, to know where the macro file lies relative to the original compiled file.
-        self.included__relative_path: str | None = None
+        self.included__relative_path = None
 
     def build(
         self,
@@ -129,6 +142,7 @@ class ExplorerScriptMacro:
                     new_labels[blueprint_op.id].markers = blueprint_op.markers.copy()
                 out_ops.append(new_labels[blueprint_op.id])
             elif isinstance(blueprint_op, SsbLabelJump):
+                assert blueprint_op.label is not None
                 if blueprint_op.label.id not in new_labels.keys():
                     # Copy the label with a new proper index
                     new_labels[blueprint_op.label.id] = self._copy_blueprint_label(lbl_idx_counter, blueprint_op.label)
@@ -160,7 +174,7 @@ class ExplorerScriptMacro:
 
     def _build_op(
         self, op_idx_counter: Counter, blueprint_op: SsbOperation, smb: SourceMapBuilder, params: dict[str, SsbOpParam]
-    ):
+    ) -> SsbOperation:
         new_op_idx = op_idx_counter()
         # Maybe this op was also included through a macro, if so just relay the macro source map entry
         potential_macro_sm_entry = self.source_map.get_op_line_and_col__macros(blueprint_op.offset)
@@ -187,6 +201,7 @@ class ExplorerScriptMacro:
         else:
             # Nope, it wasn't:
             mapping = self.source_map.get_op_line_and_col__direct(blueprint_op.offset)
+            assert mapping is not None
             smb.add_macro_opcode(new_op_idx, self.included__relative_path, self.name, mapping.line, mapping.column)
         return SsbOperation(new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params))
 
@@ -210,22 +225,22 @@ class ExplorerScriptMacro:
                 new_params.append(p)
         return new_params
 
-    def _create_parameter_mapping(self, parameters: dict[str, SsbOpParam]):
+    def _create_parameter_mapping(self, parameters: dict[str, SsbOpParam]) -> dict[str, str]:
         return {x: str(y) for x, y in parameters.items()}
 
     def _replace_in_param_mapping(
-        self, parameter_mapping: dict[str, tuple[int, str]], our_parameters: dict[str, SsbOpParam]
-    ):
-        our_parameters = self._create_parameter_mapping(our_parameters)
+        self, parameter_mapping: dict[str, str], our_parameters: dict[str, SsbOpParam]
+    ) -> dict[str, str]:
+        our_parameters_c = self._create_parameter_mapping(our_parameters)
         new_dict = {}
         for p_name, p_value in parameter_mapping.items():
             if p_value in our_parameters:
-                new_dict[p_name] = our_parameters[p_value]
+                new_dict[p_name] = our_parameters_c[p_value]
             else:
                 new_dict[p_name] = p_value
         return new_dict
 
-    def _copy_blueprint_label(self, lbl_idx_counter: Counter, blueprint_op: SsbLabel):
+    def _copy_blueprint_label(self, lbl_idx_counter: Counter, blueprint_op: SsbLabel) -> SsbLabel:
         if isinstance(blueprint_op, MacroStartSsbLabel):
             return MacroStartSsbLabel(
                 lbl_idx_counter(),

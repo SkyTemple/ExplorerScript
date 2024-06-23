@@ -21,7 +21,6 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -30,9 +29,8 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstant, Ssb
 from explorerscript.util import exps_int
 
 
-class IntegerLikeCompileHandler(AbstractCompileHandler):
+class IntegerLikeCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Integer_likeContext, None]):
     def collect(self) -> int | SsbOpParamConstant | SsbOpParamFixedPoint:
-        self.ctx: ExplorerScriptParser.Integer_likeContext
         if self.ctx.INTEGER():
             return exps_int(str(self.ctx.INTEGER()))
         if self.ctx.DECIMAL():
@@ -43,6 +41,6 @@ class IntegerLikeCompileHandler(AbstractCompileHandler):
             return SsbOpParamConstant(str(self.ctx.VARIABLE()))
         raise SsbCompilerError("Unknown 'integer like'.")
 
-    def add(self, obj: Any):
+    def add(self, obj: None) -> None:
         # Doesn't accept anything.
         self._raise_add_error(obj)

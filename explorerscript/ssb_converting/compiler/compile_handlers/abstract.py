@@ -21,32 +21,47 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import Any, MutableSequence, TypeVar, Generic, TypeAlias, TYPE_CHECKING
+
+from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
 
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 
-def handler_is_for_statement(obj):
-    return isinstance(obj, AbstractStatementCompileHandler)
+
+def handler_is_for_statement(obj: object) -> bool:
+    return isinstance(obj, AbstractComplexStatementCompileHandler)
 
 
-class AbstractCompileHandler(ABC):
+CTX = TypeVar("CTX", bound=ParserRuleContext)
+HANDL = TypeVar("HANDL")
+
+
+class AbstractCompileHandler(ABC, Generic[CTX, HANDL]):
     """An abstract handler for compiling specific part of ExplorerScript source code"""
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    ctx: CTX
+    compiler_ctx: CompilerCtx
+    _added_handlers: MutableSequence[HANDL]
+
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
         self.ctx = ctx
         self.compiler_ctx = compiler_ctx
-        self._added_handlers: list[AbstractCompileHandler] = []
+        self._added_handlers: MutableSequence[HANDL] = []
 
     @abstractmethod
-    def collect(self) -> any:
+    def collect(self) -> Any:
         """Collect the result of this handler. The returned value can vary greatly based on the handler!"""
         pass
 
     @abstractmethod
-    def add(self, obj: any):
+    def add(self, obj: HANDL) -> None:
         """
         Add a sub-object to this handler. What is accepted is based on the handler! If something isn't
         supported, a ValueError should be raised.
@@ -54,7 +69,7 @@ class AbstractCompileHandler(ABC):
         """
         pass
 
-    def _raise_add_error(self, obj: any):
+    def _raise_add_error(self, obj: Any) -> None:
         raise ValueError(f"Compiler logic error: {self.__class__} does not support {type(obj)} handlers.")
 
     def _generate_operation(self, op_name: str, params: list[SsbOpParam]) -> SsbOperation:
@@ -62,8 +77,8 @@ class AbstractCompileHandler(ABC):
         return self._register_operation(SsbOperation(self.compiler_ctx.counter_ops(), SsbOpCode(-1, op_name), params))
 
     def _generate_jump_operation(
-        self, op_name: str, params: list[SsbOpParam], label: SsbLabel | None, none_allowed=False
-    ):
+        self, op_name: str, params: list[SsbOpParam], label: SsbLabel | None, none_allowed: bool = False
+    ) -> SsbLabelJump:
         if not none_allowed:
             assert label is not None
         return SsbLabelJump(self._generate_operation(op_name, params), label)
@@ -82,7 +97,10 @@ class AbstractCompileHandler(ABC):
         return op
 
 
-class AbstractStatementCompileHandler(AbstractCompileHandler, ABC):
+AnyCompileHandler: TypeAlias = AbstractCompileHandler[ParserRuleContext, Any]
+
+
+class AbstractComplexStatementCompileHandler(AbstractCompileHandler[CTX, HANDL], ABC):
     """A compile handler that generates a list of binary opcodes."""
 
     @abstractmethod
@@ -91,25 +109,36 @@ class AbstractStatementCompileHandler(AbstractCompileHandler, ABC):
         pass
 
 
-class AbstractAssignmentCompileHandler(AbstractStatementCompileHandler, ABC):
+AbstractStatementCompileHandler: TypeAlias = AbstractComplexStatementCompileHandler[CTX, None]
+
+
+class AbstractAssignmentCompileHandler(AbstractComplexStatementCompileHandler[CTX, HANDL], ABC):
     pass
 
 
-class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
+AbstractIntegerAssignmentCompileHandler: TypeAlias = AbstractAssignmentCompileHandler[CTX, "IntegerLikeCompileHandler"]
+
+
+class AbstractComplexBlockCompileHandler(AbstractComplexStatementCompileHandler[CTX, HANDL], ABC):
     """A handler that manages a sub-block of operations and generates one or multiple header operations"""
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
-        super().__init__(ctx, compiler_ctx)
-        # The added handlers are the opcodes in the block
-        # A list of headers that jump to the block.
-        self._header_jump_blueprints: list[SsbLabelJumpBlueprint] = []
-        # The processed jumps
-        self.processed_header_jumps: list[SsbLabelJump] = []
-        self._added_handlers: list[AbstractStatementCompileHandler] = []
-        self.start_label: SsbLabel | None = None
-        self.end_label: SsbLabel | None = None
+    # The added handlers are the opcodes in the block
+    # A list of headers that jump to the block.
+    _header_jump_blueprints: list[SsbLabelJumpBlueprint]
+    # The processed jumps
+    processed_header_jumps: list[SsbLabelJump]
+    start_label: SsbLabel | None
+    end_label: SsbLabel | None
 
-    def _process_block(self, insert_the_jump_if_needed=True) -> list[SsbOperation]:
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
+        super().__init__(ctx, compiler_ctx)
+        self._header_jump_blueprints: list[SsbLabelJumpBlueprint] = []
+        self.processed_header_jumps: list[SsbLabelJump] = []
+        self._added_handlers = []
+        self.start_label = None
+        self.end_label = None
+
+    def _process_block(self, insert_the_jump_if_needed: bool = True) -> list[SsbOperation]:
         """
         This processes the sub-block and returns the generated sub-block opcodes.
         - Opcodes are collected (warning: opcode indexing! Make sure you allocated index numbers for the header ops!)
@@ -130,7 +159,7 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         ops: list[SsbOperation] = []
 
         for h in self._added_handlers:
-            ops += h.collect()
+            ops += h.collect()  # type: ignore
 
         self.end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block end label")
 
@@ -142,6 +171,7 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         ):
             # Just has a jump, insert that into the headers instead
             for hjb in self._header_jump_blueprints:
+                assert ops[0].label is not None
                 self.processed_header_jumps.append(hjb.build_for(ops[0].label))
             self.start_label = ops[0].label
             return [self.end_label]  # in this case we don't actually have any operations to write
@@ -171,18 +201,23 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         """Generate a new empty jump operation"""
         return self._generate_jump_operation(OP_JUMP, [], None, True)
 
-    def get_processed_header_jumps(self):
+    def get_processed_header_jumps(self) -> list[SsbLabelJump]:
         return self.processed_header_jumps
 
-    def set_processed_header_jumps(self, val: list[SsbLabelJump]):
+    def set_processed_header_jumps(self, val: list[SsbLabelJump]) -> None:
         self.processed_header_jumps = val
 
-    def get_start_label(self):
+    def get_start_label(self) -> SsbLabel | None:
         return self.start_label
 
 
-class AbstractLoopBlockCompileHandler(AbstractBlockCompileHandler, ABC):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+AbstractBlockCompileHandler: TypeAlias = AbstractComplexBlockCompileHandler[
+    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+]
+
+
+class AbstractComplexLoopBlockCompileHandler(AbstractComplexBlockCompileHandler[CTX, HANDL], ABC):
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._start_label = SsbLabel(
             self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} outer start label"
@@ -196,10 +231,16 @@ class AbstractLoopBlockCompileHandler(AbstractBlockCompileHandler, ABC):
         return self._generate_jump_operation(OP_JUMP, [], self._end_label)
 
 
-class AbstractFuncdefCompileHandler(AbstractCompileHandler, ABC):
+AbstractLoopBlockCompileHandler: TypeAlias = AbstractComplexLoopBlockCompileHandler[
+    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+]
+AnyLoopBlockCompileHandler: TypeAlias = AbstractLoopBlockCompileHandler[ParserRuleContext]
+
+
+class AbstractFuncdefCompileHandler(AbstractCompileHandler[CTX, AbstractCompileHandler[ParserRuleContext, Any]], ABC):
     """An abstract handler for funcdefs."""
 
-    def add(self, obj: any):
+    def add(self, obj: AbstractCompileHandler[ParserRuleContext, Any]) -> None:
         if handler_is_for_statement(obj):
             self._added_handlers.append(obj)
             return

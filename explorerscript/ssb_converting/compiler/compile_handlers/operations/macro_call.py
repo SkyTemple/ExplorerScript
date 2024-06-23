@@ -24,20 +24,21 @@ from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.util import _, f
 
 
-class MacroCallCompileHandler(AbstractStatementCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class MacroCallCompileHandler(
+    AbstractComplexStatementCompileHandler[ExplorerScriptParser.Macro_callContext, ArgListCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Macro_callContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.arg_list_handler: ArgListCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.ctx: ExplorerScriptParser.Macro_callContext
         name = str(self.ctx.MACRO_CALL())[1:]
         args: list[SsbOpParam] = []
         if self.arg_list_handler:
@@ -56,7 +57,7 @@ class MacroCallCompileHandler(AbstractStatementCompileHandler):
             self.compiler_ctx.source_map_builder,
         )
 
-    def add(self, obj: any):
+    def add(self, obj: ArgListCompileHandler) -> None:
         if isinstance(obj, ArgListCompileHandler):
             self.arg_list_handler = obj
             return

@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import sys
 
 SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME = "performance_progress_list_var_name"
@@ -32,7 +33,7 @@ SETTINGS_DMC_REQUEST = "request"
 SETTINGS_DMC_OPEN_REQUEST = "open_request"
 
 
-def check_settings(settings):
+def check_settings(settings):  # type: ignore
     if SETTINGS not in settings:
         print("Settings missing.", file=sys.stderr)
         exit(1)

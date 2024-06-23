@@ -21,11 +21,13 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump
 
 logger = logging.getLogger(__name__)
@@ -34,13 +36,16 @@ logger = logging.getLogger(__name__)
 class CallWriteHandler(AbstractWriteHandler):
     """Handles writing call."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         logger.debug("Handling a call; (%s)...", self.start_vertex["op"])
         op: SsbLabelJump = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
+        assert op.label is not None
         self.decompiler.write_stmnt(f"call @label_{op.label.id};")
         exits = self.start_vertex.out_edges()
         assert 3 > len(exits) > 0, f"A call must have exactly one or two points to jump to, " f"has {len(exits)}."

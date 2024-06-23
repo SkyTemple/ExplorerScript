@@ -26,6 +26,7 @@ and replaces jumps by regular opcodes arguments.
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from explorerscript.error import SsbCompilerError
@@ -39,16 +40,17 @@ logger = logging.getLogger(__name__)
 class OpsLabelJumpToRemover:
     def __init__(self, routines: list[list[SsbOperation]], label_offsets: dict[int, int]):
         logger.debug("Removing labels - replacing them with opcode jumps...")
-        self.routines = []
+        self.routines: list[list[SsbOperation]] = []
 
         # label_offsets is a dict that maps label ids to their next opcode offset id
         for routine_id, rtn in enumerate(routines):
-            new_rtn_ops = []
+            new_rtn_ops: list[SsbOperation] = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
                 if isinstance(op, SsbLabelJump):
                     # Remove the jump and add the label offset as last argument
                     new_op = op.root
+                    assert op.label is not None
                     if op.label.id not in label_offsets:
                         label_id = op.label.original_name
                         if label_id is None:

@@ -27,6 +27,7 @@ from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabelJump, ForeverStart
 from explorerscript.ssb_converting.util import Blk
 
@@ -36,14 +37,20 @@ logger = logging.getLogger(__name__)
 class ForeverWriteHandler(AbstractWriteHandler):
     """Handles writing loops."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
-        super().__init__(start_vertex, decompiler, parent)
-        self.m: ForeverStart = None
-        self.ended_on_jump = True
-        # Since the break_loop does NOT have to be on the exact next level, we use a stack system instead!
-        self._vertex_after_forever: Vertex | None = None
+    m: ForeverStart | None = None
+    ended_on_jump: bool
+    # Since the break_loop does NOT have to be on the exact next level, we use a stack system instead!
+    _vertex_after_forever: Vertex | None
 
-    def write_content(self):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
+        super().__init__(start_vertex, decompiler, parent)
+        self.m = None
+        self.ended_on_jump = True
+        self._vertex_after_forever = None
+
+    def write_content(self) -> Vertex | None:
         op: SsbLabelJump = self.start_vertex["op"]
         logger.debug("Writing a forever-block (%s)...", op)
         m: ForeverStart = [m for m in op.markers if isinstance(m, ForeverStart)][0]
@@ -60,10 +67,10 @@ class ForeverWriteHandler(AbstractWriteHandler):
             self.decompiler.forever_start_handler_stack.pop()
             return self._vertex_after_forever
 
-    def set_vertex_after(self, v: Vertex):
+    def set_vertex_after(self, v: Vertex) -> None:
         self._vertex_after_forever = v
 
-    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler):
+    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler) -> bool:
         """
         A loop should end either if there are no vertices left (duh!) or if the end-forever label is reached.
         """
@@ -73,6 +80,7 @@ class ForeverWriteHandler(AbstractWriteHandler):
             lwh = next_handler
 
             if len(lwh.ended_loops) > 0:
+                assert self.m is not None
                 if self.m.loop_id in lwh.ended_loops:
                     return False
         return True

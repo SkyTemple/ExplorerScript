@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union, Type
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -36,11 +38,20 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE
 from explorerscript.util import _
 
+_SupportedHandlers: TypeAlias = Union[
+    CaseHeaderMenuCompileHandler, CaseHeaderOpCompileHandler, IntegerLikeCompileHandler
+]
 
-class CaseHeaderCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class CaseHeaderCompileHandler(
+    AbstractCompileHandler[
+        ExplorerScriptParser.Case_headerContext,
+        _SupportedHandlers,
+    ]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._header_cmplx_handler: AbstractCompileHandler | None = None
+        self._header_cmplx_handler: _SupportedHandlers | None = None
 
     def collect(self) -> SsbLabelJumpBlueprint:
         self.ctx: ExplorerScriptParser.Case_headerContext
@@ -58,10 +69,11 @@ class CaseHeaderCompileHandler(AbstractCompileHandler):
 
         raise SsbCompilerError(_("Unknown case operation."))
 
-    def get_header_handler_type(self) -> type(AbstractCompileHandler):
+    def get_header_handler_type(self) -> Type[_SupportedHandlers]:
+        assert self._header_cmplx_handler is not None
         return type(self._header_cmplx_handler)
 
-    def add(self, obj: any):
+    def add(self, obj: CaseHeaderMenuCompileHandler | CaseHeaderOpCompileHandler | IntegerLikeCompileHandler) -> None:
         if (
             isinstance(obj, CaseHeaderMenuCompileHandler)
             or isinstance(obj, CaseHeaderOpCompileHandler)

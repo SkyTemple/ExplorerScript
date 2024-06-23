@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
@@ -53,6 +54,20 @@ class ExplorerScriptSsbDecompiler:
     see skytemple_files.script.ssb.model.Ssb.to_explorerscript.
     """
 
+    # all variables are private
+    _routine_infos: list[SsbRoutineInfo]
+    _routine_ops: list[list[SsbOperation]]
+    named_coroutines: dict[int, str]
+    _output: str
+    indent: int
+    _line_number: int
+    labels_already_printed: list[int] = []
+    smb: SourceMapBuilder | None
+    performance_progress_list_var_name: str
+    dungeon_mode_constants: DungeonModeConstants
+    # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
+    forever_start_handler_stack: list[ForeverWriteHandler] = []
+
     def __init__(
         self,
         routine_infos: list[SsbRoutineInfo],
@@ -70,16 +85,15 @@ class ExplorerScriptSsbDecompiler:
         """
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
-        self.named_coroutines: dict[int, str] = {x.id: x.name for x in named_coroutines}
+        self.named_coroutines = {x.id: x.name for x in named_coroutines}
         self._output = ""
         self.indent = 0
         self._line_number = 1
         self.labels_already_printed = []
-        self.smb: SourceMapBuilder = None
+        self.smb = None
         self.performance_progress_list_var_name = performance_progress_list_var_name
         self.dungeon_mode_constants = dungeon_mode_constants
-        # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
-        self.forever_start_handler_stack: list[ForeverWriteHandler] = []
+        self.forever_start_handler_stack = []
 
     def convert(self) -> tuple[str, SourceMap]:
         logger.debug("Decompiling ExplorerScript...")
@@ -128,28 +142,28 @@ class ExplorerScriptSsbDecompiler:
 
         return self._output, self.smb.build()
 
-    def write_stmnt(self, stmnt, line=True):
+    def write_stmnt(self, stmnt: str, line: bool = True) -> None:
         """Write a simple single line statement"""
         if line:
             self.write_line()
         self._line_number += stmnt.count("\n")
         self._output += stmnt
 
-    def write_line(self):
+    def write_line(self) -> None:
         self._line_number += 1
         self._output += "\n"
         self._output += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
 
-    def write_return(self):
+    def write_return(self) -> None:
         self.write_stmnt("return;")
 
-    def write_end(self):
+    def write_end(self) -> None:
         self.write_stmnt("end;")
 
-    def write_hold(self):
+    def write_hold(self) -> None:
         self.write_stmnt("hold;")
 
-    def write_label_jump(self, label_id: int, previous_op: SsbOperation):
+    def write_label_jump(self, label_id: int, previous_op: SsbOperation) -> None:
         # Depending on what the previous operation was, this has to be printed differently
         if not isinstance(previous_op, SsbLabelJump):
             # We need a jump now. We didn't have one but now we will.
@@ -167,13 +181,15 @@ class ExplorerScriptSsbDecompiler:
             # Jump as part of a control structure
             self.write_stmnt(f"jump @label_{label_id};")
 
-    def source_map_add_opcode(self, op_offset):
+    def source_map_add_opcode(self, op_offset: int) -> None:
         """Has to be called BEFORE writing the opcode."""
+        assert self.smb is not None
         # TODO: Assumes that all statements start in a new line after indent.
         #       Might need this more flexible.
         self.smb.add_opcode(op_offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
 
-    def source_map_add_position_mark(self, length, param: SsbOpParamPositionMarker):
+    def source_map_add_position_mark(self, length: int, param: SsbOpParamPositionMarker) -> None:
+        assert self.smb is not None
         col_number = self.indent * NUMBER_OF_SPACES_PER_INDENT
         self.smb.add_position_mark(
             SourceMapPositionMark(

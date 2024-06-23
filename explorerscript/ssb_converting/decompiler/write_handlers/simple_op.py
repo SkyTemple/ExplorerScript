@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
@@ -37,6 +38,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_CTX,
     OP_JUMP,
@@ -69,10 +71,12 @@ class SimpleOperationWriteHandler(AbstractWriteHandler):
     for x in OPS_FLAG_ALL:
         _ssb_operations_special_cases_handlers[x] = FlagSimpleOpWriteHandler
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         """Delegate to specific simple op handler"""
         return self.get_real_handler()(self.start_vertex, self.decompiler, self).write_content()
 

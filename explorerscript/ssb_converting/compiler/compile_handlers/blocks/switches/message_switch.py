@@ -22,9 +22,11 @@
 #
 from __future__ import annotations
 
+from typing import Union, TypeAlias
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
@@ -40,18 +42,24 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 )
 from explorerscript.util import _, f
 
+_SupportedHandlers: TypeAlias = Union[
+    CaseBlockCompileHandler, DefaultCaseBlockCompileHandler, IntegerLikeCompileHandler
+]
 
-class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
+
+class MessageSwitchCompileHandler(
+    AbstractComplexStatementCompileHandler[ExplorerScriptParser.Message_switch_blockContext, _SupportedHandlers]
+):
     """Handles a message switch."""
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    def __init__(self, ctx: ExplorerScriptParser.Message_switch_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._switch_header_handler: IntegerLikeCompileHandler | None = None
         self._case_handlers: list[CaseBlockCompileHandler] = []
         self._default_handler: DefaultCaseBlockCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.ctx: ExplorerScriptParser.Message_switch_blockContext
+        assert self._switch_header_handler is not None
         if self.ctx.MESSAGE_SWITCH_MONOLOGUE():
             switch_op = self._generate_operation(OP_MESSAGE_SWITCH_MONOLOGUE, [self._switch_header_handler.collect()])
         elif self.ctx.MESSAGE_SWITCH_TALK():
@@ -81,7 +89,7 @@ class MessageSwitchCompileHandler(AbstractStatementCompileHandler):
 
         return [switch_op] + case_ops
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, CaseBlockCompileHandler):
             self._case_handlers.append(obj)
             return

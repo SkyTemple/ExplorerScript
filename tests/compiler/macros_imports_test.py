@@ -36,49 +36,49 @@ class MacrosImportsTestCase(unittest.TestCase):
           if it works.
     """
 
-    def test_simple1(self):
+    def test_simple1(self) -> None:
         self.assert_can_compile("test_simple1")
 
-    def test_simple2(self):
+    def test_simple2(self) -> None:
         self.assert_can_compile("test_simple2")
 
-    def test_simple3_chain(self):
+    def test_simple3_chain(self) -> None:
         self.assert_can_compile("test_simple3_chain")
 
-    def test_nested(self):
+    def test_nested(self) -> None:
         self.assert_can_compile("test_nested")
 
-    def test_nested_chain(self):
+    def test_nested_chain(self) -> None:
         self.assert_can_compile("test_nested_chain")
 
-    def test_other_file(self):
+    def test_other_file(self) -> None:
         self.assert_can_compile("test_other_file")
 
-    def test_other_two(self):
+    def test_other_two(self) -> None:
         self.assert_can_compile("test_other_two")
 
-    def test_complex(self):
+    def test_complex(self) -> None:
         self.assert_can_compile("test_complex")
 
-    def test_err_notfound(self):
+    def test_err_notfound(self) -> None:
         self.assert_can_not_compile("test_err_notfound", SsbCompilerError)
 
-    def test_err_params(self):
+    def test_err_params(self) -> None:
         self.assert_can_not_compile("test_err_params", ValueError)
 
-    def test_err_recursion1(self):
+    def test_err_recursion1(self) -> None:
         self.assert_can_not_compile("test_err_recursion1", SsbCompilerError)
 
-    def test_err_recursion2(self):
+    def test_err_recursion2(self) -> None:
         self.assert_can_not_compile("test_err_recursion2", SsbCompilerError)
 
-    def assert_can_compile(self, fixture_name):
+    def assert_can_compile(self, fixture_name: str) -> None:
         self.compile(fixture_name)
 
-    def assert_can_not_compile(self, fixture_name, error):
+    def assert_can_not_compile(self, fixture_name: str, error: type[Exception]) -> None:
         self.assertRaises(error, self.compile, fixture_name)
 
-    def compile(self, fixture_name):
+    def compile(self, fixture_name: str) -> None:
         fixture_path = self.__fixture_path(fixture_name)
         compiler = ExplorerScriptSsbCompiler("N/A", [])
         with open(fixture_path) as f:
@@ -86,7 +86,7 @@ class MacrosImportsTestCase(unittest.TestCase):
         compiler.compile(exps_source, fixture_path)
 
     @staticmethod
-    def __fixture_path(fixture_name):
+    def __fixture_path(fixture_name: str) -> str:
         return os.path.abspath(
             os.path.join(
                 os.path.dirname(__file__),

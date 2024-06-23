@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -44,15 +46,22 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH
 from explorerscript.util import _
 
+_SupportedHandlers: TypeAlias = Union[
+    SwitchHeaderDungeonModeCompileHandler,
+    SwitchHeaderRandomCompileHandler,
+    SwitchHeaderScnCompileHandler,
+    SwitchHeaderSectorCompileHandler,
+    IntegerLikeCompileHandler,
+    OperationCompileHandler,
+]
 
-class SwitchHeaderCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class SwitchHeaderCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Switch_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._header_cmplx_handler: AbstractCompileHandler | None = None
+        self._header_cmplx_handler: _SupportedHandlers | None = None
 
     def collect(self) -> SsbOperation:
-        self.ctx: ExplorerScriptParser.Case_headerContext
-
         # Complex branches
         if self._header_cmplx_handler:
             if isinstance(self._header_cmplx_handler, IntegerLikeCompileHandler):
@@ -60,10 +69,10 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
                 return self._generate_operation(OP_SWITCH, [self._header_cmplx_handler.collect()])
             elif isinstance(self._header_cmplx_handler, OperationCompileHandler):
                 # An operation as condition
-                op = self._header_cmplx_handler.collect()
-                if len(op) != 1:
+                ops = self._header_cmplx_handler.collect()
+                if len(ops) != 1:
                     raise SsbCompilerError(_("Invalid content for a switch-header"))
-                op = op[0]
+                op = ops[0]
                 return self._generate_operation(op.op_code.name, op.params)
             else:
                 # A regular complex if condition
@@ -71,7 +80,7 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler):
 
         raise SsbCompilerError(_("Unknown switch operation."))
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if (
             isinstance(obj, SwitchHeaderDungeonModeCompileHandler)
             or isinstance(obj, SwitchHeaderRandomCompileHandler)

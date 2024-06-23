@@ -21,11 +21,13 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import SsbForeignLabel
 
 logger = logging.getLogger(__name__)
@@ -37,8 +39,8 @@ class ForeignLabelWriteHandler(AbstractWriteHandler):
     def __init__(
         self,
         start_vertex: Vertex,
-        decompiler,
-        parent,
+        decompiler: ExplorerScriptSsbDecompiler,
+        parent: AbstractWriteHandler | None,
         vertex_that_started_block: Vertex,
         is_first_vertex_of_block: bool,
     ):
@@ -46,7 +48,7 @@ class ForeignLabelWriteHandler(AbstractWriteHandler):
         self.vertex_that_started_block = vertex_that_started_block
         self.is_first_vertex_of_block = is_first_vertex_of_block
 
-    def write_content(self):
+    def write_content(self) -> None:
         op: SsbForeignLabel = self.start_vertex["op"]
         logger.debug("Handling a foreign label (%s)...", op)
         exits = self.start_vertex.out_edges()

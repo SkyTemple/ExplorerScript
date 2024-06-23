@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
@@ -37,12 +38,12 @@ class LabelFinalizer:
 
     def __init__(self, routines: list[list[SsbOperation]]):
         logger.debug("Finalizing and optimizing labels...")
-        self.routines = []
+        self.routines: list[list[SsbOperation]] = []
         self.label_offsets: dict[int, int] = {}
 
         labels_waiting: list[SsbLabel] = []
         for r_id, r in enumerate(routines):
-            new_r = []
+            new_r: list[SsbOperation] = []
             self.routines.append(new_r)
             for op_i, op in enumerate(r):
                 if isinstance(op, SsbLabel):
@@ -64,9 +65,9 @@ class LabelFinalizer:
                         labels_waiting = []
 
     @classmethod
-    def _labels_after(cls, r: list[SsbOperation], op_i: int, skip_redundant_label_jumps=True) -> list[SsbLabel]:
+    def _labels_after(cls, r: list[SsbOperation], op_i: int, skip_redundant_label_jumps: bool = True) -> list[SsbLabel]:
         """Returns all labels in r after the opcode with index op_i (until the next non-label)."""
-        ls = []
+        ls: list[SsbLabel] = []
         cursor = op_i + 1
         try:
             while isinstance(r[cursor], SsbLabel) or isinstance(r[cursor], SsbLabelJump):
@@ -76,14 +77,14 @@ class LabelFinalizer:
                     have_match = False
                     if skip_redundant_label_jumps:
                         for label in cls._labels_after(r, cursor, False):
-                            if r[cursor].label == label:
+                            if r[cursor].label == label:  # type: ignore
                                 have_match = True
                                 break
                     if have_match:
                         cursor += 1
                         continue
                     break
-                ls.append(r[cursor])
+                ls.append(r[cursor])  # type: ignore
                 cursor += 1
         except IndexError:
             pass

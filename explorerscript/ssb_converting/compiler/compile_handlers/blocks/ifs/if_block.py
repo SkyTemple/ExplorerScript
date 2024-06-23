@@ -22,10 +22,15 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
+from antlr4 import ParserRuleContext
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
-    AbstractBlockCompileHandler,
+    AbstractComplexBlockCompileHandler,
     AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.elseif_block import ElseIfBlockCompileHandler
@@ -34,11 +39,20 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
 
+_SupportedHandlers: TypeAlias = Union[
+    AbstractStatementCompileHandler[ParserRuleContext],
+    IfHeaderCompileHandler,
+    ElseIfBlockCompileHandler,
+    ElseBlockCompileHandler,
+]
 
-class IfBlockCompileHandler(AbstractBlockCompileHandler):
+
+class IfBlockCompileHandler(
+    AbstractComplexBlockCompileHandler[ExplorerScriptParser.If_blockContext, _SupportedHandlers]
+):
     """Handles an entire if block, with it's optional elseif and else sub-blocks."""
 
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+    def __init__(self, ctx: ExplorerScriptParser.If_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._if_header_handlers: list[IfHeaderCompileHandler] = []
         self._else_if_handlers: list[ElseIfBlockCompileHandler] = []
@@ -54,11 +68,11 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, "entire if-block end label")
         is_positive = self.ctx.NOT() is None
 
-        ops: list[SsbOperation | None] = []
+        ops: list[SsbOperation] = []
 
         # 1. Go over all if header ops:
         for h in self._if_header_handlers:
-            ops.append(None)
+            ops.append(None)  # type: ignore
             h.set_positive(is_positive)
             jmpb = h.collect()
             self._header_jump_blueprints.append(jmpb)
@@ -75,7 +89,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
             this_elseif__allocations = []
             this_elseif__was_output = False
             for jmpb in jmp_blueprints:
-                ops.append(None)
+                ops.append(None)  # type: ignore
                 jmpb.set_index_number(self.compiler_ctx.counter_ops.allocate(1))
                 # Allocate 1 for it's branch op
                 this_elseif__allocations.append(len(ops) - 1)
@@ -116,7 +130,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
 
         return ops + [end_label]
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, IfHeaderCompileHandler):
             self._if_header_handlers.append(obj)
             return
@@ -126,7 +140,7 @@ class IfBlockCompileHandler(AbstractBlockCompileHandler):
         if isinstance(obj, ElseBlockCompileHandler):
             self._else_handler = obj
             return
-        if isinstance(obj, AbstractStatementCompileHandler):
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)
             return

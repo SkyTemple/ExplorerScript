@@ -22,11 +22,13 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
-class MacroDefCompileHandler(AbstractFuncdefCompileHandler):
-    def collect(self) -> any:
+class MacroDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.MacrodefContext]):
+    def collect(self) -> list[SsbOperation]:
         """Collects macro operations."""
         return self.collect_ops()
 

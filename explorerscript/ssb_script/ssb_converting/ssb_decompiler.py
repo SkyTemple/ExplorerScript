@@ -21,7 +21,9 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
+import warnings
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
@@ -47,6 +49,15 @@ class SsbScriptSsbDecompiler:
     see skytemple_files.script.ssb.model.Ssb.to_ssb_script.
     """
 
+    # all variables are private:
+    _routine_infos: list[SsbRoutineInfo]
+    _routine_ops: list[list[SsbOperation]]
+    _named_coroutines: dict[int, str]
+    _output: str
+    indent: int
+    _line_number: int
+    _source_map_builder: SourceMapBuilder | None
+
     def __init__(
         self,
         routine_infos: list[SsbRoutineInfo],
@@ -55,11 +66,11 @@ class SsbScriptSsbDecompiler:
     ):
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
-        self._named_coroutines: dict[int, str] = {x.id: x.name for x in named_coroutines}
+        self._named_coroutines = {x.id: x.name for x in named_coroutines}
         self._output = ""
         self.indent = 0
         self._line_number = 1
-        self._source_map_builder: SourceMapBuilder = None
+        self._source_map_builder = None
 
     def convert(self) -> tuple[str, SourceMap]:
         logger.debug("Decompiling SSBScript...")
@@ -90,7 +101,7 @@ class SsbScriptSsbDecompiler:
             self._write_line()
         return self._output, self._source_map_builder.build()
 
-    def _write_routine_header(self, r_id, r_info):
+    def _write_routine_header(self, r_id: int, r_info: SsbRoutineInfo) -> None:
         if r_info.type == SsbRoutineType.COROUTINE:
             if r_id in self._named_coroutines:
                 self.write_stmnt(f"coro {self._named_coroutines[r_id]}")
@@ -107,13 +118,20 @@ class SsbScriptSsbDecompiler:
         else:
             raise ValueError(f"Unknown routine type for: {r_id}, {r_info}")
 
-    def _read_op(self, op: SsbOperation):
+    def _read_op(self, op: SsbOperation) -> None:
         real_op = op
         if isinstance(op, SsbLabelJump):
             real_op = op.root
 
         orig_params = real_op.params
         if isinstance(op.params, dict):
+            # TODO: This should never be able to be the case...? Raise a deprecation warning and remove at some point.
+            warnings.warn(
+                "An opcode's params were a dict, not a list when processing operation in SsbScript decompiler. "
+                "This is deprecated, use a proper list instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
             orig_params = real_op.params.values()
 
         # Build parameter string
@@ -122,8 +140,10 @@ class SsbScriptSsbDecompiler:
         if isinstance(op, SsbLabelJump):
             if len(orig_params) > 0:
                 params += ", "
+            assert op.label is not None
             params += f"@label_{op.label.id}"
         # Build position mark source maps
+        assert self._source_map_builder is not None
         for param in orig_params:
             if isinstance(param, SsbOpParamPositionMarker):
                 cn = self.indent * NUMBER_OF_SPACES_PER_INDENT
@@ -143,19 +163,19 @@ class SsbScriptSsbDecompiler:
         self._source_map_builder.add_opcode(op.offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
         self.write_stmnt(f"{real_op.op_code.name}({params});")
 
-    def _single_param_to_string(self, param: SsbOpParam):
+    def _single_param_to_string(self, param: SsbOpParam) -> str:
         if hasattr(param, "indent"):
             param.indent = self.indent
         return str(param)
 
-    def write_stmnt(self, stmnt, line=True):
+    def write_stmnt(self, stmnt: str, line: bool = True) -> None:
         """Write a simple single line statement"""
         if line:
             self._write_line()
         self._line_number += stmnt.count("\n")
         self._output += stmnt
 
-    def _write_line(self):
+    def _write_line(self) -> None:
         self._line_number += 1
         self._output += "\n"
         self._output += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)

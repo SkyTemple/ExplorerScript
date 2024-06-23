@@ -21,6 +21,9 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
+from typing import Any
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.ssb_converting.compiler.utils import string_literal
@@ -29,27 +32,27 @@ from explorerscript.ssb_converting.compiler.utils import string_literal
 class ImportVisitor(ExplorerScriptVisitor):
     """Returns the list of files to import from an ExplorerScript parsing tree."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
+    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> str:
         return string_literal(ctx.STRING_LITERAL())
 
-    def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext):
+    def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext) -> None:
         # Are not visited.
         return None
 
-    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
+    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext) -> None:
         # Are not visited.
         return None
 
-    def defaultResult(self):
+    def defaultResult(self) -> list[str]:  # type: ignore
         return []
 
-    def visitTerminal(self, node):
+    def visitTerminal(self, node: Any) -> None:
         return None
 
-    def aggregateResult(self, aggregate, nextResult):
+    def aggregateResult(self, aggregate: list[str], nextResult: str) -> list[str]:
         if nextResult is not None:
             aggregate.append(nextResult)
         return aggregate

@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -32,8 +32,10 @@ from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_DUNGEON_MODE
 from explorerscript.util import _
 
 
-class SwitchHeaderDungeonModeCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class SwitchHeaderDungeonModeCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Switch_h_dungeon_modeContext, IntegerLikeCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_h_dungeon_modeContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.value: SsbOpParam | None = None
 
@@ -43,7 +45,7 @@ class SwitchHeaderDungeonModeCompileHandler(AbstractCompileHandler):
 
         return self._generate_operation(OP_SWITCH_DUNGEON_MODE, [self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

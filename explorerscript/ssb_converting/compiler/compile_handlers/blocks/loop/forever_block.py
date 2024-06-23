@@ -21,26 +21,32 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
-from typing import Any
 
+from typing import cast
+
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
     AbstractLoopBlockCompileHandler,
+    AnyLoopBlockCompileHandler,
 )
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
-class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler):
+class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParser.Forever_blockContext]):
     """Handles an entire forever block."""
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(self)
+        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
         retval = [self._start_label] + self._process_block(False) + [self.continue_loop(), self._end_label]
         self.compiler_ctx.remove_loop()
         return retval
 
-    def add(self, obj: Any):
-        if isinstance(obj, AbstractStatementCompileHandler):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)
             return

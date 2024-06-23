@@ -28,14 +28,18 @@ from explorerscript.source_map import SourceMap, MacroSourceMapping
 class SourceMapVisualizer:
     """Visualizes a source map by adding comments to it's source code pointing to the opcodes."""
 
-    def __init__(self, source_code: str, source_map: SourceMap, apply_for_macro_calls=None):
+    source_code: str
+    source_map: SourceMap
+    _inserts: dict[int, list[str]]
+
+    def __init__(self, source_code: str, source_map: SourceMap, apply_for_macro_calls: str | None = None):
         self.source_code = source_code
         self._source_map = source_map
         # A dict of a list of strings to insert at given lines
-        self._inserts: dict[int, list[str]] = {}
+        self._inserts = {}
 
         # Opcodes
-        for opcode_offset, mapping in self._source_map:
+        for opcode_offset, mapping in self._source_map:  # type: ignore
             if not isinstance(mapping, MacroSourceMapping):
                 if apply_for_macro_calls is None:
                     self._insert_comment(mapping.line, f"col: {mapping.column} - 0x{opcode_offset:0x}")
@@ -68,7 +72,7 @@ class SourceMapVisualizer:
             string_array.append(line_content)
         return "\n".join(string_array)
 
-    def _insert_comment(self, line_number, txt):
+    def _insert_comment(self, line_number: int, txt: str) -> None:
         if line_number not in self._inserts:
             self._inserts[line_number] = []
         self._inserts[line_number].append(f"// {txt}")

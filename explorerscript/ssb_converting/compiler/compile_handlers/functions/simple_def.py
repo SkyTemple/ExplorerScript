@@ -21,13 +21,17 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
+from typing import Any
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 from explorerscript.util import exps_int
 
 
-class SimpleDefCompileHandler(AbstractFuncdefCompileHandler):
-    def collect(self) -> any:
+class SimpleDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.Simple_defContext]):
+    def collect(self) -> Any:
         """Collects routine info and operations."""
         return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
 

@@ -21,12 +21,15 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
+from antlr4 import ParserRuleContext
+
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 
 
-class NullCompileHandler(AbstractCompileHandler):
-    def collect(self):
+class NullCompileHandler(AbstractCompileHandler[ParserRuleContext, None]):
+    def collect(self) -> None:
         raise AssertionError("collect called on NullCompileHandler.")
 
-    def add(self, obj):
+    def add(self, obj: None) -> None:
         raise AssertionError("add called on NullCompileHandler.")

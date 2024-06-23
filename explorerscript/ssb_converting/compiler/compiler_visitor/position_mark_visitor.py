@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import Any
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
@@ -36,13 +38,13 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarke
 class PositionMarkVisitor(ExplorerScriptVisitor):
     """Returns the list of position marks from an ExplorerScript parsing tree."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.compiler_ctx = CompilerCtx(Counter(), SourceMapBuilder(), {}, Counter(), "n/a", {})
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[SourceMapPositionMark]:
         return self.visitChildren(ctx)
 
-    def visitPosition_marker(self, ctx: ExplorerScriptParser.Position_markerContext):
+    def visitPosition_marker(self, ctx: ExplorerScriptParser.Position_markerContext) -> SourceMapPositionMark:
         mark_handler = PositionMarkerCompileHandler(ctx, self.compiler_ctx)
         for arg_handler in self.visitChildren(ctx):
             mark_handler.add(arg_handler)
@@ -59,16 +61,20 @@ class PositionMarkVisitor(ExplorerScriptVisitor):
             pos_mark_param.y_relative,
         )
 
-    def visitPosition_marker_arg(self, ctx: ExplorerScriptParser.Position_marker_argContext):
+    def visitPosition_marker_arg(
+        self, ctx: ExplorerScriptParser.Position_marker_argContext
+    ) -> PositionMarkerArgCompileHandler:
         return PositionMarkerArgCompileHandler(ctx, self.compiler_ctx)
 
-    def defaultResult(self):
+    def defaultResult(self) -> list[SourceMapPositionMark]:  # type: ignore
         return []
 
-    def visitTerminal(self, node):
+    def visitTerminal(self, node: Any) -> None:
         return None
 
-    def aggregateResult(self, aggregate, nextResult):
+    def aggregateResult(
+        self, aggregate: list[SourceMapPositionMark], nextResult: list[SourceMapPositionMark] | SourceMapPositionMark
+    ) -> list[SourceMapPositionMark]:
         if isinstance(nextResult, list):
             return aggregate + nextResult
         if nextResult is not None:

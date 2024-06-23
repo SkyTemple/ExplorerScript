@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -31,8 +31,8 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.util import _
 
 
-class ValueOfCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class ValueOfCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Value_ofContext, IntegerLikeCompileHandler]):
+    def __init__(self, ctx: ExplorerScriptParser.Value_ofContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
 
@@ -42,7 +42,7 @@ class ValueOfCompileHandler(AbstractCompileHandler):
 
         return self.var_target
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.var_target = obj.collect()
             return

@@ -30,6 +30,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OP_MESSAGE_SWITCH_TALK,
     OP_MESSAGE_SWITCH_MONOLOGUE,
@@ -41,12 +42,17 @@ from explorerscript.ssb_converting.util import Blk
 class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing message_SwitchMonologue and message_SwitchTalk."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    op_name: str | None
+    have_written_at_least_one_child: bool
+
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
         self.op_name = None
         self.have_written_at_least_one_child = False
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
         self.op_name = op.op_code.name
 
@@ -81,8 +87,9 @@ class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
 
         return next_vertex_after_blk
 
-    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler):
+    def check_end_block(self, block: BlockWriteHandler, next_handler: AbstractWriteHandler) -> bool:
         next_op: SsbOperation = next_handler.start_vertex["op"]
+        assert self.op_name is not None
         if next_op.op_code.name not in OPS_SWITCH_TEXT_CASE_MAP[self.op_name]:
             if not self.have_written_at_least_one_child:
                 raise ValueError("A message_Switch* must have at least one case or default.")

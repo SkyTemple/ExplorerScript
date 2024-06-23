@@ -29,11 +29,11 @@ from enum import Enum
 from typing import Union
 
 
-def escape_quotes(string):
+def escape_quotes(string: str) -> str:
     return string.replace('"', '\\"').replace("'", "\\'")
 
 
-def escape_newlines(string):
+def escape_newlines(string: str) -> str:
     return string.replace("\n", "\\n")
 
 
@@ -46,7 +46,7 @@ class SsbRoutineType(Enum):
     INVALID = -1
 
     @staticmethod
-    def create_for_index(idx: int):
+    def create_for_index(idx: int) -> SsbRoutineType:
         if idx == 1:
             return SsbRoutineType.GENERIC
         if idx == 3:
@@ -65,18 +65,18 @@ class SsbNamedId:
         self.id = id
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}<{self.name}({self.id})>"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return int(self) == int(other)
 
-    def __int__(self):
+    def __int__(self) -> int:
         return self.id
 
 
@@ -93,8 +93,12 @@ class SsbWarning(UserWarning):
 
 
 class SsbRoutineInfo:
-    def __init__(self, type: SsbRoutineType, linked_to: int, linked_to_name: str = None):
-        self.type: SsbRoutineType = type
+    type: SsbRoutineType
+    linked_to: int
+    linked_to_name: str | None
+
+    def __init__(self, type: SsbRoutineType, linked_to: int, linked_to_name: str | None = None):
+        self.type = type
         self.linked_to = linked_to
         self.linked_to_name = linked_to_name
 
@@ -104,18 +108,18 @@ class SsbRoutineInfo:
             return self.linked_to_name
         return str(self.linked_to)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}<{self.type}({self.linked_to})>"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return self.type == other.type and self.linked_to == other.linked_to
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self.type, self.linked_to, self.linked_to_name))
 
 
@@ -151,7 +155,9 @@ class SsbOpParamFixedPoint:
             elif whole_part.rstrip("0") == "-":
                 whole_part = "-0"
 
+            whole: int | type[SsbOpParamFixedPoint.NegativeZero]
             whole = int(whole_part) if whole_part != "-0" else SsbOpParamFixedPoint.NegativeZero
+
             if len(parts) == 1:
                 return cls(whole, "0")
             fract = parts[1]
@@ -159,13 +165,13 @@ class SsbOpParamFixedPoint:
         except ValueError as e:
             raise ValueError(f"Invalid fixed point decimal: {value}") from e
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SsbOpParamFixedPoint):
             return False
         return self.value == other.value
@@ -174,16 +180,18 @@ class SsbOpParamFixedPoint:
 class SsbOpParamConstant:
     """An actual constant representing an int"""
 
+    name: str
+
     def __init__(self, name: str):
         self.name = name
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SsbOpParamConstant):
             return False
         return self.name == other.name
@@ -192,16 +200,18 @@ class SsbOpParamConstant:
 class SsbOpParamConstString:
     """A string constant from the table of string constants in an Ssb"""
 
+    name: str
+
     def __init__(self, name: str):
         self.name = name
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"'{escape_newlines(escape_quotes(self.name))}'"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"str({str(self)})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SsbOpParamConstString):
             return False
         return self.name == other.name
@@ -210,13 +220,15 @@ class SsbOpParamConstString:
 class SsbOpParamLanguageString:
     """A string from the table of strings in an Ssb"""
 
+    strings: dict[str, str]
+
     def __init__(self, strings: dict[str, str]):  # {language_name: string}
         self.strings = strings
         # Because this will print a multiline output, this may specify the original indent of the current
         # line in the converter, may be set by the converter before converting to string
         self.indent = 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = "{\n"
         for language, lang_string in self.strings.items():
             string += " " * ((self.indent + 1) * NUMBER_OF_SPACES_PER_INDENT)
@@ -225,7 +237,7 @@ class SsbOpParamLanguageString:
         string += "}"
         return string
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SsbOpParamLanguageString):
             return False
         return self.strings == other.strings
@@ -233,6 +245,12 @@ class SsbOpParamLanguageString:
 
 class SsbOpParamPositionMarker:
     """Actually a tuple of four SSB binary parameters encoded as one positon marker"""
+
+    name: str
+    x_offset: int
+    y_offset: int
+    x_relative: int
+    y_relative: int
 
     def __init__(self, name: str, x_offset: int, y_offset: int, x_relative: int, y_relative: int):
         self.name = name
@@ -242,28 +260,26 @@ class SsbOpParamPositionMarker:
         self.y_relative = y_relative
 
     @property
-    def x_final(self):
+    def x_final(self) -> str:
         x_offset_marker = ""
         if self.x_offset > 1:
-            # TODO: The offset parameter is a bit weird, check if this is actually the case:
             x_offset_marker = ".5"
         return f"{self.x_relative}{x_offset_marker}"
 
     @property
-    def y_final(self):
+    def y_final(self) -> str:
         y_offset_marker = ""
         if self.y_offset > 1:
-            # TODO: The offset parameter is a bit weird, check if this is actually the case:
             y_offset_marker = ".5"
         return f"{self.y_relative}{y_offset_marker}"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Position<'{self.name}', {self.x_final}, {self.y_final}>"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SsbOpParamPositionMarker('{self.name}', {self.x_offset}, {self.y_offset}, {self.x_relative}, {self.y_relative})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, SsbOpParamPositionMarker):
             return False
         return (
@@ -285,18 +301,22 @@ SsbOpParam = Union[
 
 
 class SsbOperation:
+    offset: int
+    op_code: SsbOpCode
+    params: list[SsbOpParam]
+
     def __init__(self, offset: int, op_code: SsbOpCode, params: list[SsbOpParam]):
         self.offset = offset
         self.op_code = op_code
         self.params = params
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}<{str({k: v for k, v in self.__dict__.items()})}>"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return self.offset == other.offset and self.op_code == other.op_code and self.params == other.params
@@ -317,20 +337,20 @@ class SsbOperator(Enum):
     XOR = 9, "^"
     BIT_SET = 10, "&<<"
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # type: ignore
         obj = object.__new__(cls)
         obj._value_ = args[0]
         return obj
 
     # ignore the first param since it's already set by __new__
-    def __init__(self, _: str, notation: str = None):
+    def __init__(self, _: str, notation: str):
         self._notation_ = notation
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     @property
-    def notation(self):
+    def notation(self) -> str:
         return self._notation_
 
 
@@ -343,20 +363,20 @@ class SsbCalcOperator(Enum):
     MULTIPLY = 3, "*="
     DIVIDE = 4, "/="
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # type: ignore
         obj = object.__new__(cls)
         obj._value_ = args[0]
         return obj
 
     # ignore the first param since it's already set by __new__
-    def __init__(self, _: str, notation: str = None):
+    def __init__(self, _: str, notation: str):
         self._notation_ = notation
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     @property
-    def notation(self):
+    def notation(self) -> str:
         return self._notation_
 
 
@@ -367,7 +387,7 @@ class DungeonModeConstants:
         self.close_constant = close_constant
         self.open_and_request_constant = open_and_request_constant
 
-    def get_explorerscript_constant_for(self, idx: int):
+    def get_explorerscript_constant_for(self, idx: int) -> str:
         if idx == 1:
             return self.open_constant
         if idx == 2:

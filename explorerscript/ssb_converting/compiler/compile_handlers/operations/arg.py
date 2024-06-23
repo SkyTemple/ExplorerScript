@@ -22,6 +22,10 @@
 #
 from __future__ import annotations
 
+from typing import Union
+
+from antlr4 import ParserRuleContext
+
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
@@ -29,18 +33,19 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 
+_SupportedHandlers = Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]
 
-class ArgCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class ArgCompileHandler(AbstractCompileHandler[ParserRuleContext, _SupportedHandlers]):
+    def __init__(self, ctx: ParserRuleContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_handler: None | (
-            IntegerLikeCompileHandler | StringCompileHandler | PositionMarkerCompileHandler
-        ) = None
+        self.arg_handler: _SupportedHandlers | None = None
 
     def collect(self) -> SsbOpParam:
+        assert self.arg_handler is not None
         return self.arg_handler.collect()
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if (
             isinstance(obj, IntegerLikeCompileHandler)
             or isinstance(obj, StringCompileHandler)

@@ -21,10 +21,12 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbCalcOperator
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_FLAG__CALC_BIT,
     OPS_FLAG__CALC_VALUE,
@@ -44,19 +46,21 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 class FlagSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing flag setting statements.."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if op.op_code.name == OPS_FLAG__CALC_BIT:
             self.decompiler.write_stmnt(f"{op.params[0]}[{op.params[1]}] = {op.params[2]};")
         elif op.op_code.name == OPS_FLAG__CALC_VALUE:
-            self.decompiler.write_stmnt(f"{op.params[0]} {SsbCalcOperator(op.params[1]).notation} {op.params[2]};")
+            self.decompiler.write_stmnt(f"{op.params[0]} {SsbCalcOperator(op.params[1]).notation} {op.params[2]};")  # type: ignore
         elif op.op_code.name == OPS_FLAG__CALC_VARIABLE:
             self.decompiler.write_stmnt(
-                f"{op.params[0]} {SsbCalcOperator(op.params[1]).notation} value({op.params[2]});"
+                f"{op.params[0]} {SsbCalcOperator(op.params[1]).notation} value({op.params[2]});"  # type: ignore
             )
         elif op.op_code.name == OPS_FLAG__CLEAR:
             self.decompiler.write_stmnt(f"clear {op.params[0]};")
@@ -71,7 +75,7 @@ class FlagSimpleOpWriteHandler(AbstractWriteHandler):
         elif op.op_code.name == OPS_FLAG__SET_ADVENTURE_LOG:
             self.decompiler.write_stmnt(f"adventure_log = {op.params[0]};")
         elif op.op_code.name == OPS_FLAG__SET_DUNGEON_MODE:
-            flag_value = self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[1])
+            flag_value = self.decompiler.dungeon_mode_constants.get_explorerscript_constant_for(op.params[1])  # type: ignore
             self.decompiler.write_stmnt(f"dungeon_mode({op.params[0]}) = {flag_value};")
         elif op.op_code.name == OPS_FLAG__SET_PERFORMANCE:
             self.decompiler.write_stmnt(

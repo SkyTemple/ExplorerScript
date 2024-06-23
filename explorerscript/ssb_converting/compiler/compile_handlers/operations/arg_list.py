@@ -22,13 +22,14 @@
 #
 from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.source_map import SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOpParamPositionMarker
 
 
-class ArgListCompileHandler(AbstractCompileHandler):
+class ArgListCompileHandler(AbstractCompileHandler[ExplorerScriptParser.ArglistContext, ArgCompileHandler]):
     def collect(self) -> list[SsbOpParam]:
         ret = []
         for i, h in enumerate(self._added_handlers):
@@ -52,7 +53,7 @@ class ArgListCompileHandler(AbstractCompileHandler):
                 )
         return ret
 
-    def add(self, obj: any):
+    def add(self, obj: ArgCompileHandler) -> None:
         if isinstance(obj, ArgCompileHandler):
             self._added_handlers.append(obj)
             return

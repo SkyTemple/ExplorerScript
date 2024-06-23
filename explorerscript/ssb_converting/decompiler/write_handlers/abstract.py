@@ -36,12 +36,17 @@ class AbstractWriteHandler(ABC):
     The start vertex is passed by the parent handler to specify where this handler should begin.
     """
 
+    start_vertex: Vertex
+    decompiler: ExplorerScriptSsbDecompiler
+    # Parent write handler.
+    parent: AbstractWriteHandler | None
+    ended_on_jump: bool
+
     def __init__(
         self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
     ):
         self.start_vertex = start_vertex
         self.decompiler = decompiler
-        # Parent write handler.
         self.parent = parent
         self.ended_on_jump = False
 

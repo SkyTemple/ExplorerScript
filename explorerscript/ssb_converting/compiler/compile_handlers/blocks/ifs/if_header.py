@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+from typing import TypeAlias, Union
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
@@ -38,29 +40,35 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_special_ops import OPS_BRANCH
 from explorerscript.util import _, f
 
+_SupportedHandlers: TypeAlias = Union[
+    IfHeaderBitCompileHandler,
+    IfHeaderOperatorCompileHandler,
+    IfHeaderNegatableCompileHandler,
+    IfHeaderScnCompileHandler,
+    OperationCompileHandler,
+]
 
-class IfHeaderCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class IfHeaderCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.If_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._header_cmplx_handler: AbstractCompileHandler | None = None
+        self._header_cmplx_handler: _SupportedHandlers | None = None
         self._is_positive = True
 
-    def set_positive(self, positive):
+    def set_positive(self, positive: bool) -> None:
         self._is_positive = positive
 
     def collect(self) -> SsbLabelJumpBlueprint:
-        self.ctx: ExplorerScriptParser.If_headerContext
         is_positive = self._is_positive
 
-        self.ctx: ExplorerScriptParser.If_headerContext
         # Complex branches
         if self._header_cmplx_handler:
             if isinstance(self._header_cmplx_handler, OperationCompileHandler):
                 # An operation as condition
-                op = self._header_cmplx_handler.collect()
-                if len(op) != 1:
+                ops = self._header_cmplx_handler.collect()
+                if len(ops) != 1:
                     raise SsbCompilerError(_("Invalid content for an if-header"))
-                op = op[0]
+                op = ops[0]
                 if op.op_code.name not in OPS_BRANCH.keys():
                     raise SsbCompilerError(
                         f(_("Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"))
@@ -76,7 +84,7 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
 
         raise SsbCompilerError(f(_("Unknown if operation in line {self.ctx.start.line}).")))
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if (
             isinstance(obj, IfHeaderBitCompileHandler)
             or isinstance(obj, IfHeaderOperatorCompileHandler)

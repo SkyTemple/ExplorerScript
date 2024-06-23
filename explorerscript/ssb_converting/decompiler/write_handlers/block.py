@@ -21,7 +21,9 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
+from typing import Callable, TypeAlias
 
 from igraph import Vertex
 
@@ -30,6 +32,8 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
     AbstractWriteHandler,
     NestedBlockDisallowedError,
 )
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_THAT_END_CONTROL_FLOW,
     SsbLabel,
@@ -43,36 +47,45 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 
 logger = logging.getLogger(__name__)
 
+CheckEndBlockCallable: TypeAlias = Callable[["BlockWriteHandler", "AbstractWriteHandler"], bool]
+
 
 class BlockWriteHandler(AbstractWriteHandler):
     """Writes one block of output for ExplorerScript using an entry point vertex (the first in this block)."""
 
+    _next_vertex: Vertex
+    # Optional callback to check if the block should be ended
+    # Please note, that the block will also end automatically, if the end of the
+    # graph has no reachable vertices anymore.
+    check_end_block: CheckEndBlockCallable | None
+    # This will contain the handler for the last operation written by this block, after write_content.
+    last_handler_in_block: AbstractWriteHandler | None
+    # If True, an exception is raised if the block contains any opcodes that would start another sub-block
+    _disallow_nested: bool
+
+    vertex_that_started_block: Vertex
+    last_vertex: Vertex | None
+
     def __init__(
         self,
         start_vertex: Vertex,
-        decompiler,
-        parent,
+        decompiler: ExplorerScriptSsbDecompiler,
+        parent: AbstractWriteHandler | None,
         vertex_that_started_block: Vertex,
         *,
-        check_end_block=None,
-        disallow_nested=False,
-    ):
+        check_end_block: CheckEndBlockCallable | None = None,
+        disallow_nested: bool = False,
+    ) -> None:
         super().__init__(start_vertex, decompiler, parent)
         self._next_vertex: Vertex = start_vertex
-        # Optional callback to check if the block should be ended
-        # Please note, that the block will also end automatically, if the end of the
-        # graph has no reachable vertices anymore.
         self.check_end_block = check_end_block
-        # This will contain the handler for the last operation written by this block, after write_content.
-        self.last_handler_in_block: AbstractWriteHandler | None = None
-        # If True, an exception is raised if the block contains any opcodes that would start another sub-block
+        self.last_handler_in_block = None
         self._disallow_nested = disallow_nested
 
         self.vertex_that_started_block = vertex_that_started_block
-        self.last_vertex: Vertex | None = None
+        self.last_vertex = None
 
-    def write_content(self):
-        should_continue = True
+    def write_content(self) -> Vertex:
         previous_vertex = None
         is_first_vertex = True
         while self._next_vertex is not None:
@@ -91,8 +104,8 @@ class BlockWriteHandler(AbstractWriteHandler):
             # TODO: pretty hard-coded at the moment.
             if self._disallow_nested and self.last_handler_in_block.__class__.__name__ != "SimpleOperationWriteHandler":
                 raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
-            # noinspection PyUnresolvedReferences
-            # : (last_handler_in_block must be SimpleOperationWriteHandler in this case)
+            # (last_handler_in_block must be SimpleOperationWriteHandler in this case)
+            assert isinstance(self.last_handler_in_block, SimpleOperationWriteHandler)
             if (
                 self._disallow_nested
                 and self.last_handler_in_block.get_real_handler().__name__ == "CtxSimpleOpWriteHandler"
@@ -105,6 +118,7 @@ class BlockWriteHandler(AbstractWriteHandler):
 
         # Perform basic end-of-branch check (to see if we need an end, return or hold).
         # we don't need to do that on jumps or fallthrough
+        assert self.last_handler_in_block is not None
         if self._next_vertex is None and not self.last_handler_in_block.ended_on_jump:
             if previous_vertex is None:
                 # ???

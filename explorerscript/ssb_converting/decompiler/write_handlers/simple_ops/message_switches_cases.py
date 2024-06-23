@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
@@ -28,6 +29,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_
     MesageSwitchSimpleOpWriteHandler,
 )
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT
 from explorerscript.ssb_converting.util import Blk
 
@@ -35,15 +37,18 @@ from explorerscript.ssb_converting.util import Blk
 class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing cases for message_Switch* opcodes."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
+    def write_content(self) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
 
         # The parent handler MUST be a simple block handler -> block handler
         # and it's handler MUST be a message switch handler
+        assert self.parent is not None and self.parent.parent is not None
         if not isinstance(self.parent.parent.parent, MesageSwitchSimpleOpWriteHandler):
             raise ValueError("Message switch cases are only allowed as children of message switches.")
 

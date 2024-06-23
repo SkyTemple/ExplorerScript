@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var import ScnVarCompileHandler
@@ -33,8 +33,10 @@ from explorerscript.util import _, f
 from explorerscript.util import exps_int
 
 
-class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class SwitchHeaderScnCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Switch_h_scnContext, ScnVarCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_h_scnContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.scn_var_target: SsbOpParam | None = None
 
@@ -49,7 +51,7 @@ class SwitchHeaderScnCompileHandler(AbstractCompileHandler):
             return self._generate_operation(OP_SWITCH_SCENARIO_LEVEL, [self.scn_var_target])
         raise SsbCompilerError(f(_("Index for scn() if condition must be 0 or 1 (line {self.ctx.start.line}).")))
 
-    def add(self, obj: any):
+    def add(self, obj: ScnVarCompileHandler) -> None:
         if isinstance(obj, ScnVarCompileHandler):
             self.scn_var_target = obj.collect()
             return
