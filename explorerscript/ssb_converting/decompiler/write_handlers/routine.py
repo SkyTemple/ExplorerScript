@@ -44,7 +44,7 @@ class RoutineWriteHandler(AbstractWriteHandler):
     """
 
     def __init__(self, decompiler: ExplorerScriptSsbDecompiler, r_id: int, r_info: SsbRoutineInfo, r_graph: Graph):
-        super().__init__(r_graph.vs[0] if len(r_graph.vs) > 0 else None, decompiler, None)
+        super().__init__(r_graph.vs[0] if len(r_graph.vs) > 0 else None, decompiler, None)  # type: ignore
         self.r_id = r_id
         self.r_info = r_info
         self.r_graph = r_graph

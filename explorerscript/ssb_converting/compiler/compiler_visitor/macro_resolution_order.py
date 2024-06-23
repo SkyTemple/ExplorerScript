@@ -80,7 +80,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         name = str(ctx.MACRO_CALL())[1:]
         assert self._active_macro_name is not None
         self._create_vertex(name)
-        if not self._dependency_graph.are_connected(name, self._active_macro_name):
+        if not self._dependency_graph.are_adjacent(name, self._active_macro_name):
             self._dependency_graph.add_edge(name, self._active_macro_name)
 
     def _create_vertex(self, name: str) -> None:
@@ -100,6 +100,6 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
                     f(_("Dependency cycle detected while trying to resolve macros" " (for macro '{v['name']}')."))
                 )
 
-    def _has_path(self, a: Vertex, b: Vertex) -> bool:
+    def _has_path(self, a: Vertex | int, b: Vertex) -> bool:
         # TODO: can be done more efficiently
         return len(b.graph.get_all_simple_paths(a, b)) > 0

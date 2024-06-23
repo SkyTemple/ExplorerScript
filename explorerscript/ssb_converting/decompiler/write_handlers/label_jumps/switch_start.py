@@ -207,7 +207,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
             return f"{SsbOperator(op.params[0]).notation} value({op.params[1]})"  # type: ignore
         raise ValueError(f"Unknown switch-case {op.op_code.name}")
 
-    def _get_root_op(self, v: Vertex) -> SsbOperation | None:
+    def _get_root_op(self, v: Vertex | None) -> SsbOperation | None:
         if v is None:
             return None
         if isinstance(v["op"], SsbLabelJump):

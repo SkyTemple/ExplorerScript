@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 class LabelWriteHandler(AbstractWriteHandler):
     """Handles writing labels."""
 
-    vertex_that_started_block: Vertex
+    vertex_that_started_block: Vertex | None
     is_first_vertex_of_block: bool
 
     # Settings set by the markers
@@ -67,7 +67,7 @@ class LabelWriteHandler(AbstractWriteHandler):
         start_vertex: Vertex,
         decompiler: ExplorerScriptSsbDecompiler,
         parent: AbstractWriteHandler | None,
-        vertex_that_started_block: Vertex,
+        vertex_that_started_block: Vertex | None,
         is_first_vertex_of_block: bool,
     ):
         super().__init__(start_vertex, decompiler, parent)
@@ -118,7 +118,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             # We are at the end, since we already printed this entire branch somewhere else.
             # If we aren't the first vertex in this block, then the operation before this was a simple
             # one, we can set previous_vertex to None then and just print a jump statement.
-            previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None
+            previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None  # type: ignore
             self.decompiler.write_label_jump(op.id, previous_vertex_op)
             self.ended_on_jump = True
             logger.debug("Wrote the label!")

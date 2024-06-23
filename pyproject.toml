@@ -6,14 +6,14 @@ build-backend = "setuptools.build_meta"
 name = "explorerscript"
 version = "0.2.0"
 authors = [
-    {name = 'Marco "Capypara" Köpcke', email = "hello@capypara.de"},
+    { name = 'Marco "Capypara" Köpcke', email = "hello@capypara.de" },
     # see GitHub contributors list for additional people.
 ]
 description = "ExplorerScript and SSBScript: Script languages for decompiled SSB (Pokémon Mystery Dungeon Explorers of Sky)"
 readme = "README.rst"
 requires-python = ">=3.9"
 keywords = ["rom-hacking", "game-modding", "skytemple"]
-license = {text = "MIT"}
+license = { text = "MIT" }
 classifiers = [
     "Development Status :: 4 - Beta",
     'Programming Language :: Python',
@@ -24,7 +24,7 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    'igraph >= 0.8.0, < 0.10.5',
+    'igraph == 0.11.5',
     'antlr4-python3-runtime == 4.13.1'
 ]
 
@@ -49,4 +49,4 @@ extend-exclude = [
 ]
 
 [tools.ruff.lint]
-select = [ "W", "E", "F", "ARG"]
+select = ["W", "E", "F", "ARG"]

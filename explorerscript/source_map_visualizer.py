@@ -39,7 +39,7 @@ class SourceMapVisualizer:
         self._inserts = {}
 
         # Opcodes
-        for opcode_offset, mapping in self._source_map:  # type: ignore
+        for opcode_offset, mapping in self._source_map:
             if not isinstance(mapping, MacroSourceMapping):
                 if apply_for_macro_calls is None:
                     self._insert_comment(mapping.line, f"col: {mapping.column} - 0x{opcode_offset:0x}")

@@ -54,7 +54,7 @@ CheckEndBlockCallable: TypeAlias = Callable[["BlockWriteHandler", "AbstractWrite
 class BlockWriteHandler(AbstractWriteHandler):
     """Writes one block of output for ExplorerScript using an entry point vertex (the first in this block)."""
 
-    _next_vertex: Vertex
+    _next_vertex: Vertex | None
     # Optional callback to check if the block should be ended
     # Please note, that the block will also end automatically, if the end of the
     # graph has no reachable vertices anymore.
@@ -64,7 +64,7 @@ class BlockWriteHandler(AbstractWriteHandler):
     # If True, an exception is raised if the block contains any opcodes that would start another sub-block
     _disallow_nested: bool
 
-    vertex_that_started_block: Vertex
+    vertex_that_started_block: Vertex | None
     last_vertex: Vertex | None
 
     def __init__(
@@ -72,13 +72,13 @@ class BlockWriteHandler(AbstractWriteHandler):
         start_vertex: Vertex,
         decompiler: ExplorerScriptSsbDecompiler,
         parent: AbstractWriteHandler | None,
-        vertex_that_started_block: Vertex,
+        vertex_that_started_block: Vertex | None,
         *,
         check_end_block: CheckEndBlockCallable | None = None,
         disallow_nested: bool = False,
     ) -> None:
         super().__init__(start_vertex, decompiler, parent)
-        self._next_vertex: Vertex = start_vertex
+        self._next_vertex = start_vertex
         self.check_end_block = check_end_block
         self.last_handler_in_block = None
         self._disallow_nested = disallow_nested
@@ -86,7 +86,7 @@ class BlockWriteHandler(AbstractWriteHandler):
         self.vertex_that_started_block = vertex_that_started_block
         self.last_vertex = None
 
-    def write_content(self) -> Vertex:
+    def write_content(self) -> Vertex | None:
         from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
 
         previous_vertex = None

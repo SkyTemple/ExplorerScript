@@ -54,6 +54,7 @@ class IfWriteHandler(AbstractWriteHandler):
         op: SsbLabelJump = self.start_vertex["op"]
         m = op.get_marker()
         assert isinstance(m, IfStart)
+        else_edge: Edge | None
         if_edge, else_edge = self._write_if_header("if", op, self.start_vertex)
 
         if else_edge == if_edge:

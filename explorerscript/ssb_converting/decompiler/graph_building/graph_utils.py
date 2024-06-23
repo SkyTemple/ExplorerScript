@@ -28,6 +28,7 @@ import logging
 import operator
 from collections import Counter
 from threading import Lock
+from typing import Callable, Generator, cast, Sequence
 
 from igraph import Edge, OUT, Vertex, Graph
 
@@ -40,6 +41,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     IfStart,
     SwitchStart,
     ForeverStart,
+    LabelMarker,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,7 +56,7 @@ def find_lowest_and_highest_out_edge(g: Graph, vertex: Vertex, attr: str) -> tup
 
 
 cache_lock = Lock()
-find_first_common_next_vertex_in_edges_cache: dict[int, dict[str, list[Edge]]] = {}
+find_first_common_next_vertex_in_edges_cache: dict[int, dict[str, list[Edge] | None]] = {}
 
 
 def find_first_common_next_vertex_in_edges__clear_cache(g: Graph) -> None:
@@ -64,7 +66,7 @@ def find_first_common_next_vertex_in_edges__clear_cache(g: Graph) -> None:
 
 def find_first_common_next_vertex_in_edges(
     g: Graph,
-    es: list[Edge],
+    es: Sequence[Edge] | set[Edge],
     allow_open_branches: bool = False,
     allow_loops: bool = False,
     vs_to_not_visit: list[int] | None = None,
@@ -113,11 +115,11 @@ def find_first_common_next_vertex_in_edges(
 def _find_first_common_next_vertex_in_edges__impl(
     g: Graph,
     es: list[set[Edge | None]],
-    map_of_visited: [list[dict[int, int]]],
+    map_of_visited: list[dict[int, int]],
     allow_open_branches: bool,
     allow_loops: bool,
-    vs_to_not_visit: list[int] = None,
-    allow_loop_edges=True,
+    vs_to_not_visit: list[int] | None = None,
+    allow_loop_edges: bool = True,
 ) -> None | list[Edge]:
     """
     :param g: Graph
@@ -159,7 +161,7 @@ def _find_first_common_next_vertex_in_edges__impl(
         # Get next edge for all paths
         new_es: list[set[Edge | None]] = []
         for i, e_set in enumerate(es):
-            new_es_entry = set()
+            new_es_entry: set[Edge | None] = set()
             new_es.append(new_es_entry)
             for e in e_set:
                 if e is None:
@@ -171,7 +173,7 @@ def _find_first_common_next_vertex_in_edges__impl(
                         # Potential endless recursion situation. Abort.
                         new_es_entry.add(None)
                         continue
-                v_es = []
+                v_es: list[Edge] = []
                 for e in v_es:
                     if e.index in g.es:
                         v_es.append(e)
@@ -199,9 +201,10 @@ def _find_first_common_next_vertex_in_edges__impl(
                             new_es_entry.add(new_common_vertex_edges[0])
 
         es = new_es
+    return None
 
 
-def find_end_label_in_edges(g, es: list[Edge]) -> None | list[Edge | None]:
+def find_end_label_in_edges(g: Graph, es: list[Edge]) -> None | list[Edge | None]:
     """
     Finds the first vertex with SsbLabel op (actually list of edges that lead to it for each edge in es)
     which is reachable by some edges in es. We search for the ONE vertex joining most of the paths,
@@ -299,7 +302,7 @@ def find_end_label_in_edges(g, es: list[Edge]) -> None | list[Edge | None]:
             return None
 
     # collect original path in edges to this vertex
-    in_edges = []
+    in_edges: list[Edge | None] = []
     for i, in_e in enumerate(es):
         if in_e.target == common_v:
             in_edges.append(in_e)
@@ -319,7 +322,7 @@ def find_end_label_in_edges(g, es: list[Edge]) -> None | list[Edge | None]:
     return in_edges
 
 
-def has_path_not_using_any_loop_edges(v1, v2) -> bool:
+def has_path_not_using_any_loop_edges(v1: Vertex, v2: Vertex) -> bool:
     """Check if there are paths between v1 and v2 using only edges with the attribute "loop"=True."""
     edges = v1.out_edges()
     vs_already_visited = {v1}
@@ -335,7 +338,7 @@ def has_path_not_using_any_loop_edges(v1, v2) -> bool:
     return False
 
 
-def is_loop(g: Graph, v: Vertex, e: Edge):
+def is_loop(g: Graph, v: Vertex, e: Edge) -> bool:
     """Check if a vertex can reach itself again using the provided edge (check if the edge creates a loop)"""
     if not has_path_not_using_any_loop_edges(e.target_vertex, v):
         return False
@@ -357,7 +360,9 @@ def is_loop(g: Graph, v: Vertex, e: Edge):
     return not has_any_loops
 
 
-def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
+def find_first_label_vertex_with_marker_that_matches_condition(
+    g: Graph, cb: Callable[[LabelMarker], bool]
+) -> tuple[Vertex | None, int | None]:
     for v in g.vs:
         if isinstance(v["op"], SsbLabel):
             for i, marker in enumerate(v["op"].markers):
@@ -366,14 +371,15 @@ def find_first_label_vertex_with_marker_that_matches_condition(g: Graph, cb):
     return None, None
 
 
-def iterate_switch_edges(v: Vertex) -> tuple[Edge, list[SwitchCaseOperation], bool]:
+def iterate_switch_edges(v: Vertex) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool], None, None]:
     """See iterate_switch_edges_using_edges_and_op."""
     return iterate_switch_edges_using_edges_and_op(v.out_edges(), v["op"])
 
 
+# TODO: in_op isn't used. This is either wrong or the documentation should be updated.
 def iterate_switch_edges_using_edges_and_op(
-    case_edges: list[Edge], op: SsbLabelJump
-) -> tuple[Edge, list[SwitchCaseOperation], bool]:
+    case_edges: list[Edge], in_op: SsbLabelJump
+) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool], None, None]:
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 
@@ -399,22 +405,22 @@ def iterate_switch_edges_using_edges_and_op(
     map_switches_ops_edges = []
     already_yielded_default = False
     for i in range(0, number_of_switches_in_switch):
-        map_ops_edges = {}
+        map_ops_edges_s = {}
         for e in case_edges:
             if e["switch_ops"] is not None:
                 for op in e["switch_ops"]:
                     if op.switch_index == i:
-                        map_ops_edges[op.index] = e
-        map_ops_edges = [map_ops_edges[k] for k in sorted(map_ops_edges)]
+                        map_ops_edges_s[op.index] = e
+        map_ops_edges = [map_ops_edges_s[k] for k in sorted(map_ops_edges_s)]
         map_switches_ops_edges.append(map_ops_edges)
 
     cursors = [0 for _ in range(0, number_of_switches_in_switch)]
     first_cursor_not_at_end = 0
     next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
-    ops_for_edge = []
+    ops_for_edge: list[SwitchCaseOperation] = []
     while first_cursor_not_at_end < len(cursors):
         if map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]] != next_edge:
-            yield next_edge, ops_for_edge, next_edge["is_else"] and not already_yielded_default
+            yield next_edge, ops_for_edge, cast(bool, next_edge["is_else"]) and not already_yielded_default
             if next_edge["is_else"]:
                 already_yielded_default = True
             next_edge = map_switches_ops_edges[first_cursor_not_at_end][cursors[first_cursor_not_at_end]]
@@ -440,7 +446,7 @@ def iterate_switch_edges_using_edges_and_op(
             yield else_edge_candidates[0], [], True
 
 
-def reverse_find_edge(e, cb, loop_check: set[Vertex] = None) -> list[Edge]:
+def reverse_find_edge(e: Edge, cb: Callable[[Edge], bool], loop_check: set[int] | None = None) -> list[Edge]:
     """
     Returns all edges that match the condition, that can be reached by traversing backwards.
     If found, the search is ended at that edge.
@@ -459,7 +465,7 @@ def reverse_find_edge(e, cb, loop_check: set[Vertex] = None) -> list[Edge]:
 
 
 def get_out_edges_of_subgraph(
-    g: Graph, start: Vertex, to: list[Vertex | int], path_filter=lambda e, v: True
+    g: Graph, start: Vertex, to: list[Vertex | int], path_filter: Callable[[Edge, Vertex], bool] = lambda e, v: True
 ) -> set[int] | None:
     """
     Create a subgraph of the given list of vertices and then find all edges out of this sub-graph and return them
@@ -482,21 +488,23 @@ def get_out_edges_of_subgraph(
         for e in g.vs[v].out_edges():
             vertices.add(e.target)
     # Make sure we didn't re-add something we shouldn't be collecting all eids
-    for e in edges.copy():
-        if g.es[e].target_vertex != start and not path_filter(g.es[e], g.es[e].target_vertex):
-            edges.remove(e)
+    for e2 in edges.copy():
+        if g.es[e2].target_vertex != start and not path_filter(g.es[e2], g.es[e2].target_vertex):
+            edges.remove(e2)
     # Remove all vertices not in subgraph and remove all edges in the original graph = only out edges of this subg.
     es = {e.index for e in g.es}
     # new_g.delete_edges(edges)
     es = es - edges
     # new_g.delete_vertices(set(v.index for v in g.vs) - vertices)
-    for e in es.copy():
-        if g.es[e].source not in vertices or g.es[e].target not in vertices:
-            es.remove(e)
+    for e3 in es.copy():
+        if g.es[e3].source not in vertices or g.es[e3].target not in vertices:
+            es.remove(e3)
     return es
 
 
-def get_all_vertices_between(g, start, target, path_filter=lambda e, v: True):
+def get_all_vertices_between(
+    g: Graph, start: int, target: int, path_filter: Callable[[Edge, Vertex], bool] = lambda e, v: True
+) -> set[int]:
     paths_to_go_through = []
     for e in g.vs[start].out_edges():
         paths_to_go_through.append((e, {start}))
@@ -529,18 +537,18 @@ def find_switch_end_label(g: Graph, switch_id: int) -> Vertex | None:
     return None
 
 
-def any_incoming_edge_is_loop(v: Vertex):
+def any_incoming_edge_is_loop(v: Vertex) -> bool:
     for e in v.in_edges():
         if e["loop"]:
             return True
     return False
 
 
-def has_unclosed_blocks(paths: list[list[int]], g: Graph):
+def has_unclosed_blocks(paths: list[list[int]], g: Graph) -> bool:
     """Returns whether the path contains any unclosed ifs/switches or loops"""
     u_ifs = []
     u_switches = []
-    u_loops = []
+    u_loops: list[int] = []
     for p in paths:
         for iv in p:
             v = g.vs[iv]
@@ -553,12 +561,12 @@ def has_unclosed_blocks(paths: list[list[int]], g: Graph):
                 elif isinstance(m, ForeverStart):
                     u_loops.append(m.loop_id)
             elif isinstance(v["op"], SsbLabel):
-                for m in v["op"].markers:
+                for m2 in v["op"].markers:
                     try:
-                        if isinstance(m, IfEnd):
-                            u_ifs.remove(m.if_id)
-                        elif isinstance(m, SwitchEnd):
-                            u_switches.remove(m.switch_id)
+                        if isinstance(m2, IfEnd):
+                            u_ifs.remove(m2.if_id)
+                        elif isinstance(m2, SwitchEnd):
+                            u_switches.remove(m2.switch_id)
                     except ValueError:
                         pass
                 # We assume all loops are unclosed, because they can't reliably be fully closed in a situation like this.
@@ -566,7 +574,7 @@ def has_unclosed_blocks(paths: list[list[int]], g: Graph):
     return len(u_ifs) > 0 or len(u_switches) > 0 or len(u_loops) > 0
 
 
-def is_reachable_when_removing(g: Graph, check_id: int, start_id: int, remove_id: int):
+def is_reachable_when_removing(g: Graph, check_id: int, start_id: int, remove_id: int) -> bool:
     """Checks if check is still reachable from start if remove is removed"""
     g_copy: Graph = g.copy()
 

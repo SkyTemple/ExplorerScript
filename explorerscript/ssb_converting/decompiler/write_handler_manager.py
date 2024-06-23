@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING
 
@@ -45,7 +46,7 @@ class WriteHandlerManager:
         v: Vertex,
         decompiler: ExplorerScriptSsbDecompiler,
         parent: AbstractWriteHandler,
-        vertex_that_started_block: Vertex,
+        vertex_that_started_block: Vertex | None,
         is_first_vertex_of_block: bool,
     ) -> AbstractWriteHandler:
         from explorerscript.ssb_converting.decompiler.write_handlers.foreign_label import ForeignLabelWriteHandler

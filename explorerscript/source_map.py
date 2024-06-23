@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Iterable
-from typing import Mapping, Any
+from typing import Mapping, Any, Generator
 
 logger = logging.getLogger(__name__)
 
@@ -284,7 +284,7 @@ class SourceMap:
     def get_position_marks__macros(self) -> list[tuple[str | None, str, SourceMapPositionMark]]:
         return self._position_marks_macro
 
-    def __iter__(self) -> Iterable[tuple[int, SourceMapping]]:
+    def __iter__(self) -> Generator[tuple[int, SourceMapping], None, None]:
         """
         Iterates over all source map entries, including the macro entries.
         If it's a macro entry, macro_name is a string.

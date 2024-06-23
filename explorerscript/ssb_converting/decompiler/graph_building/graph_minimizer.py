@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from typing import TYPE_CHECKING
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 
@@ -72,7 +73,7 @@ sys.setrecursionlimit(10000)
 
 
 class SsbGraphMinimizer:
-    def __init__(self, routine_ops: list[list[SsbOperation]], optimize_ending_opcodes=True):
+    def __init__(self, routine_ops: list[list[SsbOperation]], optimize_ending_opcodes: bool = True):
         self._graphs: list[Graph] = []
         self.optimize_ending_opcodes = optimize_ending_opcodes
         for rtn_id, rtn in enumerate(routine_ops):
@@ -84,13 +85,13 @@ class SsbGraphMinimizer:
             # Map of label id -> id of opcode in routine
             label_indices: dict[int, int] = {}
             for i, op in enumerate(rtn):
-                v = g.add_vertex(i, label=None, op=op, style="solid", shape="ellipse")
+                v = g.add_vertex(f"v{i}", label=None, op=op, style="solid", shape="ellipse")
                 if isinstance(op, SsbLabel):
                     label_indices[op.id] = i
                 self._update_vertex_style(v)
             self._get_edges(g, rtn, rtn_id, label_indices)
 
-    def count_labels(self):
+    def count_labels(self) -> int:
         """Count labels without markers (real labels)"""
         count = 0
         for g in self._graphs:
@@ -99,7 +100,7 @@ class SsbGraphMinimizer:
                     count += 1
         return count
 
-    def optimize_paths(self):
+    def optimize_paths(self) -> None:
         """Perform some general optimizations. To be run before any of the other graph changing methods."""
         logger.debug("Optimizing paths...")
         for g in self._graphs:
@@ -115,7 +116,7 @@ class SsbGraphMinimizer:
                             vs_to_delete += self._optimize_paths__jump_after_label(g, jump=v, label=iv)
             g.delete_vertices(vs_to_delete)
 
-    def _optimize_paths__jump_after_label(self, g, jump, label):
+    def _optimize_paths__jump_after_label(self, g: Graph, jump: Vertex, label: Vertex) -> list[int]:
         """
         Remove all connections to labels that just jump to another label,
         with direct connections to that label.
@@ -138,7 +139,7 @@ class SsbGraphMinimizer:
             return [jump.index, label.index]
         return []
 
-    def build_branches(self):
+    def build_branches(self) -> None:
         """
         Marks "ifs" in the graph, based on Branch* opcodes.
         Examples to check:
@@ -212,7 +213,7 @@ class SsbGraphMinimizer:
 
             g.delete_vertices(vs_to_delete)
 
-    def invert_branches(self):
+    def invert_branches(self) -> None:
         """
         Invert if-start marker (mark them as not and switch the else/if branches), if the if-branch is
         currently empty.
@@ -221,7 +222,7 @@ class SsbGraphMinimizer:
         """
         logger.debug("Searching for inverted branches...")
         for i, g in enumerate(self._graphs):
-            vs_to_delete = set()
+            vs_to_delete: set[Vertex] = set()
             for v in g.vs:
                 if (
                     isinstance(v["op"], SsbLabelJump)
@@ -229,7 +230,10 @@ class SsbGraphMinimizer:
                     and v not in vs_to_delete
                 ):
                     # IS IF
-                    if_id = v["op"].get_marker().if_id
+                    marker = v["op"].get_marker()
+                    if TYPE_CHECKING:
+                        assert marker is not None and isinstance(marker, IfStart)
+                    if_id = marker.if_id
                     else_edge = [e for e in v.out_edges() if e["is_else"]][0]
                     if_edge = [e for e in v.out_edges() if not e["is_else"]][0]
                     v_at_if = if_edge.target_vertex
@@ -242,12 +246,12 @@ class SsbGraphMinimizer:
                         # Else ends directly at end of if-branch. Swap!
                         else_edge["is_else"] = False
                         if_edge["is_else"] = True
-                        v["op"].get_marker().is_not = True
+                        marker.is_not = True
                         self._update_edge_style(else_edge)
                         self._update_edge_style(if_edge)
                         self._update_vertex_style(v)
 
-    def group_branches(self):
+    def group_branches(self) -> None:
         """
         Groups branches right next to each other in the else-path, that have the same if-path together (if x or y)
         Examples to check:
@@ -271,9 +275,12 @@ class SsbGraphMinimizer:
                     first_run = True
                     while self._group_branches__is_if_group_possible(if_edge, v_at_else):
                         # Build an if-group
-                        original_op_v = v["op"]
+                        original_op_v: SsbLabelJump = v["op"]
                         original_op_v_at_else = v_at_else["op"]
-                        v_if_id = original_op_v.get_marker().if_id
+                        marker = original_op_v.get_marker()
+                        if TYPE_CHECKING:
+                            assert marker is not None and isinstance(marker, IfStart)
+                        v_if_id = marker.if_id
                         v_at_else_if_id = original_op_v_at_else.get_marker().if_id
                         if first_run:
                             # v op:                         Turn into SsbMultiIfStart
@@ -283,12 +290,14 @@ class SsbGraphMinimizer:
                                 MultiIfStart(v_if_id, [original_op_v.root, original_op_v_at_else.root])
                             )
                             # Obfuscate original opcode name and remove root, to clarify that this is a special case
-                            original_op_v.root = None
+                            original_op_v.unset_root()
                             original_op_v.op_code.name = "ES_OR_MULTI_IF"
                             first_run = False
                         else:
+                            marker_multi = v["op"].get_marker()
+                            assert marker_multi is not None and isinstance(marker_multi, MultiIfStart)
                             # v op:                         Add v_at_else op to original_ssb_ifs
-                            v["op"].get_marker().add_if(original_op_v_at_else.root)
+                            marker_multi.add_if(original_op_v_at_else.root)
                         # v_at_else:                    Delete
                         vs_to_delete.add(v_at_else)
                         # v:                            Reconnect with else of v_at_else
@@ -310,16 +319,16 @@ class SsbGraphMinimizer:
             g.delete_vertices(vs_to_delete)
 
     @staticmethod
-    def _group_branches__is_if_group_possible(base_if_v__edge_if, v_to_check):
+    def _group_branches__is_if_group_possible(base_if_v__edge_if: Edge, v_to_check: Vertex) -> bool:
         if isinstance(v_to_check["op"], SsbLabelJump) and isinstance(v_to_check["op"].get_marker(), IfStart):
             v_to_check__edge_if = [e for e in v_to_check.out_edges() if not e["is_else"]][0]
             return v_to_check__edge_if.target == base_if_v__edge_if.target
         return False
 
-    def build_and_group_switch_cases(self):
+    def build_and_group_switch_cases(self) -> None:
         logger.debug("Building switches...")
         for i, g in enumerate(self._graphs):
-            vs_to_delete = set()
+            vs_to_delete: set[Vertex | int] = set()
             current_switch_id = -1
             for v in g.vs:
                 if v["op"].op_code.name in OPS_SWITCH_CASE_MAP.keys() and v not in vs_to_delete:
@@ -335,7 +344,7 @@ class SsbGraphMinimizer:
                     self._update_vertex_style(v)
                     # Collect all cases for this switch
                     possible_cases = OPS_SWITCH_CASE_MAP[v["op"].root.op_code.name]
-                    next_vertex = out_edges[0].target_vertex
+                    next_vertex: Vertex | None = out_edges[0].target_vertex
                     current_flow_attributes = out_edges[0].attributes()
                     case_i = -1
                     while (
@@ -345,6 +354,7 @@ class SsbGraphMinimizer:
                         and next_vertex["op"].root.op_code.name in possible_cases
                     ):
                         case_i += 1
+                        else_edge: Edge | None
                         else_edge, case_edge = find_lowest_and_highest_out_edge(g, next_vertex, "flow_level")
                         if else_edge == case_edge:
                             else_edge = None
@@ -414,7 +424,7 @@ class SsbGraphMinimizer:
 
             g.delete_vertices(vs_to_delete)
 
-    def group_switch_cases(self):
+    def group_switch_cases(self) -> None:
         """Group cases of a switch or multi switch that jump to the same point"""
         logger.debug("Grouping switches...")
         for i, g in enumerate(self._graphs):
@@ -422,7 +432,7 @@ class SsbGraphMinimizer:
             for v in g.vs:
                 if isinstance(v["op"], SsbLabelJump) and isinstance(v["op"].get_marker(), SwitchStart):
                     # SWITCH. Let's see what cases can be combined
-                    case_targets = {}
+                    case_targets: dict[int, list[Edge]] = {}
                     for e in v.out_edges():
                         if e.target not in case_targets:
                             case_targets[e.target] = []
@@ -448,7 +458,7 @@ class SsbGraphMinimizer:
             if len(es_to_delete) > 0:
                 find_first_common_next_vertex_in_edges__clear_cache(g)
 
-    def build_switch_fallthroughs(self):
+    def build_switch_fallthroughs(self) -> None:
         """
         Mark switch fallthroughs (ends of case branches lead to next case branch or default).
         Examples:
@@ -470,9 +480,12 @@ class SsbGraphMinimizer:
                         if isinstance(possible_fallthrough_marker["op"], SsbLabel):
                             # If this label already has a switch end marker for this switch, it's
                             # obviously no fallthrough situation...
+                            v_marker = v["op"].get_marker()
+                            if TYPE_CHECKING:
+                                assert v_marker is not None and isinstance(v_marker, SwitchStart)
                             if any(
                                 [
-                                    isinstance(m, SwitchEnd) and m.switch_id == v["op"].get_marker().switch_id
+                                    isinstance(m, SwitchEnd) and m.switch_id == v_marker.switch_id
                                     for m in possible_fallthrough_marker["op"].markers
                                 ]
                             ):
@@ -493,7 +506,7 @@ class SsbGraphMinimizer:
                                         self._update_vertex_style(possible_fallthrough_marker)
                                         break
 
-    def build_loops(self):
+    def build_loops(self) -> None:
         """
         Build loop like structures, with beginnings, loopings points (continues) and breaking points.
         Valid loops don't contain any half-started ifs/switches or subloops. They all either end with proper
@@ -526,6 +539,7 @@ class SsbGraphMinimizer:
                         # Perform the backup proper loop detection check, to make sure we can't reach any of
                         # the continue and break points from outside the loop
                         if can_build:
+                            assert break_points is not None and continue_points is not None
                             for loop_edge in break_points + continue_points:
                                 if is_reachable_when_removing(g, loop_edge.source, 0, v.index):
                                     # We can't build this loop, the break point would be
@@ -533,13 +547,14 @@ class SsbGraphMinimizer:
                                     can_build = False
                                     break
                         if can_build:
+                            assert break_points is not None and continue_points is not None
                             loop_id += 1
                             # Mark break points end vertex as end of loop
                             if len(break_points) > 1:
                                 break_points[0].target_vertex["op"].add_marker(ForeverEnd(loop_id))
                                 self._update_vertex_style(break_points[0].target_vertex)
                             es_to_delete = set()
-                            vs_to_delete = set()
+                            vs_to_delete: set[int] = set()
                             v["op"].add_marker(ForeverStart(loop_id))
                             self._update_vertex_style(v)
                             for loop_edge in break_points:
@@ -624,13 +639,13 @@ class SsbGraphMinimizer:
         continues = [e for e in start.in_edges() if e["loop"]]
 
         # Make sure the loop doesn't cross any existing loops
-        def path_filter(e, v):
+        def path_filter(e: Edge, v: Vertex) -> bool:
             return not any_incoming_edge_is_loop(v)
 
-        immediate_breaks = get_out_edges_of_subgraph(start.graph, start, [c.source for c in continues], path_filter)
-        if immediate_breaks is None:
+        immediate_breaks_b = get_out_edges_of_subgraph(start.graph, start, [c.source for c in continues], path_filter)
+        if immediate_breaks_b is None:
             return False, None, None
-        immediate_breaks = [start.graph.es[e] for e in immediate_breaks]
+        immediate_breaks = [start.graph.es[e] for e in immediate_breaks_b]
         # Not done! To get the actual break points, find common next vertex
         # of all break points and then apply breakpoint status to all jumps before that, that can be accesed on any
         # path from the immediate breaks.
@@ -649,7 +664,7 @@ class SsbGraphMinimizer:
                 # hm, this really shouldn't happen.
                 logger.warning("Warning, break node was starting node when building loop")
                 return False, None, None
-            breaks = set(breaks)
+            breaks_set = set(breaks)
             # Get a list of all vertices visited from the immediate break points, to the first common end point
             vertices = set()
             for e in immediate_breaks:
@@ -659,15 +674,15 @@ class SsbGraphMinimizer:
                     )
                 )
             # Check all other in edges of this loop end, we may have more allowed break points in the list of vertices
-            for e in break_target.in_edges():
-                if e.source in vertices:
-                    breaks.add(e)
+            for e2 in break_target.in_edges():
+                if e2.source in vertices:
+                    breaks_set.add(e2)
         else:
-            breaks = immediate_breaks
+            breaks_set = set(immediate_breaks)
 
-        return True, list(b for b in breaks if b not in continues), continues
+        return True, list(b for b in breaks_set if b not in continues), continues
 
-    def remove_label_markers(self):
+    def remove_label_markers(self) -> None:
         logger.debug("Removing unnecessary labels...")
         for i, g in enumerate(self._graphs):
             find_first_common_next_vertex_in_edges__clear_cache(g)
@@ -733,11 +748,11 @@ class SsbGraphMinimizer:
                         vs_to_delete.add(v)
             g.delete_vertices(vs_to_delete)
 
-    def _get_edges(self, g: Graph, rtn: list[SsbOperation], rtn_id: int, label_indices: dict[int, int]):
+    def _get_edges(self, g: Graph, rtn: list[SsbOperation], rtn_id: int, label_indices: dict[int, int]) -> None:
         """
         Get the edges for the graph g by a list of SsbOperations. Will branch at SsbLabelJumps.
         """
-        already_visited = set()
+        already_visited: set[int] = set()
         self._get_edges__add_edge(g, rtn, rtn_id, label_indices, 0, already_visited)
         return
         # TODO: below is for debugging.
@@ -793,8 +808,8 @@ class SsbGraphMinimizer:
         label_indices: dict[int, int],
         op_i: int,
         already_visited: set[int],
-        flow_level=0,
-    ):
+        flow_level: int = 0,
+    ) -> None:
         nxt_stack = [(flow_level, op_i)]
         while len(nxt_stack) > 0:
             flow_level, op_i = nxt_stack.pop()
@@ -811,7 +826,7 @@ class SsbGraphMinimizer:
                 nxt_stack.insert(0, (flow_level, nxt))
 
     def _get_edges__get_next_for(
-        self, g, rtn: list[SsbOperation], rtn_id: int, flow_level: int, label_indices: dict[int, int], op_i: int
+        self, g: Graph, rtn: list[SsbOperation], rtn_id: int, flow_level: int, label_indices: dict[int, int], op_i: int
     ) -> list[tuple[int, int]]:
         """
         Returns a list of next opcodes to visit from this opcode and
@@ -834,11 +849,16 @@ class SsbGraphMinimizer:
             next_ops.append((flow_level, op_i + 1))
         # If this is a label jump, we can also continue at the label
         if is_label_jump:
+            if TYPE_CHECKING:
+                assert isinstance(op, SsbLabelJump)
+            assert op.label is not None
             if op.label.routine_id == rtn_id:
                 next_ops.append((flow_level + 1, label_indices[op.label.id]))
             else:
                 # We need a foreign label reference
-                v = g.add_vertex(-1, label=None, op=SsbForeignLabel(op.label), style="solid", shape="ellipse")
+                v = g.add_vertex(
+                    f"FLR<from{op_i}>", label=None, op=SsbForeignLabel(op.label), style="solid", shape="ellipse"
+                )
                 self._update_vertex_style(v)
                 next_ops.append((flow_level + 1, v.index))
 
@@ -851,7 +871,14 @@ class SsbGraphMinimizer:
         return next_ops
 
     @classmethod
-    def _reconnect(cls, g, old_vertex, old_vertex_edge_to_remove, new_vertex_to_connect, do_not_delete=False):
+    def _reconnect(
+        cls,
+        g: Graph,
+        old_vertex: Vertex | int,
+        old_vertex_edge_to_remove: Edge,
+        new_vertex_to_connect: Vertex,
+        do_not_delete: bool = False,
+    ) -> Edge:
         attr = old_vertex_edge_to_remove.attributes()
         if not do_not_delete:
             g.delete_edges(old_vertex_edge_to_remove)
@@ -860,7 +887,7 @@ class SsbGraphMinimizer:
         return e
 
     @staticmethod
-    def _update_vertex_style(v):
+    def _update_vertex_style(v: Vertex) -> None:
         v["label"] = f"<{v['name']}>{v['op'].op_code.name}"
         if isinstance(v["op"], SsbForeignLabel):
             v["style"] = "striped"
@@ -895,26 +922,26 @@ class SsbGraphMinimizer:
             if len(v["op"].markers) > 0:
                 marker_str = ""
                 v["fillcolor"] = ""
-                for marker in v["op"].markers:
-                    if isinstance(marker, CallJump):
+                for jmarker in v["op"].markers:
+                    if isinstance(jmarker, CallJump):
                         v["fillcolor"] += "#A3C96D:"
-                    elif isinstance(marker, MultiIfStart):
+                    elif isinstance(jmarker, MultiIfStart):
                         v["fillcolor"] += "#E3BF00:"
-                    elif isinstance(marker, IfStart):
+                    elif isinstance(jmarker, IfStart):
                         v["fillcolor"] += "#E36A00:"
-                    elif isinstance(marker, SwitchStart):
+                    elif isinstance(jmarker, SwitchStart):
                         v["fillcolor"] += "#00BC3F:"
-                    elif isinstance(marker, ForeverContinue):
+                    elif isinstance(jmarker, ForeverContinue):
                         v["fillcolor"] += "#0C00BC:"
-                    elif isinstance(marker, ForeverBreak):
+                    elif isinstance(jmarker, ForeverBreak):
                         v["fillcolor"] += "#6694FF:"
-                    marker_str += str(marker) + ";"
+                    marker_str += str(jmarker) + ";"
                 marker_str = marker_str[:-1]
                 v["fillcolor"] = v["fillcolor"][:-1]
                 v["label"] += f" ({marker_str})"
 
     @staticmethod
-    def _update_edge_style(e):
+    def _update_edge_style(e: Edge) -> None:
         e["color"] = "black"
         e["label"] = str(e["flow_level"])
         if e["is_else"]:
@@ -931,9 +958,9 @@ class SsbGraphMinimizer:
 
     # Additional utility transformations for debugging:
 
-    def remove_all_labels_and_simple_jumps(self):
+    def remove_all_labels_and_simple_jumps(self) -> None:
         for i, g in enumerate(self._graphs):
-            vs_to_delete = set()
+            vs_to_delete: set[Vertex] = set()
             first_pass = True
             while first_pass or len(vs_to_delete) > 0:
                 vs_to_delete = set()
@@ -954,7 +981,7 @@ class SsbGraphMinimizer:
                 assert not isinstance(v["op"], SsbLabel)
                 assert not (isinstance(v["op"], SsbLabelJump) and v["op"].root.op_code.name == OP_JUMP)
 
-    def _delete_and_reconnect(self, v, vs_to_delete):
+    def _delete_and_reconnect(self, v: Vertex, vs_to_delete: set[Vertex]) -> None:
         g = v.graph
         in_edges = v.in_edges()
         out_edges = v.out_edges()

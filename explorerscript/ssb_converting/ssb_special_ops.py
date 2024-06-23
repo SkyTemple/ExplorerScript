@@ -403,7 +403,7 @@ class SsbForeignLabel(SsbOperation):
 class SsbLabelJump(SsbOperation):
     """An op that jumps to a label."""
 
-    root: SsbOperation
+    _root: SsbOperation | None
     # May be None, if so the connected edges determine the different jumps
     label: SsbLabel | None
     # Markers for this jump (type of jump)
@@ -419,9 +419,21 @@ class SsbLabelJump(SsbOperation):
             label_id = -1
         #                                                                             Params only for debugging
         super().__init__(root.offset, SsbOpCode(-1, f"ES_JUMP<{root.op_code.name}>"), [label_id])
-        self.root = root
+        self._root = root
         self.label = label
         self.markers = []
+
+    @property
+    def root(self) -> SsbOperation:
+        assert self._root is not None
+        return self._root
+
+    @root.setter
+    def root(self, value: SsbOperation) -> None:
+        self._root = value
+
+    def unset_root(self) -> None:
+        self._root = None
 
     def add_marker(self, m: LabelJumpMarker) -> None:
         if len(self.markers) > 0:
