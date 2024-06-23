@@ -22,12 +22,13 @@
 #
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from typing import Any, MutableSequence, TypeVar, Generic, TYPE_CHECKING
 
-try:
+if sys.version_info >= (3, 10):
     from typing import TypeAlias
-except ImportError:
+else:
     from typing_extensions import TypeAlias
 
 from antlr4 import ParserRuleContext

@@ -23,11 +23,12 @@
 from __future__ import annotations
 
 import logging
+import sys
 from typing import Callable, TYPE_CHECKING
 
-try:
+if sys.version_info >= (3, 10):
     from typing import TypeAlias
-except ImportError:
+else:
     from typing_extensions import TypeAlias
 
 from igraph import Vertex

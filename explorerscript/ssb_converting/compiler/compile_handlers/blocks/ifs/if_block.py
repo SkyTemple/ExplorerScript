@@ -22,11 +22,12 @@
 #
 from __future__ import annotations
 
+import sys
 from typing import Union
 
-try:
+if sys.version_info >= (3, 10):
     from typing import TypeAlias
-except ImportError:
+else:
     from typing_extensions import TypeAlias
 
 from antlr4 import ParserRuleContext
