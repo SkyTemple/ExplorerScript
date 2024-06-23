@@ -23,7 +23,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, TypeAlias, TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 from igraph import Vertex
 

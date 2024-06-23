@@ -26,7 +26,12 @@ import argparse
 import json
 import os
 import sys
-from typing import TypedDict, Required
+from typing import TypedDict
+
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 from explorerscript.cli import SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME, check_settings, SETTINGS
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
@@ -53,11 +58,11 @@ class OpDict(TypedDict):
     params: list[int | SsbParamDict]
 
 
-class RoutineDict(TypedDict, total=False):
-    type: Required[str]
-    name: str
-    target_id: int | str | None
-    ops: Required[list[OpDict]]
+class RoutineDict(TypedDict):
+    type: str
+    name: NotRequired[str]
+    target_id: NotRequired[int | str | None]
+    ops: list[OpDict]
 
 
 def build_ops(ops: list[SsbOperation]) -> list[OpDict]:

@@ -22,7 +22,12 @@
 #
 from __future__ import annotations
 
-from typing import TypeAlias, Union, Type
+from typing import Union, Type
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError

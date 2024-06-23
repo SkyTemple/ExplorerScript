@@ -26,7 +26,12 @@ import argparse
 import json
 import os
 import sys
-from typing import TypedDict, Any, Required, MutableSequence
+from typing import TypedDict, Any, MutableSequence
+
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 from explorerscript.cli import (
     check_settings,
@@ -69,11 +74,11 @@ class ParamDict(TypedDict):
     value: Any  # TODO
 
 
-class RoutineDict(TypedDict, total=False):
-    type: Required[str]
-    ops: Required[list[OpDict]]
-    name: str
-    target_id: str
+class RoutineDict(TypedDict):
+    type: str
+    ops: list[OpDict]
+    name: NotRequired[str]
+    target_id: NotRequired[str]
 
 
 def parse_pos_mark_arg(arg_str: str) -> tuple[int, int]:

@@ -22,7 +22,12 @@
 #
 from __future__ import annotations
 
-from typing import TypeAlias, Union
+from typing import Union
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 from antlr4 import ParserRuleContext
 

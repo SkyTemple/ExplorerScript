@@ -23,7 +23,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, MutableSequence, TypeVar, Generic, TypeAlias, TYPE_CHECKING
+from typing import Any, MutableSequence, TypeVar, Generic, TYPE_CHECKING
+
+try:
+    from typing import TypeAlias
+except ImportError:
+    from typing_extensions import TypeAlias
 
 from antlr4 import ParserRuleContext
 

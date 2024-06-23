@@ -6,3 +6,4 @@ types-antlr4-python3-runtime<=4.13.2
 skytemple-3rdparty-typestubs==1.1.0
 ruff
 mypy
+typing_extensions >= 4.0; python_version < "3.11"
