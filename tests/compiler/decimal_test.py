@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 import unittest
+from typing import MutableSequence
 
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamFixedPoint, SsbOpParam
@@ -103,13 +104,13 @@ class DecimalTestCase(unittest.TestCase):
     def test_decimal_suffix_zero_whole_exps(self) -> None:
         self.assertEqual(DECIMAL_SUFFIX_ZEROS_EXPECTED, self.compile_exps(DECIMAL_SUFFIX_ZEROS))
 
-    def compile_ssbscript(self, src: str) -> list[SsbOpParam]:
+    def compile_ssbscript(self, src: str) -> MutableSequence[SsbOpParam]:
         compiler = SsbScriptSsbCompiler()
         compiler.compile(src)
         assert compiler.routine_ops
         return compiler.routine_ops[0][0].params
 
-    def compile_exps(self, src: str) -> list[SsbOpParam]:
+    def compile_exps(self, src: str) -> MutableSequence[SsbOpParam]:
         compiler = ExplorerScriptSsbCompiler("N/A", [])
         compiler.compile(src, "/dev/null")
         assert compiler.routine_ops

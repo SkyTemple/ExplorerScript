@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import logging
+from typing import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
@@ -55,8 +56,8 @@ class ExplorerScriptSsbDecompiler:
     """
 
     # all variables are private
-    _routine_infos: list[SsbRoutineInfo]
-    _routine_ops: list[list[SsbOperation]]
+    _routine_infos: MutableSequence[SsbRoutineInfo]
+    _routine_ops: MutableSequence[MutableSequence[SsbOperation]]
     named_coroutines: dict[int, str]
     _output: str
     indent: int
@@ -70,9 +71,9 @@ class ExplorerScriptSsbDecompiler:
 
     def __init__(
         self,
-        routine_infos: list[SsbRoutineInfo],
-        routine_ops: list[list[SsbOperation]],
-        named_coroutines: list[SsbCoroutine],
+        routine_infos: MutableSequence[SsbRoutineInfo],
+        routine_ops: MutableSequence[MutableSequence[SsbOperation]],
+        named_coroutines: Sequence[SsbCoroutine],
         performance_progress_list_var_name: str,
         dungeon_mode_constants: DungeonModeConstants,
     ):

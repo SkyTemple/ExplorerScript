@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, MutableSequence
 
 from antlr4 import ParserRuleContext
 
@@ -148,7 +148,7 @@ class SsbLabelJumpBlueprint:
     compiler_ctx: CompilerCtx
     ctx: ParserRuleContext
     op_code_name: str
-    params: list[SsbOpParam]
+    params: MutableSequence[SsbOpParam]
     number: int | None
     jump_is_positive: bool
 
@@ -157,13 +157,13 @@ class SsbLabelJumpBlueprint:
         compiler_ctx: CompilerCtx,
         ctx: ParserRuleContext,
         op_code_name: str,
-        params: list[SsbOpParam],
+        params: MutableSequence[SsbOpParam],
         jump_is_positive: bool = True,
     ):
         self.compiler_ctx: CompilerCtx = compiler_ctx
         self.ctx = ctx
         self.op_code_name: str = op_code_name
-        self.params: list[SsbOpParam] = params
+        self.params = params
         # offset indices for these blueprints can be pre-allocated.
         self.number = None
         # Whether or not this jump is negated (False) or not (True)

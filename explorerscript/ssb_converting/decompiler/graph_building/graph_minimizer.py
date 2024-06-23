@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 
@@ -73,7 +73,7 @@ sys.setrecursionlimit(10000)
 
 
 class SsbGraphMinimizer:
-    def __init__(self, routine_ops: list[list[SsbOperation]], optimize_ending_opcodes: bool = True):
+    def __init__(self, routine_ops: Sequence[Sequence[SsbOperation]], optimize_ending_opcodes: bool = True):
         self._graphs: list[Graph] = []
         self.optimize_ending_opcodes = optimize_ending_opcodes
         for rtn_id, rtn in enumerate(routine_ops):
@@ -350,7 +350,7 @@ class SsbGraphMinimizer:
                     while (
                         next_vertex is not None
                         and isinstance(next_vertex["op"], SsbLabelJump)
-                        and next_vertex["op"].root is not None
+                        and next_vertex["op"].maybe_root is not None
                         and next_vertex["op"].root.op_code.name in possible_cases
                     ):
                         case_i += 1
@@ -412,7 +412,7 @@ class SsbGraphMinimizer:
                             # Remove the jumps before the common end label (if they exist), we don't need them anymore.
                             if (
                                 isinstance(e.source_vertex["op"], SsbLabelJump)
-                                and e.source_vertex["op"].root is not None
+                                and e.source_vertex["op"].maybe_root is not None
                                 and e.source_vertex["op"].root.op_code.name == OP_JUMP
                             ):
                                 vs_to_delete.add(e.source_vertex.index)
@@ -691,7 +691,7 @@ class SsbGraphMinimizer:
             for v in g.vs:
                 if (
                     isinstance(v["op"], SsbLabelJump)
-                    and v["op"].root is not None
+                    and v["op"].maybe_root is not None
                     and v["op"].root.op_code.name == OP_JUMP
                     and v["op"].get_marker() is None
                 ):
@@ -748,7 +748,7 @@ class SsbGraphMinimizer:
                         vs_to_delete.add(v)
             g.delete_vertices(vs_to_delete)
 
-    def _get_edges(self, g: Graph, rtn: list[SsbOperation], rtn_id: int, label_indices: dict[int, int]) -> None:
+    def _get_edges(self, g: Graph, rtn: Sequence[SsbOperation], rtn_id: int, label_indices: dict[int, int]) -> None:
         """
         Get the edges for the graph g by a list of SsbOperations. Will branch at SsbLabelJumps.
         """
@@ -803,7 +803,7 @@ class SsbGraphMinimizer:
     def _get_edges__add_edge(
         self,
         g: Graph,
-        rtn: list[SsbOperation],
+        rtn: Sequence[SsbOperation],
         rtn_id: int,
         label_indices: dict[int, int],
         op_i: int,
@@ -826,7 +826,13 @@ class SsbGraphMinimizer:
                 nxt_stack.insert(0, (flow_level, nxt))
 
     def _get_edges__get_next_for(
-        self, g: Graph, rtn: list[SsbOperation], rtn_id: int, flow_level: int, label_indices: dict[int, int], op_i: int
+        self,
+        g: Graph,
+        rtn: Sequence[SsbOperation],
+        rtn_id: int,
+        flow_level: int,
+        label_indices: dict[int, int],
+        op_i: int,
     ) -> list[tuple[int, int]]:
         """
         Returns a list of next opcodes to visit from this opcode and

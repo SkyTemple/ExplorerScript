@@ -21,6 +21,7 @@
 #  SOFTWARE.
 #
 import unittest
+from typing import MutableSequence
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
@@ -88,13 +89,13 @@ class PositionMarkArgTestCase(unittest.TestCase):
     def test_negative_invalid_decimal_exps(self) -> None:
         self.assertRaises(SsbCompilerError, lambda: self.compile_exps(NEGATIVE_INVALID_DECIMAL))
 
-    def compile_ssbscript(self, src: str) -> list[SsbOpParam]:
+    def compile_ssbscript(self, src: str) -> MutableSequence[SsbOpParam]:
         compiler = SsbScriptSsbCompiler()
         compiler.compile(src)
         assert compiler.routine_ops
         return compiler.routine_ops[0][0].params
 
-    def compile_exps(self, src: str) -> list[SsbOpParam]:
+    def compile_exps(self, src: str) -> MutableSequence[SsbOpParam]:
         compiler = ExplorerScriptSsbCompiler("N/A", [])
         compiler.compile(src, "/dev/null")
         assert compiler.routine_ops

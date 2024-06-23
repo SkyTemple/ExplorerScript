@@ -24,6 +24,8 @@
 #
 from __future__ import annotations
 
+from typing import MutableSequence
+
 from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamConstant, SsbOpCode
@@ -206,7 +208,7 @@ class ExplorerScriptMacro:
         return SsbOperation(new_op_idx, blueprint_op.op_code, self._process_parameters(blueprint_op.params, params))
 
     def _process_parameters(
-        self, original_params: list[SsbOpParam], macro_params: dict[str, SsbOpParam]
+        self, original_params: MutableSequence[SsbOpParam], macro_params: dict[str, SsbOpParam]
     ) -> list[SsbOpParam]:
         """
         Returns a copy of original_params,

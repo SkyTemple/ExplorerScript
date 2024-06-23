@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import string
 from enum import Enum
-from typing import Union
+from typing import Union, MutableSequence
 
 
 def escape_quotes(string: str) -> str:
@@ -303,9 +303,9 @@ SsbOpParam = Union[
 class SsbOperation:
     offset: int
     op_code: SsbOpCode
-    params: list[SsbOpParam]
+    params: MutableSequence[SsbOpParam]
 
-    def __init__(self, offset: int, op_code: SsbOpCode, params: list[SsbOpParam]):
+    def __init__(self, offset: int, op_code: SsbOpCode, params: MutableSequence[SsbOpParam]):
         self.offset = offset
         self.op_code = op_code
         self.params = params

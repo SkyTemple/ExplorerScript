@@ -72,7 +72,7 @@ class AbstractCompileHandler(ABC, Generic[CTX, HANDL]):
     def _raise_add_error(self, obj: Any) -> None:
         raise ValueError(f"Compiler logic error: {self.__class__} does not support {type(obj)} handlers.")
 
-    def _generate_operation(self, op_name: str, params: list[SsbOpParam]) -> SsbOperation:
+    def _generate_operation(self, op_name: str, params: MutableSequence[SsbOpParam]) -> SsbOperation:
         """Generates an operation, increases the counter and updates the source map"""
         return self._register_operation(SsbOperation(self.compiler_ctx.counter_ops(), SsbOpCode(-1, op_name), params))
 

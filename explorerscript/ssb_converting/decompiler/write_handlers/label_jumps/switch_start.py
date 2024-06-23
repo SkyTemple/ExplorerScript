@@ -211,5 +211,5 @@ class SwitchWriteHandler(AbstractWriteHandler):
         if v is None:
             return None
         if isinstance(v["op"], SsbLabelJump):
-            return v["op"].root
+            return v["op"].maybe_root
         return v["op"]

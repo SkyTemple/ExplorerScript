@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import logging
 import warnings
+from typing import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
@@ -50,8 +51,8 @@ class SsbScriptSsbDecompiler:
     """
 
     # all variables are private:
-    _routine_infos: list[SsbRoutineInfo]
-    _routine_ops: list[list[SsbOperation]]
+    _routine_infos: MutableSequence[SsbRoutineInfo]
+    _routine_ops: MutableSequence[MutableSequence[SsbOperation]]
     _named_coroutines: dict[int, str]
     _output: str
     indent: int
@@ -60,9 +61,9 @@ class SsbScriptSsbDecompiler:
 
     def __init__(
         self,
-        routine_infos: list[SsbRoutineInfo],
-        routine_ops: list[list[SsbOperation]],
-        named_coroutines: list[SsbCoroutine],
+        routine_infos: MutableSequence[SsbRoutineInfo],
+        routine_ops: MutableSequence[MutableSequence[SsbOperation]],
+        named_coroutines: Sequence[SsbCoroutine],
     ):
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops

@@ -26,7 +26,7 @@ import argparse
 import json
 import os
 import sys
-from typing import TypedDict, Any, Required
+from typing import TypedDict, Any, Required, MutableSequence
 
 from explorerscript.cli import (
     check_settings,
@@ -126,10 +126,10 @@ def read_ops(ops: list[OpDict]) -> list[SsbOperation]:
 
 def read_routines(
     routines: list[RoutineDict],
-) -> tuple[list[SsbRoutineInfo], list[SsbCoroutine], list[list[SsbOperation]]]:
+) -> tuple[list[SsbRoutineInfo], list[SsbCoroutine], MutableSequence[MutableSequence[SsbOperation]]]:
     routine_infos = []
     named_coroutines = []
-    routine_ops = []
+    routine_ops: MutableSequence[MutableSequence[SsbOperation]] = []
     for r in routines:
         if "ops" not in r:
             raise ValueError("Ops for a routine not set.")

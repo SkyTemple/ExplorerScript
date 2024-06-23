@@ -424,6 +424,10 @@ class SsbLabelJump(SsbOperation):
         self.markers = []
 
     @property
+    def maybe_root(self) -> SsbOperation | None:
+        return self._root
+
+    @property
     def root(self) -> SsbOperation:
         assert self._root is not None
         return self._root
