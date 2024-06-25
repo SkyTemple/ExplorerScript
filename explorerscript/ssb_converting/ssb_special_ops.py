@@ -468,7 +468,9 @@ class SwitchCaseOperation:
         return f"{self.switch_index}:{self.index} :: {self.op}"
 
 
-def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], routine_id: int) -> SsbOperation:
+def process_op_for_jump(
+    op: SsbOperation, known_labels: dict[int, SsbLabel], routine_id: int, routine_end_offsets: list[int]
+) -> SsbOperation:
     """
     Processes the operation.
     If it doesn't contain a jump to a memory offset, op is simply returned.
@@ -508,6 +510,14 @@ def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], rou
                 next_label_id = 0
             else:
                 next_label_id = max(label.id for label in known_labels.values()) + 1
+            # We need to calculate the routine ID based on the offset, because it might be that the label is in a
+            # LATER routine we haven't passed yet or even in one before.
+            while routine_id > 0 and old_offset < routine_end_offsets[routine_id - 1]:
+                routine_id -= 1
+            while old_offset > routine_end_offsets[routine_id]:
+                routine_id += 1
+                if routine_id >= len(routine_end_offsets):
+                    raise ValueError("A jump operation went past EOF.")
             label = SsbLabel(next_label_id, routine_id)
             known_labels[old_offset] = label
         new_params = param_list.copy()
