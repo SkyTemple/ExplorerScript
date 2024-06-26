@@ -65,6 +65,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     ForeverEnd,
     SsbForeignLabel,
     CallJump,
+    OPS_THAT_WILL_JUMP_GUARANTEED,
 )
 
 logger = logging.getLogger(__name__)
@@ -698,6 +699,8 @@ class SsbGraphMinimizer:
                     in_edges = v.in_edges()
                     out_edges = v.out_edges()
                     if len(in_edges) != 0:
+                        if not (len(in_edges) == 1 and len(out_edges) == 1):
+                            v.graph.write("/tmp/gv/failure.dot")
                         assert len(in_edges) == 1 and len(out_edges) == 1
                         v_before = in_edges[0].source_vertex
                         v_after = out_edges[0].target_vertex
@@ -856,8 +859,13 @@ class SsbGraphMinimizer:
         if isinstance(op, SsbLabelJump):
             real_op = op.root
             is_label_jump = True
-        # If this is not a guaranteed jump or the last op_code in rtn, one possible branch is always just the next op:
-        if len(rtn) > op_i + 1 and (flow_can_not_end or real_op.op_code.name not in OPS_THAT_END_CONTROL_FLOW):
+        is_guaranteed_jump = real_op.op_code.name in OPS_THAT_WILL_JUMP_GUARANTEED
+        # If this is not a guaranteed jump or the last op_code in rtn, one possible branch is always just the next op,
+        if (
+            not is_guaranteed_jump
+            and len(rtn) > op_i + 1
+            and (flow_can_not_end or real_op.op_code.name not in OPS_THAT_END_CONTROL_FLOW)
+        ):
             next_ops.append((flow_level, op_i + 1))
         # If this is a label jump, we can also continue at the label
         if is_label_jump:

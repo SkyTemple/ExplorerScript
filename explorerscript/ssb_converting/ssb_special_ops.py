@@ -170,10 +170,11 @@ OP_END = "End"
 # The opcode to insert if a control flow ending opcode needs to be inserted
 OP_DUMMY_END = OP_RETURN
 
+OPS_THAT_WILL_JUMP_GUARANTEED = [OP_JUMP, "JumpCommon"]
 # These ops end the control flow in the current routine
 # (usually by jumping somewhere else and NOT "automatically" returining.)
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
-OPS_THAT_END_CONTROL_FLOW = [OP_JUMP, OP_RETURN, OP_END, OP_HOLD, "JumpCommon", "Destroy"]
+OPS_THAT_END_CONTROL_FLOW = OPS_THAT_WILL_JUMP_GUARANTEED + [OP_RETURN, OP_END, OP_HOLD, "Destroy"]
 
 OPS_CTX_LIVES = "lives"
 OPS_CTX_OBJECT = "object"
