@@ -1,2 +1,2 @@
 include explorerscript/py.typed
-recursive-include explorerscript/antlr *
+recursive-include explorerscript/antlr *.g4

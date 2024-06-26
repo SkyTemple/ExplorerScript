@@ -735,8 +735,14 @@ class SsbGraphMinimizer:
                         if (
                             v["op"].id == 0
                             or in_edges[0]["loop"]
-                            or isinstance(v["op"], SsbLabel)
-                            and len(v["op"].markers) > 0
+                            or (
+                                isinstance(v["op"], SsbLabel)
+                                and (
+                                    v["op"].force_write
+                                    or v["op"].referenced_from_other_routine
+                                    or len(v["op"].markers) > 0
+                                )
+                            )
                         ):
                             # The label is a special label, loops, or is the first operation, we really
                             # shouldn't remove it

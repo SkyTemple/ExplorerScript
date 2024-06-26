@@ -510,6 +510,7 @@ def process_op_for_jump(
                 next_label_id = 0
             else:
                 next_label_id = max(label.id for label in known_labels.values()) + 1
+            our_routine_id = routine_id
             # We need to calculate the routine ID based on the offset, because it might be that the label is in a
             # LATER routine we haven't passed yet or even in one before.
             while routine_id > 0 and old_offset < routine_end_offsets[routine_id - 1]:
@@ -519,6 +520,8 @@ def process_op_for_jump(
                 if routine_id >= len(routine_end_offsets):
                     raise ValueError("A jump operation went past EOF.")
             label = SsbLabel(next_label_id, routine_id)
+            if routine_id != our_routine_id:
+                label.referenced_from_other_routine = True
             known_labels[old_offset] = label
         new_params = param_list.copy()
         del new_params[jump_param_idx]
