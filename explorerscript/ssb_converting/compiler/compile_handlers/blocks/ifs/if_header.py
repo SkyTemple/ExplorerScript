@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,53 +20,66 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional
+from __future__ import annotations
+
+import sys
+from typing import Union
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.bit import IfHeaderBitCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import \
-    IfHeaderNegatableCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import \
-    IfHeaderOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.negatable import (
+    IfHeaderNegatableCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.operator import (
+    IfHeaderOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.header.scn import IfHeaderScnCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
-from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_PERFORMANCE, OPS_BRANCH
+from explorerscript.ssb_converting.ssb_special_ops import OPS_BRANCH
 from explorerscript.util import _, f
 
+_SupportedHandlers: TypeAlias = Union[
+    IfHeaderBitCompileHandler,
+    IfHeaderOperatorCompileHandler,
+    IfHeaderNegatableCompileHandler,
+    IfHeaderScnCompileHandler,
+    OperationCompileHandler,
+]
 
-class IfHeaderCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class IfHeaderCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.If_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._header_cmplx_handler: Optional[AbstractCompileHandler] = None
+        self._header_cmplx_handler: _SupportedHandlers | None = None
         self._is_positive = True
 
-    def set_positive(self, positive):
+    def set_positive(self, positive: bool) -> None:
         self._is_positive = positive
 
     def collect(self) -> SsbLabelJumpBlueprint:
-        self.ctx: ExplorerScriptParser.If_headerContext
         is_positive = self._is_positive
 
-        self.ctx: ExplorerScriptParser.If_headerContext
         # Complex branches
         if self._header_cmplx_handler:
             if isinstance(self._header_cmplx_handler, OperationCompileHandler):
                 # An operation as condition
-                op = self._header_cmplx_handler.collect()
-                if len(op) != 1:
+                ops = self._header_cmplx_handler.collect()
+                if len(ops) != 1:
                     raise SsbCompilerError(_("Invalid content for an if-header"))
-                op = op[0]
+                op = ops[0]
                 if op.op_code.name not in OPS_BRANCH.keys():
                     raise SsbCompilerError(
                         f(_("Invalid operation for if condition: {op.op_code.name} (line {self.ctx.start.line})"))
                     )
-                jmp = SsbLabelJumpBlueprint(
-                    self.compiler_ctx, self.ctx,
-                    op.op_code.name, op.params
-                )
+                jmp = SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, op.op_code.name, op.params)
                 jmp.set_jump_is_positive(is_positive)
                 return jmp
             else:
@@ -77,10 +90,14 @@ class IfHeaderCompileHandler(AbstractCompileHandler):
 
         raise SsbCompilerError(f(_("Unknown if operation in line {self.ctx.start.line}).")))
 
-    def add(self, obj: any):
-        if isinstance(obj, IfHeaderBitCompileHandler) or isinstance(obj, IfHeaderOperatorCompileHandler) \
-                or isinstance(obj, IfHeaderNegatableCompileHandler) \
-                or isinstance(obj, IfHeaderScnCompileHandler) or isinstance(obj, OperationCompileHandler):
+    def add(self, obj: _SupportedHandlers) -> None:
+        if (
+            isinstance(obj, IfHeaderBitCompileHandler)
+            or isinstance(obj, IfHeaderOperatorCompileHandler)
+            or isinstance(obj, IfHeaderNegatableCompileHandler)
+            or isinstance(obj, IfHeaderScnCompileHandler)
+            or isinstance(obj, OperationCompileHandler)
+        ):
             self._header_cmplx_handler = obj
             return
         self._raise_add_error(obj)

@@ -1,0 +1,2 @@
+include explorerscript/py.typed
+recursive-include explorerscript/antlr *

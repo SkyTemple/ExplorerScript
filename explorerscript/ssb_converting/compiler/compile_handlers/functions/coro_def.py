@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,17 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import Any
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 
 
-class CoroDefCompileHandler(AbstractFuncdefCompileHandler):
-    def collect(self) -> any:
+class CoroDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.Coro_defContext]):
+    def collect(self) -> Any:
         """Collects name of the coroutine, routine info and operations."""
         return str(self.ctx.IDENTIFIER()), SsbRoutineInfo(SsbRoutineType.COROUTINE, 0), self.collect_ops()
 

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,32 +20,54 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+import sys
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Optional
+from typing import Any, MutableSequence, TypeVar, Generic, TYPE_CHECKING
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
+
+from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OPS_THAT_END_CONTROL_FLOW, OP_JUMP
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 
 
-def handler_is_for_statement(obj):
-    return isinstance(obj, AbstractStatementCompileHandler)
+def handler_is_for_statement(obj: object) -> bool:
+    return isinstance(obj, AbstractComplexStatementCompileHandler)
 
 
-class AbstractCompileHandler(ABC):
+CTX = TypeVar("CTX", bound=ParserRuleContext)
+HANDL = TypeVar("HANDL")
+
+
+class AbstractCompileHandler(ABC, Generic[CTX, HANDL]):
     """An abstract handler for compiling specific part of ExplorerScript source code"""
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+    ctx: CTX
+    compiler_ctx: CompilerCtx
+    _added_handlers: MutableSequence[HANDL]
+
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
         self.ctx = ctx
         self.compiler_ctx = compiler_ctx
-        self._added_handlers: list[AbstractCompileHandler] = []
+        self._added_handlers: MutableSequence[HANDL] = []
 
     @abstractmethod
-    def collect(self) -> any:
+    def collect(self) -> Any:
         """Collect the result of this handler. The returned value can vary greatly based on the handler!"""
         pass
 
     @abstractmethod
-    def add(self, obj: any):
+    def add(self, obj: HANDL) -> None:
         """
         Add a sub-object to this handler. What is accepted is based on the handler! If something isn't
         supported, a ValueError should be raised.
@@ -53,23 +75,19 @@ class AbstractCompileHandler(ABC):
         """
         pass
 
-    def _raise_add_error(self, obj: any):
+    def _raise_add_error(self, obj: Any) -> None:
         raise ValueError(f"Compiler logic error: {self.__class__} does not support {type(obj)} handlers.")
 
-    def _generate_operation(self, op_name: str, params: list[SsbOpParam]) -> SsbOperation:
+    def _generate_operation(self, op_name: str, params: MutableSequence[SsbOpParam]) -> SsbOperation:
         """Generates an operation, increases the counter and updates the source map"""
-        return self._register_operation(SsbOperation(
-            self.compiler_ctx.counter_ops(),
-            SsbOpCode(-1, op_name),
-            params
-        ))
+        return self._register_operation(SsbOperation(self.compiler_ctx.counter_ops(), SsbOpCode(-1, op_name), params))
 
-    def _generate_jump_operation(self, op_name: str, params: list[SsbOpParam], label: Optional[SsbLabel], none_allowed=False):
+    def _generate_jump_operation(
+        self, op_name: str, params: list[SsbOpParam], label: SsbLabel | None, none_allowed: bool = False
+    ) -> SsbLabelJump:
         if not none_allowed:
             assert label is not None
-        return SsbLabelJump(
-            self._generate_operation(op_name, params), label
-        )
+        return SsbLabelJump(self._generate_operation(op_name, params), label)
 
     def _register_operation(self, op: SsbOperation) -> SsbOperation:
         """
@@ -78,37 +96,55 @@ class AbstractCompileHandler(ABC):
         """
         self.compiler_ctx.source_map_builder.add_opcode(
             # Antlr line ids are 1-indexed.
-            self.compiler_ctx.counter_ops.count, self.ctx.start.line - 1, self.ctx.start.column
+            self.compiler_ctx.counter_ops.count,
+            self.ctx.start.line - 1,
+            self.ctx.start.column,
         )
         return op
 
 
-class AbstractStatementCompileHandler(AbstractCompileHandler, ABC):
+AnyCompileHandler: TypeAlias = AbstractCompileHandler[ParserRuleContext, Any]
+
+
+class AbstractComplexStatementCompileHandler(AbstractCompileHandler[CTX, HANDL], ABC):
     """A compile handler that generates a list of binary opcodes."""
+
     @abstractmethod
     def collect(self) -> list[SsbOperation]:
         """Collect a list of operations generated by this handler."""
         pass
 
 
-class AbstractAssignmentCompileHandler(AbstractStatementCompileHandler, ABC):
+AbstractStatementCompileHandler: TypeAlias = AbstractComplexStatementCompileHandler[CTX, None]
+
+
+class AbstractAssignmentCompileHandler(AbstractComplexStatementCompileHandler[CTX, HANDL], ABC):
     pass
 
 
-class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
-    """A handler that manages a sub-block of operations and generates one or multiple header operations"""
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
-        super().__init__(ctx, compiler_ctx)
-        # The added handlers are the opcodes in the block
-        # A list of headers that jump to the block.
-        self._header_jump_blueprints: list[SsbLabelJumpBlueprint] = []
-        # The processed jumps
-        self.processed_header_jumps: list[SsbLabelJump] = []
-        self._added_handlers: list[AbstractStatementCompileHandler] = []
-        self.start_label: Optional[SsbLabel] = None
-        self.end_label: Optional[SsbLabel] = None
+AbstractIntegerAssignmentCompileHandler: TypeAlias = AbstractAssignmentCompileHandler[CTX, "IntegerLikeCompileHandler"]
 
-    def _process_block(self, insert_the_jump_if_needed=True) -> list[SsbOperation]:
+
+class AbstractComplexBlockCompileHandler(AbstractComplexStatementCompileHandler[CTX, HANDL], ABC):
+    """A handler that manages a sub-block of operations and generates one or multiple header operations"""
+
+    # The added handlers are the opcodes in the block
+    # A list of headers that jump to the block.
+    _header_jump_blueprints: list[SsbLabelJumpBlueprint]
+    # The processed jumps
+    processed_header_jumps: list[SsbLabelJump]
+    start_label: SsbLabel | None
+    end_label: SsbLabel | None
+
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
+        super().__init__(ctx, compiler_ctx)
+        self._header_jump_blueprints: list[SsbLabelJumpBlueprint] = []
+        self.processed_header_jumps: list[SsbLabelJump] = []
+        self._added_handlers = []
+        self.start_label = None
+        self.end_label = None
+
+    def _process_block(self, insert_the_jump_if_needed: bool = True) -> list[SsbOperation]:
         """
         This processes the sub-block and returns the generated sub-block opcodes.
         - Opcodes are collected (warning: opcode indexing! Make sure you allocated index numbers for the header ops!)
@@ -129,27 +165,32 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         ops: list[SsbOperation] = []
 
         for h in self._added_handlers:
-            ops += h.collect()
+            ops += h.collect()  # type: ignore
 
-        self.end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block end label'
-        )
+        self.end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block end label")
 
-        if len(self._header_jump_blueprints) > 0 and len(ops) == 1 \
-                and isinstance(ops[0], SsbLabelJump) and ops[0].root.op_code.name == OP_JUMP:
+        if (
+            len(self._header_jump_blueprints) > 0
+            and len(ops) == 1
+            and isinstance(ops[0], SsbLabelJump)
+            and ops[0].root.op_code.name == OP_JUMP
+        ):
             # Just has a jump, insert that into the headers instead
             for hjb in self._header_jump_blueprints:
+                assert ops[0].label is not None
                 self.processed_header_jumps.append(hjb.build_for(ops[0].label))
             self.start_label = ops[0].label
             return [self.end_label]  # in this case we don't actually have any operations to write
 
-        if insert_the_jump_if_needed and (len(ops) < 1 or not does_op_end_control_flow(ops[-1], ops[-2] if len(ops) > 1 else None)):
+        if insert_the_jump_if_needed and (
+            len(ops) < 1 or not does_op_end_control_flow(ops[-1], ops[-2] if len(ops) > 1 else None)
+        ):
             # insert the end label jump
             ops.append(self._generate_empty_jump())
 
         # Generate the start and end label for this block
         self.start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block start label'
+            self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block start label"
         )
         ops.insert(0, self.start_label)
         ops.append(self.end_label)
@@ -166,25 +207,28 @@ class AbstractBlockCompileHandler(AbstractStatementCompileHandler, ABC):
         """Generate a new empty jump operation"""
         return self._generate_jump_operation(OP_JUMP, [], None, True)
 
-    def get_processed_header_jumps(self):
+    def get_processed_header_jumps(self) -> list[SsbLabelJump]:
         return self.processed_header_jumps
 
-    def set_processed_header_jumps(self, val: list[SsbLabelJump]):
+    def set_processed_header_jumps(self, val: list[SsbLabelJump]) -> None:
         self.processed_header_jumps = val
 
-    def get_start_label(self):
+    def get_start_label(self) -> SsbLabel | None:
         return self.start_label
 
 
-class AbstractLoopBlockCompileHandler(AbstractBlockCompileHandler, ABC):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+AbstractBlockCompileHandler: TypeAlias = AbstractComplexBlockCompileHandler[
+    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+]
+
+
+class AbstractComplexLoopBlockCompileHandler(AbstractComplexBlockCompileHandler[CTX, HANDL], ABC):
+    def __init__(self, ctx: CTX, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._start_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} outer start label'
+            self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} outer start label"
         )
-        self._end_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} outer end label'
-        )
+        self._end_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} outer end label")
 
     def continue_loop(self) -> SsbOperation:
         return self._generate_jump_operation(OP_JUMP, [], self._start_label)
@@ -193,9 +237,16 @@ class AbstractLoopBlockCompileHandler(AbstractBlockCompileHandler, ABC):
         return self._generate_jump_operation(OP_JUMP, [], self._end_label)
 
 
-class AbstractFuncdefCompileHandler(AbstractCompileHandler, ABC):
+AbstractLoopBlockCompileHandler: TypeAlias = AbstractComplexLoopBlockCompileHandler[
+    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+]
+AnyLoopBlockCompileHandler: TypeAlias = AbstractLoopBlockCompileHandler[ParserRuleContext]
+
+
+class AbstractFuncdefCompileHandler(AbstractCompileHandler[CTX, AbstractCompileHandler[ParserRuleContext, Any]], ABC):
     """An abstract handler for funcdefs."""
-    def add(self, obj: any):
+
+    def add(self, obj: AbstractCompileHandler[ParserRuleContext, Any]) -> None:
         if handler_is_for_statement(obj):
             self._added_handlers.append(obj)
             return

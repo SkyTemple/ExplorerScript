@@ -1,6 +1,7 @@
+# type: ignore
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +27,13 @@ from explorerscript.source_map_visualizer import SourceMapVisualizer
 from explorerscript.ssb_converting.ssb_compiler import ExplorerScriptSsbCompiler
 from explorerscript.util import open_utf8
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # testing
     base = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(base, 'SCRIPT', 'base.exps')
+    file_path = os.path.join(base, "SCRIPT", "base.exps")
     with open_utf8(file_path) as f:
         exps = f.read()
-    c = ExplorerScriptSsbCompiler('$DUMMY_VAR', [os.path.join(base, 'macros')]).compile(exps, file_path)
+    c = ExplorerScriptSsbCompiler("$DUMMY_VAR", [os.path.join(base, "macros")]).compile(exps, file_path)
     print("OPS:")
     for op in c.routine_ops[0]:
         print(f"{op.offset:10x}: ({op.op_code.id:3}) {op.op_code.name:45} - {op.params}")
@@ -43,14 +44,18 @@ if __name__ == '__main__':
     print("// SOURCE MAP FOR base.exps:")
     print(SourceMapVisualizer(exps, c.source_map).write())
     print("// SOURCE MAP FOR base.exps APPLIED FOR macros1.exps:")
-    with open_utf8(os.path.join(base, 'macros', 'dir', 'macros1.exps')) as f:
+    with open_utf8(os.path.join(base, "macros", "dir", "macros1.exps")) as f:
         macros1_exps = f.read()
-    print(SourceMapVisualizer(macros1_exps, c.source_map, apply_for_macro_calls=os.path.join(
-        '..', 'macros', 'dir', 'macros1.exps'
-    )).write())
+    print(
+        SourceMapVisualizer(
+            macros1_exps, c.source_map, apply_for_macro_calls=os.path.join("..", "macros", "dir", "macros1.exps")
+        ).write()
+    )
     print("// SOURCE MAP FOR base.exps APPLIED FOR macros2.exps:")
-    with open_utf8(os.path.join(base, 'macros', 'dir', 'macros2.exps')) as f:
+    with open_utf8(os.path.join(base, "macros", "dir", "macros2.exps")) as f:
         macros2_exps = f.read()
-    print(SourceMapVisualizer(macros2_exps, c.source_map, apply_for_macro_calls=os.path.join(
-        '..', 'macros', 'dir', 'macros2.exps'
-    )).write())
+    print(
+        SourceMapVisualizer(
+            macros2_exps, c.source_map, apply_for_macro_calls=os.path.join("..", "macros", "dir", "macros2.exps")
+        ).write()
+    )

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,17 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import Sequence
+
 from antlr4.error.ErrorListener import ErrorListener
 
 from explorerscript.util import f, _
 
 
 class AntlrSyntaxError:
-    def __init__(self, recognizer, offendingSymbol, line, column, msg, e):
+    def __init__(self, recognizer, offendingSymbol, line, column, msg, e):  # type: ignore
         self.recognizer = recognizer
         self.offendingSymbol = offendingSymbol
         self.line = line
@@ -34,21 +38,24 @@ class AntlrSyntaxError:
         self.msg = msg
         self.e = e
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f(_("line {self.line}:{self.column}: {self.msg}"))
 
 
 class SyntaxErrorListener(ErrorListener):
     """General purpose error listener for Antlr"""
-    def __init__(self):
+
+    _syntax_errors: list[AntlrSyntaxError]
+
+    def __init__(self):  # type: ignore
         self._syntax_errors = []
 
     @property
-    def syntax_errors(self):
+    def syntax_errors(self) -> Sequence[AntlrSyntaxError]:
         return self._syntax_errors
 
-    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):  # type: ignore
         self._syntax_errors.append(AntlrSyntaxError(recognizer, offendingSymbol, line, column, msg, e))
 
-    def __str__(self):
-        return '\n'.join(str(e) for e in self.syntax_errors)
+    def __str__(self) -> str:
+        return "\n".join(str(e) for e in self.syntax_errors)

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2023 Capypara and the SkyTemple contributors
+ * Copyright (c) 2020-2024 Capypara and the SkyTemple contributors
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

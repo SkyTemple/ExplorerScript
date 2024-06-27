@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,27 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
-from typing import List, Optional
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var import ScnVarCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CLEAR, OPS_FLAG__RESET_DUNGEON_RESULT, \
-    OPS_FLAG__RESET_SCENARIO
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_FLAG__RESET_DUNGEON_RESULT,
+    OPS_FLAG__RESET_SCENARIO,
+)
 from explorerscript.util import _
 
 
-class AssignmentResetCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentResetCompileHandler(
+    AbstractAssignmentCompileHandler[ExplorerScriptParser.Assignment_resetContext, ScnVarCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_resetContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.scn_var_target: Optional[SsbOpParam] = None
+        self.scn_var_target: SsbOpParam | None = None
 
     def collect(self) -> list[SsbOperation]:
         if self.scn_var_target is None and not self.ctx.DUNGEON_RESULT():
@@ -45,9 +49,10 @@ class AssignmentResetCompileHandler(AbstractAssignmentCompileHandler):
         if self.ctx.DUNGEON_RESULT():
             return [self._generate_operation(OPS_FLAG__RESET_DUNGEON_RESULT, [])]
 
+        assert self.scn_var_target is not None
         return [self._generate_operation(OPS_FLAG__RESET_SCENARIO, [self.scn_var_target])]
 
-    def add(self, obj: any):
+    def add(self, obj: ScnVarCompileHandler) -> None:
         if isinstance(obj, ScnVarCompileHandler):
             self.scn_var_target = obj.collect()
             return

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,27 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List
+from __future__ import annotations
+
+from antlr4 import ParserRuleContext
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
+    AbstractBlockCompileHandler,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
-class ElseBlockCompileHandler(AbstractBlockCompileHandler):
+class ElseBlockCompileHandler(AbstractBlockCompileHandler[ExplorerScriptParser.Else_blockContext]):
     """Handles an else block."""
+
     def collect(self) -> list[SsbOperation]:
         return self._process_block()
 
-    def add(self, obj: any):
-        if isinstance(obj, AbstractStatementCompileHandler):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)
             return

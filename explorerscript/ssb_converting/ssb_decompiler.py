@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,31 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
-from typing import Tuple
+from typing import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
+from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver
 from explorerscript.ssb_converting.decompiler.write_handlers.labels.forever_start import ForeverWriteHandler
 from explorerscript.ssb_converting.decompiler.write_handlers.routine import RoutineWriteHandler
-from explorerscript.ssb_converting.ssb_special_ops import *
-from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer
-from explorerscript.ssb_converting.ssb_data_types import SsbCoroutine, SsbRoutineInfo, SsbOpParam, \
-    SsbOperation, NUMBER_OF_SPACES_PER_INDENT, SsbOpParamPositionMarker, DungeonModeConstants
+from explorerscript.ssb_converting.ssb_data_types import (
+    SsbCoroutine,
+    SsbRoutineInfo,
+    SsbOperation,
+    NUMBER_OF_SPACES_PER_INDENT,
+    SsbOpParamPositionMarker,
+    DungeonModeConstants,
+)
+from explorerscript.ssb_converting.ssb_special_ops import (
+    SsbLabelJump,
+    CallJump,
+    ForeverBreak,
+    ForeverContinue,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,11 +55,28 @@ class ExplorerScriptSsbDecompiler:
     see skytemple_files.script.ssb.model.Ssb.to_explorerscript.
     """
 
-    def __init__(self, routine_infos: List[SsbRoutineInfo],
-                 routine_ops: List[List[SsbOperation]],
-                 named_coroutines: List[SsbCoroutine], performance_progress_list_var_name: str,
-                 dungeon_mode_constants: DungeonModeConstants
-                 ):
+    # all variables are private
+    _routine_infos: MutableSequence[SsbRoutineInfo]
+    _routine_ops: MutableSequence[MutableSequence[SsbOperation]]
+    named_coroutines: dict[int, str]
+    _output: str
+    indent: int
+    _line_number: int
+    labels_already_printed: list[int] = []
+    smb: SourceMapBuilder | None
+    performance_progress_list_var_name: str
+    dungeon_mode_constants: DungeonModeConstants
+    # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
+    forever_start_handler_stack: list[ForeverWriteHandler] = []
+
+    def __init__(
+        self,
+        routine_infos: MutableSequence[SsbRoutineInfo],
+        routine_ops: MutableSequence[MutableSequence[SsbOperation]],
+        named_coroutines: Sequence[SsbCoroutine],
+        performance_progress_list_var_name: str,
+        dungeon_mode_constants: DungeonModeConstants,
+    ):
         """
         performance_progress_list_var_name is the name of the constant for the variable
         PERFORMANCE_PROGRESS_LIST, it's converted into special opcodes!
@@ -55,16 +86,15 @@ class ExplorerScriptSsbDecompiler:
         """
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
-        self.named_coroutines: Dict[int, str] = {x.id: x.name for x in named_coroutines}
+        self.named_coroutines = {x.id: x.name for x in named_coroutines}
         self._output = ""
         self.indent = 0
         self._line_number = 1
         self.labels_already_printed = []
-        self.smb: SourceMapBuilder = None
+        self.smb = None
         self.performance_progress_list_var_name = performance_progress_list_var_name
         self.dungeon_mode_constants = dungeon_mode_constants
-        # Since forever blocks break_loops do NOT have to be on the exact next level, we use a stack system instead!
-        self.forever_start_handler_stack: List[ForeverWriteHandler] = []
+        self.forever_start_handler_stack = []
 
     def convert(self) -> tuple[str, SourceMap]:
         logger.debug("Decompiling ExplorerScript...")
@@ -77,9 +107,10 @@ class ExplorerScriptSsbDecompiler:
         # Step 1: Build labels
         resolver = OpsLabelJumpToResolver(self._routine_ops)
         self._routine_ops = list(resolver)
-        has_any_calls = any(any(isinstance(op, SsbLabelJump)
-                                and any(isinstance(x, CallJump) for x in op.markers) for op in rtn)
-                            for rtn in self._routine_ops)
+        has_any_calls = any(
+            any(isinstance(op, SsbLabelJump) and any(isinstance(x, CallJump) for x in op.markers) for op in rtn)
+            for rtn in self._routine_ops
+        )
 
         # Step 2: Build and optimize execution graph
         logger.debug("Building base graph...")
@@ -105,33 +136,35 @@ class ExplorerScriptSsbDecompiler:
         # Step 3:
         # We can now just go through the graph and build the result.
         for r_id, (r_info, r_graph) in enumerate(zip(self._routine_infos, grapher.get_graphs())):
-            logger.debug("Decompiling (%d, %s)...", r_id, self.named_coroutines[r_id] if r_id in self.named_coroutines else None)
+            logger.debug(
+                "Decompiling (%d, %s)...", r_id, self.named_coroutines[r_id] if r_id in self.named_coroutines else None
+            )
             RoutineWriteHandler(self, r_id, r_info, r_graph).write_content()
 
         return self._output, self.smb.build()
 
-    def write_stmnt(self, stmnt, line=True):
+    def write_stmnt(self, stmnt: str, line: bool = True) -> None:
         """Write a simple single line statement"""
         if line:
             self.write_line()
-        self._line_number += stmnt.count('\n')
+        self._line_number += stmnt.count("\n")
         self._output += stmnt
 
-    def write_line(self):
+    def write_line(self) -> None:
         self._line_number += 1
         self._output += "\n"
         self._output += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
 
-    def write_return(self):
+    def write_return(self) -> None:
         self.write_stmnt("return;")
 
-    def write_end(self):
+    def write_end(self) -> None:
         self.write_stmnt("end;")
 
-    def write_hold(self):
+    def write_hold(self) -> None:
         self.write_stmnt("hold;")
 
-    def write_label_jump(self, label_id: int, previous_op: SsbOperation):
+    def write_label_jump(self, label_id: int, previous_op: SsbOperation) -> None:
         # Depending on what the previous operation was, this has to be printed differently
         if not isinstance(previous_op, SsbLabelJump):
             # We need a jump now. We didn't have one but now we will.
@@ -139,7 +172,9 @@ class ExplorerScriptSsbDecompiler:
         elif previous_op.get_marker() is None:
             # Normal jump, just print that
             self.write_stmnt(f"jump @label_{label_id};")
-        elif isinstance(previous_op.get_marker(), ForeverContinue) or isinstance(previous_op.get_marker(), ForeverBreak):
+        elif isinstance(previous_op.get_marker(), ForeverContinue) or isinstance(
+            previous_op.get_marker(), ForeverBreak
+        ):
             # Loop continue/break
             # Do nothing
             pass
@@ -147,20 +182,26 @@ class ExplorerScriptSsbDecompiler:
             # Jump as part of a control structure
             self.write_stmnt(f"jump @label_{label_id};")
 
-    def source_map_add_opcode(self, op_offset):
+    def source_map_add_opcode(self, op_offset: int) -> None:
         """Has to be called BEFORE writing the opcode."""
+        assert self.smb is not None
         # TODO: Assumes that all statements start in a new line after indent.
         #       Might need this more flexible.
         self.smb.add_opcode(op_offset, self._line_number, self.indent * NUMBER_OF_SPACES_PER_INDENT)
 
-    def source_map_add_position_mark(self, length, param: SsbOpParamPositionMarker):
+    def source_map_add_position_mark(self, length: int, param: SsbOpParamPositionMarker) -> None:
+        assert self.smb is not None
         col_number = self.indent * NUMBER_OF_SPACES_PER_INDENT
         self.smb.add_position_mark(
             SourceMapPositionMark(
-                line_number=self._line_number, column_number=col_number,
-                end_line_number=self._line_number, end_column_number=col_number + length,
+                line_number=self._line_number,
+                column_number=col_number,
+                end_line_number=self._line_number,
+                end_column_number=col_number + length,
                 name=param.name,
-                x_offset=param.x_offset, y_offset=param.y_offset, x_relative=param.x_relative,
-                y_relative=param.y_relative
+                x_offset=param.x_offset,
+                y_offset=param.y_offset,
+                x_relative=param.x_relative,
+                y_relative=param.y_relative,
             )
         )

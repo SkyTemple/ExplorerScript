@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
-from typing import Optional
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -32,10 +32,12 @@ from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_RANDOM
 from explorerscript.util import _
 
 
-class SwitchHeaderRandomCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class SwitchHeaderRandomCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Switch_h_randomContext, IntegerLikeCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Switch_h_randomContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.value: Optional[SsbOpParam] = None
+        self.value: SsbOpParam | None = None
 
     def collect(self) -> SsbOperation:
         if self.value is None:
@@ -43,7 +45,7 @@ class SwitchHeaderRandomCompileHandler(AbstractCompileHandler):
 
         return self._generate_operation(OP_SWITCH_RANDOM, [self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

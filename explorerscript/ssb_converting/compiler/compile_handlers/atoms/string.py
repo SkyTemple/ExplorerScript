@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union, Optional
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -30,20 +30,19 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, string_lit
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamConstString, SsbOpParamLanguageString
 
 
-class StringCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class StringCompileHandler(AbstractCompileHandler[ExplorerScriptParser.StringContext, LangStringCompileHandler]):
+    def __init__(self, ctx: ExplorerScriptParser.StringContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.lang_string_handler: Optional[LangStringCompileHandler] = None
+        self.lang_string_handler: LangStringCompileHandler | None = None
 
-    def collect(self) -> Union[SsbOpParamLanguageString, SsbOpParamConstString]:
-        self.ctx: ExplorerScriptParser.StringContext
+    def collect(self) -> SsbOpParamLanguageString | SsbOpParamConstString:
         if self.ctx.STRING_LITERAL():
             return SsbOpParamConstString(string_literal(self.ctx.STRING_LITERAL()))
         if self.lang_string_handler:
             return self.lang_string_handler.collect()
         raise SsbCompilerError("Invalid string, neither literal nor language string")
 
-    def add(self, obj: any):
+    def add(self, obj: LangStringCompileHandler) -> None:
         if isinstance(obj, LangStringCompileHandler):
             self.lang_string_handler = obj
             return

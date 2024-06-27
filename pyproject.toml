@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "explorerscript"
+version = "0.2.0"
+authors = [
+    { name = 'Marco "Capypara" Köpcke', email = "hello@capypara.de" },
+    # see GitHub contributors list for additional people.
+]
+description = "ExplorerScript and SSBScript: Script languages for decompiled SSB (Pokémon Mystery Dungeon Explorers of Sky)"
+readme = "README.rst"
+requires-python = ">=3.9"
+keywords = ["rom-hacking", "game-modding", "skytemple"]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    'Programming Language :: Python',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+dependencies = [
+    'igraph == 0.11.5',
+    'antlr4-python3-runtime == 4.13.1',
+    'typing_extensions >= 4.0; python_version < "3.11"'
+]
+
+[project.urls]
+Homepage = "https://skytemple.org"
+Announcements = "https://blog.skytemple.org"
+Documentation = "https://wiki.skytemple.org"
+Repository = "https://github.com/SkyTemple/ExplorerScript.git"
+Issues = "https://github.com/SkyTemple/ExplorerScript/issues"
+Discord = "https://discord.gg/skytemple"
+
+[project.optional-dependencies]
+pygments = ["pygments>=2.6.1"]
+
+[project.entry-points."pygments.lexers"]
+expslexer = "explorerscript.pygments.expslexer:ExplorerScriptLexer"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = [
+    "explorerscript/antlr/*"
+]
+
+[tools.ruff.lint]
+select = ["W", "E", "F", "ARG"]

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,34 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
+from __future__ import annotations
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractComplexBlockCompileHandler,
+    AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 
 
-class ElseIfBlockCompileHandler(AbstractBlockCompileHandler):
+class ElseIfBlockCompileHandler(
+    AbstractComplexBlockCompileHandler[
+        ExplorerScriptParser.Elseif_blockContext,
+        "AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler",
+    ]
+):
     """Handles an elseif block."""
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+    def __init__(self, ctx: ExplorerScriptParser.Elseif_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._if_header_handlers: list[IfHeaderCompileHandler] = []
 
-    def create_header_jump_templates(self):
+    def create_header_jump_templates(self) -> list[SsbLabelJumpBlueprint]:
         self._header_jump_blueprints = []
         is_positive = self.ctx.NOT() is None
         for h in self._if_header_handlers:
@@ -47,11 +59,11 @@ class ElseIfBlockCompileHandler(AbstractBlockCompileHandler):
         # create_header_jump_templates has to be called before!
         return self._process_block()
 
-    def collect_header_handlers(self):
+    def collect_header_handlers(self) -> list[IfHeaderCompileHandler]:
         return self._if_header_handlers
 
-    def add(self, obj: any):
-        if isinstance(obj, AbstractStatementCompileHandler):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler) -> None:
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)
             return

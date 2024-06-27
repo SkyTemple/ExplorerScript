@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,32 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpParamPositionMarker
 
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
 
 class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing regular opcodes."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+    def write_content(self) -> Vertex | None:
+        op: SsbOperation = self.start_vertex["op"]
 
         # Build parameter string
-        params = ", ".join(
-            [self._single_param_to_string(param) for param in op.params]
-        )
+        params = ", ".join([self._single_param_to_string(param) for param in op.params])
 
         # Build position mark source maps
         for param in op.params:
@@ -55,10 +60,10 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
         elif len(exits) == 0:
             next_vertex = None
         else:
-            raise ValueError(f"After a simple opcode there must be exactly 0 or 1 immediate opcode.")
+            raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex
 
-    def _single_param_to_string(self, param: SsbOpParam):
-        if hasattr(param, 'indent'):
+    def _single_param_to_string(self, param: SsbOpParam) -> str:
+        if hasattr(param, "indent"):
             param.indent = self.decompiler.indent
         return str(param)

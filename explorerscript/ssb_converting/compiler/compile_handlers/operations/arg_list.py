@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,16 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List
+from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.source_map import SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOpParamPositionMarker
 
 
-class ArgListCompileHandler(AbstractCompileHandler):
+class ArgListCompileHandler(AbstractCompileHandler[ExplorerScriptParser.ArglistContext, ArgCompileHandler]):
     def collect(self) -> list[SsbOpParam]:
         ret = []
         for i, h in enumerate(self._added_handlers):
@@ -36,14 +37,23 @@ class ArgListCompileHandler(AbstractCompileHandler):
             ret.append(arg)
             if isinstance(arg, SsbOpParamPositionMarker):
                 # Collect position marker source map entries
-                self.compiler_ctx.source_map_builder.add_position_mark(SourceMapPositionMark(
-                    # Antlr line ids are 1-indexed.
-                    self.ctx.start.line - 1, self.ctx.start.column, self.ctx.stop.line - 1, self.ctx.stop.column,
-                    arg.name, arg.x_offset, arg.y_offset, arg.x_relative, arg.y_relative
-                ))
+                self.compiler_ctx.source_map_builder.add_position_mark(
+                    SourceMapPositionMark(
+                        # Antlr line ids are 1-indexed.
+                        self.ctx.start.line - 1,
+                        self.ctx.start.column,
+                        self.ctx.stop.line - 1,
+                        self.ctx.stop.column,
+                        arg.name,
+                        arg.x_offset,
+                        arg.y_offset,
+                        arg.x_relative,
+                        arg.y_relative,
+                    )
+                )
         return ret
 
-    def add(self, obj: any):
+    def add(self, obj: ArgCompileHandler) -> None:
         if isinstance(obj, ArgCompileHandler):
             self._added_handlers.append(obj)
             return

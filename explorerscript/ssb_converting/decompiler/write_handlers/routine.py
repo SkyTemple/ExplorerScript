@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,10 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from igraph import Graph
 
@@ -28,6 +31,10 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 from explorerscript.ssb_converting.util import Blk
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
 logger = logging.getLogger(__name__)
 
 
@@ -35,13 +42,14 @@ class RoutineWriteHandler(AbstractWriteHandler):
     """
     Handles writing a single routine, with header.
     """
-    def __init__(self, decompiler, r_id: int, r_info: SsbRoutineInfo, r_graph: Graph):
-        super().__init__(r_graph.vs[0] if len(r_graph.vs) > 0 else None, decompiler, None)
+
+    def __init__(self, decompiler: ExplorerScriptSsbDecompiler, r_id: int, r_info: SsbRoutineInfo, r_graph: Graph):
+        super().__init__(r_graph.vs[0] if len(r_graph.vs) > 0 else None, decompiler, None)  # type: ignore
         self.r_id = r_id
         self.r_info = r_info
         self.r_graph = r_graph
 
-    def write_content(self):
+    def write_content(self) -> None:
         self._write_routine_header()
         logger.debug("Handling a routine...")
         with Blk(self.decompiler):
@@ -51,7 +59,7 @@ class RoutineWriteHandler(AbstractWriteHandler):
                 BlockWriteHandler(self.start_vertex, self.decompiler, self.parent, None).write_content()
         self.decompiler.write_line()
 
-    def _write_routine_header(self):
+    def _write_routine_header(self) -> None:
         if self.r_info.type == SsbRoutineType.COROUTINE:
             if self.r_id in self.decompiler.named_coroutines:
                 self.decompiler.write_stmnt(f"coro {self.decompiler.named_coroutines[self.r_id]}")

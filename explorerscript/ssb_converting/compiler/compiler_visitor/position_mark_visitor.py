@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,31 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List
+from __future__ import annotations
+
+from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import \
-    PositionMarkerArgCompileHandler
-from explorerscript.ssb_converting.compiler.utils import string_literal, CompilerCtx, Counter
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
+    PositionMarkerArgCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
 
 
 class PositionMarkVisitor(ExplorerScriptVisitor):
     """Returns the list of position marks from an ExplorerScript parsing tree."""
-    def __init__(self):
-        self.compiler_ctx = CompilerCtx(
-            Counter(), SourceMapBuilder(), {}, Counter(), 'n/a', {}
-        )
 
-    def visitStart(self, ctx : ExplorerScriptParser.StartContext) -> list[SourceMapPositionMark]:
+    def __init__(self) -> None:
+        self.compiler_ctx = CompilerCtx(Counter(), SourceMapBuilder(), {}, Counter(), "n/a", {})
+
+    def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[SourceMapPositionMark]:
         return self.visitChildren(ctx)
 
-    def visitPosition_marker(self, ctx: ExplorerScriptParser.Position_markerContext):
+    def visitPosition_marker(self, ctx: ExplorerScriptParser.Position_markerContext) -> SourceMapPositionMark:
         mark_handler = PositionMarkerCompileHandler(ctx, self.compiler_ctx)
         for arg_handler in self.visitChildren(ctx):
             mark_handler.add(arg_handler)
@@ -59,16 +61,20 @@ class PositionMarkVisitor(ExplorerScriptVisitor):
             pos_mark_param.y_relative,
         )
 
-    def visitPosition_marker_arg(self, ctx: ExplorerScriptParser.Position_marker_argContext):
+    def visitPosition_marker_arg(
+        self, ctx: ExplorerScriptParser.Position_marker_argContext
+    ) -> PositionMarkerArgCompileHandler:
         return PositionMarkerArgCompileHandler(ctx, self.compiler_ctx)
 
-    def defaultResult(self):
+    def defaultResult(self) -> list[SourceMapPositionMark]:  # type: ignore
         return []
 
-    def visitTerminal(self, node):
+    def visitTerminal(self, node: Any) -> None:
         return None
 
-    def aggregateResult(self, aggregate, nextResult):
+    def aggregateResult(
+        self, aggregate: list[SourceMapPositionMark], nextResult: list[SourceMapPositionMark] | SourceMapPositionMark
+    ) -> list[SourceMapPositionMark]:
         if isinstance(nextResult, list):
             return aggregate + nextResult
         if nextResult is not None:

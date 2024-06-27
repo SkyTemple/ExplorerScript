@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,32 +20,34 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, Tuple
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import \
-    PositionMarkerArgCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
+    PositionMarkerArgCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, string_literal
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
 
 
-class PositionMarkerCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class PositionMarkerCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Position_markerContext, PositionMarkerArgCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Position_markerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         # position, offset
-        self.x: Optional[tuple[int, int]] = None
-        self.y: Optional[tuple[int, int]] = None
+        self.x: tuple[int, int] | None = None
+        self.y: tuple[int, int] | None = None
 
     def collect(self) -> SsbOpParamPositionMarker:
-        self.ctx: ExplorerScriptParser.Position_markerContext
         name = string_literal(self.ctx.STRING_LITERAL())
+        assert self.x is not None and self.y is not None
         return SsbOpParamPositionMarker(
-            name=name, x_offset=self.x[1], y_offset=self.y[1],
-            x_relative=self.x[0], y_relative=self.y[0]
+            name=name, x_offset=self.x[1], y_offset=self.y[1], x_relative=self.x[0], y_relative=self.y[0]
         )
 
-    def add(self, obj: any):
+    def add(self, obj: PositionMarkerArgCompileHandler) -> None:
         if isinstance(obj, PositionMarkerArgCompileHandler):
             if self.x is None:
                 self.x = obj.collect()

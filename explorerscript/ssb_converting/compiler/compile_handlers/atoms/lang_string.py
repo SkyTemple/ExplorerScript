@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,18 +20,21 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Dict
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import \
-    LangStringArgumentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import (
+    LangStringArgumentCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamLanguageString
 
 
-class LangStringCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class LangStringCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Lang_stringContext, LangStringArgumentCompileHandler]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Lang_stringContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.language_dict: dict[str, str] = {}
 
@@ -39,7 +42,7 @@ class LangStringCompileHandler(AbstractCompileHandler):
         self.ctx: ExplorerScriptParser.Lang_stringContext
         return SsbOpParamLanguageString(self.language_dict)
 
-    def add(self, obj: any):
+    def add(self, obj: LangStringArgumentCompileHandler) -> None:
         if isinstance(obj, LangStringArgumentCompileHandler):
             lang, string = obj.collect()
             self.language_dict[lang] = string

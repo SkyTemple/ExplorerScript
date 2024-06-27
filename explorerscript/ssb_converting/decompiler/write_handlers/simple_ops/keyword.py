@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
 from igraph import Vertex
 
@@ -28,15 +30,20 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import Abs
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_RETURN, OP_END, OP_HOLD
 
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
 
 class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing simple opcodes that have special keyword representations in ExplorerScript."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+    def write_content(self) -> Vertex | None:
+        op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if op.op_code.name == OP_RETURN:
             self._write_return()
@@ -52,14 +59,14 @@ class KeywordSimpleOpWriteHandler(AbstractWriteHandler):
         elif len(exits) == 0:
             next_vertex = None
         else:
-            raise ValueError(f"After a simple opcode there must be exactly 0 or 1 immediate opcode.")
+            raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex
 
-    def _write_return(self):
+    def _write_return(self) -> None:
         self.decompiler.write_return()
 
-    def _write_end(self):
+    def _write_end(self) -> None:
         self.decompiler.write_end()
 
-    def _write_hold(self):
+    def _write_hold(self) -> None:
         self.decompiler.write_hold()

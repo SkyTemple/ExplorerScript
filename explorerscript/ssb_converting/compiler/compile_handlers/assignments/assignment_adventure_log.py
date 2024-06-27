@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,24 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
-from typing import List, Optional
-
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractIntegerAssignmentCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CLEAR, OPS_FLAG__SET_ADVENTURE_LOG
+from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__SET_ADVENTURE_LOG
 from explorerscript.util import _
 
 
-class AssignmentAdventureLogCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentAdventureLogCompileHandler(
+    AbstractIntegerAssignmentCompileHandler[ExplorerScriptParser.Assignment_adv_logContext]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_adv_logContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.value: Optional[SsbOpParam] = None
+        self.value: SsbOpParam | None = None
 
     def collect(self) -> list[SsbOperation]:
         if self.value is None:
@@ -43,7 +45,7 @@ class AssignmentAdventureLogCompileHandler(AbstractAssignmentCompileHandler):
 
         return [self._generate_operation(OPS_FLAG__SET_ADVENTURE_LOG, [self.value])]
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self.value = obj.collect()
             return

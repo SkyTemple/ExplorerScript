@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +20,39 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional
+from __future__ import annotations
 
+import sys
+from typing import Union
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import \
-    ConditionalOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
+    ConditionalOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE, OP_CASE_VALUE
+from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE_VALUE
 from explorerscript.util import _
 
+_SupportedHandlers: TypeAlias = Union[
+    IntegerLikeCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler
+]
 
-class CaseHeaderOpCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class CaseHeaderOpCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.operator: Optional[SsbOperator] = None
-        self.value: Optional[SsbOpParam] = None
+        self.operator: SsbOperator | None = None
+        self.value: SsbOpParam | None = None
         self.value_is_a_variable = False
 
     def collect(self) -> SsbLabelJumpBlueprint:
@@ -50,11 +64,10 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         if self.value_is_a_variable:
             # CaseVariable
             return SsbLabelJumpBlueprint(
-                self.compiler_ctx, self.ctx,
-                OP_CASE_VARIABLE, [self.operator.value, self.value]
+                self.compiler_ctx, self.ctx, OP_CASE_VARIABLE, [self.operator.value, self.value]
             )
 
-        #if self.operator == SsbOperator.EQ:
+        # if self.operator == SsbOperator.EQ:
         #    # Case
         #    return SsbLabelJumpBlueprint(
         #        self.compiler_ctx, self.ctx,
@@ -62,12 +75,9 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler):
         #    )
 
         # CaseValue
-        return SsbLabelJumpBlueprint(
-            self.compiler_ctx, self.ctx,
-            OP_CASE_VALUE, [self.operator.value, self.value]
-        )
+        return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_VALUE, [self.operator.value, self.value])
 
-    def add(self, obj: any):
+    def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             # (integer_like[1] | value_of) -> var to set to
             self.value = obj.collect()

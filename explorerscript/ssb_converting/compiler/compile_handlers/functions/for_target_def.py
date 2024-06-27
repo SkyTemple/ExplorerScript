@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,43 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
+from __future__ import annotations
+
+from typing import Any
+
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractFuncdefCompileHandler,
+    AbstractCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
-from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
+from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType, SsbOpParam
 from explorerscript.util import exps_int
 
 
-class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.For_target_defContext]):
+    _linked_to_target: SsbOpParam | None
+
+    def __init__(self, ctx: ExplorerScriptParser.For_target_defContext, compiler_ctx: CompilerCtx) -> None:
         super().__init__(ctx, compiler_ctx)
         self._linked_to_target = None
 
-    def collect(self) -> any:
+    def collect(self) -> Any:
         """Collects routine info and operations."""
         linked_to = -1
         linked_to_name = None
         integer_like = self._linked_to_target
         try:
-            linked_to = exps_int(integer_like)
-        except:
-            linked_to_name = integer_like.name
+            linked_to = exps_int(integer_like)  # type: ignore
+        except ValueError:
+            linked_to_name = integer_like.name  # type: ignore
 
-        if str(self.ctx.FOR_TARGET()) == 'for_actor':
+        if str(self.ctx.FOR_TARGET()) == "for_actor":
             routine_info = SsbRoutineInfo(SsbRoutineType.ACTOR, linked_to, linked_to_name)
-        elif str(self.ctx.FOR_TARGET()) == 'for_object':
+        elif str(self.ctx.FOR_TARGET()) == "for_object":
             routine_info = SsbRoutineInfo(SsbRoutineType.OBJECT, linked_to, linked_to_name)
         else:
             routine_info = SsbRoutineInfo(SsbRoutineType.PERFORMER, linked_to, linked_to_name)
@@ -54,7 +66,7 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler):
     def get_new_routine_id(self, old_id: int) -> int:
         return exps_int(str(self.ctx.INTEGER()))
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler | AbstractCompileHandler[ParserRuleContext, Any]) -> None:
         if isinstance(obj, IntegerLikeCompileHandler):
             self._linked_to_target = obj.collect()
             return

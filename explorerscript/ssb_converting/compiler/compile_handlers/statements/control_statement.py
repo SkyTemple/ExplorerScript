@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
@@ -28,10 +28,9 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_HOLD, OP_END, OP_RETURN
 
 
-class ControlStatementCompileHandler(AbstractStatementCompileHandler):
+class ControlStatementCompileHandler(AbstractStatementCompileHandler[ExplorerScriptParser.Cntrl_stmtContext]):
     def collect(self) -> list[SsbOperation]:
         ops = []
-        self.ctx: ExplorerScriptParser.Cntrl_stmtContext
         if self.ctx.RETURN():
             ops.append(self._generate_operation(OP_RETURN, []))
         elif self.ctx.END():
@@ -47,6 +46,6 @@ class ControlStatementCompileHandler(AbstractStatementCompileHandler):
 
         return ops
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         # supports no added handlers
         self._raise_add_error(obj)

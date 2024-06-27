@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,81 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
-import warnings
-from typing import Optional
+import sys
+from typing import Callable, TYPE_CHECKING
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
 
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
-from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler, \
-    NestedBlockDisallowedError
-from explorerscript.ssb_converting.ssb_special_ops import OPS_THAT_END_CONTROL_FLOW, SsbLabel, SsbLabelJump, \
-    SsbForeignLabel, OP_HOLD, OP_END, OP_RETURN, OP_DUMMY_END
+from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
+    AbstractWriteHandler,
+    NestedBlockDisallowedError,
+)
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_THAT_END_CONTROL_FLOW,
+    SsbLabel,
+    SsbLabelJump,
+    SsbForeignLabel,
+    OP_HOLD,
+    OP_END,
+    OP_RETURN,
+    OP_DUMMY_END,
+)
+
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
+
+CheckEndBlockCallable: TypeAlias = Callable[["BlockWriteHandler", "AbstractWriteHandler"], bool]
 
 
 class BlockWriteHandler(AbstractWriteHandler):
     """Writes one block of output for ExplorerScript using an entry point vertex (the first in this block)."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent, vertex_that_started_block: Vertex, *,
-                 check_end_block=None, disallow_nested=False):
+    _next_vertex: Vertex | None
+    # Optional callback to check if the block should be ended
+    # Please note, that the block will also end automatically, if the end of the
+    # graph has no reachable vertices anymore.
+    check_end_block: CheckEndBlockCallable | None
+    # This will contain the handler for the last operation written by this block, after write_content.
+    last_handler_in_block: AbstractWriteHandler | None
+    # If True, an exception is raised if the block contains any opcodes that would start another sub-block
+    _disallow_nested: bool
+
+    vertex_that_started_block: Vertex | None
+    last_vertex: Vertex | None
+
+    def __init__(
+        self,
+        start_vertex: Vertex,
+        decompiler: ExplorerScriptSsbDecompiler,
+        parent: AbstractWriteHandler | None,
+        vertex_that_started_block: Vertex | None,
+        *,
+        check_end_block: CheckEndBlockCallable | None = None,
+        disallow_nested: bool = False,
+    ) -> None:
         super().__init__(start_vertex, decompiler, parent)
-        self._next_vertex: Vertex = start_vertex
-        # Optional callback to check if the block should be ended
-        # Please note, that the block will also end automatically, if the end of the
-        # graph has no reachable vertices anymore.
+        self._next_vertex = start_vertex
         self.check_end_block = check_end_block
-        # This will contain the handler for the last operation written by this block, after write_content.
-        self.last_handler_in_block: Optional[AbstractWriteHandler] = None
-        # If True, an exception is raised if the block contains any opcodes that would start another sub-block
+        self.last_handler_in_block = None
         self._disallow_nested = disallow_nested
 
         self.vertex_that_started_block = vertex_that_started_block
-        self.last_vertex: Optional[Vertex] = None
+        self.last_vertex = None
 
-    def write_content(self):
-        should_continue = True
+    def write_content(self) -> Vertex | None:
+        from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
+
         previous_vertex = None
         is_first_vertex = True
         while self._next_vertex is not None:
@@ -69,14 +109,15 @@ class BlockWriteHandler(AbstractWriteHandler):
                 if not should_continue:
                     break
 
-            # Make sure, that the _disallow_nested restriction is honored.
-            # TODO: pretty hard-coded at the moment.
-            if self._disallow_nested and self.last_handler_in_block.__class__.__name__ != 'SimpleOperationWriteHandler':
-                raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
-            # noinspection PyUnresolvedReferences
-            # : (last_handler_in_block must be SimpleOperationWriteHandler in this case)
-            if self._disallow_nested and self.last_handler_in_block.get_real_handler().__name__ == 'CtxSimpleOpWriteHandler':
-                raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
+            if self._disallow_nested:
+                # Make sure, that the _disallow_nested restriction is honored.
+                # TODO: pretty hard-coded at the moment.
+                if self.last_handler_in_block.__class__.__name__ != "SimpleOperationWriteHandler":
+                    raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
+                # (last_handler_in_block must be SimpleOperationWriteHandler in this case)
+                assert isinstance(self.last_handler_in_block, SimpleOperationWriteHandler)
+                if self.last_handler_in_block.get_real_handler().__name__ == "CtxSimpleOpWriteHandler":
+                    raise NestedBlockDisallowedError("A block was not expected to contain any sub-blocks.")
 
             previous_vertex = self._next_vertex
             self._next_vertex = self.last_handler_in_block.write_content()
@@ -84,16 +125,21 @@ class BlockWriteHandler(AbstractWriteHandler):
 
         # Perform basic end-of-branch check (to see if we need an end, return or hold).
         # we don't need to do that on jumps or fallthrough
+        assert self.last_handler_in_block is not None
         if self._next_vertex is None and not self.last_handler_in_block.ended_on_jump:
             if previous_vertex is None:
                 # ???
                 raise ValueError("Found end of branch, but no previous op...?")
-            if previous_vertex['op'].op_code.name not in OPS_THAT_END_CONTROL_FLOW \
-                    and not isinstance(previous_vertex['op'], SsbLabelJump) \
-                    and not isinstance(previous_vertex['op'], SsbLabel) \
-                    and not isinstance(previous_vertex['op'], SsbForeignLabel):
+            if (
+                previous_vertex["op"].op_code.name not in OPS_THAT_END_CONTROL_FLOW
+                and not isinstance(previous_vertex["op"], SsbLabelJump)
+                and not isinstance(previous_vertex["op"], SsbLabel)
+                and not isinstance(previous_vertex["op"], SsbForeignLabel)
+            ):
                 # All branches must end with something that ends their control flow
-                logger.warning(f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch.")
+                logger.warning(
+                    f"Had to insert a {OP_DUMMY_END} after {previous_vertex['op']}, because it was last in branch."
+                )
                 if OP_DUMMY_END == OP_RETURN:
                     self.decompiler.write_return()
                 elif OP_DUMMY_END == OP_END:

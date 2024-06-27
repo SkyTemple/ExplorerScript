@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING
 
@@ -28,8 +30,8 @@ from igraph import Vertex
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbForeignLabel, SsbLabelJump
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
@@ -37,19 +39,24 @@ if TYPE_CHECKING:
 
 class WriteHandlerManager:
     """Class that retrieves the handlers for vertices in a ExplorerScript graph."""
+
     @classmethod
-    def get_for(cls,
-                v: Vertex, decompiler: 'ExplorerScriptSsbDecompiler', parent: AbstractWriteHandler,
-                vertex_that_started_block: Vertex, is_first_vertex_of_block: bool
-                ) -> AbstractWriteHandler:
+    def get_for(
+        cls,
+        v: Vertex,
+        decompiler: ExplorerScriptSsbDecompiler,
+        parent: AbstractWriteHandler,
+        vertex_that_started_block: Vertex | None,
+        is_first_vertex_of_block: bool,
+    ) -> AbstractWriteHandler:
         from explorerscript.ssb_converting.decompiler.write_handlers.foreign_label import ForeignLabelWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.label import LabelWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.label_jump import LabelJumpWriteHandler
         from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
 
-        if 'op' not in v.attributes():
+        if "op" not in v.attributes():
             raise ValueError(f"Invalid Ssb vertex: {v}")
-        op: SsbOperation = v['op']
+        op: SsbOperation = v["op"]
         if isinstance(op, SsbLabel):
             return LabelWriteHandler(v, decompiler, parent, vertex_that_started_block, is_first_vertex_of_block)
         if isinstance(op, SsbForeignLabel):

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import sys
 
 SETTINGS_PERFORMANCE_PROGRESS_LIST_VAR_NAME = "performance_progress_list_var_name"
@@ -31,9 +33,9 @@ SETTINGS_DMC_REQUEST = "request"
 SETTINGS_DMC_OPEN_REQUEST = "open_request"
 
 
-def check_settings(settings):
+def check_settings(settings):  # type: ignore
     if SETTINGS not in settings:
-        print(f"Settings missing.", file=sys.stderr)
+        print("Settings missing.", file=sys.stderr)
         exit(1)
     settings = settings[SETTINGS]
 
@@ -42,8 +44,8 @@ def check_settings(settings):
         exit(1)
 
     if SETTINGS_DUNGEON_MODE_CONSTANTS not in settings or not all(
-            x in settings[SETTINGS_DUNGEON_MODE_CONSTANTS] for x in [SETTINGS_DMC_OPEN, SETTINGS_DMC_CLOSED,
-                                                                     SETTINGS_DMC_REQUEST, SETTINGS_DMC_OPEN_REQUEST]
+        x in settings[SETTINGS_DUNGEON_MODE_CONSTANTS]
+        for x in [SETTINGS_DMC_OPEN, SETTINGS_DMC_CLOSED, SETTINGS_DMC_REQUEST, SETTINGS_DMC_OPEN_REQUEST]
     ):
         print(f"'{SETTINGS_DUNGEON_MODE_CONSTANTS}' missing in settings or malformed.", file=sys.stderr)
         exit(1)

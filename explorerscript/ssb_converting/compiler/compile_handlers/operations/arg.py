@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,11 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union, Optional
+from __future__ import annotations
+
+from typing import Union
+
+from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -29,17 +33,24 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 
+_SupportedHandlers = Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]
 
-class ArgCompileHandler(AbstractCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+class ArgCompileHandler(AbstractCompileHandler[ParserRuleContext, _SupportedHandlers]):
+    def __init__(self, ctx: ParserRuleContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.arg_handler: Optional[Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]] = None
+        self.arg_handler: _SupportedHandlers | None = None
 
     def collect(self) -> SsbOpParam:
+        assert self.arg_handler is not None
         return self.arg_handler.collect()
 
-    def add(self, obj: any):
-        if isinstance(obj, IntegerLikeCompileHandler) or isinstance(obj, StringCompileHandler) or isinstance(obj, PositionMarkerCompileHandler):
+    def add(self, obj: _SupportedHandlers) -> None:
+        if (
+            isinstance(obj, IntegerLikeCompileHandler)
+            or isinstance(obj, StringCompileHandler)
+            or isinstance(obj, PositionMarkerCompileHandler)
+        ):
             self.arg_handler = obj
             return
         self._raise_add_error(obj)

@@ -20,7 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Union
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
@@ -29,8 +29,8 @@ from explorerscript.util import exps_int, _
 
 
 def parse_position_marker_arg(
-        ctx: Union[ExplorerScriptParser.Position_marker_argContext, SsbScriptParser.Position_marker_argContext]
-):
+    ctx: ExplorerScriptParser.Position_marker_argContext | SsbScriptParser.Position_marker_argContext,
+) -> tuple[int, int]:
     offset = 0
     pos = 0
     if ctx.INTEGER():

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,28 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_script.ssb_converting.ssb_decompiler import SsbScriptSsbDecompiler
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class Blk:
     """Utility context manager for managing indents."""
-    def __init__(self, reader, braces=True):
+
+    def __init__(self, reader: SsbScriptSsbDecompiler | ExplorerScriptSsbDecompiler, braces: bool = True):
         self.reader = reader
         self.braces = braces
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         self.reader.indent += 1
         if self.braces:
-            self.reader.write_stmnt(' {', False)
+            self.reader.write_stmnt(" {", False)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:  # type: ignore
         self.reader.indent -= 1
         if self.braces:
-            self.reader.write_stmnt('}', True)
+            self.reader.write_stmnt("}", True)

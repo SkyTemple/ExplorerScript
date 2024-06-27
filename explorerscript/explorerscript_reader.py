@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,8 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 from antlr4 import InputStream, CommonTokenStream
 
 from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
@@ -30,11 +32,15 @@ from explorerscript.syntax_error_listener import SyntaxErrorListener
 
 class ExplorerScriptReader:
     """Constructs a parsing tree out of ExplorerScript source code."""
+
+    source_code: str
+    parser: ExplorerScriptParser | None
+
     def __init__(self, source_code: str):
         self.source_code = source_code
         self.parser = None
 
-    def read(self):
+    def read(self) -> ExplorerScriptParser.StartContext:
         """
         :raises: ParseError
         """
@@ -56,5 +62,6 @@ class ExplorerScriptReader:
 
         return tree
 
-    def get_parser(self):
+    def get_parser(self) -> ExplorerScriptParser:
+        assert self.parser is not None
         return self.parser

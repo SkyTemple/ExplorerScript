@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-
-from typing import List
+from __future__ import annotations
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractStatementCompileHandler
@@ -29,23 +28,20 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
 
 
-class JumpCompileHandler(AbstractStatementCompileHandler):
+class JumpCompileHandler(AbstractStatementCompileHandler[ExplorerScriptParser.JumpContext]):
     def collect(self) -> list[SsbOperation]:
         """
         We generate a label jump now. This might be removed & merged with the if/switch-case
         before it (if applicable and only operation in block), in the appropriate parent handler.
         """
-        self.ctx: ExplorerScriptParser.JumpContext
         label_name = str(self.ctx.IDENTIFIER())
         if label_name in self.compiler_ctx.collected_labels:
             label = self.compiler_ctx.collected_labels[label_name]
         else:
-            label = SsbLabel(
-                self.compiler_ctx.counter_labels(), -1, f'proper label, named {label_name}', label_name
-            )
+            label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"proper label, named {label_name}", label_name)
             self.compiler_ctx.collected_labels[label_name] = label
         return [self._generate_jump_operation(OP_JUMP, [], label)]
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         # supports no added handlers
         self._raise_add_error(obj)

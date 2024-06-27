@@ -2,9 +2,10 @@
 Resolves the offsets of memory jump instructions in a list of ssb routines to label jumps
 and inserts labels at the appropriate locations.
 """
+
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +25,33 @@ and inserts labels at the appropriate locations.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
-from typing import List, Dict
+from typing import Generator, MutableSequence, Sequence
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel
+
 logger = logging.getLogger(__name__)
 
 
 class OpsLabelJumpToResolver:
-    def __init__(self, routines: list[list[SsbOperation]]):
+    # A mapping of labels: {mem_location: label_name}
+    labels: dict[int, SsbLabel]
+    routines: MutableSequence[MutableSequence[SsbOperation]]
+
+    def __init__(self, routines: MutableSequence[MutableSequence[SsbOperation]]):
         logger.debug("Constructing labels and jumps...")
-        # A mapping of labels: {mem_location: label_name}
-        self.labels: dict[int, SsbLabel] = {}
+        self.labels = {}
         self.routines = []
         for routine_id, rtn in enumerate(routines):
-            new_rtn_ops = []
+            new_rtn_ops: list[SsbOperation] = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
                 new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id))
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[list[SsbOperation], None, None]:
         rtn_iterator = iter(self.routines)
         try:
             while True:
@@ -53,7 +60,7 @@ class OpsLabelJumpToResolver:
         except StopIteration:
             return
 
-    def _iter_routine(self, rtn):
+    def _iter_routine(self, rtn: Sequence[SsbOperation]) -> Generator[SsbOperation, None, None]:
         op_iterator = iter(rtn)
         try:
             while True:

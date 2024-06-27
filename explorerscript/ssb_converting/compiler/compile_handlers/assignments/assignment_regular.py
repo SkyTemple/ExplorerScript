@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,39 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import List, Optional
+from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractAssignmentCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import \
-    AssignOperatorCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import (
+    AssignOperatorCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbCalcOperator
-from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CALC_VARIABLE, OPS_FLAG__SET, OPS_FLAG__CALC_VALUE, \
-    OPS_FLAG__SET_PERFORMANCE, OPS_FLAG__CALC_BIT
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_FLAG__CALC_VARIABLE,
+    OPS_FLAG__SET,
+    OPS_FLAG__CALC_VALUE,
+    OPS_FLAG__SET_PERFORMANCE,
+    OPS_FLAG__CALC_BIT,
+)
 from explorerscript.util import exps_int, f, _
 
 
-class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+class AssignmentRegularCompileHandler(
+    AbstractAssignmentCompileHandler[
+        ExplorerScriptParser.Assignment_regularContext,
+        "IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler",
+    ]
+):
+    def __init__(self, ctx: ExplorerScriptParser.Assignment_regularContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self.var_target: Optional[SsbOpParam] = None
-        self.operator: Optional[SsbCalcOperator] = None
-        self.value: Optional[SsbOpParam] = None
+        self.var_target: SsbOpParam | None = None
+        self.operator: SsbCalcOperator | None = None
+        self.value: SsbOpParam | None = None
         self.value_is_a_variable = False
 
     def collect(self) -> list[SsbOperation]:
@@ -55,20 +67,23 @@ class AssignmentRegularCompileHandler(AbstractAssignmentCompileHandler):
             index = exps_int(str(self.ctx.INTEGER()))
             # CalcBit / SetPerformance
             if self.value_is_a_variable:
-                raise SsbCompilerError(f(_("value(X) can not be used with index based assignments "
-                                           "(line {self.ctx.start.line}).")))
+                raise SsbCompilerError(
+                    f(_("value(X) can not be used with index based assignments " "(line {self.ctx.start.line})."))
+                )
             if str(self.var_target) == self.compiler_ctx.performance_progress_list_var_name:
                 return [self._generate_operation(OPS_FLAG__SET_PERFORMANCE, [index, self.value])]
             return [self._generate_operation(OPS_FLAG__CALC_BIT, [self.var_target, index, self.value])]
 
         # CalcValue / CalcVariable / Set
         if self.value_is_a_variable:
-            return [self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator.value, self.value])]
+            return [
+                self._generate_operation(OPS_FLAG__CALC_VARIABLE, [self.var_target, self.operator.value, self.value])
+            ]
         if self.operator == SsbCalcOperator.ASSIGN:
             return [self._generate_operation(OPS_FLAG__SET, [self.var_target, self.value])]
         return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator.value, self.value])]
 
-    def add(self, obj: any):
+    def add(self, obj: IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler) -> None:
         # assign_operator -> operator
         if isinstance(obj, IntegerLikeCompileHandler):
             if self.var_target is None:

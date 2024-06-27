@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,17 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_SECTOR
 
 
-class SwitchHeaderSectorCompileHandler(AbstractCompileHandler):
+class SwitchHeaderSectorCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Switch_h_sectorContext, None]):
     def collect(self) -> SsbOperation:
         return self._generate_operation(OP_SWITCH_SECTOR, [])
 
-    def add(self, obj: any):
+    def add(self, obj: None) -> None:
         self._raise_add_error(obj)

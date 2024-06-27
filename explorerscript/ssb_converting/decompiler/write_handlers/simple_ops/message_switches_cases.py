@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,52 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from igraph import Vertex
 
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import AbstractWriteHandler
-from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import \
-    MesageSwitchSimpleOpWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.message_switches import (
+    MesageSwitchSimpleOpWriteHandler,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_TEXT, OP_DEFAULT_TEXT
 from explorerscript.ssb_converting.util import Blk
+
+if TYPE_CHECKING:
+    from explorerscript.ssb_converting.ssb_decompiler import ExplorerScriptSsbDecompiler
 
 
 class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
     """Handles writing cases for message_Switch* opcodes."""
 
-    def __init__(self, start_vertex: Vertex, decompiler, parent):
+    def __init__(
+        self, start_vertex: Vertex, decompiler: ExplorerScriptSsbDecompiler, parent: AbstractWriteHandler | None
+    ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self):
-        op: SsbOperation = self.start_vertex['op']
+    def write_content(self) -> Vertex | None:
+        op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
 
         # The parent handler MUST be a simple block handler -> block handler
         # and it's handler MUST be a message switch handler
+        assert self.parent is not None and self.parent.parent is not None
         if not isinstance(self.parent.parent.parent, MesageSwitchSimpleOpWriteHandler):
             raise ValueError("Message switch cases are only allowed as children of message switches.")
 
         if op.op_code.name == OP_CASE_TEXT:
-            self.decompiler.write_stmnt(f'case {op.params[0]}:')
+            self.decompiler.write_stmnt(f"case {op.params[0]}:")
             with Blk(self.decompiler, False):
-                if hasattr(op.params[1], 'indent'):
+                if hasattr(op.params[1], "indent"):
                     op.params[1].indent = self.decompiler.indent
                 self.decompiler.write_stmnt(str(op.params[1]))
         elif op.op_code.name == OP_DEFAULT_TEXT:
-            self.decompiler.write_stmnt(f'default:')
+            self.decompiler.write_stmnt("default:")
             with Blk(self.decompiler, False):
-                if hasattr(op.params[0], 'indent'):
+                if hasattr(op.params[0], "indent"):
                     op.params[0].indent = self.decompiler.indent
                 self.decompiler.write_stmnt(str(op.params[0]))
 
@@ -64,5 +75,5 @@ class MesageSwitchCasesSimpleOpWriteHandler(AbstractWriteHandler):
         elif len(exits) == 0:
             next_vertex = None
         else:
-            raise ValueError(f"After a simple opcode there must be exactly 0 or 1 immediate opcode.")
+            raise ValueError("After a simple opcode there must be exactly 0 or 1 immediate opcode.")
         return next_vertex

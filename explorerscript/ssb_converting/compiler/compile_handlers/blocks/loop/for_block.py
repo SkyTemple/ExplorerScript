@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,26 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List
+from __future__ import annotations
 
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractLoopBlockCompileHandler, \
-    AbstractStatementCompileHandler
+from typing import cast
+
+from antlr4 import ParserRuleContext
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractStatementCompileHandler,
+    AbstractComplexStatementCompileHandler,
+    AbstractLoopBlockCompileHandler,
+    AnyLoopBlockCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_JUMP, SsbLabel
 
 
-class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
+class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParser.For_blockContext]):
     """
     Compiles a for loop.
     It has three parts:
@@ -55,40 +64,41 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler):
     - Branch <Check If Header>? -> BLOCK_LABEL
     - END_LABEL
     """
-    def __init__(self, ctx, compiler_ctx: CompilerCtx):
+
+    def __init__(self, ctx: ExplorerScriptParser.For_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._block_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} block label'
-        )
+        self._block_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block label")
         self._new_run_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} new run label'
+            self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} new run label"
         )
         self._initial_label = SsbLabel(
-            self.compiler_ctx.counter_labels(), -1, f'{self.__class__.__name__} initial label'
+            self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} initial label"
         )
-        self._branch_blueprint: Optional[SsbLabelJumpBlueprint] = None
-        self._init_statement_handler: Optional[AbstractStatementCompileHandler] = None
-        self._end_statement_handler: Optional[AbstractStatementCompileHandler] = None
+        self._branch_blueprint: SsbLabelJumpBlueprint | None = None
+        self._init_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
+        self._end_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(self)
-        retval = [
-                     self._start_label
-                 ] + self._init_statement_handler.collect() + [
-                     self._generate_jump_operation(OP_JUMP, [], self._initial_label),
-                     self._block_label
-                 ] + self._process_block(False) + [
-                     self._new_run_label
-                 ] + self._end_statement_handler.collect() + [
-                     self._initial_label,
-                     self._branch_blueprint.build_for(self._block_label),
-                     self._end_label
-                 ]
+        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
+        assert (
+            self._init_statement_handler is not None
+            and self._end_statement_handler is not None
+            and self._branch_blueprint is not None
+        )
+        retval = (
+            [self._start_label]
+            + self._init_statement_handler.collect()
+            + [self._generate_jump_operation(OP_JUMP, [], self._initial_label), self._block_label]
+            + self._process_block(False)
+            + [self._new_run_label]
+            + self._end_statement_handler.collect()
+            + [self._initial_label, self._branch_blueprint.build_for(self._block_label), self._end_label]
+        )
         self.compiler_ctx.remove_loop()
         return retval
 
-    def add(self, obj: any):
-        if isinstance(obj, AbstractStatementCompileHandler):
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+        if isinstance(obj, AbstractComplexStatementCompileHandler):
             if self._init_statement_handler is None:
                 self._init_statement_handler = obj
             elif self._end_statement_handler is None:

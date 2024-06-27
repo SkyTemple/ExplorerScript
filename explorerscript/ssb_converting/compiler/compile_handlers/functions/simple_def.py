@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,18 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import Any
+
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractFuncdefCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType
 from explorerscript.util import exps_int
 
 
-class SimpleDefCompileHandler(AbstractFuncdefCompileHandler):
-    def collect(self) -> any:
+class SimpleDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.Simple_defContext]):
+    def collect(self) -> Any:
         """Collects routine info and operations."""
         return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
 

@@ -1,10 +1,11 @@
 """
 Opposite of decompiler.label_jump_to_resolver -> Removes LabelJumps and Labels
 and replaces jumps by regular opcodes arguments.
- """
+"""
+
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +25,9 @@ and replaces jumps by regular opcodes arguments.
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
 import logging
-from typing import List, Dict
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
@@ -38,22 +40,24 @@ logger = logging.getLogger(__name__)
 class OpsLabelJumpToRemover:
     def __init__(self, routines: list[list[SsbOperation]], label_offsets: dict[int, int]):
         logger.debug("Removing labels - replacing them with opcode jumps...")
-        self.routines = []
+        self.routines: list[list[SsbOperation]] = []
 
         # label_offsets is a dict that maps label ids to their next opcode offset id
         for routine_id, rtn in enumerate(routines):
-            new_rtn_ops = []
+            new_rtn_ops: list[SsbOperation] = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
                 if isinstance(op, SsbLabelJump):
                     # Remove the jump and add the label offset as last argument
                     new_op = op.root
+                    assert op.label is not None
                     if op.label.id not in label_offsets:
                         label_id = op.label.original_name
                         if label_id is None:
                             label_id = f"<internal:{op.label.id}>"
-                        raise SsbCompilerError(f(_("Label {label_id} does not exist, but a jump to it does "
-                                                   "(remove it).")))
+                        raise SsbCompilerError(
+                            f(_("Label {label_id} does not exist, but a jump to it does " "(remove it)."))
+                        )
                     new_op.params.append(label_offsets[op.label.id])
                     new_rtn_ops.append(new_op)
                 elif isinstance(op, SsbLabel):

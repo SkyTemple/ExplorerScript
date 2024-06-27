@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,16 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
-from typing import Optional, List, Dict
+from __future__ import annotations
+
+from typing import cast
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.error import SsbCompilerError
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.macro_def import MacroDefCompileHandler
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
@@ -35,20 +37,28 @@ from explorerscript.util import _
 
 
 class MacroVisitor(ExplorerScriptVisitor):
-    """ Collects all macros as Macro models from an ExplorerScript tree. """
+    """Collects all macros as Macro models from an ExplorerScript tree."""
+
+    # Global compilation context for the handlers
+    source_map_builder: SourceMapBuilder
+    compiler_ctx: CompilerCtx
+    macro_resolution_order: list[str]
+
+    _root_handler: MacroDefCompileHandler | None
+
     def __init__(
-            self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro],
-            macro_resolution_order: list[str]
+        self,
+        performance_progress_list_var_name: str,
+        macros: dict[str, ExplorerScriptMacro],
+        macro_resolution_order: list[str],
     ):
-        # Global compilation context for the handlers
         self.source_map_builder = SourceMapBuilder()
         self.compiler_ctx = CompilerCtx(
-            Counter(), self.source_map_builder, {}, Counter(),
-            performance_progress_list_var_name, macros.copy()
+            Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name, macros.copy()
         )
         self.macro_resolution_order = macro_resolution_order
 
-        self._root_handler: Optional[AbstractCompileHandler] = None
+        self._root_handler = None
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}
@@ -74,9 +84,10 @@ class MacroVisitor(ExplorerScriptVisitor):
 
         return ExplorerScriptMacro(name, variables, blueprints, self.source_map_builder.build())
 
-    def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext):
+    def visitFunc_alias(self, ctx: ExplorerScriptParser.Func_aliasContext) -> None:
         raise SsbCompilerError(_("Macros can not alias."))
 
-    def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext):
+    def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
+        assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(self._root_handler, self.compiler_ctx))
+            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))

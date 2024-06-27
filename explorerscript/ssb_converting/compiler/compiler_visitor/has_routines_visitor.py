@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2023 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,36 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 #
+from __future__ import annotations
+
+from typing import Any
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 
 
 class HasRoutinesVisitor(ExplorerScriptVisitor):
     """Visitor that returns whether or not the ExplorerScript tree contains any routines."""
-    def __init__(self):
+
+    def __init__(self) -> None:
         pass
 
-    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext):
+    def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> bool:
         # Are not visited.
         return False
 
-    def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext):
+    def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext) -> bool:
         return True
 
-    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext):
+    def visitMacrodef(self, ctx: ExplorerScriptParser.MacrodefContext) -> bool:
         # Are not visited.
         return False
 
-    def defaultResult(self):
+    def defaultResult(self) -> bool:  # type: ignore
         return False
 
-    def visitTerminal(self, node):
+    def visitTerminal(self, node: Any) -> bool:
         return False
 
-    def aggregateResult(self, aggregate, nextResult):
+    def aggregateResult(self, aggregate: bool, nextResult: bool) -> bool:
         return aggregate or nextResult
