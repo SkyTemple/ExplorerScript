@@ -37,8 +37,10 @@ from explorerscript.ssb_converting.compiler.compiler_visitor.macro_visitor impor
 from explorerscript.ssb_converting.compiler.compiler_visitor.routine_visitor import RoutineVisitor
 from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalizer
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
+from explorerscript.ssb_converting.compiler.meta_attributes import parse_exps_meta_attributes, ExpsMetaAttributes
 from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
+from explorerscript.ssb_script.ssb_converting.ssb_compiler import SsbScriptSsbCompiler
 from explorerscript.util import open_utf8, f, _
 
 logger = logging.getLogger(__name__)
@@ -146,6 +148,20 @@ class ExplorerScriptSsbCompiler:
         self.macros = {}
         if original_base_file is None:
             original_base_file = file_name
+
+        # Parse attributes
+        attributes = parse_exps_meta_attributes(explorerscript_src)
+        if ExpsMetaAttributes.IsSsbScript in attributes.keys():
+            value = attributes[ExpsMetaAttributes.IsSsbScript]
+            if value == "true" or value == "1":
+                # Parse as SsbScript instead
+                subcompiler = SsbScriptSsbCompiler()
+                subcompiler.compile(explorerscript_src)
+                self.routine_infos = subcompiler.routine_infos
+                self.routine_ops = subcompiler.routine_ops
+                self.named_coroutines = subcompiler.named_coroutines
+                self.source_map = subcompiler.source_map
+                return self
 
         reader = ExplorerScriptReader(explorerscript_src)
         tree = reader.read()

@@ -92,12 +92,12 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         for v in self._dependency_graph.vs:
             if any(self._has_path(out_e.target, v) for out_e in v.out_edges()):
                 raise SsbCompilerError(
-                    f(_("Dependency cycle detected while trying to resolve macros" " (for macro '{v['name']}')."))
+                    f(_("Dependency cycle detected while trying to resolve macros (for macro '{v['name']}')."))
                 )
             # Check direct cycles
             if any(v.index == e.target for e in v.out_edges()):
                 raise SsbCompilerError(
-                    f(_("Dependency cycle detected while trying to resolve macros" " (for macro '{v['name']}')."))
+                    f(_("Dependency cycle detected while trying to resolve macros (for macro '{v['name']}')."))
                 )
 
     def _has_path(self, a: Vertex | int, b: Vertex) -> bool:

@@ -76,7 +76,7 @@ class MessageSwitchCompileHandler(
         for h in self._case_handlers:
             if not h.is_message_case:
                 raise SsbCompilerError(
-                    f(_("A message_ switch can only contain cases with strings " "(line {self.ctx.start.line})."))
+                    f(_("A message_ switch can only contain cases with strings (line {self.ctx.start.line})."))
                 )
             header_handler = h.collect_header_handler()
             if header_handler.get_header_handler_type() != IntegerLikeCompileHandler:

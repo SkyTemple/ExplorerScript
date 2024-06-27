@@ -81,7 +81,7 @@ class SwitchBlockCompileHandler(
             h.set_end_label(end_label)
             if h.is_message_case:
                 raise SsbCompilerError(
-                    f(_("A switch case must contain a list of statements " "(line {self.ctx.start.line})."))
+                    f(_("A switch case must contain a list of statements (line {self.ctx.start.line})."))
                 )
             assert isinstance(h, CaseBlockCompileHandler)
             jmp_blueprint = h.get_header_jump_template()
@@ -143,7 +143,7 @@ class SwitchBlockCompileHandler(
         if isinstance(obj, DefaultCaseBlockCompileHandler):
             if self._default_handler is not None:
                 raise SsbCompilerError(
-                    f(_("A switch block can only have a single default case " "(line {self.ctx.start.line})."))
+                    f(_("A switch block can only have a single default case (line {self.ctx.start.line})."))
                 )
             self._default_handler = obj
             self._default_handler_index = len(self._case_handlers)

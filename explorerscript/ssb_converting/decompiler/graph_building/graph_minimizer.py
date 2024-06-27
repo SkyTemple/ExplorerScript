@@ -65,6 +65,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     ForeverEnd,
     SsbForeignLabel,
     CallJump,
+    OPS_THAT_WILL_JUMP_GUARANTEED,
 )
 
 logger = logging.getLogger(__name__)
@@ -735,8 +736,14 @@ class SsbGraphMinimizer:
                         if (
                             v["op"].id == 0
                             or in_edges[0]["loop"]
-                            or isinstance(v["op"], SsbLabel)
-                            and len(v["op"].markers) > 0
+                            or (
+                                isinstance(v["op"], SsbLabel)
+                                and (
+                                    v["op"].force_write
+                                    or v["op"].referenced_from_other_routine
+                                    or len(v["op"].markers) > 0
+                                )
+                            )
                         ):
                             # The label is a special label, loops, or is the first operation, we really
                             # shouldn't remove it
@@ -850,8 +857,13 @@ class SsbGraphMinimizer:
         if isinstance(op, SsbLabelJump):
             real_op = op.root
             is_label_jump = True
-        # If this is not a guaranteed jump or the last op_code in rtn, one possible branch is always just the next op:
-        if len(rtn) > op_i + 1 and (flow_can_not_end or real_op.op_code.name not in OPS_THAT_END_CONTROL_FLOW):
+        is_guaranteed_jump = real_op.op_code.name in OPS_THAT_WILL_JUMP_GUARANTEED
+        # If this is not a guaranteed jump or the last op_code in rtn, one possible branch is always just the next op,
+        if (
+            not is_guaranteed_jump
+            and len(rtn) > op_i + 1
+            and (flow_can_not_end or real_op.op_code.name not in OPS_THAT_END_CONTROL_FLOW)
+        ):
             next_ops.append((flow_level, op_i + 1))
         # If this is a label jump, we can also continue at the label
         if is_label_jump:

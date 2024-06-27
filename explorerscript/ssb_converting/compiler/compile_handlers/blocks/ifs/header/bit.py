@@ -57,7 +57,7 @@ class IfHeaderBitCompileHandler(
             )
         elif not is_simple_positive:
             raise SsbCompilerError(
-                f(_("The variable {var_target_name} can not be used with 'not' " "(line {self.ctx.start.line})."))
+                f(_("The variable {var_target_name} can not be used with 'not' (line {self.ctx.start.line})."))
             )
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_BIT, [self.var_target, index])
 

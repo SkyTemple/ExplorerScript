@@ -26,6 +26,8 @@ import logging
 import sys
 from typing import Callable, TYPE_CHECKING
 
+from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
+
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
 else:
@@ -33,7 +35,6 @@ else:
 
 from igraph import Vertex
 
-from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
 from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
     AbstractWriteHandler,
     NestedBlockDisallowedError,

@@ -57,7 +57,7 @@ class SourceMapVisualizer:
                     if called_in_file == apply_for_macro_calls:
                         self._insert_comment(
                             called_in_line,
-                            f"col: {called_in_col} - 0x{opcode_offset:0x}" f" (CALL TO ~{mapping.macro_name})",
+                            f"col: {called_in_col} - 0x{opcode_offset:0x} (CALL TO ~{mapping.macro_name})",
                         )
         # Position Marks
         for pos_mark in self._source_map.get_position_marks__direct():

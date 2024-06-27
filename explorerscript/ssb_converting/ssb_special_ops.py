@@ -170,10 +170,11 @@ OP_END = "End"
 # The opcode to insert if a control flow ending opcode needs to be inserted
 OP_DUMMY_END = OP_RETURN
 
+OPS_THAT_WILL_JUMP_GUARANTEED = [OP_JUMP, "JumpCommon"]
 # These ops end the control flow in the current routine
 # (usually by jumping somewhere else and NOT "automatically" returining.)
 # This does not include OpCodes that MAY jump somewhere else (branching opcodes, see above)
-OPS_THAT_END_CONTROL_FLOW = [OP_JUMP, OP_RETURN, OP_END, OP_HOLD, "JumpCommon", "Destroy"]
+OPS_THAT_END_CONTROL_FLOW = OPS_THAT_WILL_JUMP_GUARANTEED + [OP_RETURN, OP_END, OP_HOLD, "Destroy"]
 
 OPS_CTX_LIVES = "lives"
 OPS_CTX_OBJECT = "object"
@@ -468,7 +469,9 @@ class SwitchCaseOperation:
         return f"{self.switch_index}:{self.index} :: {self.op}"
 
 
-def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], routine_id: int) -> SsbOperation:
+def process_op_for_jump(
+    op: SsbOperation, known_labels: dict[int, SsbLabel], routine_id: int, routine_end_offsets: list[int]
+) -> SsbOperation:
     """
     Processes the operation.
     If it doesn't contain a jump to a memory offset, op is simply returned.
@@ -508,7 +511,18 @@ def process_op_for_jump(op: SsbOperation, known_labels: dict[int, SsbLabel], rou
                 next_label_id = 0
             else:
                 next_label_id = max(label.id for label in known_labels.values()) + 1
+            our_routine_id = routine_id
+            # We need to calculate the routine ID based on the offset, because it might be that the label is in a
+            # LATER routine we haven't passed yet or even in one before.
+            while routine_id > 0 and old_offset < routine_end_offsets[routine_id - 1]:
+                routine_id -= 1
+            while old_offset > routine_end_offsets[routine_id]:
+                routine_id += 1
+                if routine_id >= len(routine_end_offsets):
+                    raise ValueError("A jump operation went past EOF.")
             label = SsbLabel(next_label_id, routine_id)
+            if routine_id != our_routine_id:
+                label.referenced_from_other_routine = True
             known_labels[old_offset] = label
         new_params = param_list.copy()
         del new_params[jump_param_idx]

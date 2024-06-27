@@ -86,7 +86,7 @@ class MesageSwitchSimpleOpWriteHandler(AbstractWriteHandler):
                 ).write_content()
             except NestedBlockDisallowedError:
                 raise ValueError(
-                    "message_Switch* opcode blocks must not contain opcodes that start any " "branching code."
+                    "message_Switch* opcode blocks must not contain opcodes that start any branching code."
                 )
 
         return next_vertex_after_blk

@@ -11,7 +11,4 @@ routine statements and regular operation
 statements, even for statements that have special
 syntax in ExplorerScript.
 
-It does not support named arguments.
-
-It also doesn't support comments. It is meant to be direct
-representation of a binaries SSB opcodes.
+It is meant to be direct representation of a binaries SSB opcodes.

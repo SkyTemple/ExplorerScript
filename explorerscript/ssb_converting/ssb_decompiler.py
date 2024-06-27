@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
@@ -44,6 +45,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     ForeverBreak,
     ForeverContinue,
 )
+from explorerscript.ssb_script.ssb_converting.ssb_decompiler import SsbScriptSsbDecompiler
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +61,7 @@ class ExplorerScriptSsbDecompiler:
     _routine_infos: MutableSequence[SsbRoutineInfo]
     _routine_ops: MutableSequence[MutableSequence[SsbOperation]]
     named_coroutines: dict[int, str]
+    _raw_named_coroutines: Sequence[SsbCoroutine]
     _output: str
     indent: int
     _line_number: int
@@ -87,6 +90,7 @@ class ExplorerScriptSsbDecompiler:
         self._routine_infos = routine_infos
         self._routine_ops = routine_ops
         self.named_coroutines = {x.id: x.name for x in named_coroutines}
+        self._raw_named_coroutines = named_coroutines
         self._output = ""
         self.indent = 0
         self._line_number = 1
@@ -104,6 +108,8 @@ class ExplorerScriptSsbDecompiler:
         self._line_number = 1
         self.smb = SourceMapBuilder()
 
+        raw_routine_backup_ops = deepcopy(self._routine_ops)
+
         # Step 1: Build labels
         resolver = OpsLabelJumpToResolver(self._routine_ops)
         self._routine_ops = list(resolver)
@@ -114,34 +120,64 @@ class ExplorerScriptSsbDecompiler:
 
         # Step 2: Build and optimize execution graph
         logger.debug("Building base graph...")
-        # If we have any calls, we disable the optimization that stops at ending opcodes.
-        grapher = SsbGraphMinimizer(self._routine_ops, not has_any_calls)
-        logger.debug("Built base graph...")
-        # Remove redundant labels
-        grapher.optimize_paths()
-        # Build groups switch+cases, switch groups, branch-groups
-        # get rid of as many label references (jumps) as possible
-        grapher.build_branches()
-        grapher.group_branches()
-        grapher.invert_branches()
-        grapher.build_and_group_switch_cases()
-        grapher.group_switch_cases()
-        grapher.build_switch_fallthroughs()
-        # Process loops
-        grapher.build_loops()
-        # Remove all labels that are no longer needed, because they are only referenced from one place or implicit
-        # control flow
-        grapher.remove_label_markers()
+        try:
+            # If we have any calls, we disable the optimization that stops at ending opcodes.
+            grapher = SsbGraphMinimizer(self._routine_ops, not has_any_calls)
+            logger.debug("Built base graph...")
+            # Remove redundant labels
+            grapher.optimize_paths()
+            # Build groups switch+cases, switch groups, branch-groups
+            # get rid of as many label references (jumps) as possible
+            grapher.build_branches()
+            grapher.group_branches()
+            grapher.invert_branches()
+            grapher.build_and_group_switch_cases()
+            grapher.group_switch_cases()
+            grapher.build_switch_fallthroughs()
+            # Process loops
+            grapher.build_loops()
+            # Remove all labels that are no longer needed, because they are only referenced from one place or implicit
+            # control flow
+            grapher.remove_label_markers()
 
-        # Step 3:
-        # We can now just go through the graph and build the result.
-        for r_id, (r_info, r_graph) in enumerate(zip(self._routine_infos, grapher.get_graphs())):
-            logger.debug(
-                "Decompiling (%d, %s)...", r_id, self.named_coroutines[r_id] if r_id in self.named_coroutines else None
+            # Step 3:
+            # We can now just go through the graph and build the result.
+            for r_id, (r_info, r_graph) in enumerate(zip(self._routine_infos, grapher.get_graphs())):
+                logger.debug(
+                    "Decompiling (%d, %s)...",
+                    r_id,
+                    self.named_coroutines[r_id] if r_id in self.named_coroutines else None,
+                )
+                RoutineWriteHandler(self, r_id, r_info, r_graph).write_content()
+
+            return self._output, self.smb.build()
+
+        except AssertionError:
+            # If an assertion failed, then either there is a bug in the decompiler or the script is not valid, ie.
+            # has no ending opcode at the end of routines. Try to fallback to SsbScript.
+            self._routine_ops = raw_routine_backup_ops
+            logger.warning("Failed to decompile. Falling back to SsbScript...")
+            prefix = "//?: is-ssb-script: true\n"
+            prefix += "// WARNING:\n"
+            prefix += "// Failed to normally decompile this script. This is either because of a bug\n"
+            prefix += "// in the decompiler or because this script was not valid.\n"
+            prefix += "//\n"
+            prefix += "// The following is a fallback decompilation as SsbScript that may not be as easy to read.\n"
+            prefix += "//\n"
+            prefix += "// IMPORTANT: This is now SsbScript instead of ExplorerScript. If you remove the very first\n"
+            prefix += "// line (//?: is-ssb-script: true), then the compiler will try to compile this file \n"
+            prefix += "// as ExplorerScript again.\n"
+            prefix += "// Before this is possible you will need to re-write this file to be valid ExplorerScript.\n"
+
+            ssb_script_decompiler = SsbScriptSsbDecompiler(
+                self._routine_infos,
+                self._routine_ops,
+                self._raw_named_coroutines,
             )
-            RoutineWriteHandler(self, r_id, r_info, r_graph).write_content()
 
-        return self._output, self.smb.build()
+            self._output, sm = ssb_script_decompiler.convert(prefix=prefix)
+
+            return self._output, sm
 
     def write_stmnt(self, stmnt: str, line: bool = True) -> None:
         """Write a simple single line statement"""

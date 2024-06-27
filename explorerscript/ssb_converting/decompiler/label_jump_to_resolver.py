@@ -45,11 +45,12 @@ class OpsLabelJumpToResolver:
         logger.debug("Constructing labels and jumps...")
         self.labels = {}
         self.routines = []
+        routine_end_offsets = self._build_end_offsets(routines)
         for routine_id, rtn in enumerate(routines):
             new_rtn_ops: list[SsbOperation] = []
             self.routines.append(new_rtn_ops)
             for op in rtn:
-                new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id))
+                new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id, routine_end_offsets))
 
     def __iter__(self) -> Generator[list[SsbOperation], None, None]:
         rtn_iterator = iter(self.routines)
@@ -71,3 +72,13 @@ class OpsLabelJumpToResolver:
                 yield next_item
         except StopIteration:
             return
+
+    def _build_end_offsets(self, routines: Sequence[Sequence[SsbOperation]]) -> list[int]:
+        offsets = []
+        prev_offset = 0
+        for routine in routines:
+            if len(routine) > 0:
+                last_op = routine[-1]
+                prev_offset = last_op.offset
+            offsets.append(prev_offset)
+        return offsets
