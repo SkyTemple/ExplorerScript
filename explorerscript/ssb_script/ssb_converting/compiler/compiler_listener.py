@@ -50,6 +50,7 @@ class ListenerArgType(Enum):
     INTEGER = auto()
     DECIMAL = auto()
     CONSTANT = auto()
+    VARIABLE = auto()
     STRING_LITERAL = auto()
     LANGUAGE_STRING = auto()
     JUMP = auto()
@@ -211,6 +212,9 @@ class SsbScriptCompilerListener(SsbScriptListener):
         elif self._argument_type == ListenerArgType.DECIMAL:
             assert isinstance(self._argument_value, str)
             self._collected_params.append(SsbOpParamFixedPoint.from_str(self._argument_value))
+        elif self._argument_type == ListenerArgType.VARIABLE:
+            assert isinstance(self._argument_value, str)
+            self._collected_params.append(SsbOpParamConstant(self._argument_value))
         elif self._argument_type == ListenerArgType.CONSTANT:
             assert isinstance(self._argument_value, str)
             self._collected_params.append(SsbOpParamConstant(self._argument_value))
@@ -246,12 +250,15 @@ class SsbScriptCompilerListener(SsbScriptListener):
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
                 self._argument_value = exps_int(str(ctx.INTEGER()))
-            if ctx.DECIMAL():
+            elif ctx.DECIMAL():
                 self._argument_type = ListenerArgType.DECIMAL
                 self._argument_value = str(ctx.DECIMAL())
             elif ctx.IDENTIFIER():
                 self._argument_type = ListenerArgType.CONSTANT
                 self._argument_value = str(ctx.IDENTIFIER())
+            elif ctx.VARIABLE():
+                self._argument_type = ListenerArgType.VARIABLE
+                self._argument_value = str(ctx.VARIABLE())
 
     def exitJump_marker(self, ctx: SsbScriptParser.Jump_markerContext) -> None:
         if self._is_processing_argument:

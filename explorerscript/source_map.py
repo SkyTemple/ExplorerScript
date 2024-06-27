@@ -423,7 +423,7 @@ class SourceMapBuilder:
         """
         if len(self._macro_context__stack) < 1:
             raise ValueError(
-                "There are no return addresses on the macro return address stack, " "can not add macro opcode."
+                "There are no return addresses on the macro return address stack, can not add macro opcode."
             )
         called_in = None
         if self._next_macro_called_in is not None:

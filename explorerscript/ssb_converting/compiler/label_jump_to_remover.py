@@ -56,7 +56,7 @@ class OpsLabelJumpToRemover:
                         if label_id is None:
                             label_id = f"<internal:{op.label.id}>"
                         raise SsbCompilerError(
-                            f(_("Label {label_id} does not exist, but a jump to it does " "(remove it)."))
+                            f(_("Label {label_id} does not exist, but a jump to it does (remove it)."))
                         )
                     new_op.params.append(label_offsets[op.label.id])
                     new_rtn_ops.append(new_op)

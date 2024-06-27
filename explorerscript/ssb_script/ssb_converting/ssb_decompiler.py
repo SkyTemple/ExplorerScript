@@ -73,11 +73,11 @@ class SsbScriptSsbDecompiler:
         self._line_number = 1
         self._source_map_builder = None
 
-    def convert(self) -> tuple[str, SourceMap]:
+    def convert(self, *, prefix: str = "") -> tuple[str, SourceMap]:
         logger.debug("Decompiling SSBScript...")
-        self._output = ""
+        self._output = prefix
         self.indent = 0
-        self._line_number = 1
+        self._line_number = prefix.count("\n") + 1
         self._source_map_builder = SourceMapBuilder()
 
         # Step 1: Build labels

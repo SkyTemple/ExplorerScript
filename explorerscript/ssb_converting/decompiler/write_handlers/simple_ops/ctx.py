@@ -77,7 +77,7 @@ class CtxSimpleOpWriteHandler(AbstractWriteHandler):
                 ).write_content()
             except NestedBlockDisallowedError:
                 raise ValueError(
-                    "lives/performer/object blocks must contain opcodes that don't start any " "branching code."
+                    "lives/performer/object blocks must contain opcodes that don't start any branching code."
                 )
 
         return next_vertex_after_blk
