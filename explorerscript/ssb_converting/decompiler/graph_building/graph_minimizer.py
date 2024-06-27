@@ -699,8 +699,6 @@ class SsbGraphMinimizer:
                     in_edges = v.in_edges()
                     out_edges = v.out_edges()
                     if len(in_edges) != 0:
-                        if not (len(in_edges) == 1 and len(out_edges) == 1):
-                            v.graph.write("/tmp/gv/failure.dot")
                         assert len(in_edges) == 1 and len(out_edges) == 1
                         v_before = in_edges[0].source_vertex
                         v_after = out_edges[0].target_vertex
