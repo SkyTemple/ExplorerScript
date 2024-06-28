@@ -35,7 +35,7 @@ from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
-from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
+from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP, OP_END
 
 if TYPE_CHECKING:
     from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
@@ -259,6 +259,10 @@ class AbstractFuncdefCompileHandler(AbstractCompileHandler[CTX, AbstractCompileH
             ops_of_h = h.collect()
             assert isinstance(ops_of_h, list) and (len(ops_of_h) == 0 or isinstance(ops_of_h[0], SsbOperation))
             ops += ops_of_h
+        # Add an End at the end of all routines as failsafe in case the user has not put a control-flow ending operation.
+        # Unless the routine is empty, in which case it is an alias routine.
+        if len(ops) > 0:
+            ops.append(self._generate_operation(OP_END, []))
         return ops
 
     @abstractmethod
