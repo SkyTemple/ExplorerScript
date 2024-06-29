@@ -29,7 +29,7 @@ from explorerscript.ssb_converting.compiler.utils import string_literal
 
 class LangStringArgumentCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Lang_string_argumentContext, None]):
     def collect(self) -> tuple[str, str]:  # language, string
-        return str(self.ctx.IDENTIFIER()), string_literal(self.ctx.STRING_LITERAL())
+        return str(self.ctx.IDENTIFIER()), string_literal(self.ctx.string_value())
 
     def add(self, obj: None) -> None:
         # Doesn't accept anything

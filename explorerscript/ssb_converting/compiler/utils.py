@@ -22,11 +22,14 @@
 #
 from __future__ import annotations
 
+import itertools
 import logging
-from typing import TYPE_CHECKING, MutableSequence
+from collections import deque
+from typing import TYPE_CHECKING, MutableSequence, Iterable, Any
 
 from antlr4 import ParserRuleContext
 
+from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
@@ -186,9 +189,56 @@ class SsbLabelJumpBlueprint:
         return SsbLabelJump(SsbOperation(number, SsbOpCode(-1, self.op_code_name), self.params), label)
 
 
-def string_literal(string: str) -> str:
-    # TODO: Very naive "escaping" atm.
+def string_literal(string: ExplorerScriptParser.String_valueContext) -> str:
+    single_line = string.STRING_LITERAL()
+    if single_line:
+        return singleline_string_literal(single_line)
+    return multiline_string_literal(string.MULTILINE_STRING_LITERAL())
+
+
+def singleline_string_literal(string: str) -> str:
+    # This isn't the greatest escaping but it works for most cases. Changing it now would be backwards incompatible.
     return str(string)[1:-1].replace('\\"', '"').replace("\\'", "'").replace("\\n", "\n")
+
+
+def multiline_string_literal(string: str) -> str:
+    string = str(string)[3:-3]
+    all_lines = string.splitlines()
+    lines: list[str] = []
+    last_line = ""
+
+    if len(all_lines) == 0:
+        first_line = ""
+    elif len(all_lines) == 1:
+        first_line = all_lines[0]
+    elif len(all_lines) == 2:
+        first_line = all_lines[0]
+        last_line = all_lines[1]
+    else:
+        [first_line, *lines, last_line] = all_lines
+
+    last_line_stripped = last_line.lstrip(" ")
+    if len(last_line_stripped) != 0:
+        # The last line contains characters, treat it as normal.
+        lines.append(last_line)
+
+    whitespace_counts: list[int] = [_count_iter_items(itertools.takewhile(lambda c: c == " ", line)) for line in lines]
+    min_whitespace_count = min(whitespace_counts, default=0)
+
+    transformed_lines = [line[min_whitespace_count:] for line in lines]
+
+    nl_if_lines = "\n" if first_line != "" and len(transformed_lines) > 0 else ""
+
+    return first_line + nl_if_lines + "\n".join(transformed_lines)
+
+
+def _count_iter_items(iterable: Iterable[Any]) -> int:
+    """
+    Consume an iterable not reading it into memory; return the number of items.
+    """
+    counter = itertools.count()
+    deque(zip(iterable, counter), maxlen=0)
+    return next(counter)
 
 
 def routine_op_offsets_are_ordered(routine_ops: list[list[SsbOperation]]) -> bool:

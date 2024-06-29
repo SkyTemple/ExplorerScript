@@ -36,8 +36,8 @@ class StringCompileHandler(AbstractCompileHandler[ExplorerScriptParser.StringCon
         self.lang_string_handler: LangStringCompileHandler | None = None
 
     def collect(self) -> SsbOpParamLanguageString | SsbOpParamConstString:
-        if self.ctx.STRING_LITERAL():
-            return SsbOpParamConstString(string_literal(self.ctx.STRING_LITERAL()))
+        if self.ctx.string_value():
+            return SsbOpParamConstString(string_literal(self.ctx.string_value()))
         if self.lang_string_handler:
             return self.lang_string_handler.collect()
         raise SsbCompilerError("Invalid string, neither literal nor language string")

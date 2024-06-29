@@ -1,4 +1,4 @@
-# Generated from SsbScript.g4 by ANTLR 4.13.1
+# Generated from SsbScript.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .SsbScriptParser import SsbScriptParser
@@ -176,6 +176,15 @@ class SsbScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by SsbScriptParser#lang_string_argument.
     def exitLang_string_argument(self, ctx:SsbScriptParser.Lang_string_argumentContext):
+        pass
+
+
+    # Enter a parse tree produced by SsbScriptParser#string_value.
+    def enterString_value(self, ctx:SsbScriptParser.String_valueContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#string_value.
+    def exitString_value(self, ctx:SsbScriptParser.String_valueContext):
         pass
 
 

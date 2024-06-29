@@ -1,4 +1,4 @@
-# Generated from ExplorerScript.g4 by ANTLR 4.13.1
+# Generated from ExplorerScript.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .ExplorerScriptParser import ExplorerScriptParser
@@ -572,6 +572,15 @@ class ExplorerScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by ExplorerScriptParser#lang_string_argument.
     def exitLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#string_value.
+    def enterString_value(self, ctx:ExplorerScriptParser.String_valueContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#string_value.
+    def exitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
         pass
 
 
