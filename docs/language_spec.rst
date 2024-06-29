@@ -210,16 +210,16 @@ Given this single line string literal...:
 .. code:: ExplorerScript
 
     '''First Line
-    Second Line
-      Some indentation in the third line
-    Fourth Line
+      Second Line
+        Some indentation in the third line
+      Fourth Line
                   '''
 
     """
-    First Line
-    Second Line
-      Some indentation in the third line
-    Fourth Line"""
+      First Line
+      Second Line
+        Some indentation in the third line
+      Fourth Line"""
 
 ``\n`` in multiline strings are kept as is, they are not converted to new lines.
 

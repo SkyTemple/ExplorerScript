@@ -29,12 +29,42 @@ from enum import Enum
 from typing import Union, MutableSequence
 
 
-def escape_quotes(string: str) -> str:
-    return string.replace('"', '\\"').replace("'", "\\'")
+def escape_quotes(string: str, which_quotes: str | None = None) -> str:
+    if which_quotes is None:
+        return string.replace('"', '\\"').replace("'", "\\'")
+    return string.replace(f"{which_quotes}", f"\\{which_quotes}")
 
 
 def escape_newlines(string: str) -> str:
     return string.replace("\n", "\\n")
+
+
+def repr_string(string: str, indent: int = 0, prefer_single_qoute: bool = False) -> str:
+    if prefer_single_qoute:
+        preferred_quote = "'"
+        preferred_multiline_quote = "'''"
+        secondary_multiline_quote = '"""'
+    else:
+        preferred_quote = '"'
+        preferred_multiline_quote = '"""'
+        secondary_multiline_quote = "'''"
+
+    if "\n" not in string:
+        # Single line string
+        return f"{preferred_quote}{escape_quotes(string, which_quotes=preferred_quote)}{preferred_quote}"
+    if preferred_multiline_quote in string:
+        if secondary_multiline_quote in string:
+            # uh oh... We can't properly handle this at the moment. We fall back to single line string representation.
+            return f"{preferred_quote}{escape_newlines(escape_quotes(string, which_quotes=preferred_quote))}{preferred_quote}"
+        return _repr_multiline_string(string, indent, secondary_multiline_quote)
+    return _repr_multiline_string(string, indent, preferred_multiline_quote)
+
+
+def _repr_multiline_string(string: str, indent: int, delimiter: str) -> str:
+    lines = string.split("\n")
+    indentprefix = " " * (NUMBER_OF_SPACES_PER_INDENT * indent)
+    output = "\n".join((indentprefix + (" " * NUMBER_OF_SPACES_PER_INDENT) + o for o in lines))
+    return f"{delimiter}\n{output}\n{indentprefix}{delimiter}"
 
 
 class SsbRoutineType(Enum):
@@ -201,12 +231,14 @@ class SsbOpParamConstString:
     """A string constant from the table of string constants in an Ssb"""
 
     name: str
+    indent: int
 
     def __init__(self, name: str):
         self.name = name
+        self.indent = 0
 
     def __str__(self) -> str:
-        return f"'{escape_newlines(escape_quotes(self.name))}'"
+        return repr_string(self.name, indent=self.indent, prefer_single_qoute=True)
 
     def __repr__(self) -> str:
         return f"str({str(self)})"
@@ -232,7 +264,7 @@ class SsbOpParamLanguageString:
         string = "{\n"
         for language, lang_string in self.strings.items():
             string += " " * ((self.indent + 1) * NUMBER_OF_SPACES_PER_INDENT)
-            string += f'{language}="{escape_newlines(escape_quotes(lang_string))}",\n'
+            string += f"{language}={repr_string(lang_string, indent=self.indent + 1)},\n"
         string += " " * (self.indent * NUMBER_OF_SPACES_PER_INDENT)
         string += "}"
         return string

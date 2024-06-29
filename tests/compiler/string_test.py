@@ -70,26 +70,26 @@ MULTILINE_ESCAPES_SINGLEQ_STRING = (r"'''X\nY\\Z\"A\'B'''", r"X\nY\\Z\"A\'B")
 
 MULTILINE_DOCTEST_A = (
     """'''First Line
-    Second Line
-      Some indentation in the third line
-    Fourth Line
-    '''""",
+      Second Line
+        Some indentation in the third line
+      Fourth Line
+             '''""",
     "First Line\nSecond Line\n  Some indentation in the third line\nFourth Line",
 )
 MULTILINE_DOCTEST_B = (
     '''"""
-    First Line
-    Second Line
-      Some indentation in the third line
-    Fourth Line"""''',
+      First Line
+      Second Line
+        Some indentation in the third line
+      Fourth Line"""''',
     "First Line\nSecond Line\n  Some indentation in the third line\nFourth Line",
 )
 MULTILINE_DOCTEST_C = (
     '''"""
-    First Line
-    Second Line
-      Some indentation in the third line
-         Fourth Line"""''',
+      First Line
+      Second Line
+        Some indentation in the third line
+           Fourth Line"""''',
     "First Line\nSecond Line\n  Some indentation in the third line\n     Fourth Line",
 )
 
