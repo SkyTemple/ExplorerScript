@@ -28,7 +28,7 @@ from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
-from explorerscript.ssb_converting.compiler.utils import string_literal
+from explorerscript.ssb_converting.compiler.utils import singleline_string_literal
 from explorerscript.ssb_converting.ssb_data_types import (
     SsbRoutineInfo,
     SsbOperation,
@@ -229,7 +229,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
     def exitPosition_marker(self, ctx: SsbScriptParser.Position_markerContext) -> None:
         if self._is_processing_argument:
             assert self._collected_pos_marker is not None
-            self._collected_pos_marker.name = string_literal(ctx.STRING_LITERAL())
+            self._collected_pos_marker.name = singleline_string_literal(ctx.STRING_LITERAL())
 
     def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext) -> None:
         if self._is_processing_argument:
@@ -270,7 +270,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
             string = ctx.STRING_LITERAL()
             if string:
                 self._argument_type = ListenerArgType.STRING_LITERAL
-                self._argument_value = string_literal(string)
+                self._argument_value = singleline_string_literal(string)
             else:
                 # Process the collected lang string
                 self._argument_type = ListenerArgType.LANGUAGE_STRING
@@ -280,7 +280,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._collected_lang_string = {}
 
     def exitLang_string_argument(self, ctx: SsbScriptParser.Lang_string_argumentContext) -> None:
-        self._collected_lang_string[str(ctx.IDENTIFIER())] = string_literal(ctx.STRING_LITERAL())
+        self._collected_lang_string[str(ctx.IDENTIFIER())] = singleline_string_literal(ctx.STRING_LITERAL())
 
     def exitLabel(self, ctx: SsbScriptParser.LabelContext) -> None:
         label_name = str(ctx.IDENTIFIER())

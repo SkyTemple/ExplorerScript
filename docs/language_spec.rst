@@ -169,20 +169,75 @@ are usually in uppercase.
 ~~~~~~~~~~~~~~~~~~
 A simple string literal that has no translations available.
 
+It may be a single line string, enclosed in single- or double quotes.
+
 .. code:: ExplorerScript
 
+    // Single quotes string:
+    'Hello World'
+    // Double quotes string:
     "Hello World"
+
+A single line string may contain ``\n`` to insert a newline in the resulting text.
+
+A string literal may also be a multi line string, which is indicated by three quote characters (``'''`` or ``"""``).
+
+.. code:: ExplorerScript
+
+    """
+    This is a multiline string.
+    It can span multiple lines.
+    """
+
+New lines in a multi line string are kept and indentations (whitespace characters before the first non-whitespace
+character in a line) are stripped in a way that makes writing these strings convenient:
+
+- The indentation in the first line of the string literal (after the starting three quote characters) is preserved.
+- The indentation in the last line of the string literal is fully removed if it only consists of whitespace characters.
+- For all other lines, the least indentation among all of these lines is calculated and then the lines are dedented
+  by that amount. If the last line does not fully consist of whitespace characters, this also applies to it.
+
+If the first or last line would be empty after applying the rules above, they are removed from the resulting string.
+
+Given this single line string literal...:
+
+.. code:: ExplorerScript
+
+    "First Line\nSecond Line\n  Some indentation in the third line\nFourth Line"
+
+... all of these multi line string literals would be equivalent to it:
+
+.. code:: ExplorerScript
+
+    '''First Line
+    Second Line
+      Some indentation in the third line
+    Fourth Line
+                  '''
+
+    """
+    First Line
+    Second Line
+      Some indentation in the third line
+    Fourth Line"""
+
+``\n`` in multiline strings are kept as is, they are not converted to new lines.
 
 Language Strings
 ~~~~~~~~~~~~~~~~
 A collection of strings for different languages. It must have
-at least one string defined.
+at least one string defined. A language string's value can be a
+single line or a multi line string literal, see above.
 
 .. code:: ExplorerScript
 
     {
         languageA='String for lang A',
-        languageB="String for lang B"
+        languageB="String for lang B",
+        languageC="""
+          String for lang C
+          on multiple lines
+        """
     }
 
 .. admonition:: SkyTemple

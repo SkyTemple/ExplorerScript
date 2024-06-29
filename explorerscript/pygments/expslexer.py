@@ -22,6 +22,8 @@
 #
 from __future__ import annotations
 
+import re
+
 from pygments.lexer import RegexLexer, include, words
 from pygments.token import Comment, Name, String, Text, Number
 
@@ -86,6 +88,8 @@ class ExplorerScriptLexer(RegexLexer):
     aliases = ["explorerscript", "exps"]
     filenames = ["*.exps"]
 
+    flags = re.MULTILINE | re.DOTALL
+
     tokens = {
         "comments": [
             (r"/\*.*?\*/", Comment.Multiline),
@@ -99,6 +103,8 @@ class ExplorerScriptLexer(RegexLexer):
             (r"@[a-zA-Z_][0-9a-zA-Z_]*", Name.Decorator),
             (r"[a-zA-Z_][0-9a-zA-Z_]*", Name),
             include("numbers"),
+            ('"""', String, "mdq_string"),
+            ("'''", String, "msq_string"),
             ('"', String, "dq_string"),
             ("'", String, "sq_string"),
             (r".", Text),
@@ -110,6 +116,8 @@ class ExplorerScriptLexer(RegexLexer):
             (r"0[xX][a-fA-F0-9]+", Number.Hex),
             (r"\d+", Number.Integer),
         ],
+        "mdq_string": [('"""', String, "#pop"), ('"', String), include("dq_string")],
+        "msq_string": [("'''", String, "#pop"), ("'", String), include("sq_string")],
         "dq_string": [
             ('[^"]+', String),
             ('"', String, "#pop"),

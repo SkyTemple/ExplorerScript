@@ -26,7 +26,7 @@ from typing import Any
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
-from explorerscript.ssb_converting.compiler.utils import string_literal
+from explorerscript.ssb_converting.compiler.utils import singleline_string_literal
 
 
 class ImportVisitor(ExplorerScriptVisitor):
@@ -36,7 +36,7 @@ class ImportVisitor(ExplorerScriptVisitor):
         pass
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> str:
-        return string_literal(ctx.STRING_LITERAL())
+        return singleline_string_literal(ctx.STRING_LITERAL())
 
     def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext) -> None:
         # Are not visited.
