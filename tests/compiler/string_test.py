@@ -129,6 +129,63 @@ class StringTestCase(unittest.TestCase):
     def test_backslash_singleq_ssbscript(self) -> None:
         self.do_test_string(BACKSLASH_SINGLEQ_STRING, self.compile_ssbscript)
 
+    def test_multiline_singleline_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_SINGLELINE_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_singleline_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_SINGLELINE_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_simple_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_SIMPLE_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_simple_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_SIMPLE_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_start_indent_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_START_INDENT_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_start_indent_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_START_INDENT_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_extra_line_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_EXTRA_LINE_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_extra_line_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_EXTRA_LINE_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_extra_line_pre_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_EXTRA_LINE_PRE_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_hanging_simple_extra_line_pre_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_HANGING_SIMPLE_EXTRA_LINE_PRE_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_complex_indents_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_COMPLEX_INDENTS_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_complex_indents_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_COMPLEX_INDENTS_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_escapes_doubleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_ESCAPES_DOUBLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_escapes_singleq_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_ESCAPES_SINGLEQ_STRING, self.compile_ssbscript)
+
+    def test_multiline_doctest_a_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_DOCTEST_A, self.compile_ssbscript)
+
+    def test_multiline_doctest_b_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_DOCTEST_B, self.compile_ssbscript)
+
+    def test_multiline_doctest_c_ssbscript(self) -> None:
+        self.do_test_string(MULTILINE_DOCTEST_C, self.compile_ssbscript)
+
     def test_simple_doubleq_exps(self) -> None:
         self.do_test_string(SIMPLE_DOUBLEQ_STRING, self.compile_exps)
 

@@ -244,21 +244,6 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ExplorerScriptParser#string.
-    def visitString(self, ctx:ExplorerScriptParser.StringContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ExplorerScriptParser#lang_string_argument.
-    def visitLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ExplorerScriptParser#string_value.
-    def visitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by ExplorerScriptParser#funcdef.
     def visitFuncdef(self, ctx:ExplorerScriptParser.FuncdefContext):
         return self.visitChildren(ctx)
@@ -324,8 +309,23 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#string.
+    def visitString(self, ctx:ExplorerScriptParser.StringContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExplorerScriptParser#lang_string.
     def visitLang_string(self, ctx:ExplorerScriptParser.Lang_stringContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExplorerScriptParser#lang_string_argument.
+    def visitLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExplorerScriptParser#string_value.
+    def visitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
         return self.visitChildren(ctx)
 
 

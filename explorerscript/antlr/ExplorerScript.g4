@@ -114,19 +114,9 @@ assign_operator
  | ASSIGN
  ;
 
-// support for multiline strings
-string: string_value | lang_string;
-lang_string_argument: IDENTIFIER ASSIGN string_value;
-string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
-
 /*
  * lexer rules
  */
-
-MULTILINE_STRING_LITERAL
- : '\'\'\'' .*? '\'\'\''
- | '"""' .*? '"""'
- ;
 
 CTX_TYPE
  : ACTOR

@@ -58,9 +58,10 @@ position_marker_arg: INTEGER | DECIMAL;
 
 label: PARAGRAPH IDENTIFIER;
 
-string: STRING_LITERAL | lang_string;
+string: string_value | lang_string;
 lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? CLOSE_BRACE;
-lang_string_argument: IDENTIFIER ASSIGN STRING_LITERAL;
+lang_string_argument: IDENTIFIER ASSIGN string_value;
+string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
 
 /*
  * lexer rules
@@ -69,6 +70,11 @@ lang_string_argument: IDENTIFIER ASSIGN STRING_LITERAL;
 STRING_LITERAL
  : '\'' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f'] )* '\''
  | '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n\f"] )* '"'
+ ;
+
+MULTILINE_STRING_LITERAL
+ : '\'\'\'' .*? '\'\'\''
+ | '"""' .*? '"""'
  ;
 
 FOR_TARGET

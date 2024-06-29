@@ -179,5 +179,14 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SsbScriptParser#string_value.
+    def enterString_value(self, ctx:SsbScriptParser.String_valueContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#string_value.
+    def exitString_value(self, ctx:SsbScriptParser.String_valueContext):
+        pass
+
+
 
 del SsbScriptParser

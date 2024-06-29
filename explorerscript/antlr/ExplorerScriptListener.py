@@ -431,33 +431,6 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by ExplorerScriptParser#string.
-    def enterString(self, ctx:ExplorerScriptParser.StringContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#string.
-    def exitString(self, ctx:ExplorerScriptParser.StringContext):
-        pass
-
-
-    # Enter a parse tree produced by ExplorerScriptParser#lang_string_argument.
-    def enterLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#lang_string_argument.
-    def exitLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
-        pass
-
-
-    # Enter a parse tree produced by ExplorerScriptParser#string_value.
-    def enterString_value(self, ctx:ExplorerScriptParser.String_valueContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#string_value.
-    def exitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
-        pass
-
-
     # Enter a parse tree produced by ExplorerScriptParser#funcdef.
     def enterFuncdef(self, ctx:ExplorerScriptParser.FuncdefContext):
         pass
@@ -575,12 +548,39 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#string.
+    def enterString(self, ctx:ExplorerScriptParser.StringContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#string.
+    def exitString(self, ctx:ExplorerScriptParser.StringContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#lang_string.
     def enterLang_string(self, ctx:ExplorerScriptParser.Lang_stringContext):
         pass
 
     # Exit a parse tree produced by ExplorerScriptParser#lang_string.
     def exitLang_string(self, ctx:ExplorerScriptParser.Lang_stringContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#lang_string_argument.
+    def enterLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#lang_string_argument.
+    def exitLang_string_argument(self, ctx:ExplorerScriptParser.Lang_string_argumentContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#string_value.
+    def enterString_value(self, ctx:ExplorerScriptParser.String_valueContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#string_value.
+    def exitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
         pass
 
 
