@@ -45,7 +45,8 @@ for_target_def: DEF INTEGER FOR_TARGET OPEN_PAREN integer_like CLOSE_PAREN func_
 integer_like: DECIMAL | INTEGER | IDENTIFIER | VARIABLE;
 
 stmt: (operation | label) ';';
-operation: IDENTIFIER OPEN_PAREN arglist? CLOSE_PAREN;
+operation: IDENTIFIER inline_ctx? OPEN_PAREN arglist? CLOSE_PAREN;
+inline_ctx: OPEN_SHARP ctx_header CLOSE_SHARP;
 
 func_suite: OPEN_BRACE (stmt+ | func_alias) CLOSE_BRACE;
 func_alias: ALIAS PREVIOUS ';';
@@ -62,6 +63,8 @@ string: string_value | lang_string;
 lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? CLOSE_BRACE;
 lang_string_argument: IDENTIFIER ASSIGN string_value;
 string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
+
+ctx_header: CTX_TYPE integer_like;
 
 /*
  * lexer rules
@@ -91,6 +94,16 @@ FOR_PERFORMER: 'for_performer';
 ALIAS: 'alias';
 PREVIOUS: 'previous';
 POSITION: 'Position';
+
+CTX_TYPE
+ : ACTOR
+ | OBJECT
+ | PERFORMER
+ ;
+
+ACTOR: 'actor';
+OBJECT: 'object';
+PERFORMER: 'performer';
 
 IDENTIFIER
  : IDENTIFIER_BASE

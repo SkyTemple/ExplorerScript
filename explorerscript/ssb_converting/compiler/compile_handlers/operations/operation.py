@@ -22,11 +22,27 @@
 #
 from __future__ import annotations
 
+from typing import Union
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
+from explorerscript.error import SsbCompilerError
+from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
+    AbstractComplexStatementCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import (
+    ArgListCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import (
+    IntegerLikeCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_CTX_LIVES,
+    OPS_CTX_OBJECT,
+    OPS_CTX_PERFORMER,
+)
+from explorerscript.util import _, f
 
 
 class OperationCompileHandler(
@@ -34,17 +50,43 @@ class OperationCompileHandler(
 ):
     def __init__(self, ctx: ExplorerScriptParser.OperationContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
+        self._for_id: SsbOpParam | None = None
         self.arg_list_handler: ArgListCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
         name = str(self.ctx.IDENTIFIER())
         args: list[SsbOpParam] = []
+
+        ops = []
+        inline_ctx = self.ctx.inline_ctx()
+        if inline_ctx is not None:
+            for_type = str(inline_ctx.ctx_header().CTX_TYPE())
+
+            if self._for_id is None:
+                raise SsbCompilerError(_("No target ID set for inline actor/object/performer context."))
+
+            if for_type == "actor":
+                ops.append(self._generate_operation(OPS_CTX_LIVES, [self._for_id]))
+            elif for_type == "object":
+                ops.append(self._generate_operation(OPS_CTX_OBJECT, [self._for_id]))
+            elif for_type == "performer":
+                ops.append(self._generate_operation(OPS_CTX_PERFORMER, [self._for_id]))
+            else:
+                raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
+
         if self.arg_list_handler:
             args = self.arg_list_handler.collect()
-        return [self._generate_operation(name, args)]
 
-    def add(self, obj: ArgListCompileHandler) -> None:
+        ops.append(self._generate_operation(name, args))
+        return ops
+
+    def add(self, obj: Union[ArgListCompileHandler, IntegerLikeCompileHandler]) -> None:
         if isinstance(obj, ArgListCompileHandler):
             self.arg_list_handler = obj
             return
+
+        if isinstance(obj, IntegerLikeCompileHandler):
+            self._for_id = obj.collect()
+            return
+
         self._raise_add_error(obj)
