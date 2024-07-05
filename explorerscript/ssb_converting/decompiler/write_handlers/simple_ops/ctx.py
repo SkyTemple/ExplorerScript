@@ -31,6 +31,7 @@ from explorerscript.ssb_converting.decompiler.write_handlers.abstract import (
     NestedBlockDisallowedError,
 )
 from explorerscript.ssb_converting.decompiler.write_handlers.block import BlockWriteHandler
+from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
 from explorerscript.ssb_converting.util import Blk
@@ -48,21 +49,37 @@ class CtxSimpleOpWriteHandler(AbstractWriteHandler):
         super().__init__(start_vertex, decompiler, parent)
 
     def write_content(self) -> Vertex | None:
+        # Workaround for "partially initialized modules"
+        from explorerscript.ssb_converting.decompiler.write_handlers.simple_op import SimpleOperationWriteHandler
+        from explorerscript.ssb_converting.decompiler.write_handlers.simple_ops.simple import SimpleSimpleOpWriteHandler
+
         op: SsbOperation = self.start_vertex["op"]
         self.decompiler.source_map_add_opcode(op.offset)
         if len(op.params) != 1:
             raise ValueError(f"Error reading operation for {op.op_code.name} ({op}). Must have exactly one argument.")
+
         if op.op_code.name == OPS_CTX_LIVES:
-            self.decompiler.write_stmnt(f"with (actor {op.params[0]})")
+            ctx = f"actor {op.params[0]}"
         elif op.op_code.name == OPS_CTX_OBJECT:
-            self.decompiler.write_stmnt(f"with (object {op.params[0]})")
+            ctx = f"object {op.params[0]}"
         elif op.op_code.name == OPS_CTX_PERFORMER:
-            self.decompiler.write_stmnt(f"with (performer {op.params[0]})")
+            ctx = f"performer {op.params[0]}"
         else:
             raise ValueError(f"Unknown ctx opcode: {op}")
 
         exits = self.start_vertex.out_edges()
         assert len(exits) == 1, "After a lives/object/performer op, there must be exactly one op following."
+
+        handler = WriteHandlerManager.get_for(exits[0].target_vertex, self.decompiler, self, self.start_vertex, True)
+
+        # Try to decompile with the inline context syntax (only supported for simple ops)
+        if isinstance(handler, SimpleOperationWriteHandler):
+            real_handler_ty = handler.get_real_handler()
+            if real_handler_ty == SimpleSimpleOpWriteHandler:
+                return real_handler_ty(exits[0].target_vertex, self.decompiler, handler).write_content(ctx)  # type: ignore
+
+        # Fall back to `with` block syntax
+        self.decompiler.write_stmnt(f"with ({ctx})")
 
         # Write the context opcode.
         with Blk(self.decompiler):
