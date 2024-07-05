@@ -64,7 +64,7 @@ lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? 
 lang_string_argument: IDENTIFIER ASSIGN string_value;
 string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
 
-ctx_header: CTX_TYPE integer_like;
+ctx_header: IDENTIFIER integer_like;
 
 /*
  * lexer rules
@@ -94,16 +94,6 @@ FOR_PERFORMER: 'for_performer';
 ALIAS: 'alias';
 PREVIOUS: 'previous';
 POSITION: 'Position';
-
-CTX_TYPE
- : ACTOR
- | OBJECT
- | PERFORMER
- ;
-
-ACTOR: 'actor';
-OBJECT: 'object';
-PERFORMER: 'performer';
 
 IDENTIFIER
  : IDENTIFIER_BASE

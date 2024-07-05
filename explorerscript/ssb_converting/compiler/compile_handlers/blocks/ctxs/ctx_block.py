@@ -88,7 +88,7 @@ class CtxBlockCompileHandler(
             raise SsbCompilerError(_("No target ID set for with(){} block."))
         if self._sub_stmt is None:
             raise SsbCompilerError(_("A with(){} block needs exactly one statement."))
-        for_type = str(self.ctx.ctx_header().CTX_TYPE())
+        for_type = str(self.ctx.ctx_header().IDENTIFIER())
 
         if for_type == "actor":
             ops.append(self._generate_operation(OPS_CTX_LIVES, [self._for_id]))

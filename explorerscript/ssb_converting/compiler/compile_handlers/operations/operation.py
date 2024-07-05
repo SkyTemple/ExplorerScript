@@ -60,7 +60,7 @@ class OperationCompileHandler(
         ops = []
         inline_ctx = self.ctx.inline_ctx()
         if inline_ctx is not None:
-            for_type = str(inline_ctx.ctx_header().CTX_TYPE())
+            for_type = str(inline_ctx.ctx_header().IDENTIFIER())
 
             if self._for_id is None:
                 raise SsbCompilerError(_("No target ID set for inline actor/object/performer context."))
