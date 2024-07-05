@@ -27,6 +27,7 @@ from typing import Any
 from antlr4 import ParserRuleContext
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractFuncdefCompileHandler,
     AbstractCompileHandler,
@@ -54,12 +55,17 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptPar
         except ValueError:
             linked_to_name = integer_like.name  # type: ignore
 
-        if str(self.ctx.FOR_TARGET()) == "for_actor":
+        target: ExplorerScriptParser.For_target_def_targetContext = self.ctx.for_target_def_target()
+        legacy_deprecated_target = target.FOR_TARGET()
+        new_style_target = target.IDENTIFIER()
+        if str(legacy_deprecated_target) == "for_actor" or str(new_style_target) == "actor":
             routine_info = SsbRoutineInfo(SsbRoutineType.ACTOR, linked_to, linked_to_name)
-        elif str(self.ctx.FOR_TARGET()) == "for_object":
+        elif str(legacy_deprecated_target) == "for_object" or str(new_style_target) == "object":
             routine_info = SsbRoutineInfo(SsbRoutineType.OBJECT, linked_to, linked_to_name)
-        else:
+        elif str(legacy_deprecated_target) == "for_performer" or str(new_style_target) == "performer":
             routine_info = SsbRoutineInfo(SsbRoutineType.PERFORMER, linked_to, linked_to_name)
+        else:
+            raise SsbCompilerError("A targeted routine must be 'for' an 'actor', 'object' or 'performer'.")
 
         return routine_info, self.collect_ops()
 

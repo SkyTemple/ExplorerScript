@@ -206,5 +206,14 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SsbScriptParser#for_target_def_target.
+    def enterFor_target_def_target(self, ctx:SsbScriptParser.For_target_def_targetContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#for_target_def_target.
+    def exitFor_target_def_target(self, ctx:SsbScriptParser.For_target_def_targetContext):
+        pass
+
+
 
 del SsbScriptParser

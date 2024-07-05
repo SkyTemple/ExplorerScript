@@ -109,11 +109,11 @@ class SsbScriptSsbDecompiler:
             else:
                 raise ValueError(f"Unknown coroutine for: {r_id}, {r_info}")
         elif r_info.type == SsbRoutineType.ACTOR:
-            self.write_stmnt(f"def {r_id} for_actor({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for actor {r_info.linked_to_repr}")
         elif r_info.type == SsbRoutineType.OBJECT:
-            self.write_stmnt(f"def {r_id} for_object({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for object {r_info.linked_to_repr}")
         elif r_info.type == SsbRoutineType.PERFORMER:
-            self.write_stmnt(f"def {r_id} for_performer({r_info.linked_to_repr})")
+            self.write_stmnt(f"def {r_id} for performer {r_info.linked_to_repr}")
         elif r_info.type == SsbRoutineType.GENERIC:
             self.write_stmnt(f"def {r_id}")
         else:
