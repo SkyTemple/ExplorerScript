@@ -25,7 +25,7 @@ from __future__ import annotations
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_SWITCH_DUNGEON_MODE
@@ -33,7 +33,7 @@ from explorerscript.util import _
 
 
 class SwitchHeaderDungeonModeCompileHandler(
-    AbstractCompileHandler[ExplorerScriptParser.Switch_h_dungeon_modeContext, IntegerLikeCompileHandler]
+    AbstractCompileHandler[ExplorerScriptParser.Switch_h_dungeon_modeContext, PrimitiveCompileHandler]
 ):
     def __init__(self, ctx: ExplorerScriptParser.Switch_h_dungeon_modeContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
@@ -45,9 +45,9 @@ class SwitchHeaderDungeonModeCompileHandler(
 
         return self._generate_operation(OP_SWITCH_DUNGEON_MODE, [self.value])
 
-    def add(self, obj: IntegerLikeCompileHandler) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self.value = obj.collect()
+    def add(self, obj: PrimitiveCompileHandler) -> None:
+        if isinstance(obj, PrimitiveCompileHandler):
+            self.value = obj.collect(allow_string=False)
             return
 
         self._raise_add_error(obj)

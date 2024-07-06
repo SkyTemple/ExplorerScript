@@ -33,13 +33,13 @@ else:
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_block import CaseBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.default_case_block import (
     DefaultCaseBlockCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
-from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import (
     OP_MESSAGE_SWITCH_MONOLOGUE,
     OP_MESSAGE_SWITCH_TALK,
@@ -48,9 +48,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
 )
 from explorerscript.util import _, f
 
-_SupportedHandlers: TypeAlias = Union[
-    CaseBlockCompileHandler, DefaultCaseBlockCompileHandler, IntegerLikeCompileHandler
-]
+_SupportedHandlers: TypeAlias = Union[CaseBlockCompileHandler, DefaultCaseBlockCompileHandler, PrimitiveCompileHandler]
 
 
 class MessageSwitchCompileHandler(
@@ -60,16 +58,15 @@ class MessageSwitchCompileHandler(
 
     def __init__(self, ctx: ExplorerScriptParser.Message_switch_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._switch_header_handler: IntegerLikeCompileHandler | None = None
+        self._switch_header_handler: PrimitiveCompileHandler | None = None
         self._case_handlers: list[CaseBlockCompileHandler] = []
         self._default_handler: DefaultCaseBlockCompileHandler | None = None
 
     def collect(self) -> list[SsbOperation]:
-        assert self._switch_header_handler is not None
         if self.ctx.MESSAGE_SWITCH_MONOLOGUE():
-            switch_op = self._generate_operation(OP_MESSAGE_SWITCH_MONOLOGUE, [self._switch_header_handler.collect()])
+            switch_op = self._generate_operation(OP_MESSAGE_SWITCH_MONOLOGUE, [self._collect_header()])
         elif self.ctx.MESSAGE_SWITCH_TALK():
-            switch_op = self._generate_operation(OP_MESSAGE_SWITCH_TALK, [self._switch_header_handler.collect()])
+            switch_op = self._generate_operation(OP_MESSAGE_SWITCH_TALK, [self._collect_header()])
         else:
             raise SsbCompilerError(_("Invalid message switch."))
         case_ops = []
@@ -79,7 +76,7 @@ class MessageSwitchCompileHandler(
                     f(_("A message_ switch can only contain cases with strings (line {self.ctx.start.line})."))
                 )
             header_handler = h.collect_header_handler()
-            if header_handler.get_header_handler_type() != IntegerLikeCompileHandler:
+            if header_handler.get_header_handler_type() != PrimitiveCompileHandler:
                 raise SsbCompilerError(f(_("Invalid case type for message_ switch (line {self.ctx.start.line}).")))
             string = h.get_text()
             value_blueprint = header_handler.collect()
@@ -95,6 +92,13 @@ class MessageSwitchCompileHandler(
 
         return [switch_op] + case_ops
 
+    def _collect_header(self) -> SsbOpParam:
+        assert self._switch_header_handler is not None
+        if isinstance(self._switch_header_handler, PrimitiveCompileHandler):
+            return self._switch_header_handler.collect(allow_string=False)
+        else:
+            return self._switch_header_handler.collect()
+
     def add(self, obj: _SupportedHandlers) -> None:
         if isinstance(obj, CaseBlockCompileHandler):
             self._case_handlers.append(obj)
@@ -106,7 +110,7 @@ class MessageSwitchCompileHandler(
                 )
             self._default_handler = obj
             return
-        if isinstance(obj, IntegerLikeCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             self._switch_header_handler = obj
             return
         self._raise_add_error(obj)

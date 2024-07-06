@@ -259,8 +259,8 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ExplorerScriptParser#integer_like.
-    def visitInteger_like(self, ctx:ExplorerScriptParser.Integer_likeContext):
+    # Visit a parse tree produced by ExplorerScriptParser#primitive.
+    def visitPrimitive(self, ctx:ExplorerScriptParser.PrimitiveContext):
         return self.visitChildren(ctx)
 
 

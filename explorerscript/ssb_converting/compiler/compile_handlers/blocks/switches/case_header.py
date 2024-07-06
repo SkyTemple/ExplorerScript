@@ -33,7 +33,7 @@ else:
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_headers.menu import (
     CaseHeaderMenuCompileHandler,
 )
@@ -44,9 +44,7 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE
 from explorerscript.util import _
 
-_SupportedHandlers: TypeAlias = Union[
-    CaseHeaderMenuCompileHandler, CaseHeaderOpCompileHandler, IntegerLikeCompileHandler
-]
+_SupportedHandlers: TypeAlias = Union[CaseHeaderMenuCompileHandler, CaseHeaderOpCompileHandler, PrimitiveCompileHandler]
 
 
 class CaseHeaderCompileHandler(
@@ -64,10 +62,10 @@ class CaseHeaderCompileHandler(
 
         # Complex branches
         if self._header_cmplx_handler:
-            if isinstance(self._header_cmplx_handler, IntegerLikeCompileHandler):
+            if isinstance(self._header_cmplx_handler, PrimitiveCompileHandler):
                 # Case
                 return SsbLabelJumpBlueprint(
-                    self.compiler_ctx, self.ctx, OP_CASE, [self._header_cmplx_handler.collect()]
+                    self.compiler_ctx, self.ctx, OP_CASE, [self._header_cmplx_handler.collect(allow_string=False)]
                 )
             else:
                 # A regular complex if condition
@@ -79,11 +77,11 @@ class CaseHeaderCompileHandler(
         assert self._header_cmplx_handler is not None
         return type(self._header_cmplx_handler)
 
-    def add(self, obj: CaseHeaderMenuCompileHandler | CaseHeaderOpCompileHandler | IntegerLikeCompileHandler) -> None:
+    def add(self, obj: CaseHeaderMenuCompileHandler | CaseHeaderOpCompileHandler | PrimitiveCompileHandler) -> None:
         if (
             isinstance(obj, CaseHeaderMenuCompileHandler)
             or isinstance(obj, CaseHeaderOpCompileHandler)
-            or isinstance(obj, IntegerLikeCompileHandler)
+            or isinstance(obj, PrimitiveCompileHandler)
         ):
             self._header_cmplx_handler = obj
             return

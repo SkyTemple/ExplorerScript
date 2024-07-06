@@ -23,27 +23,27 @@
 from __future__ import annotations
 
 import sys
-from typing import Union
+
+from explorerscript.common_syntax import is_primitive_string
 
 if sys.version_info >= (3, 10):
-    from typing import TypeAlias
+    pass
 else:
-    from typing_extensions import TypeAlias
+    pass
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_MENU2, OP_CASE_MENU
 from explorerscript.util import _
 
-_SupportedHandlers: TypeAlias = Union[IntegerLikeCompileHandler, StringCompileHandler]
 
-
-class CaseHeaderMenuCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, _SupportedHandlers]):
+class CaseHeaderMenuCompileHandler(
+    AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, PrimitiveCompileHandler]
+):
     def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx, is_menu_2: bool):
         super().__init__(ctx, compiler_ctx)
         self.value: SsbOpParam | None = None
@@ -51,17 +51,19 @@ class CaseHeaderMenuCompileHandler(AbstractCompileHandler[ExplorerScriptParser.C
 
     def collect(self) -> SsbLabelJumpBlueprint:
         if self.value is None:
-            raise SsbCompilerError(_("No value set for if condition."))
+            raise SsbCompilerError(_("No value set for case menu condition."))
 
+        value_is_string = is_primitive_string(self.value)
         if self.is_menu_2:
+            if value_is_string:
+                raise SsbCompilerError(_("Value for case menu condition must be a string."))
             return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU2, [self.value])
+        if not value_is_string:
+            raise SsbCompilerError(_("Value for case menu2 condition must not be a string."))
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_MENU, [self.value])
 
-    def add(self, obj: _SupportedHandlers) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self.value = obj.collect()
-            return
-        if isinstance(obj, StringCompileHandler):
+    def add(self, obj: PrimitiveCompileHandler) -> None:
+        if isinstance(obj, PrimitiveCompileHandler):
             self.value = obj.collect()
             return
 

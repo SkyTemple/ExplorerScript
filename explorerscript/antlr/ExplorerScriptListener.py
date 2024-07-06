@@ -458,12 +458,12 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by ExplorerScriptParser#integer_like.
-    def enterInteger_like(self, ctx:ExplorerScriptParser.Integer_likeContext):
+    # Enter a parse tree produced by ExplorerScriptParser#primitive.
+    def enterPrimitive(self, ctx:ExplorerScriptParser.PrimitiveContext):
         pass
 
-    # Exit a parse tree produced by ExplorerScriptParser#integer_like.
-    def exitInteger_like(self, ctx:ExplorerScriptParser.Integer_likeContext):
+    # Exit a parse tree produced by ExplorerScriptParser#primitive.
+    def exitPrimitive(self, ctx:ExplorerScriptParser.PrimitiveContext):
         pass
 
 

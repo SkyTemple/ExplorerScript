@@ -69,6 +69,7 @@ KEYWORDS = (
     "call",
     "while",
     "for",
+    "const",
     # Weak keywords
     "TRUE",
     "FALSE",

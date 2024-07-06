@@ -33,7 +33,7 @@ else:
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.switch_headers.dungeon_mode import (
     SwitchHeaderDungeonModeCompileHandler,
 )
@@ -57,7 +57,7 @@ _SupportedHandlers: TypeAlias = Union[
     SwitchHeaderRandomCompileHandler,
     SwitchHeaderScnCompileHandler,
     SwitchHeaderSectorCompileHandler,
-    IntegerLikeCompileHandler,
+    PrimitiveCompileHandler,
     OperationCompileHandler,
 ]
 
@@ -70,9 +70,9 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Swi
     def collect(self) -> SsbOperation:
         # Complex branches
         if self._header_cmplx_handler:
-            if isinstance(self._header_cmplx_handler, IntegerLikeCompileHandler):
+            if isinstance(self._header_cmplx_handler, PrimitiveCompileHandler):
                 # Switch
-                return self._generate_operation(OP_SWITCH, [self._header_cmplx_handler.collect()])
+                return self._generate_operation(OP_SWITCH, [self._header_cmplx_handler.collect(allow_string=False)])
             elif isinstance(self._header_cmplx_handler, OperationCompileHandler):
                 # An operation as condition
                 ops = self._header_cmplx_handler.collect()
@@ -92,7 +92,7 @@ class SwitchHeaderCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Swi
             or isinstance(obj, SwitchHeaderRandomCompileHandler)
             or isinstance(obj, SwitchHeaderScnCompileHandler)
             or isinstance(obj, SwitchHeaderSectorCompileHandler)
-            or isinstance(obj, IntegerLikeCompileHandler)
+            or isinstance(obj, PrimitiveCompileHandler)
             or isinstance(obj, OperationCompileHandler)
         ):
             self._header_cmplx_handler = obj

@@ -29,11 +29,9 @@ from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexStatementCompileHandler,
 )
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import (
     ArgListCompileHandler,
-)
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import (
-    IntegerLikeCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
@@ -46,7 +44,9 @@ from explorerscript.util import _, f
 
 
 class OperationCompileHandler(
-    AbstractComplexStatementCompileHandler[ExplorerScriptParser.OperationContext, ArgListCompileHandler]
+    AbstractComplexStatementCompileHandler[
+        ExplorerScriptParser.OperationContext, Union[ArgListCompileHandler, PrimitiveCompileHandler]
+    ]
 ):
     def __init__(self, ctx: ExplorerScriptParser.OperationContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
@@ -80,13 +80,13 @@ class OperationCompileHandler(
         ops.append(self._generate_operation(name, args))
         return ops
 
-    def add(self, obj: Union[ArgListCompileHandler, IntegerLikeCompileHandler]) -> None:
+    def add(self, obj: Union[ArgListCompileHandler, PrimitiveCompileHandler]) -> None:
         if isinstance(obj, ArgListCompileHandler):
             self.arg_list_handler = obj
             return
 
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self._for_id = obj.collect()
+        if isinstance(obj, PrimitiveCompileHandler):
+            self._for_id = obj.collect(allow_string=False)
             return
 
         self._raise_add_error(obj)

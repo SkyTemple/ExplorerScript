@@ -25,7 +25,7 @@ from __future__ import annotations
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_BIT, OP_BRANCH_PERFORMANCE
@@ -33,9 +33,7 @@ from explorerscript.util import _, f
 from explorerscript.util import exps_int
 
 
-class IfHeaderBitCompileHandler(
-    AbstractCompileHandler[ExplorerScriptParser.If_h_bitContext, IntegerLikeCompileHandler]
-):
+class IfHeaderBitCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h_bitContext, PrimitiveCompileHandler]):
     def __init__(self, ctx: ExplorerScriptParser.If_h_bitContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.var_target: SsbOpParam | None = None
@@ -61,9 +59,9 @@ class IfHeaderBitCompileHandler(
             )
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_BRANCH_BIT, [self.var_target, index])
 
-    def add(self, obj: IntegerLikeCompileHandler) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self.var_target = obj.collect()
+    def add(self, obj: PrimitiveCompileHandler) -> None:
+        if isinstance(obj, PrimitiveCompileHandler):
+            self.var_target = obj.collect(allow_string=False)
             return
 
         self._raise_add_error(obj)

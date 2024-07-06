@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexBlockCompileHandler,
     AbstractComplexStatementCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP, SsbLabelJump
@@ -40,14 +40,15 @@ from explorerscript.util import _
 
 class DefaultCaseBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
-        ExplorerScriptParser.DefaultContext, "AbstractStatementCompileHandler[ParserRuleContext] | StringCompileHandler"
+        ExplorerScriptParser.DefaultContext,
+        "AbstractStatementCompileHandler[ParserRuleContext] | PrimitiveCompileHandler",
     ]
 ):
     """Handles a default block."""
 
     def __init__(self, ctx: ExplorerScriptParser.DefaultContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
-        self._added_string_handler: StringCompileHandler | None = None
+        self._added_string_handler: PrimitiveCompileHandler | None = None
         self.is_message_case = False
         # The end of the switch
         self._end_label: SsbLabel | None = None
@@ -73,15 +74,15 @@ class DefaultCaseBlockCompileHandler(
         assert self._added_string_handler is not None
         if not self.is_message_case:
             raise SsbCompilerError(_("Invalid message switch case call."))
-        return self._added_string_handler.collect()
+        return self._added_string_handler.collect(allow_integer_like=False)
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | StringCompileHandler) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | PrimitiveCompileHandler) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             # WARNING: Might not have any operations. In this case, it's part of the following cases!
             self._added_handlers.append(obj)
             return
-        if isinstance(obj, StringCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             # This is a case for a message switch.
             self.is_message_case = True
             self._added_string_handler = obj

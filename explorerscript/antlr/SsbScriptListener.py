@@ -71,12 +71,12 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by SsbScriptParser#integer_like.
-    def enterInteger_like(self, ctx:SsbScriptParser.Integer_likeContext):
+    # Enter a parse tree produced by SsbScriptParser#primitive.
+    def enterPrimitive(self, ctx:SsbScriptParser.PrimitiveContext):
         pass
 
-    # Exit a parse tree produced by SsbScriptParser#integer_like.
-    def exitInteger_like(self, ctx:SsbScriptParser.Integer_likeContext):
+    # Exit a parse tree produced by SsbScriptParser#primitive.
+    def exitPrimitive(self, ctx:SsbScriptParser.PrimitiveContext):
         pass
 
 

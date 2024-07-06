@@ -36,20 +36,18 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
     ConditionalOperatorCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_CASE_VARIABLE, OP_CASE_VALUE
 from explorerscript.util import _
 
-_SupportedHandlers: TypeAlias = Union[
-    IntegerLikeCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler
-]
+_SupportedHandlers: TypeAlias = Union[PrimitiveCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler]
 
 
-class CaseHeaderOpCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_headerContext, _SupportedHandlers]):
-    def __init__(self, ctx: ExplorerScriptParser.Case_headerContext, compiler_ctx: CompilerCtx):
+class CaseHeaderOpCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Case_h_opContext, _SupportedHandlers]):
+    def __init__(self, ctx: ExplorerScriptParser.Case_h_opContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.operator: SsbOperator | None = None
         self.value: SsbOpParam | None = None
@@ -78,9 +76,9 @@ class CaseHeaderOpCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Cas
         return SsbLabelJumpBlueprint(self.compiler_ctx, self.ctx, OP_CASE_VALUE, [self.operator.value, self.value])
 
     def add(self, obj: _SupportedHandlers) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             # (integer_like[1] | value_of) -> var to set to
-            self.value = obj.collect()
+            self.value = obj.collect(allow_string=False)
             self.value_is_a_variable = False
             return
         if isinstance(obj, ConditionalOperatorCompileHandler):
