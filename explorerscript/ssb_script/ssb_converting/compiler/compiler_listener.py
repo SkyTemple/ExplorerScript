@@ -27,6 +27,7 @@ from enum import Enum, auto
 from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg
+from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.utils import singleline_string_literal, string_literal
 from explorerscript.ssb_converting.ssb_data_types import (
@@ -42,7 +43,7 @@ from explorerscript.ssb_converting.ssb_data_types import (
     SsbOpParamFixedPoint,
 )
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
-from explorerscript.util import exps_int
+from explorerscript.util import exps_int, _
 
 
 class ListenerArgType(Enum):
@@ -136,6 +137,10 @@ class SsbScriptCompilerListener(SsbScriptListener):
 
         collected_params = self._collected_params
         self._collected_params = []
+
+        inline_ctx = ctx.inline_ctx()
+        if inline_ctx is not None:
+            raise SsbCompilerError(_("Operations in SSBScript cannot contain an inline context."))
 
         self._total_number_collected_ops += 1
         root_op = SsbOperation(self._total_number_collected_ops, SsbOpCode(-1, op_code_name), collected_params)
