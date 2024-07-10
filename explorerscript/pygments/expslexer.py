@@ -100,7 +100,7 @@ class ExplorerScriptLexer(RegexLexer):
             include("comments"),
             (r"\$[a-zA-Z_][0-9a-zA-Z_]*", Name.Variable),
             (r"§[a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
-            (r"@[a-zA-Z_][0-9a-zA-Z_]*", Name.Decorator),
+            (r"@[a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
             (r"[a-zA-Z_][0-9a-zA-Z_]*", Name),
             include("numbers"),
             ('"""', String, "mdq_string"),

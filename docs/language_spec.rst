@@ -279,12 +279,17 @@ A statement can be marked with multiple labels.
 
 .. code:: ExplorerScript
 
-    §hello_label;
+    @hello_label;
     operation();
 
-    §another_label;
-    §and_another_one;
+    @another_label;
+    @and_another_one;
     another_operation();
+
+.. admonition:: SkyTemple
+
+    ``§label;`` can be used instead of ``@label;`` for backwards
+    compatibility. You should use ``@label;`` in new scripts.
 
 Control statements
 ~~~~~~~~~~~~~~~~~~
@@ -355,7 +360,7 @@ Jumps to a label.
 .. code:: ExplorerScript
 
     // This will execute operation() in an endless loop.
-    §hello_label;
+    @hello_label;
     operation();
     jump @hello_label;
 

@@ -56,7 +56,7 @@ pos_argument: integer_like | string | position_marker;
 position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' position_marker_arg CLOSE_SHARP;
 position_marker_arg: INTEGER | DECIMAL;
 
-label: PARAGRAPH IDENTIFIER;
+label: (PARAGRAPH | AT) IDENTIFIER;
 
 string: string_value | lang_string;
 lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? CLOSE_BRACE;
