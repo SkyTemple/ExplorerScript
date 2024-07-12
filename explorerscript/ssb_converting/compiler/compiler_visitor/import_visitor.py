@@ -46,6 +46,10 @@ class ImportVisitor(ExplorerScriptVisitor):
         # Are not visited.
         return None
 
+    def visitConstant_assign(self, ctx: ExplorerScriptParser.Constant_assignContext) -> None:
+        # Are not visited.
+        return None
+
     def defaultResult(self) -> list[str]:  # type: ignore
         return []
 

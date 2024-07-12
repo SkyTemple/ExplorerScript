@@ -19,6 +19,11 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#constant_assign.
+    def visitConstant_assign(self, ctx:ExplorerScriptParser.Constant_assignContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExplorerScriptParser#macrodef.
     def visitMacrodef(self, ctx:ExplorerScriptParser.MacrodefContext):
         return self.visitChildren(ctx)

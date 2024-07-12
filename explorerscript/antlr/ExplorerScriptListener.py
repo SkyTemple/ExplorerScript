@@ -26,6 +26,15 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#constant_assign.
+    def enterConstant_assign(self, ctx:ExplorerScriptParser.Constant_assignContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#constant_assign.
+    def exitConstant_assign(self, ctx:ExplorerScriptParser.Constant_assignContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#macrodef.
     def enterMacrodef(self, ctx:ExplorerScriptParser.MacrodefContext):
         pass

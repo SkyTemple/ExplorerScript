@@ -45,6 +45,10 @@ class HasRoutinesVisitor(ExplorerScriptVisitor):
         # Are not visited.
         return False
 
+    def visitConstant_assign(self, ctx: ExplorerScriptParser.Constant_assignContext) -> None:
+        # Are not visited.
+        return None
+
     def defaultResult(self) -> bool:  # type: ignore
         return False
 

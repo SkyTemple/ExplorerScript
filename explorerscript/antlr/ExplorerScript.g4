@@ -31,13 +31,14 @@ import SsbCommon;
  * parser rules
  */
 
-start: import_stmt* (macrodef | funcdef)* EOF;
+start: import_stmt* (macrodef | funcdef | constant_assign)* EOF;
 
 import_stmt: IMPORT STRING_LITERAL ';';
+constant_assign: CONST IDENTIFIER ASSIGN primitive ';';
 
 macrodef: MACRO IDENTIFIER OPEN_PAREN VARIABLE? (',' VARIABLE)* CLOSE_PAREN func_suite;
 
-stmt: (simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block | macro_call );
+stmt: (constant_assign | simple_stmt | ctx_block | if_block | switch_block | message_switch_block | forever_block | for_block | while_block | macro_call );
 simple_stmt: (operation | label | cntrl_stmt | jump | call | assignment) ';';
 
 cntrl_stmt: RETURN | END | HOLD | CONTINUE | BREAK | BREAK_LOOP;

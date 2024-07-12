@@ -77,6 +77,10 @@ class RoutineVisitor(ExplorerScriptVisitor):
         # Are not visited.
         return
 
+    def visitConstant_assign(self, ctx: ExplorerScriptParser.Constant_assignContext) -> None:
+        # Are not visited.
+        return None
+
     def visitSimple_def(self, ctx: ExplorerScriptParser.Simple_defContext) -> None:
         self._root_handler = SimpleDefCompileHandler(ctx, self.compiler_ctx)
         self._active_routine_id = self._root_handler.get_new_routine_id(self._active_routine_id)
