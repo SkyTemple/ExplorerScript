@@ -261,6 +261,11 @@ def strip_last_label(routine_ops: list[list[SsbOperation]]) -> list[list[SsbOper
     returned_routine_ops = []
     for routine in routine_ops:
         if len(routine) > 0:
+            jump_counts: dict[int, int] = {}
+            for op in routine:
+                if isinstance(op, SsbLabelJump) and op.label is not None:
+                    jump_counts[op.label.id] = jump_counts.get(op.label.id, 0) + 1
+
             while isinstance(routine[-1], SsbLabel):
                 indices_to_remove = set()
                 label = routine[-1]
@@ -279,7 +284,7 @@ def strip_last_label(routine_ops: list[list[SsbOperation]]) -> list[list[SsbOper
                     else:
                         if isinstance(op, SsbLabel):
                             # If there is a label before, then something might jump here!
-                            if _number_of_jumps_to_label(op, routine) > 1:
+                            if jump_counts.get(op.id, 0) > 1:
                                 op_before_ends_control_flow = False
                         else:
                             op_before_ends_control_flow = does_op_end_control_flow(
@@ -298,11 +303,3 @@ def does_op_end_control_flow(op: SsbOperation, previous_op: SsbOperation | None)
     if isinstance(op, SsbLabelJump):
         return op.root.op_code.name in OPS_THAT_END_CONTROL_FLOW
     return op.op_code.name in OPS_THAT_END_CONTROL_FLOW
-
-
-def _number_of_jumps_to_label(label: SsbLabel, routine: list[SsbOperation]) -> int:
-    counter = 0
-    for o in routine:
-        if isinstance(o, SsbLabelJump) and o.label == label:
-            counter += 1
-    return counter
