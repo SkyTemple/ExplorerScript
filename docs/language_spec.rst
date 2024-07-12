@@ -73,13 +73,13 @@ must not be a gap.
 
 Targeted Routine
 ~~~~~~~~~~~~~~~~
-A routine for an actor (``for_actor``), an object (``for_object``) or a performer (``for_performer``) and an ID.
+A routine for an actor (``for actor``), an object (``for object``) or a performer (``for performer``) and an ID.
 
 As identifiers for the actors, objects and performers any constant or integer can be used.
 
 .. code:: ExplorerScript
 
-    def 1234 for_actor(ACTOR_PLAYER) {
+    def 1234 for actor ACTOR_PLAYER {
         /** Statements **/
     }
 
