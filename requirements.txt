@@ -7,3 +7,5 @@ skytemple-3rdparty-typestubs==1.1.0
 ruff
 mypy
 typing_extensions >= 4.0; python_version < "3.11"
+pybind11==2.13.1
+pybind11-stubgen==2.5.1

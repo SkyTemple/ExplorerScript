@@ -1,5 +1,8 @@
 [build-system]
-requires = ["setuptools"]
+requires = [
+    "setuptools",
+    "pybind11>=2.10.0"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -42,6 +45,11 @@ pygments = ["pygments>=2.6.1"]
 
 [project.entry-points."pygments.lexers"]
 expslexer = "explorerscript.pygments.expslexer:ExplorerScriptLexer"
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["explorerscript*"]
+namespaces = false
 
 [tool.ruff]
 line-length = 120
