@@ -35,6 +35,8 @@ def parse_exps_meta_attributes(explorerscript_src: str) -> dict[str, Any]:
     attributes = {}
     attribute_reader_line = 0
     lines = explorerscript_src.splitlines()
+    if len(lines) < 1:
+        return {}
     regex_attr_line = re.compile(r"//\?:\s*(.*?):\s*(.*)")
     while lines[attribute_reader_line].strip().startswith("//?:"):
         try:
