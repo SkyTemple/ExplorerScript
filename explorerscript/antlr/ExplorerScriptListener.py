@@ -98,15 +98,6 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by ExplorerScriptParser#ctx_header.
-    def enterCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
-        pass
-
-    # Exit a parse tree produced by ExplorerScriptParser#ctx_header.
-    def exitCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
-        pass
-
-
     # Enter a parse tree produced by ExplorerScriptParser#if_block.
     def enterIf_block(self, ctx:ExplorerScriptParser.If_blockContext):
         pass
@@ -485,6 +476,15 @@ class ExplorerScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by ExplorerScriptParser#inline_ctx.
+    def enterInline_ctx(self, ctx:ExplorerScriptParser.Inline_ctxContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#inline_ctx.
+    def exitInline_ctx(self, ctx:ExplorerScriptParser.Inline_ctxContext):
+        pass
+
+
     # Enter a parse tree produced by ExplorerScriptParser#func_suite.
     def enterFunc_suite(self, ctx:ExplorerScriptParser.Func_suiteContext):
         pass
@@ -581,6 +581,15 @@ class ExplorerScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by ExplorerScriptParser#string_value.
     def exitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by ExplorerScriptParser#ctx_header.
+    def enterCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
+        pass
+
+    # Exit a parse tree produced by ExplorerScriptParser#ctx_header.
+    def exitCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
         pass
 
 

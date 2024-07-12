@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from igraph import Vertex
 
@@ -41,7 +41,7 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
     ):
         super().__init__(start_vertex, decompiler, parent)
 
-    def write_content(self) -> Vertex | None:
+    def write_content(self, inline_ctx: Optional[str] = None) -> Vertex | None:
         op: SsbOperation = self.start_vertex["op"]
 
         # Build parameter string
@@ -52,7 +52,10 @@ class SimpleSimpleOpWriteHandler(AbstractWriteHandler):
             if isinstance(param, SsbOpParamPositionMarker):
                 self.decompiler.source_map_add_position_mark(len(self._single_param_to_string(param)), param)
         self.decompiler.source_map_add_opcode(op.offset)
-        self.decompiler.write_stmnt(f"{op.op_code.name}({params});")
+        if inline_ctx:
+            self.decompiler.write_stmnt(f"{op.op_code.name}<{inline_ctx}>({params});")
+        else:
+            self.decompiler.write_stmnt(f"{op.op_code.name}({params});")
 
         exits = self.start_vertex.out_edges()
         if len(exits) == 1:

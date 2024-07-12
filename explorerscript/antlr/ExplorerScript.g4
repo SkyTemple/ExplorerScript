@@ -48,7 +48,6 @@ macro_call: MACRO_CALL OPEN_PAREN arglist? CLOSE_PAREN ';';
 // a ctx block needs exactly one simple statement, we enforce this on parser level.
 // warning: the parser also accepts labels, which isn't valid!
 ctx_block: WITH OPEN_PAREN ctx_header CLOSE_PAREN OPEN_BRACE simple_stmt CLOSE_BRACE;
-ctx_header: CTX_TYPE integer_like;
 
 if_block: IF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE elseif_block* else_block?;
 elseif_block: ELSEIF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
@@ -118,12 +117,6 @@ assign_operator
  * lexer rules
  */
 
-CTX_TYPE
- : ACTOR
- | OBJECT
- | PERFORMER
- ;
-
 OP_FALSE: 'FALSE';
 OP_TRUE: 'TRUE';
 ASSIGN : '=';
@@ -161,9 +154,6 @@ HOLD: 'hold';
 CONTINUE: 'continue';
 BREAK: 'break';
 BREAK_LOOP: 'break_loop';
-ACTOR: 'actor';
-OBJECT: 'object';
-PERFORMER: 'performer';
 VALUE: 'value';
 DEBUG: 'debug';
 EDIT: 'edit';

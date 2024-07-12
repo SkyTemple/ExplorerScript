@@ -59,11 +59,6 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ExplorerScriptParser#ctx_header.
-    def visitCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by ExplorerScriptParser#if_block.
     def visitIf_block(self, ctx:ExplorerScriptParser.If_blockContext):
         return self.visitChildren(ctx)
@@ -274,6 +269,11 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#inline_ctx.
+    def visitInline_ctx(self, ctx:ExplorerScriptParser.Inline_ctxContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ExplorerScriptParser#func_suite.
     def visitFunc_suite(self, ctx:ExplorerScriptParser.Func_suiteContext):
         return self.visitChildren(ctx)
@@ -326,6 +326,11 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by ExplorerScriptParser#string_value.
     def visitString_value(self, ctx:ExplorerScriptParser.String_valueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ExplorerScriptParser#ctx_header.
+    def visitCtx_header(self, ctx:ExplorerScriptParser.Ctx_headerContext):
         return self.visitChildren(ctx)
 
 

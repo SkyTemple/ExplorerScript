@@ -928,15 +928,23 @@ operations, it may raise errors for unknown operations.
 
     MyOperation(3, "String", Position<'Name', 20, 20.5>);
 
+Optionally, you may also pass a context (actor, object or
+performer) to run the operation in.
+
+
+.. code:: ExplorerScript
+
+    MyOperation<actor ACTOR_HELLO_WORLD>(3, "String", Position<'Name', 20, 20.5>);
+
 .. admonition:: SkyTemple
 
    A list of operations supported by Explorers of Sky
-   can be found in this `Google sheet`_.
+   can be found on this `Wiki page`_.
    Feel free to extend the list. Some of the opcodes are reserved
    for ExplorerScript specific syntax and should not be used
    (eg. the "Branch", "Switch", "Case" and "flag" operations).
 
-.. _Google sheet: https://docs.google.com/spreadsheets/d/1ckdDbczWbL7OaEywxAaqyEOYVEVORLt4EzN_1Cb7KaY/edit#gid=0
+.. _Wiki page: https://wiki.skytemple.org/index.php/List_of_Opcodes
 
 Macro call
 ~~~~~~~~~~

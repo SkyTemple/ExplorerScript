@@ -36,17 +36,31 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractAssignmentCompileHandler,
     AbstractComplexStatementCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import LabelCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import CallCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import (
+    IntegerLikeCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import (
+    LabelCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import (
+    OperationCompileHandler,
+)
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import (
+    CallCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import (
     ControlStatementCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import (
+    JumpCompileHandler,
+)
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
-from explorerscript.ssb_converting.ssb_special_ops import OPS_CTX_LIVES, OPS_CTX_OBJECT, OPS_CTX_PERFORMER
+from explorerscript.ssb_converting.ssb_special_ops import (
+    OPS_CTX_LIVES,
+    OPS_CTX_OBJECT,
+    OPS_CTX_PERFORMER,
+)
 from explorerscript.util import _, f
 
 _SupportedHandlers: TypeAlias = Union[
@@ -74,7 +88,7 @@ class CtxBlockCompileHandler(
             raise SsbCompilerError(_("No target ID set for with(){} block."))
         if self._sub_stmt is None:
             raise SsbCompilerError(_("A with(){} block needs exactly one statement."))
-        for_type = str(self.ctx.ctx_header().CTX_TYPE())
+        for_type = str(self.ctx.ctx_header().IDENTIFIER())
 
         if for_type == "actor":
             ops.append(self._generate_operation(OPS_CTX_LIVES, [self._for_id]))
@@ -86,8 +100,18 @@ class CtxBlockCompileHandler(
             raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
 
         assert not isinstance(self._sub_stmt, IntegerLikeCompileHandler)
+
         sub_ops = self._sub_stmt.collect()
         if len(sub_ops) != 1:
+            if isinstance(self._sub_stmt, OperationCompileHandler):
+                if self._sub_stmt.ctx.inline_ctx() is not None:
+                    # Provide a more specific error when an inline context is used in the operation.
+                    raise SsbCompilerError(
+                        _(
+                            "Operations inside with(){} blocks cannot contain an inline `actor`, `object` or `performer` context."
+                        )
+                    )
+
             raise SsbCompilerError(
                 _(
                     "A with(){} block needs exactly one binary operation. "

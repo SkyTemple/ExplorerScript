@@ -98,6 +98,15 @@ class SsbScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SsbScriptParser#inline_ctx.
+    def enterInline_ctx(self, ctx:SsbScriptParser.Inline_ctxContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#inline_ctx.
+    def exitInline_ctx(self, ctx:SsbScriptParser.Inline_ctxContext):
+        pass
+
+
     # Enter a parse tree produced by SsbScriptParser#func_suite.
     def enterFunc_suite(self, ctx:SsbScriptParser.Func_suiteContext):
         pass
@@ -185,6 +194,15 @@ class SsbScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by SsbScriptParser#string_value.
     def exitString_value(self, ctx:SsbScriptParser.String_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by SsbScriptParser#ctx_header.
+    def enterCtx_header(self, ctx:SsbScriptParser.Ctx_headerContext):
+        pass
+
+    # Exit a parse tree produced by SsbScriptParser#ctx_header.
+    def exitCtx_header(self, ctx:SsbScriptParser.Ctx_headerContext):
         pass
 
 
