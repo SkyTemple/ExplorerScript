@@ -96,7 +96,7 @@ class SsbScriptSsbDecompiler:
                     self.write_stmnt("alias previous;")
                 for op in r_ops:
                     if isinstance(op, SsbLabel):
-                        self.write_stmnt(f"§label_{op.id};")
+                        self.write_stmnt(f"@label_{op.id};")
                     else:
                         self._read_op(op)
             self._write_line()
