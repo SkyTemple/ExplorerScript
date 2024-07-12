@@ -66,11 +66,11 @@ class RoutineWriteHandler(AbstractWriteHandler):
             else:
                 raise ValueError(f"Unknown coroutine for: {self.r_id}, {self.r_info}")
         elif self.r_info.type == SsbRoutineType.ACTOR:
-            self.decompiler.write_stmnt(f"def {self.r_id} for_actor({self.r_info.linked_to_repr})")
+            self.decompiler.write_stmnt(f"def {self.r_id} for actor {self.r_info.linked_to_repr}")
         elif self.r_info.type == SsbRoutineType.OBJECT:
-            self.decompiler.write_stmnt(f"def {self.r_id} for_object({self.r_info.linked_to_repr})")
+            self.decompiler.write_stmnt(f"def {self.r_id} for object {self.r_info.linked_to_repr}")
         elif self.r_info.type == SsbRoutineType.PERFORMER:
-            self.decompiler.write_stmnt(f"def {self.r_id} for_performer({self.r_info.linked_to_repr})")
+            self.decompiler.write_stmnt(f"def {self.r_id} for performer {self.r_info.linked_to_repr}")
         elif self.r_info.type == SsbRoutineType.GENERIC:
             self.decompiler.write_stmnt(f"def {self.r_id}")
         else:

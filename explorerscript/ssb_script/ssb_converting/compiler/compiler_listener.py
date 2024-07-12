@@ -117,18 +117,23 @@ class SsbScriptCompilerListener(SsbScriptListener):
         except ValueError:
             linked_to_name = integer_like
 
-        if str(ctx.FOR_TARGET()) == "for_actor":
+        target: SsbScriptParser.For_target_def_targetContext = ctx.for_target_def_target()
+        legacy_deprecated_target = target.FOR_TARGET()
+        new_style_target = target.IDENTIFIER()
+        if str(legacy_deprecated_target) == "for_actor" or str(new_style_target) == "actor":
             self.routine_infos[self._active_routine_id] = SsbRoutineInfo(
                 SsbRoutineType.ACTOR, linked_to, linked_to_name
             )
-        elif str(ctx.FOR_TARGET()) == "for_object":
+        elif str(legacy_deprecated_target) == "for_object" or str(new_style_target) == "object":
             self.routine_infos[self._active_routine_id] = SsbRoutineInfo(
                 SsbRoutineType.OBJECT, linked_to, linked_to_name
             )
-        else:
+        elif str(legacy_deprecated_target) == "for_performer" or str(new_style_target) == "performer":
             self.routine_infos[self._active_routine_id] = SsbRoutineInfo(
                 SsbRoutineType.PERFORMER, linked_to, linked_to_name
             )
+        else:
+            raise SsbCompilerError("A targeted routine must be 'for' an 'actor', 'object' or 'performer'.")
         self.routine_ops[self._active_routine_id] = self._collected_ops
         self._collected_ops = []
 

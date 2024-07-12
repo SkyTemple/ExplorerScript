@@ -174,6 +174,5 @@ ADVENTURE_LOG: 'adventure_log';
 MESSAGE_SWITCH_TALK: 'message_SwitchTalk';
 MESSAGE_SWITCH_MONOLOGUE: 'message_SwitchMonologue';
 WHILE: 'while';
-FOR: 'for';
 OPEN_BRACKET : '[';
 CLOSE_BRACKET : ']';

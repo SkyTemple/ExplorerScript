@@ -15,10 +15,10 @@ def 0 {
     debug_Print("After Macro");
 }
 
-def 1 for_actor(TEST) {
+def 1 for actor TEST {
     test_actor();
 }
 
-def 2 for_actor(2) {
+def 2 for actor 2 {
     test_actor_id();
 }

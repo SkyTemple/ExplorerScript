@@ -36,7 +36,7 @@ start: funcdef* EOF;
 funcdef: coro_def | simple_def | for_target_def;
 simple_def: DEF INTEGER func_suite;
 coro_def: CORO IDENTIFIER func_suite;
-for_target_def: DEF INTEGER FOR_TARGET OPEN_PAREN integer_like CLOSE_PAREN func_suite;
+for_target_def: DEF INTEGER for_target_def_target OPEN_PAREN? integer_like CLOSE_PAREN? func_suite;
 
 // In SSBScript identifiers and variables are not distinguished.
 // For ExplorerScript:
@@ -66,6 +66,11 @@ string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
 
 ctx_header: IDENTIFIER integer_like;
 
+for_target_def_target
+  : (FOR IDENTIFIER)
+  | (FOR_TARGET)  // DEPRECATED, use syntax above instead.
+  ;
+
 /*
  * lexer rules
  */
@@ -80,6 +85,7 @@ MULTILINE_STRING_LITERAL
  | '"""' .*? '"""'
  ;
 
+// DEPRECATED since 0.2, see for_target_def_target
 FOR_TARGET
  : FOR_ACTOR
  | FOR_OBJECT
@@ -92,6 +98,7 @@ FOR_ACTOR : 'for_actor';
 FOR_OBJECT: 'for_object';
 FOR_PERFORMER: 'for_performer';
 ALIAS: 'alias';
+FOR: 'for';
 PREVIOUS: 'previous';
 POSITION: 'Position';
 

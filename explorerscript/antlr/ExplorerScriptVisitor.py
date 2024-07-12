@@ -334,5 +334,10 @@ class ExplorerScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ExplorerScriptParser#for_target_def_target.
+    def visitFor_target_def_target(self, ctx:ExplorerScriptParser.For_target_def_targetContext):
+        return self.visitChildren(ctx)
+
+
 
 del ExplorerScriptParser
