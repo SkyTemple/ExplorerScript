@@ -28,7 +28,7 @@ from collections import deque
 from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, MutableSequence, Iterable, Any, TypeVar, Never, Iterator
+from typing import TYPE_CHECKING, MutableSequence, Iterable, Any, TypeVar, Iterator
 
 from antlr4 import ParserRuleContext
 
@@ -79,14 +79,14 @@ class MultiScopeDict(Mapping[_KT, _VT_co]):
                 return True
         return False
 
-    def __len__(self) -> Never:
+    def __len__(self) -> Any:
         raise NotImplementedError("MultiScopeDict can not be queried for length.")
 
-    def __iter__(self) -> Never:
+    def __iter__(self) -> Any:
         raise NotImplementedError("MultiScopeDict can not be iterated.")
 
 
-@dataclass(slots=True)
+@dataclass
 class UserDefinedConstants:
     """All known user defined constants"""
 
