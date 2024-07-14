@@ -21,7 +21,7 @@ explorerscript_parser/pybind_explorerscript_parser.cpp: explorerscript_parser/Ex
 
 explorerscript-installed: explorerscript_parser/pybind_explorerscript_parser.cpp
 	touch explorerscript_parser/__init__.pyi
-	pip install -e .
+	pip install .
 
 explorerscript_parser/__init__.pyi: explorerscript_parser/pybind_explorerscript_parser.cpp explorerscript-installed
 	pybind11-stubgen -o explorerscript_parser explorerscript_parser
