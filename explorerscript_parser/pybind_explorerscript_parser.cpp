@@ -2,7 +2,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
-#include "antlr4-runtime/antlr4-runtime.h"
+#include "antlr4-runtime.h"
 #include "ExplorerScriptLexer.h"
 #include "ExplorerScriptParser.h"
 #include "ExplorerScriptVisitor.h"

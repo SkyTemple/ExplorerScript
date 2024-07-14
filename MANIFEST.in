@@ -1,4 +1,8 @@
 include explorerscript/py.typed
-recursive-include explorerscript/antlr *.g4
 include explorerscript_parser/py.typed
 recursive-include explorerscript_parser *.pyi
+recursive-include explorerscript_parser *.cpp
+recursive-include explorerscript_parser *.h
+recursive-include explorerscript_parser *.g4
+include CMakeLists.txt
+graft antlr4

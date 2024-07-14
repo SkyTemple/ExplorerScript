@@ -1,9 +1,10 @@
 [build-system]
 requires = [
     "setuptools",
+    "scikit-build-core<=0.9.8",
     "pybind11>=2.10.0"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.setuptools.build_meta"
 
 [project]
 name = "explorerscript"
@@ -28,7 +29,6 @@ classifiers = [
 ]
 dependencies = [
     'igraph == 0.11.6',
-    'antlr4-python3-runtime == 4.13.1',
     'typing_extensions >= 4.0; python_version < "3.11"'
 ]
 
