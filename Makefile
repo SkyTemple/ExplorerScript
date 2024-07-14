@@ -19,7 +19,7 @@ ssbscript: explorerscript_parser/SsbScriptParser.cpp
 explorerscript_parser/pybind_explorerscript_parser.cpp: explorerscript_parser/ExplorerScriptLexer.h explorerscript_parser/ExplorerScriptListener.h explorerscript_parser/ExplorerScriptParser.h explorerscript_parser/ExplorerScriptVisitor.h explorerscript_parser/SsbScriptLexer.h explorerscript_parser/SsbScriptListener.h explorerscript_parser/SsbScriptParser.h generate_parser_bindings.py
 	./generate_parser_bindings.py
 
-explorerscript-installed: explorerscript_parser/pybind_explorerscript_parser.cpp
+explorerscript-installed: explorerscript_parser/pybind_explorerscript_parser.cpp ExternalAntlr4Cpp.cmake CMakeLists.txt pyproject.toml setup.py
 	touch explorerscript_parser/__init__.pyi
 	pip install .
 
