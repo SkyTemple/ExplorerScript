@@ -79,22 +79,21 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParse
         self._end_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
-        assert (
-            self._init_statement_handler is not None
-            and self._end_statement_handler is not None
-            and self._branch_blueprint is not None
-        )
-        retval = (
-            [self._start_label]
-            + self._init_statement_handler.collect()
-            + [self._generate_jump_operation(OP_JUMP, [], self._initial_label), self._block_label]
-            + self._process_block(False)
-            + [self._new_run_label]
-            + self._end_statement_handler.collect()
-            + [self._initial_label, self._branch_blueprint.build_for(self._block_label), self._end_label]
-        )
-        self.compiler_ctx.remove_loop()
+        with self.compiler_ctx.in_loop(cast(AnyLoopBlockCompileHandler, self)):
+            assert (
+                self._init_statement_handler is not None
+                and self._end_statement_handler is not None
+                and self._branch_blueprint is not None
+            )
+            retval = (
+                [self._start_label]
+                + self._init_statement_handler.collect()
+                + [self._generate_jump_operation(OP_JUMP, [], self._initial_label), self._block_label]
+                + self._process_block(False)
+                + [self._new_run_label]
+                + self._end_statement_handler.collect()
+                + [self._initial_label, self._branch_blueprint.build_for(self._block_label), self._end_label]
+            )
         return retval
 
     def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:

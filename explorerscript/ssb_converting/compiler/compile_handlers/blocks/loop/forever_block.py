@@ -40,9 +40,8 @@ class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptP
     """Handles an entire forever block."""
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
-        retval = [self._start_label] + self._process_block(False) + [self.continue_loop(), self._end_label]
-        self.compiler_ctx.remove_loop()
+        with self.compiler_ctx.in_loop(cast(AnyLoopBlockCompileHandler, self)):
+            retval = [self._start_label] + self._process_block(False) + [self.continue_loop(), self._end_label]
         return retval
 
     def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:

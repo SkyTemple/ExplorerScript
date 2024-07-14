@@ -32,7 +32,7 @@ from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.macro_def import MacroDefCompileHandler
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.util import _
 
 
@@ -51,10 +51,17 @@ class MacroVisitor(ExplorerScriptVisitor):
         performance_progress_list_var_name: str,
         macros: dict[str, ExplorerScriptMacro],
         macro_resolution_order: list[str],
+        user_constants: UserDefinedConstants,
     ):
         self.source_map_builder = SourceMapBuilder()
         self.compiler_ctx = CompilerCtx(
-            Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name, macros.copy()
+            Counter(),
+            self.source_map_builder,
+            {},
+            Counter(),
+            performance_progress_list_var_name,
+            macros.copy(),
+            user_constants,
         )
         self.macro_resolution_order = macro_resolution_order
 

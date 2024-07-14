@@ -34,7 +34,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.functions.coro_def 
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.for_target_def import ForTargetDefCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.simple_def import SimpleDefCompileHandler
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation
 
 
@@ -56,14 +56,25 @@ class RoutineVisitor(ExplorerScriptVisitor):
         ForTargetDefCompileHandler | CoroDefCompileHandler | SimpleDefCompileHandler | PrimitiveCompileHandler | None
     )
 
-    def __init__(self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro]):
+    def __init__(
+        self,
+        performance_progress_list_var_name: str,
+        macros: dict[str, ExplorerScriptMacro],
+        user_constants: UserDefinedConstants,
+    ):
         self.routine_infos = []
         self.routine_ops = []
         self.named_coroutines = []
         self.source_map_builder: SourceMapBuilder = SourceMapBuilder()
 
         self.compiler_ctx = CompilerCtx(
-            Counter(), self.source_map_builder, {}, Counter(), performance_progress_list_var_name, macros
+            Counter(),
+            self.source_map_builder,
+            {},
+            Counter(),
+            performance_progress_list_var_name,
+            macros,
+            user_constants,
         )
 
         self._active_routine_id = -1

@@ -33,7 +33,9 @@ from explorerscript.util import exps_int
 class SimpleDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.Simple_defContext]):
     def collect(self) -> Any:
         """Collects routine info and operations."""
-        return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), self.collect_ops()
+        with self.compiler_ctx.in_funcdef(exps_int(str(self.ctx.INTEGER()))):
+            ops = self.collect_ops()
+        return SsbRoutineInfo(SsbRoutineType.GENERIC, 0), ops
 
     def get_new_routine_id(self, old_id: int) -> int:
         return exps_int(str(self.ctx.INTEGER()))

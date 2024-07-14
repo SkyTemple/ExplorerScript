@@ -67,19 +67,19 @@ const AFTER_TWO = {
 
 EXPECTED_SSB_SCRIPT = """
 def 0 {
-    myOperation("Hello", 12, 12, ACTOR_ONE, OBJECT_TWO);
+    myOperation('Hello', 12, 12, ACTOR_ONE, OBJECT_TWO);
     included(99, 99);
     after(12, {
-        english="lang string"
+        english="lang string",
     });
-    inMacro(BAR, 12, 99, "Hello", 12);
+    inMacro(BAR, FOO, 99, 'Hello', 12);
 }
 
 def 1 {
-    myOperationInTwo("Second", 9, BUZZ);
+    myOperationInTwo('Second', 12, BUZZ);
     included(INCLUDED, 99);
     after(12, {
-        english="lang string"
+        english="lang string",
     });
 }
 """
@@ -106,4 +106,4 @@ class UserConstantsMacrosIncludesTestCase(unittest.TestCase):
             )
             ssbscript, _ = ssbscript_decompiler.convert()
 
-            self.assertEqual(ssbscript.strip(), EXPECTED_SSB_SCRIPT.strip())
+            self.assertEqual(EXPECTED_SSB_SCRIPT.strip(), ssbscript.strip())

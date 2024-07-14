@@ -68,9 +68,8 @@ class CaseBlockCompileHandler(
         if self.is_message_case:
             raise SsbCompilerError(_("Invalid message switch case call."))
         # get_header_jump_template must be called first.
-        self.compiler_ctx.add_switch_case(self)
-        retval = self._process_block(False)
-        self.compiler_ctx.remove_switch_case()
+        with self.compiler_ctx.in_switch_case(self):
+            retval = self._process_block(False)
         return retval
 
     def break_case(self) -> SsbLabelJump:

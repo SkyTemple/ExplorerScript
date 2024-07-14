@@ -35,10 +35,15 @@ from explorerscript.ssb_converting.compiler.compiler_visitor.import_visitor impo
 from explorerscript.ssb_converting.compiler.compiler_visitor.macro_resolution_order import MacroResolutionOrderVisitor
 from explorerscript.ssb_converting.compiler.compiler_visitor.macro_visitor import MacroVisitor
 from explorerscript.ssb_converting.compiler.compiler_visitor.routine_visitor import RoutineVisitor
+from explorerscript.ssb_converting.compiler.compiler_visitor.user_constants_visitor import UserConstantsVisitor
 from explorerscript.ssb_converting.compiler.label_finalizer import LabelFinalizer
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.compiler.meta_attributes import parse_exps_meta_attributes, ExpsMetaAttributes
-from explorerscript.ssb_converting.compiler.utils import routine_op_offsets_are_ordered, strip_last_label
+from explorerscript.ssb_converting.compiler.utils import (
+    routine_op_offsets_are_ordered,
+    strip_last_label,
+    UserDefinedConstants,
+)
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
 from explorerscript.ssb_script.ssb_converting.ssb_compiler import SsbScriptSsbCompiler
 from explorerscript.util import open_utf8, f, _
@@ -82,6 +87,9 @@ class ExplorerScriptSsbCompiler:
     # The order of which the macros in this file have to be processed, due to dependencies
     macro_resolution_order: list[str]
 
+    # The user constants defined by this script
+    user_constants: UserDefinedConstants
+
     ####
 
     # The name of the variable PERFORMANCE_PROGRESS_LIST in the script source.
@@ -101,6 +109,7 @@ class ExplorerScriptSsbCompiler:
         performance_progress_list_var_name: str,
         lookup_paths: list[str] | None = None,
         recursion_check: list[str] | None = None,
+        user_constants: UserDefinedConstants | None = None,
     ):
         if lookup_paths is None:
             lookup_paths = []
@@ -113,6 +122,7 @@ class ExplorerScriptSsbCompiler:
         self.imports: list[str] = []
         self.macros: dict[str, ExplorerScriptMacro] = {}
         self.macro_resolution_order: list[str] = []
+        self.user_constants = user_constants if user_constants is not None else UserDefinedConstants({}, {}, {})
 
         self.performance_progress_list_var_name: str = performance_progress_list_var_name
         self.lookup_paths = lookup_paths
@@ -188,25 +198,33 @@ class ExplorerScriptSsbCompiler:
                 self.performance_progress_list_var_name,
                 self.lookup_paths,
                 recursion_check=self.recursion_check + [file_name],
+                user_constants=self.user_constants,
             )
             with open_utf8(subfile_path, "r") as file:
                 subfile_compiler.compile(
                     file.read(), subfile_path, macros_only=True, original_base_file=original_base_file
                 )
+            self.user_constants = subfile_compiler.user_constants
             self.macros.update(self._macros_add_filenames(subfile_compiler.macros, original_base_file, subfile_path))
 
         # Sort the list of macros by how they are used
         logger.debug("<%d> Building macro resolution order...", id(self))
         self.macro_resolution_order = MacroResolutionOrderVisitor(self.macros).visit(tree)
 
+        logger.debug("<%d> Collecting constants...", id(self))
+        self.user_constants = UserConstantsVisitor(self.user_constants).visit(tree)
+
         # Loads and compiles modules in base file
         # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).
         logger.debug("<%d> Compiling macros...", id(self))
         self.macros.update(
             self._macros_add_filenames(
-                MacroVisitor(self.performance_progress_list_var_name, self.macros, self.macro_resolution_order).visit(
-                    tree
-                ),
+                MacroVisitor(
+                    self.performance_progress_list_var_name,
+                    self.macros,
+                    self.macro_resolution_order,
+                    self.user_constants,
+                ).visit(tree),
                 None,
                 file_name,
             )
@@ -225,7 +243,9 @@ class ExplorerScriptSsbCompiler:
         try:
             try:
                 logger.debug("<%d> Compiling routines...", id(self))
-                compiler_visitor = RoutineVisitor(self.performance_progress_list_var_name, self.macros)
+                compiler_visitor = RoutineVisitor(
+                    self.performance_progress_list_var_name, self.macros, self.user_constants
+                )
                 compiler_visitor.visit(tree)
             except Exception as ex:
                 # due to the stack nature of the decompile visitor, we get many stack exceptions after raising

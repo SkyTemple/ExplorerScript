@@ -296,6 +296,10 @@ class StatementVisitor(ExplorerScriptVisitor):
     def visitMacro_call(self, ctx: ExplorerScriptParser.Macro_callContext) -> Any:
         return self._push_handler_and_add(ctx, MacroCallCompileHandler)
 
+    def visitConstant_assign(self, ctx: ExplorerScriptParser.Constant_assignContext) -> None:
+        # Are not visited.
+        return None
+
     def _push_handler_and_add(
         self,
         ctx: CTX,

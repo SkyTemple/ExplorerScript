@@ -30,7 +30,8 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 class MacroDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptParser.MacrodefContext]):
     def collect(self) -> list[SsbOperation]:
         """Collects macro operations."""
-        return self.collect_ops()
+        with self.compiler_ctx.in_macrodef(self.get_name()):
+            return self.collect_ops()
 
     def get_new_routine_id(self, old_id: int) -> int:
         """n/a, use get_name"""

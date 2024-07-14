@@ -63,7 +63,10 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptPar
         else:
             raise SsbCompilerError("A targeted routine must be 'for' an 'actor', 'object' or 'performer'.")
 
-        return routine_info, self.collect_ops()
+        with self.compiler_ctx.in_funcdef(linked_to_name if linked_to_name is not None else linked_to):
+            ops = self.collect_ops()
+
+        return routine_info, ops
 
     def get_new_routine_id(self, old_id: int) -> int:
         return exps_int(str(self.ctx.INTEGER()))

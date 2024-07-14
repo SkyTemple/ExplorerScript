@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_mark
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
     PositionMarkerArgCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter
+from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
 
 
@@ -39,7 +39,9 @@ class PositionMarkVisitor(ExplorerScriptVisitor):
     """Returns the list of position marks from an ExplorerScript parsing tree."""
 
     def __init__(self) -> None:
-        self.compiler_ctx = CompilerCtx(Counter(), SourceMapBuilder(), {}, Counter(), "n/a", {})
+        self.compiler_ctx = CompilerCtx(
+            Counter(), SourceMapBuilder(), {}, Counter(), "n/a", {}, UserDefinedConstants({}, {}, {})
+        )
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[SourceMapPositionMark]:
         return self.visitChildren(ctx)
