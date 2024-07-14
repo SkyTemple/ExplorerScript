@@ -5,6 +5,10 @@
 #include "ExplorerScriptParser.h"
 #include "ExplorerScriptVisitor.h"
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
 class ParserWrapper {
     antlr4::ANTLRInputStream* input;
     ExplorerScriptLexer* lexer;
@@ -15,5 +19,5 @@ public:
     ~ParserWrapper();
 
     ExplorerScriptParser::StartContext* tree();
-    void traverse(ExplorerScriptVisitor& visitor);
+    pybind11::object traverse(ExplorerScriptVisitor& visitor);
 };
