@@ -65,22 +65,24 @@ def generate_bindings(classes, visitor_methods):
                         bindings.append(f'    .def("{method_name}", py::overload_cast<>(&{class_name}::{method_name}))')
             else:
                 method = overloads[0]
-                bindings.append(f'    .def("{method_name}", &{class_name}::{method_name})')
+                bindings.append(
+                    f'    .def("{method_name}", &{class_name}::{method_name}, py::return_value_policy::automatic_reference)'
+                )
 
         bindings.append(";")
 
     bindings.append('py::class_<ExplorerScriptVisitor, PyExplorerScriptVisitor>(m, "ExplorerScriptVisitor")')
     bindings.append("    .def(py::init<>())")
-    bindings.append(
-        '    .def("visitChildren", [](ExplorerScriptVisitor& self, antlr4::tree::ParseTree* node) {'
-    )  # todo
+    bindings.append('    .def("visitChildren", [](ExplorerScriptVisitor& self, antlr4::tree::ParseTree* node) {')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
-    bindings.append("    })")
+    bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append('    .def("defaultResult", [](ExplorerScriptVisitor& self) {')
     bindings.append("        return std::any_cast<pybind11::object>(self.defaultResult());")
-    bindings.append("    })")
+    bindings.append("    }, py::keep_alive<1, 2>())")
     for method in visitor_methods:
-        bindings.append(f'    .def("{method["method_name"]}", &ExplorerScriptVisitor::{method["method_name"]})')
+        bindings.append(
+            f'    .def("{method["method_name"]}", &ExplorerScriptVisitor::{method["method_name"]}, py::return_value_policy::reference_internal)'
+        )
     bindings.append(";")
 
     return "\n".join(bindings)
@@ -111,25 +113,31 @@ def generate_trampoline_class(visitor_methods):
     for method in visitor_methods:
         method_name = method["method_name"]
         params = method["params"]
-        trampoline_class.append(f"    pybind11::object {method_name}__wrapper({params}) {{")
-        trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
-        trampoline_class.append("            pybind11::object,")  # Return type
-        trampoline_class.append("            ExplorerScriptVisitor,")  # Parent class
+        trampoline_class.append(f"    std::any {method_name}({params}) override {{")
+        trampoline_class.append(f"        PYBIND11_OVERRIDE_PURE(")
+        trampoline_class.append(f"            pybind11::object,")  # Return type
+        trampoline_class.append(f"            ExplorerScriptVisitor,")  # Parent class
         trampoline_class.append(f"            {method_name},")
         trampoline_class.append(f'            {params.split(' ')[1].lstrip('*')}')
-        trampoline_class.append("        );")
-        trampoline_class.append("    }")
-        trampoline_class.append(f"    std::any {method_name}({params}) override {{")
-        trampoline_class.append(f'        return {method_name}__wrapper({params.split(' ')[1].lstrip('*')});')
-        trampoline_class.append("    }")
+        trampoline_class.append(f"        );")
+        trampoline_class.append(f"    }}")
 
-    trampoline_class.append("    std::any defaultResult() override {")
+    trampoline_class.append("    std::any defaultResult() override {{")
     trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
     trampoline_class.append("            pybind11::object,")  # Return type
     trampoline_class.append("            ExplorerScriptVisitor,")  # Parent class
     trampoline_class.append("            defaultResult")
     trampoline_class.append("        );")
-    trampoline_class.append("    }")
+    trampoline_class.append("    }}")
+
+    trampoline_class.append("    std::any visitChildren(antlr4::tree::ParseTree *node) override {{")
+    trampoline_class.append("        PYBIND11_OVERRIDE(")
+    trampoline_class.append("            pybind11::object,")  # Return type
+    trampoline_class.append("            ExplorerScriptVisitor,")  # Parent class
+    trampoline_class.append("            visitChildren,")
+    trampoline_class.append("            node")
+    trampoline_class.append("        );")
+    trampoline_class.append("    }}")
 
     trampoline_class.append("};")
 
