@@ -6,11 +6,15 @@
 #include "ExplorerScriptLexer.h"
 #include "ExplorerScriptParser.h"
 #include "ExplorerScriptVisitor.h"
-#include "parser_wrapper.h"
-            
+#include "SsbScriptLexer.h"
+#include "SsbScriptParser.h"
+#include "SsbScriptVisitor.h"
+#include "parser_wrapper_exps.h"
+#include "parser_wrapper_ssbs.h"
+
 using namespace antlr4;
 namespace py = pybind11;
-            
+
 class PyExplorerScriptVisitor : public ExplorerScriptVisitor {
 public:
     /* Inherit the constructors */
@@ -559,13 +563,221 @@ public:
             node
         );
     }}
+};class PySsbScriptVisitor : public SsbScriptVisitor {
+public:
+    /* Inherit the constructors */
+    using SsbScriptVisitor::SsbScriptVisitor;
+
+    std::any visitPos_argument(SsbScriptParser::Pos_argumentContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitPos_argument,
+            context
+        );
+    }
+    std::any visitJump_marker(SsbScriptParser::Jump_markerContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitJump_marker,
+            context
+        );
+    }
+    std::any visitStart(SsbScriptParser::StartContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitStart,
+            context
+        );
+    }
+    std::any visitFuncdef(SsbScriptParser::FuncdefContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitFuncdef,
+            context
+        );
+    }
+    std::any visitSimple_def(SsbScriptParser::Simple_defContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitSimple_def,
+            context
+        );
+    }
+    std::any visitCoro_def(SsbScriptParser::Coro_defContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitCoro_def,
+            context
+        );
+    }
+    std::any visitFor_target_def(SsbScriptParser::For_target_defContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitFor_target_def,
+            context
+        );
+    }
+    std::any visitInteger_like(SsbScriptParser::Integer_likeContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitInteger_like,
+            context
+        );
+    }
+    std::any visitStmt(SsbScriptParser::StmtContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitStmt,
+            context
+        );
+    }
+    std::any visitOperation(SsbScriptParser::OperationContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitOperation,
+            context
+        );
+    }
+    std::any visitInline_ctx(SsbScriptParser::Inline_ctxContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitInline_ctx,
+            context
+        );
+    }
+    std::any visitFunc_suite(SsbScriptParser::Func_suiteContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitFunc_suite,
+            context
+        );
+    }
+    std::any visitFunc_alias(SsbScriptParser::Func_aliasContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitFunc_alias,
+            context
+        );
+    }
+    std::any visitArglist(SsbScriptParser::ArglistContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitArglist,
+            context
+        );
+    }
+    std::any visitPosition_marker(SsbScriptParser::Position_markerContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitPosition_marker,
+            context
+        );
+    }
+    std::any visitPosition_marker_arg(SsbScriptParser::Position_marker_argContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitPosition_marker_arg,
+            context
+        );
+    }
+    std::any visitLabel(SsbScriptParser::LabelContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitLabel,
+            context
+        );
+    }
+    std::any visitString(SsbScriptParser::StringContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitString,
+            context
+        );
+    }
+    std::any visitLang_string(SsbScriptParser::Lang_stringContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitLang_string,
+            context
+        );
+    }
+    std::any visitLang_string_argument(SsbScriptParser::Lang_string_argumentContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitLang_string_argument,
+            context
+        );
+    }
+    std::any visitString_value(SsbScriptParser::String_valueContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitString_value,
+            context
+        );
+    }
+    std::any visitCtx_header(SsbScriptParser::Ctx_headerContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitCtx_header,
+            context
+        );
+    }
+    std::any visitFor_target_def_target(SsbScriptParser::For_target_def_targetContext *context) override {
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitFor_target_def_target,
+            context
+        );
+    }
+    std::any defaultResult() override {{
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptVisitor,
+            defaultResult
+        );
+    }}
+    std::any visitChildren(antlr4::tree::ParseTree *node) override {{
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            SsbScriptVisitor,
+            visitChildren,
+            node
+        );
+    }}
 };
 PYBIND11_MODULE(explorerscript_parser, m) {
 
-py::class_<ParserWrapper>(m, "ParserWrapper")
+py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
     .def(py::init<std::string&>())
-    .def("tree", &ParserWrapper::tree, py::keep_alive<1, 2>())
-    .def("traverse", &ParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def("tree", &ExplorerScriptParserWrapper::tree, py::keep_alive<1, 2>())
+    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
+    .def(py::init<std::string&>())
+    .def("tree", &SsbScriptParserWrapper::tree, py::keep_alive<1, 2>())
+    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>());
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)
@@ -581,7 +793,7 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
     .def_property_readonly("tokenIndex", &antlr4::Token::getStartIndex)
     .def_property_readonly("stopIndex", &antlr4::Token::getStopIndex)
     .def_property_readonly("text", &antlr4::Token::getText);
-            
+
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext");
@@ -1595,4 +1807,300 @@ py::class_<ExplorerScriptVisitor, PyExplorerScriptVisitor>(m, "ExplorerScriptVis
     .def("visitString_value", &ExplorerScriptVisitor::visitString_value, py::return_value_policy::reference_internal)
     .def("visitCtx_header", &ExplorerScriptVisitor::visitCtx_header, py::return_value_policy::reference_internal)
     .def("visitFor_target_def_target", &ExplorerScriptVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
+;py::class_<SsbScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Pos_argumentContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Pos_argumentContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Pos_argumentContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Pos_argumentContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("integer_like", &SsbScriptParser::Pos_argumentContext::integer_like, py::return_value_policy::automatic_reference)
+    .def("string", &SsbScriptParser::Pos_argumentContext::string, py::return_value_policy::automatic_reference)
+    .def("position_marker", &SsbScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::automatic_reference)
+    .def("jump_marker", &SsbScriptParser::Pos_argumentContext::jump_marker, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Pos_argumentContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Pos_argumentContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Jump_markerContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Jump_markerContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Jump_markerContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Jump_markerContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("AT", &SsbScriptParser::Jump_markerContext::AT, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::Jump_markerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Jump_markerContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Jump_markerContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StartContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::StartContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StartContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::StartContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("EOF", &SsbScriptParser::StartContext::EOF, py::return_value_policy::automatic_reference)
+    .def("funcdef", py::overload_cast<>(&SsbScriptParser::StartContext::funcdef))
+    .def("funcdef", py::overload_cast<size_t>(&SsbScriptParser::StartContext::funcdef))
+    .def("enterRule", &SsbScriptParser::StartContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::StartContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::FuncdefContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::FuncdefContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::FuncdefContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::FuncdefContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("coro_def", &SsbScriptParser::FuncdefContext::coro_def, py::return_value_policy::automatic_reference)
+    .def("simple_def", &SsbScriptParser::FuncdefContext::simple_def, py::return_value_policy::automatic_reference)
+    .def("for_target_def", &SsbScriptParser::FuncdefContext::for_target_def, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::FuncdefContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::FuncdefContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Simple_defContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Simple_defContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Simple_defContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Simple_defContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("DEF", &SsbScriptParser::Simple_defContext::DEF, py::return_value_policy::automatic_reference)
+    .def("INTEGER", &SsbScriptParser::Simple_defContext::INTEGER, py::return_value_policy::automatic_reference)
+    .def("func_suite", &SsbScriptParser::Simple_defContext::func_suite, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Simple_defContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Simple_defContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Coro_defContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Coro_defContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Coro_defContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Coro_defContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("CORO", &SsbScriptParser::Coro_defContext::CORO, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::Coro_defContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("func_suite", &SsbScriptParser::Coro_defContext::func_suite, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Coro_defContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Coro_defContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_defContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::For_target_defContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::For_target_defContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::For_target_defContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("DEF", &SsbScriptParser::For_target_defContext::DEF, py::return_value_policy::automatic_reference)
+    .def("INTEGER", &SsbScriptParser::For_target_defContext::INTEGER, py::return_value_policy::automatic_reference)
+    .def("for_target_def_target", &SsbScriptParser::For_target_defContext::for_target_def_target, py::return_value_policy::automatic_reference)
+    .def("integer_like", &SsbScriptParser::For_target_defContext::integer_like, py::return_value_policy::automatic_reference)
+    .def("func_suite", &SsbScriptParser::For_target_defContext::func_suite, py::return_value_policy::automatic_reference)
+    .def("OPEN_PAREN", &SsbScriptParser::For_target_defContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
+    .def("CLOSE_PAREN", &SsbScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::For_target_defContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::For_target_defContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Integer_likeContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Integer_likeContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Integer_likeContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Integer_likeContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("DECIMAL", &SsbScriptParser::Integer_likeContext::DECIMAL, py::return_value_policy::automatic_reference)
+    .def("INTEGER", &SsbScriptParser::Integer_likeContext::INTEGER, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::Integer_likeContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("VARIABLE", &SsbScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Integer_likeContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Integer_likeContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StmtContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::StmtContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StmtContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::StmtContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("operation", &SsbScriptParser::StmtContext::operation, py::return_value_policy::automatic_reference)
+    .def("label", &SsbScriptParser::StmtContext::label, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::StmtContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::StmtContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::OperationContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::OperationContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::OperationContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::OperationContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::OperationContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("OPEN_PAREN", &SsbScriptParser::OperationContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
+    .def("CLOSE_PAREN", &SsbScriptParser::OperationContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
+    .def("inline_ctx", &SsbScriptParser::OperationContext::inline_ctx, py::return_value_policy::automatic_reference)
+    .def("arglist", &SsbScriptParser::OperationContext::arglist, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::OperationContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::OperationContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Inline_ctxContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Inline_ctxContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Inline_ctxContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Inline_ctxContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("OPEN_SHARP", &SsbScriptParser::Inline_ctxContext::OPEN_SHARP, py::return_value_policy::automatic_reference)
+    .def("ctx_header", &SsbScriptParser::Inline_ctxContext::ctx_header, py::return_value_policy::automatic_reference)
+    .def("CLOSE_SHARP", &SsbScriptParser::Inline_ctxContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Inline_ctxContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Inline_ctxContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_suiteContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Func_suiteContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Func_suiteContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Func_suiteContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("OPEN_BRACE", &SsbScriptParser::Func_suiteContext::OPEN_BRACE, py::return_value_policy::automatic_reference)
+    .def("CLOSE_BRACE", &SsbScriptParser::Func_suiteContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
+    .def("func_alias", &SsbScriptParser::Func_suiteContext::func_alias, py::return_value_policy::automatic_reference)
+    .def("stmt", py::overload_cast<>(&SsbScriptParser::Func_suiteContext::stmt))
+    .def("stmt", py::overload_cast<size_t>(&SsbScriptParser::Func_suiteContext::stmt))
+    .def("enterRule", &SsbScriptParser::Func_suiteContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Func_suiteContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_aliasContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Func_aliasContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Func_aliasContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Func_aliasContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("ALIAS", &SsbScriptParser::Func_aliasContext::ALIAS, py::return_value_policy::automatic_reference)
+    .def("PREVIOUS", &SsbScriptParser::Func_aliasContext::PREVIOUS, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Func_aliasContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Func_aliasContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::ArglistContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::ArglistContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::ArglistContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::ArglistContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("pos_argument", py::overload_cast<>(&SsbScriptParser::ArglistContext::pos_argument))
+    .def("pos_argument", py::overload_cast<size_t>(&SsbScriptParser::ArglistContext::pos_argument))
+    .def("COMMA", py::overload_cast<>(&SsbScriptParser::ArglistContext::COMMA))
+    .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::ArglistContext::COMMA))
+    .def("enterRule", &SsbScriptParser::ArglistContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::ArglistContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_markerContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Position_markerContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Position_markerContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Position_markerContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("POSITION", &SsbScriptParser::Position_markerContext::POSITION, py::return_value_policy::automatic_reference)
+    .def("OPEN_SHARP", &SsbScriptParser::Position_markerContext::OPEN_SHARP, py::return_value_policy::automatic_reference)
+    .def("STRING_LITERAL", &SsbScriptParser::Position_markerContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
+    .def("COMMA", py::overload_cast<>(&SsbScriptParser::Position_markerContext::COMMA))
+    .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::Position_markerContext::COMMA))
+    .def("position_marker_arg", py::overload_cast<>(&SsbScriptParser::Position_markerContext::position_marker_arg))
+    .def("position_marker_arg", py::overload_cast<size_t>(&SsbScriptParser::Position_markerContext::position_marker_arg))
+    .def("CLOSE_SHARP", &SsbScriptParser::Position_markerContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Position_markerContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Position_markerContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_marker_argContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Position_marker_argContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Position_marker_argContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Position_marker_argContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("INTEGER", &SsbScriptParser::Position_marker_argContext::INTEGER, py::return_value_policy::automatic_reference)
+    .def("DECIMAL", &SsbScriptParser::Position_marker_argContext::DECIMAL, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Position_marker_argContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Position_marker_argContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::LabelContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::LabelContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::LabelContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::LabelContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::LabelContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("PARAGRAPH", &SsbScriptParser::LabelContext::PARAGRAPH, py::return_value_policy::automatic_reference)
+    .def("AT", &SsbScriptParser::LabelContext::AT, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::LabelContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::LabelContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StringContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::StringContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StringContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::StringContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("string_value", &SsbScriptParser::StringContext::string_value, py::return_value_policy::automatic_reference)
+    .def("lang_string", &SsbScriptParser::StringContext::lang_string, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::StringContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::StringContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_stringContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Lang_stringContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Lang_stringContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Lang_stringContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("OPEN_BRACE", &SsbScriptParser::Lang_stringContext::OPEN_BRACE, py::return_value_policy::automatic_reference)
+    .def("lang_string_argument", py::overload_cast<>(&SsbScriptParser::Lang_stringContext::lang_string_argument))
+    .def("lang_string_argument", py::overload_cast<size_t>(&SsbScriptParser::Lang_stringContext::lang_string_argument))
+    .def("CLOSE_BRACE", &SsbScriptParser::Lang_stringContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
+    .def("COMMA", py::overload_cast<>(&SsbScriptParser::Lang_stringContext::COMMA))
+    .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::Lang_stringContext::COMMA))
+    .def("enterRule", &SsbScriptParser::Lang_stringContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Lang_stringContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_string_argumentContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Lang_string_argumentContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Lang_string_argumentContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Lang_string_argumentContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::Lang_string_argumentContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("ASSIGN", &SsbScriptParser::Lang_string_argumentContext::ASSIGN, py::return_value_policy::automatic_reference)
+    .def("string_value", &SsbScriptParser::Lang_string_argumentContext::string_value, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Lang_string_argumentContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Lang_string_argumentContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::String_valueContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::String_valueContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::String_valueContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::String_valueContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("MULTILINE_STRING_LITERAL", &SsbScriptParser::String_valueContext::MULTILINE_STRING_LITERAL, py::return_value_policy::automatic_reference)
+    .def("STRING_LITERAL", &SsbScriptParser::String_valueContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::String_valueContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::String_valueContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Ctx_headerContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::Ctx_headerContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Ctx_headerContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::Ctx_headerContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::Ctx_headerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("integer_like", &SsbScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::Ctx_headerContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::Ctx_headerContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_def_targetContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::For_target_def_targetContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::For_target_def_targetContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::For_target_def_targetContext::getRuleIndex, py::return_value_policy::automatic_reference)
+    .def("FOR", &SsbScriptParser::For_target_def_targetContext::FOR, py::return_value_policy::automatic_reference)
+    .def("IDENTIFIER", &SsbScriptParser::For_target_def_targetContext::IDENTIFIER, py::return_value_policy::automatic_reference)
+    .def("FOR_TARGET", &SsbScriptParser::For_target_def_targetContext::FOR_TARGET, py::return_value_policy::automatic_reference)
+    .def("enterRule", &SsbScriptParser::For_target_def_targetContext::enterRule, py::return_value_policy::automatic_reference)
+    .def("exitRule", &SsbScriptParser::For_target_def_targetContext::exitRule, py::return_value_policy::automatic_reference)
+;
+py::class_<SsbScriptVisitor, PySsbScriptVisitor>(m, "SsbScriptVisitor")
+    .def(py::init<>())
+    .def("visitChildren", [](SsbScriptVisitor& self, antlr4::tree::ParseTree* node) {
+        return std::any_cast<pybind11::object>(self.visitChildren(node));
+    }, py::return_value_policy::automatic_reference)
+    .def("defaultResult", [](SsbScriptVisitor& self) {
+        return std::any_cast<pybind11::object>(self.defaultResult());
+    }, py::keep_alive<1, 2>())
+    .def("visitPos_argument", &SsbScriptVisitor::visitPos_argument, py::return_value_policy::reference_internal)
+    .def("visitJump_marker", &SsbScriptVisitor::visitJump_marker, py::return_value_policy::reference_internal)
+    .def("visitStart", &SsbScriptVisitor::visitStart, py::return_value_policy::reference_internal)
+    .def("visitFuncdef", &SsbScriptVisitor::visitFuncdef, py::return_value_policy::reference_internal)
+    .def("visitSimple_def", &SsbScriptVisitor::visitSimple_def, py::return_value_policy::reference_internal)
+    .def("visitCoro_def", &SsbScriptVisitor::visitCoro_def, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def", &SsbScriptVisitor::visitFor_target_def, py::return_value_policy::reference_internal)
+    .def("visitInteger_like", &SsbScriptVisitor::visitInteger_like, py::return_value_policy::reference_internal)
+    .def("visitStmt", &SsbScriptVisitor::visitStmt, py::return_value_policy::reference_internal)
+    .def("visitOperation", &SsbScriptVisitor::visitOperation, py::return_value_policy::reference_internal)
+    .def("visitInline_ctx", &SsbScriptVisitor::visitInline_ctx, py::return_value_policy::reference_internal)
+    .def("visitFunc_suite", &SsbScriptVisitor::visitFunc_suite, py::return_value_policy::reference_internal)
+    .def("visitFunc_alias", &SsbScriptVisitor::visitFunc_alias, py::return_value_policy::reference_internal)
+    .def("visitArglist", &SsbScriptVisitor::visitArglist, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker", &SsbScriptVisitor::visitPosition_marker, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker_arg", &SsbScriptVisitor::visitPosition_marker_arg, py::return_value_policy::reference_internal)
+    .def("visitLabel", &SsbScriptVisitor::visitLabel, py::return_value_policy::reference_internal)
+    .def("visitString", &SsbScriptVisitor::visitString, py::return_value_policy::reference_internal)
+    .def("visitLang_string", &SsbScriptVisitor::visitLang_string, py::return_value_policy::reference_internal)
+    .def("visitLang_string_argument", &SsbScriptVisitor::visitLang_string_argument, py::return_value_policy::reference_internal)
+    .def("visitString_value", &SsbScriptVisitor::visitString_value, py::return_value_policy::reference_internal)
+    .def("visitCtx_header", &SsbScriptVisitor::visitCtx_header, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def_target", &SsbScriptVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
 ;}

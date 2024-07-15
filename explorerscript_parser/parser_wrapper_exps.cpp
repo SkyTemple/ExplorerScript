@@ -1,17 +1,16 @@
-#include "parser_wrapper.h"
+#include "parser_wrapper_exps.h"
 
 using namespace std;
 using namespace antlr4;
-using namespace chrono;
 
-ParserWrapper::ParserWrapper(std::string& string) {
+ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string) {
     this->input = new ANTLRInputStream(string);
     this->lexer = new ExplorerScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new ExplorerScriptParser(tokens);
 }
 
-ParserWrapper::~ParserWrapper() {
+ExplorerScriptParserWrapper::~ExplorerScriptParserWrapper() {
     // TODO: freeing the memory leads to a segmentation fault if the
     // tree was ever referenced in Python :(
     // See https://pybind11.readthedocs.io/en/stable/advanced/functions.html#return-value-policies
@@ -23,11 +22,11 @@ ParserWrapper::~ParserWrapper() {
     delete this->input;
 }
 
-ExplorerScriptParser::StartContext* ParserWrapper::tree() {
+ExplorerScriptParser::StartContext* ExplorerScriptParserWrapper::tree() {
     return this->parser->start();
 }
 
-pybind11::object ParserWrapper::traverse(ExplorerScriptVisitor& visitor) {
+pybind11::object ExplorerScriptParserWrapper::traverse(ExplorerScriptVisitor& visitor) {
     auto ret = this->tree()->accept(&visitor);
     return std::any_cast<pybind11::object>(ret);
 }

@@ -9,14 +9,14 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
-class ParserWrapper {
+class ExplorerScriptParserWrapper {
     antlr4::ANTLRInputStream* input;
     ExplorerScriptLexer* lexer;
     antlr4::CommonTokenStream* tokens;
     ExplorerScriptParser* parser;
 public:
-    ParserWrapper(std::string& string);
-    ~ParserWrapper();
+    ExplorerScriptParserWrapper(std::string& string);
+    ~ExplorerScriptParserWrapper();
 
     ExplorerScriptParser::StartContext* tree();
     pybind11::object traverse(ExplorerScriptVisitor& visitor);
