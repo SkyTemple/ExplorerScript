@@ -40,7 +40,7 @@ from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 class CaseBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
         ExplorerScriptParser.Single_case_blockContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler",
+        "AbstractStatementCompileHandler[Antlr4ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler",
     ]
 ):
     """Handles a switch case block for a switch."""

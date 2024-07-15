@@ -22,13 +22,13 @@
 #
 from __future__ import annotations
 
-from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.util import _, f
+from explorerscript_parser import ExplorerScriptParser
 
 
 class MacroCallCompileHandler(
@@ -48,7 +48,7 @@ class MacroCallCompileHandler(
         macro = self.compiler_ctx.macros[name]
 
         self.compiler_ctx.source_map_builder.next_macro_opcode_called_in(
-            None, self.ctx.start.line - 1, self.ctx.start.column
+            None, self.ctx.start.line - 1, self.ctx.start.charPositionInLine
         )
         return macro.build(
             self.compiler_ctx.counter_ops,

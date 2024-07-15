@@ -40,7 +40,7 @@ from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 class WhileBlockCompileHandler(
     AbstractComplexLoopBlockCompileHandler[
         ExplorerScriptParser.While_blockContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler",
+        "AbstractStatementCompileHandler[Antlr4ParserRuleContext] | IfHeaderCompileHandler",
     ]
 ):
     """

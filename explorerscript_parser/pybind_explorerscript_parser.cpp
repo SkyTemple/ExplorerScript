@@ -26,9 +26,9 @@ public:
         );
     }
     
-    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override;
-    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override;
-    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override;
+    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override {}
+    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override {}
+    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override {}
 };
 class PyExplorerScriptBaseVisitor : public ExplorerScriptBaseVisitor {
 public:
@@ -818,7 +818,6 @@ public:
 PYBIND11_MODULE(explorerscript_parser, m) {
 
 py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
-    .def(py::init<>())
     .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
@@ -850,10 +849,13 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
-    .def(py::init<>());
+    .def(py::init<>())
+    .def_property_readonly("start", &antlr4::ParserRuleContext::getStart)
+    .def_property_readonly("stop", &antlr4::ParserRuleContext::getStop);
 
 
-py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StartContext")
+auto m_parser_sub_ExplorerScript = m.def_submodule("ExplorerScriptParser");
+py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "StartContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::StartContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::StartContext::toStringTree))
@@ -867,7 +869,7 @@ py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m, "Ex
     .def("funcdef", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::funcdef))
     .def("accept", &ExplorerScriptParser::StartContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Import_stmtContext")
+py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Import_stmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Import_stmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Import_stmtContext::toStringTree))
@@ -876,7 +878,7 @@ py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(
     .def("STRING_LITERAL", &ExplorerScriptParser::Import_stmtContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Import_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::MacrodefContext")
+py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "MacrodefContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::MacrodefContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::MacrodefContext::toStringTree))
@@ -892,7 +894,7 @@ py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m, 
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::MacrodefContext::COMMA))
     .def("accept", &ExplorerScriptParser::MacrodefContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StmtContext")
+py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "StmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::StmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::StmtContext::toStringTree))
@@ -908,7 +910,7 @@ py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "Exp
     .def("macro_call", &ExplorerScriptParser::StmtContext::macro_call, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::StmtContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Simple_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Simple_stmtContext")
+py::class_<ExplorerScriptParser::Simple_stmtContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Simple_stmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Simple_stmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Simple_stmtContext::toStringTree))
@@ -921,7 +923,7 @@ py::class_<ExplorerScriptParser::Simple_stmtContext, antlr4::ParserRuleContext>(
     .def("assignment", &ExplorerScriptParser::Simple_stmtContext::assignment, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Simple_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Cntrl_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Cntrl_stmtContext")
+py::class_<ExplorerScriptParser::Cntrl_stmtContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Cntrl_stmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Cntrl_stmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Cntrl_stmtContext::toStringTree))
@@ -934,7 +936,7 @@ py::class_<ExplorerScriptParser::Cntrl_stmtContext, antlr4::ParserRuleContext>(m
     .def("BREAK_LOOP", &ExplorerScriptParser::Cntrl_stmtContext::BREAK_LOOP, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Cntrl_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::JumpContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::JumpContext")
+py::class_<ExplorerScriptParser::JumpContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "JumpContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::JumpContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::JumpContext::toStringTree))
@@ -944,7 +946,7 @@ py::class_<ExplorerScriptParser::JumpContext, antlr4::ParserRuleContext>(m, "Exp
     .def("IDENTIFIER", &ExplorerScriptParser::JumpContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::JumpContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::CallContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::CallContext")
+py::class_<ExplorerScriptParser::CallContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "CallContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::CallContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::CallContext::toStringTree))
@@ -954,7 +956,7 @@ py::class_<ExplorerScriptParser::CallContext, antlr4::ParserRuleContext>(m, "Exp
     .def("IDENTIFIER", &ExplorerScriptParser::CallContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::CallContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Macro_callContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Macro_callContext")
+py::class_<ExplorerScriptParser::Macro_callContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Macro_callContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Macro_callContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Macro_callContext::toStringTree))
@@ -965,7 +967,7 @@ py::class_<ExplorerScriptParser::Macro_callContext, antlr4::ParserRuleContext>(m
     .def("arglist", &ExplorerScriptParser::Macro_callContext::arglist, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Macro_callContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Ctx_blockContext")
+py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Ctx_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Ctx_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Ctx_blockContext::toStringTree))
@@ -979,7 +981,7 @@ py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m,
     .def("CLOSE_BRACE", &ExplorerScriptParser::Ctx_blockContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Ctx_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_blockContext")
+py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_blockContext::toStringTree))
@@ -1001,7 +1003,7 @@ py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m, 
     .def("else_block", &ExplorerScriptParser::If_blockContext::else_block, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Elseif_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Elseif_blockContext")
+py::class_<ExplorerScriptParser::Elseif_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Elseif_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Elseif_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Elseif_blockContext::toStringTree))
@@ -1020,7 +1022,7 @@ py::class_<ExplorerScriptParser::Elseif_blockContext, antlr4::ParserRuleContext>
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Elseif_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::Elseif_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Else_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Else_blockContext")
+py::class_<ExplorerScriptParser::Else_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Else_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Else_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Else_blockContext::toStringTree))
@@ -1032,7 +1034,7 @@ py::class_<ExplorerScriptParser::Else_blockContext, antlr4::ParserRuleContext>(m
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Else_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::Else_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_headerContext")
+py::class_<ExplorerScriptParser::If_headerContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_headerContext::toStringTree))
@@ -1044,7 +1046,7 @@ py::class_<ExplorerScriptParser::If_headerContext, antlr4::ParserRuleContext>(m,
     .def("operation", &ExplorerScriptParser::If_headerContext::operation, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_h_negatableContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_negatableContext")
+py::class_<ExplorerScriptParser::If_h_negatableContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_h_negatableContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_negatableContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_negatableContext::toStringTree))
@@ -1055,7 +1057,7 @@ py::class_<ExplorerScriptParser::If_h_negatableContext, antlr4::ParserRuleContex
     .def("NOT", &ExplorerScriptParser::If_h_negatableContext::NOT, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_negatableContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_opContext")
+py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_h_opContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_opContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_opContext::toStringTree))
@@ -1066,7 +1068,7 @@ py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m, "
     .def("value_of", &ExplorerScriptParser::If_h_opContext::value_of, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_opContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_bitContext")
+py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_h_bitContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_bitContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_bitContext::toStringTree))
@@ -1078,7 +1080,7 @@ py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m, 
     .def("NOT", &ExplorerScriptParser::If_h_bitContext::NOT, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_bitContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::If_h_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_scnContext")
+py::class_<ExplorerScriptParser::If_h_scnContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_h_scnContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_scnContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_scnContext::toStringTree))
@@ -1092,7 +1094,7 @@ py::class_<ExplorerScriptParser::If_h_scnContext, antlr4::ParserRuleContext>(m, 
     .def("CLOSE_BRACKET", &ExplorerScriptParser::If_h_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_blockContext")
+py::class_<ExplorerScriptParser::Switch_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_blockContext::toStringTree))
@@ -1109,7 +1111,7 @@ py::class_<ExplorerScriptParser::Switch_blockContext, antlr4::ParserRuleContext>
     .def("single_case_block", py::overload_cast<size_t>(&ExplorerScriptParser::Switch_blockContext::single_case_block))
     .def("accept", &ExplorerScriptParser::Switch_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Message_switch_blockContext")
+py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Message_switch_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Message_switch_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Message_switch_blockContext::toStringTree))
@@ -1127,7 +1129,7 @@ py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRule
     .def("single_case_block", py::overload_cast<size_t>(&ExplorerScriptParser::Message_switch_blockContext::single_case_block))
     .def("accept", &ExplorerScriptParser::Message_switch_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Single_case_blockContext")
+py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Single_case_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Single_case_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Single_case_blockContext::toStringTree))
@@ -1140,7 +1142,7 @@ py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleCon
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Single_case_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::Single_case_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::DefaultContext")
+py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "DefaultContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::DefaultContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::DefaultContext::toStringTree))
@@ -1152,7 +1154,7 @@ py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m, "
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::DefaultContext::stmt))
     .def("accept", &ExplorerScriptParser::DefaultContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_headerContext")
+py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_headerContext::toStringTree))
@@ -1165,7 +1167,7 @@ py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext
     .def("switch_h_sector", &ExplorerScriptParser::Switch_headerContext::switch_h_sector, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_h_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_scnContext")
+py::class_<ExplorerScriptParser::Switch_h_scnContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_h_scnContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_h_scnContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_h_scnContext::toStringTree))
@@ -1176,7 +1178,7 @@ py::class_<ExplorerScriptParser::Switch_h_scnContext, antlr4::ParserRuleContext>
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Switch_h_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_randomContext")
+py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_h_randomContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_h_randomContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_h_randomContext::toStringTree))
@@ -1187,7 +1189,7 @@ py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleConte
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_randomContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_randomContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_dungeon_modeContext")
+py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_h_dungeon_modeContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_h_dungeon_modeContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_h_dungeon_modeContext::toStringTree))
@@ -1198,7 +1200,7 @@ py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRul
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_dungeon_modeContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_dungeon_modeContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Switch_h_sectorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_sectorContext")
+py::class_<ExplorerScriptParser::Switch_h_sectorContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Switch_h_sectorContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_h_sectorContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_h_sectorContext::toStringTree))
@@ -1208,7 +1210,7 @@ py::class_<ExplorerScriptParser::Switch_h_sectorContext, antlr4::ParserRuleConte
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_sectorContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_sectorContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_headerContext")
+py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Case_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Case_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Case_headerContext::toStringTree))
@@ -1219,7 +1221,7 @@ py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(
     .def("case_h_op", &ExplorerScriptParser::Case_headerContext::case_h_op, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_menuContext")
+py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Case_h_menuContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Case_h_menuContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Case_h_menuContext::toStringTree))
@@ -1230,7 +1232,7 @@ py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menuContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_menuContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_menu2Context")
+py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Case_h_menu2Context")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Case_h_menu2Context::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Case_h_menu2Context::toStringTree))
@@ -1241,7 +1243,7 @@ py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menu2Context::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_menu2Context::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_opContext")
+py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Case_h_opContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Case_h_opContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Case_h_opContext::toStringTree))
@@ -1251,7 +1253,7 @@ py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m,
     .def("integer_like", &ExplorerScriptParser::Case_h_opContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_opContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Forever_blockContext")
+py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Forever_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Forever_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Forever_blockContext::toStringTree))
@@ -1263,7 +1265,7 @@ py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Forever_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::Forever_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::For_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_blockContext")
+py::class_<ExplorerScriptParser::For_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "For_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::For_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::For_blockContext::toStringTree))
@@ -1280,7 +1282,7 @@ py::class_<ExplorerScriptParser::For_blockContext, antlr4::ParserRuleContext>(m,
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::For_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::For_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::While_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::While_blockContext")
+py::class_<ExplorerScriptParser::While_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "While_blockContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::While_blockContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::While_blockContext::toStringTree))
@@ -1296,7 +1298,7 @@ py::class_<ExplorerScriptParser::While_blockContext, antlr4::ParserRuleContext>(
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::While_blockContext::stmt))
     .def("accept", &ExplorerScriptParser::While_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::AssignmentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::AssignmentContext")
+py::class_<ExplorerScriptParser::AssignmentContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "AssignmentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::AssignmentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::AssignmentContext::toStringTree))
@@ -1310,7 +1312,7 @@ py::class_<ExplorerScriptParser::AssignmentContext, antlr4::ParserRuleContext>(m
     .def("assignment_scn", &ExplorerScriptParser::AssignmentContext::assignment_scn, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::AssignmentContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_regularContext")
+py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_regularContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_regularContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_regularContext::toStringTree))
@@ -1324,7 +1326,7 @@ py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleCo
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Assignment_regularContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_regularContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_clearContext")
+py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_clearContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_clearContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_clearContext::toStringTree))
@@ -1333,7 +1335,7 @@ py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleCont
     .def("integer_like", &ExplorerScriptParser::Assignment_clearContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_clearContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_initialContext")
+py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_initialContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_initialContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_initialContext::toStringTree))
@@ -1342,7 +1344,7 @@ py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleCo
     .def("integer_like", &ExplorerScriptParser::Assignment_initialContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_initialContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_resetContext")
+py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_resetContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_resetContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_resetContext::toStringTree))
@@ -1352,7 +1354,7 @@ py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleCont
     .def("scn_var", &ExplorerScriptParser::Assignment_resetContext::scn_var, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_resetContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_adv_logContext")
+py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_adv_logContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_adv_logContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_adv_logContext::toStringTree))
@@ -1362,7 +1364,7 @@ py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleCo
     .def("integer_like", &ExplorerScriptParser::Assignment_adv_logContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_adv_logContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_dungeon_modeContext")
+py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_dungeon_modeContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_dungeon_modeContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_dungeon_modeContext::toStringTree))
@@ -1375,7 +1377,7 @@ py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserR
     .def("ASSIGN", &ExplorerScriptParser::Assignment_dungeon_modeContext::ASSIGN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_dungeon_modeContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_scnContext")
+py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_scnContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_scnContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_scnContext::toStringTree))
@@ -1390,7 +1392,7 @@ py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContex
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Assignment_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Value_ofContext")
+py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Value_ofContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Value_ofContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Value_ofContext::toStringTree))
@@ -1401,7 +1403,7 @@ py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m, 
     .def("CLOSE_PAREN", &ExplorerScriptParser::Value_ofContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Value_ofContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Scn_varContext")
+py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Scn_varContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Scn_varContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Scn_varContext::toStringTree))
@@ -1412,7 +1414,7 @@ py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m, "
     .def("CLOSE_PAREN", &ExplorerScriptParser::Scn_varContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Scn_varContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Conditional_operatorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Conditional_operatorContext")
+py::class_<ExplorerScriptParser::Conditional_operatorContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Conditional_operatorContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Conditional_operatorContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Conditional_operatorContext::toStringTree))
@@ -1430,7 +1432,7 @@ py::class_<ExplorerScriptParser::Conditional_operatorContext, antlr4::ParserRule
     .def("OP_BICH", &ExplorerScriptParser::Conditional_operatorContext::OP_BICH, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Conditional_operatorContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Assign_operatorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assign_operatorContext")
+py::class_<ExplorerScriptParser::Assign_operatorContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assign_operatorContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assign_operatorContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assign_operatorContext::toStringTree))
@@ -1442,7 +1444,7 @@ py::class_<ExplorerScriptParser::Assign_operatorContext, antlr4::ParserRuleConte
     .def("ASSIGN", &ExplorerScriptParser::Assign_operatorContext::ASSIGN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assign_operatorContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::FuncdefContext")
+py::class_<ExplorerScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "FuncdefContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::FuncdefContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::FuncdefContext::toStringTree))
@@ -1452,7 +1454,7 @@ py::class_<ExplorerScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "
     .def("for_target_def", &ExplorerScriptParser::FuncdefContext::for_target_def, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::FuncdefContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Simple_defContext")
+py::class_<ExplorerScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Simple_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Simple_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Simple_defContext::toStringTree))
@@ -1462,7 +1464,7 @@ py::class_<ExplorerScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m
     .def("func_suite", &ExplorerScriptParser::Simple_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Simple_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Coro_defContext")
+py::class_<ExplorerScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Coro_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Coro_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Coro_defContext::toStringTree))
@@ -1472,7 +1474,7 @@ py::class_<ExplorerScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, 
     .def("func_suite", &ExplorerScriptParser::Coro_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Coro_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_target_defContext")
+py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "For_target_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::For_target_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::For_target_defContext::toStringTree))
@@ -1486,7 +1488,7 @@ py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContex
     .def("CLOSE_PAREN", &ExplorerScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::For_target_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Integer_likeContext")
+py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Integer_likeContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Integer_likeContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Integer_likeContext::toStringTree))
@@ -1497,7 +1499,7 @@ py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>
     .def("VARIABLE", &ExplorerScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Integer_likeContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::OperationContext")
+py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "OperationContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::OperationContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::OperationContext::toStringTree))
@@ -1509,7 +1511,7 @@ py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m,
     .def("arglist", &ExplorerScriptParser::OperationContext::arglist, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::OperationContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Inline_ctxContext")
+py::class_<ExplorerScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Inline_ctxContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Inline_ctxContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Inline_ctxContext::toStringTree))
@@ -1519,7 +1521,7 @@ py::class_<ExplorerScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m
     .def("CLOSE_SHARP", &ExplorerScriptParser::Inline_ctxContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Inline_ctxContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Func_suiteContext")
+py::class_<ExplorerScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Func_suiteContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Func_suiteContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Func_suiteContext::toStringTree))
@@ -1531,7 +1533,7 @@ py::class_<ExplorerScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Func_suiteContext::stmt))
     .def("accept", &ExplorerScriptParser::Func_suiteContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Func_aliasContext")
+py::class_<ExplorerScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Func_aliasContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Func_aliasContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Func_aliasContext::toStringTree))
@@ -1540,7 +1542,7 @@ py::class_<ExplorerScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m
     .def("PREVIOUS", &ExplorerScriptParser::Func_aliasContext::PREVIOUS, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Func_aliasContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::ArglistContext")
+py::class_<ExplorerScriptParser::ArglistContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "ArglistContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::ArglistContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::ArglistContext::toStringTree))
@@ -1551,7 +1553,7 @@ py::class_<ExplorerScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::ArglistContext::COMMA))
     .def("accept", &ExplorerScriptParser::ArglistContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Pos_argumentContext")
+py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Pos_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Pos_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Pos_argumentContext::toStringTree))
@@ -1561,7 +1563,7 @@ py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>
     .def("position_marker", &ExplorerScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Pos_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Position_markerContext")
+py::class_<ExplorerScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Position_markerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Position_markerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Position_markerContext::toStringTree))
@@ -1576,7 +1578,7 @@ py::class_<ExplorerScriptParser::Position_markerContext, antlr4::ParserRuleConte
     .def("CLOSE_SHARP", &ExplorerScriptParser::Position_markerContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Position_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Position_marker_argContext")
+py::class_<ExplorerScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Position_marker_argContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Position_marker_argContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Position_marker_argContext::toStringTree))
@@ -1585,7 +1587,7 @@ py::class_<ExplorerScriptParser::Position_marker_argContext, antlr4::ParserRuleC
     .def("DECIMAL", &ExplorerScriptParser::Position_marker_argContext::DECIMAL, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Position_marker_argContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::LabelContext")
+py::class_<ExplorerScriptParser::LabelContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "LabelContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::LabelContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::LabelContext::toStringTree))
@@ -1595,7 +1597,7 @@ py::class_<ExplorerScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "Ex
     .def("AT", &ExplorerScriptParser::LabelContext::AT, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::LabelContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::StringContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StringContext")
+py::class_<ExplorerScriptParser::StringContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "StringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::StringContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::StringContext::toStringTree))
@@ -1604,7 +1606,7 @@ py::class_<ExplorerScriptParser::StringContext, antlr4::ParserRuleContext>(m, "E
     .def("lang_string", &ExplorerScriptParser::StringContext::lang_string, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::StringContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Lang_stringContext")
+py::class_<ExplorerScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Lang_stringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Lang_stringContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Lang_stringContext::toStringTree))
@@ -1617,7 +1619,7 @@ py::class_<ExplorerScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::Lang_stringContext::COMMA))
     .def("accept", &ExplorerScriptParser::Lang_stringContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Lang_string_argumentContext")
+py::class_<ExplorerScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Lang_string_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Lang_string_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Lang_string_argumentContext::toStringTree))
@@ -1627,7 +1629,7 @@ py::class_<ExplorerScriptParser::Lang_string_argumentContext, antlr4::ParserRule
     .def("string_value", &ExplorerScriptParser::Lang_string_argumentContext::string_value, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Lang_string_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::String_valueContext")
+py::class_<ExplorerScriptParser::String_valueContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "String_valueContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::String_valueContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::String_valueContext::toStringTree))
@@ -1636,7 +1638,7 @@ py::class_<ExplorerScriptParser::String_valueContext, antlr4::ParserRuleContext>
     .def("STRING_LITERAL", &ExplorerScriptParser::String_valueContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::String_valueContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Ctx_headerContext")
+py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Ctx_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Ctx_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Ctx_headerContext::toStringTree))
@@ -1645,7 +1647,7 @@ py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m
     .def("integer_like", &ExplorerScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Ctx_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_target_def_targetContext")
+py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "For_target_def_targetContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::For_target_def_targetContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::For_target_def_targetContext::toStringTree))
@@ -1735,7 +1737,8 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerS
     .def("visitString_value", &ExplorerScriptBaseVisitor::visitString_value, py::return_value_policy::reference_internal)
     .def("visitCtx_header", &ExplorerScriptBaseVisitor::visitCtx_header, py::return_value_policy::reference_internal)
     .def("visitFor_target_def_target", &ExplorerScriptBaseVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
-;py::class_<SsbScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Pos_argumentContext")
+;auto m_parser_sub_SsbScript = m.def_submodule("SsbScriptParser");
+py::class_<SsbScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Pos_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Pos_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Pos_argumentContext::toStringTree))
@@ -1746,7 +1749,7 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerS
     .def("jump_marker", &SsbScriptParser::Pos_argumentContext::jump_marker, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Pos_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Jump_markerContext")
+py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Jump_markerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Jump_markerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Jump_markerContext::toStringTree))
@@ -1755,7 +1758,7 @@ py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m, "S
     .def("IDENTIFIER", &SsbScriptParser::Jump_markerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Jump_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StartContext")
+py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "StartContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::StartContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StartContext::toStringTree))
@@ -1765,7 +1768,7 @@ py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m, "SsbScri
     .def("funcdef", py::overload_cast<size_t>(&SsbScriptParser::StartContext::funcdef))
     .def("accept", &SsbScriptParser::StartContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::FuncdefContext")
+py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "FuncdefContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::FuncdefContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::FuncdefContext::toStringTree))
@@ -1775,7 +1778,7 @@ py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "SsbSc
     .def("for_target_def", &SsbScriptParser::FuncdefContext::for_target_def, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::FuncdefContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Simple_defContext")
+py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Simple_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Simple_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Simple_defContext::toStringTree))
@@ -1785,7 +1788,7 @@ py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "Ss
     .def("func_suite", &SsbScriptParser::Simple_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Simple_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Coro_defContext")
+py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Coro_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Coro_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Coro_defContext::toStringTree))
@@ -1795,7 +1798,7 @@ py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "SsbS
     .def("func_suite", &SsbScriptParser::Coro_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Coro_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_defContext")
+py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "For_target_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::For_target_defContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::For_target_defContext::toStringTree))
@@ -1809,7 +1812,7 @@ py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m,
     .def("CLOSE_PAREN", &SsbScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::For_target_defContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Integer_likeContext")
+py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Integer_likeContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Integer_likeContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Integer_likeContext::toStringTree))
@@ -1820,7 +1823,7 @@ py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "
     .def("VARIABLE", &SsbScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Integer_likeContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StmtContext")
+py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "StmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::StmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StmtContext::toStringTree))
@@ -1829,7 +1832,7 @@ py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "SsbScrip
     .def("label", &SsbScriptParser::StmtContext::label, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::StmtContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::OperationContext")
+py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "OperationContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::OperationContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::OperationContext::toStringTree))
@@ -1841,7 +1844,7 @@ py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "Ssb
     .def("arglist", &SsbScriptParser::OperationContext::arglist, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::OperationContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Inline_ctxContext")
+py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Inline_ctxContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Inline_ctxContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Inline_ctxContext::toStringTree))
@@ -1851,7 +1854,7 @@ py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "Ss
     .def("CLOSE_SHARP", &SsbScriptParser::Inline_ctxContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Inline_ctxContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_suiteContext")
+py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Func_suiteContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Func_suiteContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Func_suiteContext::toStringTree))
@@ -1863,7 +1866,7 @@ py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "Ss
     .def("stmt", py::overload_cast<size_t>(&SsbScriptParser::Func_suiteContext::stmt))
     .def("accept", &SsbScriptParser::Func_suiteContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_aliasContext")
+py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Func_aliasContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Func_aliasContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Func_aliasContext::toStringTree))
@@ -1872,7 +1875,7 @@ py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "Ss
     .def("PREVIOUS", &SsbScriptParser::Func_aliasContext::PREVIOUS, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Func_aliasContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::ArglistContext")
+py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "ArglistContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::ArglistContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::ArglistContext::toStringTree))
@@ -1883,7 +1886,7 @@ py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "SsbSc
     .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::ArglistContext::COMMA))
     .def("accept", &SsbScriptParser::ArglistContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_markerContext")
+py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Position_markerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Position_markerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Position_markerContext::toStringTree))
@@ -1898,7 +1901,7 @@ py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m
     .def("CLOSE_SHARP", &SsbScriptParser::Position_markerContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Position_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_marker_argContext")
+py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Position_marker_argContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Position_marker_argContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Position_marker_argContext::toStringTree))
@@ -1907,7 +1910,7 @@ py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContex
     .def("DECIMAL", &SsbScriptParser::Position_marker_argContext::DECIMAL, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Position_marker_argContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::LabelContext")
+py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "LabelContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::LabelContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::LabelContext::toStringTree))
@@ -1917,7 +1920,7 @@ py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "SsbScri
     .def("AT", &SsbScriptParser::LabelContext::AT, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::LabelContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StringContext")
+py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "StringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::StringContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::StringContext::toStringTree))
@@ -1926,7 +1929,7 @@ py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m, "SsbScr
     .def("lang_string", &SsbScriptParser::StringContext::lang_string, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::StringContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_stringContext")
+py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Lang_stringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Lang_stringContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Lang_stringContext::toStringTree))
@@ -1939,7 +1942,7 @@ py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "S
     .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::Lang_stringContext::COMMA))
     .def("accept", &SsbScriptParser::Lang_stringContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_string_argumentContext")
+py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Lang_string_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Lang_string_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Lang_string_argumentContext::toStringTree))
@@ -1949,7 +1952,7 @@ py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleConte
     .def("string_value", &SsbScriptParser::Lang_string_argumentContext::string_value, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Lang_string_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::String_valueContext")
+py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "String_valueContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::String_valueContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::String_valueContext::toStringTree))
@@ -1958,7 +1961,7 @@ py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "
     .def("STRING_LITERAL", &SsbScriptParser::String_valueContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::String_valueContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Ctx_headerContext")
+py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Ctx_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Ctx_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Ctx_headerContext::toStringTree))
@@ -1967,7 +1970,7 @@ py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "Ss
     .def("integer_like", &SsbScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::Ctx_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_def_targetContext")
+py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "For_target_def_targetContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::For_target_def_targetContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::For_target_def_targetContext::toStringTree))

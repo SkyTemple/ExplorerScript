@@ -41,7 +41,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_CTX,
 )
 from explorerscript.util import f, _
-from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext, SsbScriptParser
 
 logger = logging.getLogger(__name__)
 
@@ -246,11 +246,13 @@ class SsbLabelJumpBlueprint:
         if number is None:
             number = self.compiler_ctx.counter_ops()
 
-        self.compiler_ctx.source_map_builder.add_opcode(number, self.ctx.start.line - 1, self.ctx.start.column)
+        self.compiler_ctx.source_map_builder.add_opcode(
+            number, self.ctx.start.line - 1, self.ctx.start.charPositionInLine
+        )
         return SsbLabelJump(SsbOperation(number, SsbOpCode(-1, self.op_code_name), self.params), label)
 
 
-def string_literal(string: ExplorerScriptParser.String_valueContext) -> str:
+def string_literal(string: ExplorerScriptParser.String_valueContext | SsbScriptParser.String_valueContext) -> str:
     single_line = string.STRING_LITERAL()
     if single_line:
         return singleline_string_literal(str(single_line))

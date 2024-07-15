@@ -22,11 +22,11 @@
 #
 from __future__ import annotations
 
-from explorerscript_parser import ExplorerScriptParser
 from explorerscript.source_map import SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg import ArgCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam, SsbOpParamPositionMarker
+from explorerscript_parser import ExplorerScriptParser
 
 
 class ArgListCompileHandler(AbstractCompileHandler[ExplorerScriptParser.ArglistContext, ArgCompileHandler]):
@@ -41,9 +41,9 @@ class ArgListCompileHandler(AbstractCompileHandler[ExplorerScriptParser.ArglistC
                     SourceMapPositionMark(
                         # Antlr line ids are 1-indexed.
                         self.ctx.start.line - 1,
-                        self.ctx.start.column,
+                        self.ctx.start.charPositionInLine,
                         self.ctx.stop.line - 1,
-                        self.ctx.stop.column,
+                        self.ctx.stop.charPositionInLine,
                         arg.name,
                         arg.x_offset,
                         arg.y_offset,

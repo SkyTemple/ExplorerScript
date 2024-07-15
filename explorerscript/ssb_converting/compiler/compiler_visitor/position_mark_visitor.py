@@ -52,9 +52,9 @@ class PositionMarkVisitor(ExplorerScriptBaseVisitor):
         pos_mark_param: SsbOpParamPositionMarker = mark_handler.collect()
         return SourceMapPositionMark(
             ctx.start.line - 1,
-            ctx.start.column,
+            ctx.start.charPositionInLine,
             ctx.stop.line - 1,
-            ctx.stop.column,
+            ctx.stop.charPositionInLine,
             pos_mark_param.name,
             pos_mark_param.x_offset,
             pos_mark_param.y_offset,

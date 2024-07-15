@@ -98,7 +98,7 @@ class AbstractCompileHandler(ABC, Generic[CTX, HANDL]):
             # Antlr line ids are 1-indexed.
             self.compiler_ctx.counter_ops.count,
             self.ctx.start.line - 1,
-            self.ctx.start.column,
+            self.ctx.start.charPositionInLine,
         )
         return op
 

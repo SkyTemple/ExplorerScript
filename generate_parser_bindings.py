@@ -55,9 +55,13 @@ def extract_classes(header_file_content: str) -> Classes:
 def generate_bindings(target: str, classes: Classes, visitor_methods: list[MethodDef]) -> str:
     bindings = []
 
-    for class_name, methods in classes.items():
-        class_name = f"{target}Parser::{class_name}"
-        bindings.append(f'py::class_<{class_name}, antlr4::ParserRuleContext>(m, "{class_name}")')
+    bindings.append(f'auto m_parser_sub_{target} = m.def_submodule("{target}Parser");')
+
+    for class_base_name, methods in classes.items():
+        class_name = f"{target}Parser::{class_base_name}"
+        bindings.append(
+            f'py::class_<{class_name}, antlr4::ParserRuleContext>(m_parser_sub_{target}, "{class_base_name}")'
+        )
         bindings.append("    .def(py::init<antlr4::ParserRuleContext*, size_t>())")
         bindings.append(f'    .def("__str__", py::overload_cast<>(&{class_name}::toString))')
         bindings.append(f'    .def("to_string_tree", py::overload_cast<bool>(&{class_name}::toStringTree))')
@@ -248,7 +252,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
     for class_name, methods in classes.items():
         bindings.append(f"    class {class_name}(Antlr4ParserRuleContext):")
         for method in methods:
-            return_type = method["return_type"] if "return_type" in method else "None"
+            return_type = method["return_type"] if "return_type" in method else "Any"
             maybe_comma = ","
             if method["params"].strip() == "":
                 maybe_comma = ""
@@ -260,7 +264,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
 
     bindings.append(f"class {target}BaseVisitor:")
     for method in visitor_methods:
-        return_type = method["return_type"] if "return_type" in method else "None"
+        return_type = method["return_type"] if "return_type" in method else "Any"
         maybe_comma = ","
         if method["params"].strip() == "":
             maybe_comma = ""
@@ -274,10 +278,10 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
     bindings.append("    def aggregateResult(self, aggregate: Any, nextResult: Any) -> Any: ...")
 
     bindings.append(f"class {target}ParserWrapper:")
-    bindings.append(f"    def __init__(self, string: str) -> {target}ParserWrapper: ...")
+    bindings.append("    def __init__(self, string: str) -> None: ...")
     bindings.append(f"    def tree(self) -> {target}Parser.StartContext: ...")
     bindings.append(f"    def traverse(self, visitor: {target}BaseVisitor) -> Any: ...")
-    bindings.append("    def addErrorListener(self, listener: Antlr4BaseErrorListener) -> None: ...")
+    bindings.append("    def addErrorListener(self, listener: Antlr4ErrorListener) -> None: ...")
 
     return "\n".join(bindings)
 
@@ -325,9 +329,6 @@ namespace py = pybind11;
 
 class PyErrorListener : public ANTLRErrorListener {
 public:
-    PyErrorListener();
-    ~PyErrorListener();
-
     void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine, const std::string &msg, std::exception_ptr e) override {
         PYBIND11_OVERRIDE_PURE(
             void,
@@ -337,9 +338,9 @@ public:
         );
     }
     
-    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override;
-    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override;
-    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override;
+    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override {}
+    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override {}
+    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override {}
 };
 """
             + exps_trampoline_class
@@ -348,7 +349,6 @@ public:
 PYBIND11_MODULE(explorerscript_parser, m) {
 
 py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
-    .def(py::init<>())
     .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
@@ -380,7 +380,9 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
-    .def(py::init<>());
+    .def(py::init<>())
+    .def_property_readonly("start", &antlr4::ParserRuleContext::getStart)
+    .def_property_readonly("stop", &antlr4::ParserRuleContext::getStop);
 
 
 """
@@ -399,8 +401,11 @@ py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleC
                     "    def syntaxError(self, recognizer: Any, offendingSymbol: Antlr4Token, line: int, charPositionInLine: int, msg: str, e: Any) -> None: ...",
                     "class Antlr4ParseTree: ...",
                     "class Antlr4RuleContext(Antlr4ParseTree): ...",
-                    "class Antlr4ParserRuleContext(Antlr4RuleContext): ...",
-                    "class Antlr4ParserRuleContext(Antlr4RuleContext): ...",
+                    "class Antlr4ParserRuleContext(Antlr4RuleContext):",
+                    "    @property",
+                    "    def start(self) -> Antlr4Token: ...",
+                    "    @property",
+                    "    def stop(self) -> Antlr4Token: ...",
                     "class Antlr4Token:",
                     "    def __str__(self) -> str: ...",
                     "    @property",

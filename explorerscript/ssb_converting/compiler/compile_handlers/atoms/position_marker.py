@@ -22,13 +22,13 @@
 #
 from __future__ import annotations
 
-from explorerscript_parser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
     PositionMarkerArgCompileHandler,
 )
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, singleline_string_literal
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
+from explorerscript_parser import ExplorerScriptParser
 
 
 class PositionMarkerCompileHandler(
@@ -41,7 +41,7 @@ class PositionMarkerCompileHandler(
         self.y: tuple[int, int] | None = None
 
     def collect(self) -> SsbOpParamPositionMarker:
-        name = singleline_string_literal(self.ctx.STRING_LITERAL())
+        name = singleline_string_literal(str(self.ctx.STRING_LITERAL()))
         assert self.x is not None and self.y is not None
         return SsbOpParamPositionMarker(
             name=name, x_offset=self.x[1], y_offset=self.y[1], x_relative=self.x[0], y_relative=self.y[0]

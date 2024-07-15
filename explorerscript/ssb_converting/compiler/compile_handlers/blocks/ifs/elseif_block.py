@@ -36,7 +36,7 @@ from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 class ElseIfBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
         ExplorerScriptParser.Elseif_blockContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler",
+        "AbstractStatementCompileHandler[Antlr4ParserRuleContext] | IfHeaderCompileHandler",
     ]
 ):
     """Handles an elseif block."""
