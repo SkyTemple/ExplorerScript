@@ -2,7 +2,6 @@
 // Generated from ExplorerScript.g4 by ANTLR 4.13.0
 
 
-#include "ExplorerScriptListener.h"
 #include "ExplorerScriptVisitor.h"
 
 #include "ExplorerScriptParser.h"
@@ -399,18 +398,6 @@ size_t ExplorerScriptParser::StartContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleStart;
 }
 
-void ExplorerScriptParser::StartContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStart(this);
-}
-
-void ExplorerScriptParser::StartContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStart(this);
-}
-
 
 std::any ExplorerScriptParser::StartContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -503,18 +490,6 @@ size_t ExplorerScriptParser::Import_stmtContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleImport_stmt;
 }
 
-void ExplorerScriptParser::Import_stmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterImport_stmt(this);
-}
-
-void ExplorerScriptParser::Import_stmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitImport_stmt(this);
-}
-
 
 std::any ExplorerScriptParser::Import_stmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -598,18 +573,6 @@ tree::TerminalNode* ExplorerScriptParser::MacrodefContext::COMMA(size_t i) {
 
 size_t ExplorerScriptParser::MacrodefContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleMacrodef;
-}
-
-void ExplorerScriptParser::MacrodefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterMacrodef(this);
-}
-
-void ExplorerScriptParser::MacrodefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitMacrodef(this);
 }
 
 
@@ -720,18 +683,6 @@ ExplorerScriptParser::Macro_callContext* ExplorerScriptParser::StmtContext::macr
 
 size_t ExplorerScriptParser::StmtContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleStmt;
-}
-
-void ExplorerScriptParser::StmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStmt(this);
-}
-
-void ExplorerScriptParser::StmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStmt(this);
 }
 
 
@@ -880,18 +831,6 @@ size_t ExplorerScriptParser::Simple_stmtContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSimple_stmt;
 }
 
-void ExplorerScriptParser::Simple_stmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSimple_stmt(this);
-}
-
-void ExplorerScriptParser::Simple_stmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSimple_stmt(this);
-}
-
 
 std::any ExplorerScriptParser::Simple_stmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -1003,18 +942,6 @@ size_t ExplorerScriptParser::Cntrl_stmtContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCntrl_stmt;
 }
 
-void ExplorerScriptParser::Cntrl_stmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCntrl_stmt(this);
-}
-
-void ExplorerScriptParser::Cntrl_stmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCntrl_stmt(this);
-}
-
 
 std::any ExplorerScriptParser::Cntrl_stmtContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -1081,18 +1008,6 @@ size_t ExplorerScriptParser::JumpContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleJump;
 }
 
-void ExplorerScriptParser::JumpContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterJump(this);
-}
-
-void ExplorerScriptParser::JumpContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitJump(this);
-}
-
 
 std::any ExplorerScriptParser::JumpContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -1152,18 +1067,6 @@ tree::TerminalNode* ExplorerScriptParser::CallContext::IDENTIFIER() {
 
 size_t ExplorerScriptParser::CallContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCall;
-}
-
-void ExplorerScriptParser::CallContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCall(this);
-}
-
-void ExplorerScriptParser::CallContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCall(this);
 }
 
 
@@ -1229,18 +1132,6 @@ ExplorerScriptParser::ArglistContext* ExplorerScriptParser::Macro_callContext::a
 
 size_t ExplorerScriptParser::Macro_callContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleMacro_call;
-}
-
-void ExplorerScriptParser::Macro_callContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterMacro_call(this);
-}
-
-void ExplorerScriptParser::Macro_callContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitMacro_call(this);
 }
 
 
@@ -1330,18 +1221,6 @@ tree::TerminalNode* ExplorerScriptParser::Ctx_blockContext::CLOSE_BRACE() {
 
 size_t ExplorerScriptParser::Ctx_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCtx_block;
-}
-
-void ExplorerScriptParser::Ctx_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCtx_block(this);
-}
-
-void ExplorerScriptParser::Ctx_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCtx_block(this);
 }
 
 
@@ -1459,18 +1338,6 @@ ExplorerScriptParser::Else_blockContext* ExplorerScriptParser::If_blockContext::
 
 size_t ExplorerScriptParser::If_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_block;
-}
-
-void ExplorerScriptParser::If_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_block(this);
-}
-
-void ExplorerScriptParser::If_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_block(this);
 }
 
 
@@ -1627,18 +1494,6 @@ size_t ExplorerScriptParser::Elseif_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleElseif_block;
 }
 
-void ExplorerScriptParser::Elseif_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterElseif_block(this);
-}
-
-void ExplorerScriptParser::Elseif_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitElseif_block(this);
-}
-
 
 std::any ExplorerScriptParser::Elseif_blockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -1747,18 +1602,6 @@ size_t ExplorerScriptParser::Else_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleElse_block;
 }
 
-void ExplorerScriptParser::Else_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterElse_block(this);
-}
-
-void ExplorerScriptParser::Else_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitElse_block(this);
-}
-
 
 std::any ExplorerScriptParser::Else_blockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -1839,18 +1682,6 @@ ExplorerScriptParser::OperationContext* ExplorerScriptParser::If_headerContext::
 
 size_t ExplorerScriptParser::If_headerContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_header;
-}
-
-void ExplorerScriptParser::If_headerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_header(this);
-}
-
-void ExplorerScriptParser::If_headerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_header(this);
 }
 
 
@@ -1948,18 +1779,6 @@ size_t ExplorerScriptParser::If_h_negatableContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_h_negatable;
 }
 
-void ExplorerScriptParser::If_h_negatableContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_h_negatable(this);
-}
-
-void ExplorerScriptParser::If_h_negatableContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_h_negatable(this);
-}
-
 
 std::any ExplorerScriptParser::If_h_negatableContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -2036,18 +1855,6 @@ ExplorerScriptParser::Value_ofContext* ExplorerScriptParser::If_h_opContext::val
 
 size_t ExplorerScriptParser::If_h_opContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_h_op;
-}
-
-void ExplorerScriptParser::If_h_opContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_h_op(this);
-}
-
-void ExplorerScriptParser::If_h_opContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_h_op(this);
 }
 
 
@@ -2138,18 +1945,6 @@ size_t ExplorerScriptParser::If_h_bitContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_h_bit;
 }
 
-void ExplorerScriptParser::If_h_bitContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_h_bit(this);
-}
-
-void ExplorerScriptParser::If_h_bitContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_h_bit(this);
-}
-
 
 std::any ExplorerScriptParser::If_h_bitContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -2236,18 +2031,6 @@ tree::TerminalNode* ExplorerScriptParser::If_h_scnContext::CLOSE_BRACKET() {
 
 size_t ExplorerScriptParser::If_h_scnContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleIf_h_scn;
-}
-
-void ExplorerScriptParser::If_h_scnContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterIf_h_scn(this);
-}
-
-void ExplorerScriptParser::If_h_scnContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitIf_h_scn(this);
 }
 
 
@@ -2345,18 +2128,6 @@ ExplorerScriptParser::Single_case_blockContext* ExplorerScriptParser::Switch_blo
 
 size_t ExplorerScriptParser::Switch_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSwitch_block;
-}
-
-void ExplorerScriptParser::Switch_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_block(this);
-}
-
-void ExplorerScriptParser::Switch_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_block(this);
 }
 
 
@@ -2487,18 +2258,6 @@ size_t ExplorerScriptParser::Message_switch_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleMessage_switch_block;
 }
 
-void ExplorerScriptParser::Message_switch_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterMessage_switch_block(this);
-}
-
-void ExplorerScriptParser::Message_switch_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitMessage_switch_block(this);
-}
-
 
 std::any ExplorerScriptParser::Message_switch_blockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -2614,18 +2373,6 @@ ExplorerScriptParser::StmtContext* ExplorerScriptParser::Single_case_blockContex
 
 size_t ExplorerScriptParser::Single_case_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSingle_case_block;
-}
-
-void ExplorerScriptParser::Single_case_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSingle_case_block(this);
-}
-
-void ExplorerScriptParser::Single_case_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSingle_case_block(this);
 }
 
 
@@ -2756,18 +2503,6 @@ ExplorerScriptParser::StmtContext* ExplorerScriptParser::DefaultContext::stmt(si
 
 size_t ExplorerScriptParser::DefaultContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleDefault;
-}
-
-void ExplorerScriptParser::DefaultContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterDefault(this);
-}
-
-void ExplorerScriptParser::DefaultContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitDefault(this);
 }
 
 
@@ -2902,18 +2637,6 @@ size_t ExplorerScriptParser::Switch_headerContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSwitch_header;
 }
 
-void ExplorerScriptParser::Switch_headerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_header(this);
-}
-
-void ExplorerScriptParser::Switch_headerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_header(this);
-}
-
 
 std::any ExplorerScriptParser::Switch_headerContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -3020,18 +2743,6 @@ size_t ExplorerScriptParser::Switch_h_scnContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSwitch_h_scn;
 }
 
-void ExplorerScriptParser::Switch_h_scnContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_h_scn(this);
-}
-
-void ExplorerScriptParser::Switch_h_scnContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_h_scn(this);
-}
-
 
 std::any ExplorerScriptParser::Switch_h_scnContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -3097,18 +2808,6 @@ tree::TerminalNode* ExplorerScriptParser::Switch_h_randomContext::CLOSE_PAREN() 
 
 size_t ExplorerScriptParser::Switch_h_randomContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSwitch_h_random;
-}
-
-void ExplorerScriptParser::Switch_h_randomContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_h_random(this);
-}
-
-void ExplorerScriptParser::Switch_h_randomContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_h_random(this);
 }
 
 
@@ -3178,18 +2877,6 @@ size_t ExplorerScriptParser::Switch_h_dungeon_modeContext::getRuleIndex() const 
   return ExplorerScriptParser::RuleSwitch_h_dungeon_mode;
 }
 
-void ExplorerScriptParser::Switch_h_dungeon_modeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_h_dungeon_mode(this);
-}
-
-void ExplorerScriptParser::Switch_h_dungeon_modeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_h_dungeon_mode(this);
-}
-
 
 std::any ExplorerScriptParser::Switch_h_dungeon_modeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -3251,18 +2938,6 @@ tree::TerminalNode* ExplorerScriptParser::Switch_h_sectorContext::CLOSE_PAREN() 
 
 size_t ExplorerScriptParser::Switch_h_sectorContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSwitch_h_sector;
-}
-
-void ExplorerScriptParser::Switch_h_sectorContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSwitch_h_sector(this);
-}
-
-void ExplorerScriptParser::Switch_h_sectorContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSwitch_h_sector(this);
 }
 
 
@@ -3328,18 +3003,6 @@ ExplorerScriptParser::Case_h_opContext* ExplorerScriptParser::Case_headerContext
 
 size_t ExplorerScriptParser::Case_headerContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCase_header;
-}
-
-void ExplorerScriptParser::Case_headerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCase_header(this);
-}
-
-void ExplorerScriptParser::Case_headerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCase_header(this);
 }
 
 
@@ -3447,18 +3110,6 @@ size_t ExplorerScriptParser::Case_h_menuContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCase_h_menu;
 }
 
-void ExplorerScriptParser::Case_h_menuContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCase_h_menu(this);
-}
-
-void ExplorerScriptParser::Case_h_menuContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCase_h_menu(this);
-}
-
 
 std::any ExplorerScriptParser::Case_h_menuContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -3526,18 +3177,6 @@ size_t ExplorerScriptParser::Case_h_menu2Context::getRuleIndex() const {
   return ExplorerScriptParser::RuleCase_h_menu2;
 }
 
-void ExplorerScriptParser::Case_h_menu2Context::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCase_h_menu2(this);
-}
-
-void ExplorerScriptParser::Case_h_menu2Context::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCase_h_menu2(this);
-}
-
 
 std::any ExplorerScriptParser::Case_h_menu2Context::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -3599,18 +3238,6 @@ ExplorerScriptParser::Integer_likeContext* ExplorerScriptParser::Case_h_opContex
 
 size_t ExplorerScriptParser::Case_h_opContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCase_h_op;
-}
-
-void ExplorerScriptParser::Case_h_opContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCase_h_op(this);
-}
-
-void ExplorerScriptParser::Case_h_opContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCase_h_op(this);
 }
 
 
@@ -3697,18 +3324,6 @@ ExplorerScriptParser::StmtContext* ExplorerScriptParser::Forever_blockContext::s
 
 size_t ExplorerScriptParser::Forever_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleForever_block;
-}
-
-void ExplorerScriptParser::Forever_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterForever_block(this);
-}
-
-void ExplorerScriptParser::Forever_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitForever_block(this);
 }
 
 
@@ -3811,18 +3426,6 @@ ExplorerScriptParser::StmtContext* ExplorerScriptParser::For_blockContext::stmt(
 
 size_t ExplorerScriptParser::For_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFor_block;
-}
-
-void ExplorerScriptParser::For_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFor_block(this);
-}
-
-void ExplorerScriptParser::For_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFor_block(this);
 }
 
 
@@ -3935,18 +3538,6 @@ size_t ExplorerScriptParser::While_blockContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleWhile_block;
 }
 
-void ExplorerScriptParser::While_blockContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterWhile_block(this);
-}
-
-void ExplorerScriptParser::While_blockContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitWhile_block(this);
-}
-
 
 std::any ExplorerScriptParser::While_blockContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4049,18 +3640,6 @@ ExplorerScriptParser::Assignment_scnContext* ExplorerScriptParser::AssignmentCon
 
 size_t ExplorerScriptParser::AssignmentContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment;
-}
-
-void ExplorerScriptParser::AssignmentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment(this);
-}
-
-void ExplorerScriptParser::AssignmentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment(this);
 }
 
 
@@ -4188,18 +3767,6 @@ size_t ExplorerScriptParser::Assignment_regularContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_regular;
 }
 
-void ExplorerScriptParser::Assignment_regularContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_regular(this);
-}
-
-void ExplorerScriptParser::Assignment_regularContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_regular(this);
-}
-
 
 std::any ExplorerScriptParser::Assignment_regularContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4289,18 +3856,6 @@ size_t ExplorerScriptParser::Assignment_clearContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_clear;
 }
 
-void ExplorerScriptParser::Assignment_clearContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_clear(this);
-}
-
-void ExplorerScriptParser::Assignment_clearContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_clear(this);
-}
-
 
 std::any ExplorerScriptParser::Assignment_clearContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4354,18 +3909,6 @@ ExplorerScriptParser::Integer_likeContext* ExplorerScriptParser::Assignment_init
 
 size_t ExplorerScriptParser::Assignment_initialContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_initial;
-}
-
-void ExplorerScriptParser::Assignment_initialContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_initial(this);
-}
-
-void ExplorerScriptParser::Assignment_initialContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_initial(this);
 }
 
 
@@ -4425,18 +3968,6 @@ ExplorerScriptParser::Scn_varContext* ExplorerScriptParser::Assignment_resetCont
 
 size_t ExplorerScriptParser::Assignment_resetContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_reset;
-}
-
-void ExplorerScriptParser::Assignment_resetContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_reset(this);
-}
-
-void ExplorerScriptParser::Assignment_resetContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_reset(this);
 }
 
 
@@ -4514,18 +4045,6 @@ size_t ExplorerScriptParser::Assignment_adv_logContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_adv_log;
 }
 
-void ExplorerScriptParser::Assignment_adv_logContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_adv_log(this);
-}
-
-void ExplorerScriptParser::Assignment_adv_logContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_adv_log(this);
-}
-
 
 std::any ExplorerScriptParser::Assignment_adv_logContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4597,18 +4116,6 @@ tree::TerminalNode* ExplorerScriptParser::Assignment_dungeon_modeContext::ASSIGN
 
 size_t ExplorerScriptParser::Assignment_dungeon_modeContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_dungeon_mode;
-}
-
-void ExplorerScriptParser::Assignment_dungeon_modeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_dungeon_mode(this);
-}
-
-void ExplorerScriptParser::Assignment_dungeon_modeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_dungeon_mode(this);
 }
 
 
@@ -4698,18 +4205,6 @@ size_t ExplorerScriptParser::Assignment_scnContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssignment_scn;
 }
 
-void ExplorerScriptParser::Assignment_scnContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssignment_scn(this);
-}
-
-void ExplorerScriptParser::Assignment_scnContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssignment_scn(this);
-}
-
 
 std::any ExplorerScriptParser::Assignment_scnContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4785,18 +4280,6 @@ size_t ExplorerScriptParser::Value_ofContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleValue_of;
 }
 
-void ExplorerScriptParser::Value_ofContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterValue_of(this);
-}
-
-void ExplorerScriptParser::Value_ofContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitValue_of(this);
-}
-
 
 std::any ExplorerScriptParser::Value_ofContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -4862,18 +4345,6 @@ tree::TerminalNode* ExplorerScriptParser::Scn_varContext::CLOSE_PAREN() {
 
 size_t ExplorerScriptParser::Scn_varContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleScn_var;
-}
-
-void ExplorerScriptParser::Scn_varContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterScn_var(this);
-}
-
-void ExplorerScriptParser::Scn_varContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitScn_var(this);
 }
 
 
@@ -4971,18 +4442,6 @@ size_t ExplorerScriptParser::Conditional_operatorContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleConditional_operator;
 }
 
-void ExplorerScriptParser::Conditional_operatorContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterConditional_operator(this);
-}
-
-void ExplorerScriptParser::Conditional_operatorContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitConditional_operator(this);
-}
-
 
 std::any ExplorerScriptParser::Conditional_operatorContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5057,18 +4516,6 @@ size_t ExplorerScriptParser::Assign_operatorContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleAssign_operator;
 }
 
-void ExplorerScriptParser::Assign_operatorContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterAssign_operator(this);
-}
-
-void ExplorerScriptParser::Assign_operatorContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitAssign_operator(this);
-}
-
 
 std::any ExplorerScriptParser::Assign_operatorContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5133,18 +4580,6 @@ ExplorerScriptParser::For_target_defContext* ExplorerScriptParser::FuncdefContex
 
 size_t ExplorerScriptParser::FuncdefContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFuncdef;
-}
-
-void ExplorerScriptParser::FuncdefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncdef(this);
-}
-
-void ExplorerScriptParser::FuncdefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncdef(this);
 }
 
 
@@ -5228,18 +4663,6 @@ size_t ExplorerScriptParser::Simple_defContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleSimple_def;
 }
 
-void ExplorerScriptParser::Simple_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSimple_def(this);
-}
-
-void ExplorerScriptParser::Simple_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSimple_def(this);
-}
-
 
 std::any ExplorerScriptParser::Simple_defContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5299,18 +4722,6 @@ ExplorerScriptParser::Func_suiteContext* ExplorerScriptParser::Coro_defContext::
 
 size_t ExplorerScriptParser::Coro_defContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCoro_def;
-}
-
-void ExplorerScriptParser::Coro_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCoro_def(this);
-}
-
-void ExplorerScriptParser::Coro_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCoro_def(this);
 }
 
 
@@ -5388,18 +4799,6 @@ tree::TerminalNode* ExplorerScriptParser::For_target_defContext::CLOSE_PAREN() {
 
 size_t ExplorerScriptParser::For_target_defContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFor_target_def;
-}
-
-void ExplorerScriptParser::For_target_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFor_target_def(this);
-}
-
-void ExplorerScriptParser::For_target_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFor_target_def(this);
 }
 
 
@@ -5488,18 +4887,6 @@ size_t ExplorerScriptParser::Integer_likeContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleInteger_like;
 }
 
-void ExplorerScriptParser::Integer_likeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInteger_like(this);
-}
-
-void ExplorerScriptParser::Integer_likeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInteger_like(this);
-}
-
 
 std::any ExplorerScriptParser::Integer_likeContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5572,18 +4959,6 @@ ExplorerScriptParser::ArglistContext* ExplorerScriptParser::OperationContext::ar
 
 size_t ExplorerScriptParser::OperationContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleOperation;
-}
-
-void ExplorerScriptParser::OperationContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterOperation(this);
-}
-
-void ExplorerScriptParser::OperationContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitOperation(this);
 }
 
 
@@ -5665,18 +5040,6 @@ size_t ExplorerScriptParser::Inline_ctxContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleInline_ctx;
 }
 
-void ExplorerScriptParser::Inline_ctxContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInline_ctx(this);
-}
-
-void ExplorerScriptParser::Inline_ctxContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInline_ctx(this);
-}
-
 
 std::any ExplorerScriptParser::Inline_ctxContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5744,18 +5107,6 @@ ExplorerScriptParser::StmtContext* ExplorerScriptParser::Func_suiteContext::stmt
 
 size_t ExplorerScriptParser::Func_suiteContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFunc_suite;
-}
-
-void ExplorerScriptParser::Func_suiteContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunc_suite(this);
-}
-
-void ExplorerScriptParser::Func_suiteContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunc_suite(this);
 }
 
 
@@ -5869,18 +5220,6 @@ size_t ExplorerScriptParser::Func_aliasContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFunc_alias;
 }
 
-void ExplorerScriptParser::Func_aliasContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunc_alias(this);
-}
-
-void ExplorerScriptParser::Func_aliasContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunc_alias(this);
-}
-
 
 std::any ExplorerScriptParser::Func_aliasContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -5944,18 +5283,6 @@ tree::TerminalNode* ExplorerScriptParser::ArglistContext::COMMA(size_t i) {
 
 size_t ExplorerScriptParser::ArglistContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleArglist;
-}
-
-void ExplorerScriptParser::ArglistContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterArglist(this);
-}
-
-void ExplorerScriptParser::ArglistContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitArglist(this);
 }
 
 
@@ -6037,18 +5364,6 @@ ExplorerScriptParser::Position_markerContext* ExplorerScriptParser::Pos_argument
 
 size_t ExplorerScriptParser::Pos_argumentContext::getRuleIndex() const {
   return ExplorerScriptParser::RulePos_argument;
-}
-
-void ExplorerScriptParser::Pos_argumentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPos_argument(this);
-}
-
-void ExplorerScriptParser::Pos_argumentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPos_argument(this);
 }
 
 
@@ -6157,18 +5472,6 @@ size_t ExplorerScriptParser::Position_markerContext::getRuleIndex() const {
   return ExplorerScriptParser::RulePosition_marker;
 }
 
-void ExplorerScriptParser::Position_markerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPosition_marker(this);
-}
-
-void ExplorerScriptParser::Position_markerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPosition_marker(this);
-}
-
 
 std::any ExplorerScriptParser::Position_markerContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -6234,18 +5537,6 @@ tree::TerminalNode* ExplorerScriptParser::Position_marker_argContext::DECIMAL() 
 
 size_t ExplorerScriptParser::Position_marker_argContext::getRuleIndex() const {
   return ExplorerScriptParser::RulePosition_marker_arg;
-}
-
-void ExplorerScriptParser::Position_marker_argContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPosition_marker_arg(this);
-}
-
-void ExplorerScriptParser::Position_marker_argContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPosition_marker_arg(this);
 }
 
 
@@ -6315,18 +5606,6 @@ size_t ExplorerScriptParser::LabelContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleLabel;
 }
 
-void ExplorerScriptParser::LabelContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLabel(this);
-}
-
-void ExplorerScriptParser::LabelContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLabel(this);
-}
-
 
 std::any ExplorerScriptParser::LabelContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -6390,18 +5669,6 @@ ExplorerScriptParser::Lang_stringContext* ExplorerScriptParser::StringContext::l
 
 size_t ExplorerScriptParser::StringContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleString;
-}
-
-void ExplorerScriptParser::StringContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterString(this);
-}
-
-void ExplorerScriptParser::StringContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitString(this);
 }
 
 
@@ -6491,18 +5758,6 @@ size_t ExplorerScriptParser::Lang_stringContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleLang_string;
 }
 
-void ExplorerScriptParser::Lang_stringContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLang_string(this);
-}
-
-void ExplorerScriptParser::Lang_stringContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLang_string(this);
-}
-
 
 std::any ExplorerScriptParser::Lang_stringContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -6588,18 +5843,6 @@ size_t ExplorerScriptParser::Lang_string_argumentContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleLang_string_argument;
 }
 
-void ExplorerScriptParser::Lang_string_argumentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLang_string_argument(this);
-}
-
-void ExplorerScriptParser::Lang_string_argumentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLang_string_argument(this);
-}
-
 
 std::any ExplorerScriptParser::Lang_string_argumentContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -6655,18 +5898,6 @@ tree::TerminalNode* ExplorerScriptParser::String_valueContext::STRING_LITERAL() 
 
 size_t ExplorerScriptParser::String_valueContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleString_value;
-}
-
-void ExplorerScriptParser::String_valueContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterString_value(this);
-}
-
-void ExplorerScriptParser::String_valueContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitString_value(this);
 }
 
 
@@ -6732,18 +5963,6 @@ size_t ExplorerScriptParser::Ctx_headerContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleCtx_header;
 }
 
-void ExplorerScriptParser::Ctx_headerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCtx_header(this);
-}
-
-void ExplorerScriptParser::Ctx_headerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCtx_header(this);
-}
-
 
 std::any ExplorerScriptParser::Ctx_headerContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<ExplorerScriptVisitor*>(visitor))
@@ -6801,18 +6020,6 @@ tree::TerminalNode* ExplorerScriptParser::For_target_def_targetContext::FOR_TARG
 
 size_t ExplorerScriptParser::For_target_def_targetContext::getRuleIndex() const {
   return ExplorerScriptParser::RuleFor_target_def_target;
-}
-
-void ExplorerScriptParser::For_target_def_targetContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFor_target_def_target(this);
-}
-
-void ExplorerScriptParser::For_target_def_targetContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<ExplorerScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFor_target_def_target(this);
 }
 
 

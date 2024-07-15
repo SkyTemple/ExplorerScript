@@ -2,7 +2,7 @@
 // Generated from SsbScript.g4 by ANTLR 4.13.0
 
 
-#include "SsbScriptListener.h"
+#include "SsbScriptVisitor.h"
 
 #include "SsbScriptParser.h"
 
@@ -206,16 +206,12 @@ size_t SsbScriptParser::Pos_argumentContext::getRuleIndex() const {
   return SsbScriptParser::RulePos_argument;
 }
 
-void SsbScriptParser::Pos_argumentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPos_argument(this);
-}
 
-void SsbScriptParser::Pos_argumentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPos_argument(this);
+std::any SsbScriptParser::Pos_argumentContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitPos_argument(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Pos_argumentContext* SsbScriptParser::pos_argument() {
@@ -299,16 +295,12 @@ size_t SsbScriptParser::Jump_markerContext::getRuleIndex() const {
   return SsbScriptParser::RuleJump_marker;
 }
 
-void SsbScriptParser::Jump_markerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterJump_marker(this);
-}
 
-void SsbScriptParser::Jump_markerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitJump_marker(this);
+std::any SsbScriptParser::Jump_markerContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitJump_marker(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Jump_markerContext* SsbScriptParser::jump_marker() {
@@ -362,16 +354,12 @@ size_t SsbScriptParser::StartContext::getRuleIndex() const {
   return SsbScriptParser::RuleStart;
 }
 
-void SsbScriptParser::StartContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStart(this);
-}
 
-void SsbScriptParser::StartContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStart(this);
+std::any SsbScriptParser::StartContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitStart(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::StartContext* SsbScriptParser::start() {
@@ -436,16 +424,12 @@ size_t SsbScriptParser::FuncdefContext::getRuleIndex() const {
   return SsbScriptParser::RuleFuncdef;
 }
 
-void SsbScriptParser::FuncdefContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFuncdef(this);
-}
 
-void SsbScriptParser::FuncdefContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFuncdef(this);
+std::any SsbScriptParser::FuncdefContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitFuncdef(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::FuncdefContext* SsbScriptParser::funcdef() {
@@ -521,16 +505,12 @@ size_t SsbScriptParser::Simple_defContext::getRuleIndex() const {
   return SsbScriptParser::RuleSimple_def;
 }
 
-void SsbScriptParser::Simple_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterSimple_def(this);
-}
 
-void SsbScriptParser::Simple_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitSimple_def(this);
+std::any SsbScriptParser::Simple_defContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitSimple_def(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Simple_defContext* SsbScriptParser::simple_def() {
@@ -586,16 +566,12 @@ size_t SsbScriptParser::Coro_defContext::getRuleIndex() const {
   return SsbScriptParser::RuleCoro_def;
 }
 
-void SsbScriptParser::Coro_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCoro_def(this);
-}
 
-void SsbScriptParser::Coro_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCoro_def(this);
+std::any SsbScriptParser::Coro_defContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitCoro_def(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Coro_defContext* SsbScriptParser::coro_def() {
@@ -667,16 +643,12 @@ size_t SsbScriptParser::For_target_defContext::getRuleIndex() const {
   return SsbScriptParser::RuleFor_target_def;
 }
 
-void SsbScriptParser::For_target_defContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFor_target_def(this);
-}
 
-void SsbScriptParser::For_target_defContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFor_target_def(this);
+std::any SsbScriptParser::For_target_defContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitFor_target_def(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::For_target_defContext* SsbScriptParser::for_target_def() {
@@ -757,16 +729,12 @@ size_t SsbScriptParser::Integer_likeContext::getRuleIndex() const {
   return SsbScriptParser::RuleInteger_like;
 }
 
-void SsbScriptParser::Integer_likeContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInteger_like(this);
-}
 
-void SsbScriptParser::Integer_likeContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInteger_like(this);
+std::any SsbScriptParser::Integer_likeContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitInteger_like(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Integer_likeContext* SsbScriptParser::integer_like() {
@@ -823,16 +791,12 @@ size_t SsbScriptParser::StmtContext::getRuleIndex() const {
   return SsbScriptParser::RuleStmt;
 }
 
-void SsbScriptParser::StmtContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterStmt(this);
-}
 
-void SsbScriptParser::StmtContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitStmt(this);
+std::any SsbScriptParser::StmtContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitStmt(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::StmtContext* SsbScriptParser::stmt() {
@@ -911,16 +875,12 @@ size_t SsbScriptParser::OperationContext::getRuleIndex() const {
   return SsbScriptParser::RuleOperation;
 }
 
-void SsbScriptParser::OperationContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterOperation(this);
-}
 
-void SsbScriptParser::OperationContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitOperation(this);
+std::any SsbScriptParser::OperationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitOperation(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::OperationContext* SsbScriptParser::operation() {
@@ -994,16 +954,12 @@ size_t SsbScriptParser::Inline_ctxContext::getRuleIndex() const {
   return SsbScriptParser::RuleInline_ctx;
 }
 
-void SsbScriptParser::Inline_ctxContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterInline_ctx(this);
-}
 
-void SsbScriptParser::Inline_ctxContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitInline_ctx(this);
+std::any SsbScriptParser::Inline_ctxContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitInline_ctx(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Inline_ctxContext* SsbScriptParser::inline_ctx() {
@@ -1067,16 +1023,12 @@ size_t SsbScriptParser::Func_suiteContext::getRuleIndex() const {
   return SsbScriptParser::RuleFunc_suite;
 }
 
-void SsbScriptParser::Func_suiteContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunc_suite(this);
-}
 
-void SsbScriptParser::Func_suiteContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunc_suite(this);
+std::any SsbScriptParser::Func_suiteContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitFunc_suite(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Func_suiteContext* SsbScriptParser::func_suite() {
@@ -1156,16 +1108,12 @@ size_t SsbScriptParser::Func_aliasContext::getRuleIndex() const {
   return SsbScriptParser::RuleFunc_alias;
 }
 
-void SsbScriptParser::Func_aliasContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFunc_alias(this);
-}
 
-void SsbScriptParser::Func_aliasContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFunc_alias(this);
+std::any SsbScriptParser::Func_aliasContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitFunc_alias(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Func_aliasContext* SsbScriptParser::func_alias() {
@@ -1225,16 +1173,12 @@ size_t SsbScriptParser::ArglistContext::getRuleIndex() const {
   return SsbScriptParser::RuleArglist;
 }
 
-void SsbScriptParser::ArglistContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterArglist(this);
-}
 
-void SsbScriptParser::ArglistContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitArglist(this);
+std::any SsbScriptParser::ArglistContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitArglist(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::ArglistContext* SsbScriptParser::arglist() {
@@ -1330,16 +1274,12 @@ size_t SsbScriptParser::Position_markerContext::getRuleIndex() const {
   return SsbScriptParser::RulePosition_marker;
 }
 
-void SsbScriptParser::Position_markerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPosition_marker(this);
-}
 
-void SsbScriptParser::Position_markerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPosition_marker(this);
+std::any SsbScriptParser::Position_markerContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitPosition_marker(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Position_markerContext* SsbScriptParser::position_marker() {
@@ -1401,16 +1341,12 @@ size_t SsbScriptParser::Position_marker_argContext::getRuleIndex() const {
   return SsbScriptParser::RulePosition_marker_arg;
 }
 
-void SsbScriptParser::Position_marker_argContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterPosition_marker_arg(this);
-}
 
-void SsbScriptParser::Position_marker_argContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitPosition_marker_arg(this);
+std::any SsbScriptParser::Position_marker_argContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitPosition_marker_arg(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Position_marker_argContext* SsbScriptParser::position_marker_arg() {
@@ -1472,16 +1408,12 @@ size_t SsbScriptParser::LabelContext::getRuleIndex() const {
   return SsbScriptParser::RuleLabel;
 }
 
-void SsbScriptParser::LabelContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLabel(this);
-}
 
-void SsbScriptParser::LabelContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLabel(this);
+std::any SsbScriptParser::LabelContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitLabel(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::LabelContext* SsbScriptParser::label() {
@@ -1541,16 +1473,12 @@ size_t SsbScriptParser::StringContext::getRuleIndex() const {
   return SsbScriptParser::RuleString;
 }
 
-void SsbScriptParser::StringContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterString(this);
-}
 
-void SsbScriptParser::StringContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitString(this);
+std::any SsbScriptParser::StringContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitString(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::StringContext* SsbScriptParser::string() {
@@ -1632,16 +1560,12 @@ size_t SsbScriptParser::Lang_stringContext::getRuleIndex() const {
   return SsbScriptParser::RuleLang_string;
 }
 
-void SsbScriptParser::Lang_stringContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLang_string(this);
-}
 
-void SsbScriptParser::Lang_stringContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLang_string(this);
+std::any SsbScriptParser::Lang_stringContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitLang_string(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Lang_stringContext* SsbScriptParser::lang_string() {
@@ -1721,16 +1645,12 @@ size_t SsbScriptParser::Lang_string_argumentContext::getRuleIndex() const {
   return SsbScriptParser::RuleLang_string_argument;
 }
 
-void SsbScriptParser::Lang_string_argumentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterLang_string_argument(this);
-}
 
-void SsbScriptParser::Lang_string_argumentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitLang_string_argument(this);
+std::any SsbScriptParser::Lang_string_argumentContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitLang_string_argument(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Lang_string_argumentContext* SsbScriptParser::lang_string_argument() {
@@ -1782,16 +1702,12 @@ size_t SsbScriptParser::String_valueContext::getRuleIndex() const {
   return SsbScriptParser::RuleString_value;
 }
 
-void SsbScriptParser::String_valueContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterString_value(this);
-}
 
-void SsbScriptParser::String_valueContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitString_value(this);
+std::any SsbScriptParser::String_valueContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitString_value(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::String_valueContext* SsbScriptParser::string_value() {
@@ -1849,16 +1765,12 @@ size_t SsbScriptParser::Ctx_headerContext::getRuleIndex() const {
   return SsbScriptParser::RuleCtx_header;
 }
 
-void SsbScriptParser::Ctx_headerContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterCtx_header(this);
-}
 
-void SsbScriptParser::Ctx_headerContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitCtx_header(this);
+std::any SsbScriptParser::Ctx_headerContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitCtx_header(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::Ctx_headerContext* SsbScriptParser::ctx_header() {
@@ -1912,16 +1824,12 @@ size_t SsbScriptParser::For_target_def_targetContext::getRuleIndex() const {
   return SsbScriptParser::RuleFor_target_def_target;
 }
 
-void SsbScriptParser::For_target_def_targetContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterFor_target_def_target(this);
-}
 
-void SsbScriptParser::For_target_def_targetContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<SsbScriptListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitFor_target_def_target(this);
+std::any SsbScriptParser::For_target_def_targetContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
+    return parserVisitor->visitFor_target_def_target(this);
+  else
+    return visitor->visitChildren(this);
 }
 
 SsbScriptParser::For_target_def_targetContext* SsbScriptParser::for_target_def_target() {

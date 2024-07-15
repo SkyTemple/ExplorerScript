@@ -811,8 +811,6 @@ py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m, "Ex
     .def("macrodef", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::macrodef))
     .def("funcdef", py::overload_cast<>(&ExplorerScriptParser::StartContext::funcdef))
     .def("funcdef", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::funcdef))
-    .def("enterRule", &ExplorerScriptParser::StartContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::StartContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::StartContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Import_stmtContext")
@@ -822,8 +820,6 @@ py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(
     .def("getRuleIndex", &ExplorerScriptParser::Import_stmtContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("IMPORT", &ExplorerScriptParser::Import_stmtContext::IMPORT, py::return_value_policy::automatic_reference)
     .def("STRING_LITERAL", &ExplorerScriptParser::Import_stmtContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Import_stmtContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Import_stmtContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Import_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::MacrodefContext")
@@ -840,8 +836,6 @@ py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m, 
     .def("VARIABLE", py::overload_cast<size_t>(&ExplorerScriptParser::MacrodefContext::VARIABLE))
     .def("COMMA", py::overload_cast<>(&ExplorerScriptParser::MacrodefContext::COMMA))
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::MacrodefContext::COMMA))
-    .def("enterRule", &ExplorerScriptParser::MacrodefContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::MacrodefContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::MacrodefContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StmtContext")
@@ -858,8 +852,6 @@ py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "Exp
     .def("for_block", &ExplorerScriptParser::StmtContext::for_block, py::return_value_policy::automatic_reference)
     .def("while_block", &ExplorerScriptParser::StmtContext::while_block, py::return_value_policy::automatic_reference)
     .def("macro_call", &ExplorerScriptParser::StmtContext::macro_call, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::StmtContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::StmtContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::StmtContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Simple_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Simple_stmtContext")
@@ -873,8 +865,6 @@ py::class_<ExplorerScriptParser::Simple_stmtContext, antlr4::ParserRuleContext>(
     .def("jump", &ExplorerScriptParser::Simple_stmtContext::jump, py::return_value_policy::automatic_reference)
     .def("call", &ExplorerScriptParser::Simple_stmtContext::call, py::return_value_policy::automatic_reference)
     .def("assignment", &ExplorerScriptParser::Simple_stmtContext::assignment, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Simple_stmtContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Simple_stmtContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Simple_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Cntrl_stmtContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Cntrl_stmtContext")
@@ -888,8 +878,6 @@ py::class_<ExplorerScriptParser::Cntrl_stmtContext, antlr4::ParserRuleContext>(m
     .def("CONTINUE", &ExplorerScriptParser::Cntrl_stmtContext::CONTINUE, py::return_value_policy::automatic_reference)
     .def("BREAK", &ExplorerScriptParser::Cntrl_stmtContext::BREAK, py::return_value_policy::automatic_reference)
     .def("BREAK_LOOP", &ExplorerScriptParser::Cntrl_stmtContext::BREAK_LOOP, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Cntrl_stmtContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Cntrl_stmtContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Cntrl_stmtContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::JumpContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::JumpContext")
@@ -900,8 +888,6 @@ py::class_<ExplorerScriptParser::JumpContext, antlr4::ParserRuleContext>(m, "Exp
     .def("JUMP", &ExplorerScriptParser::JumpContext::JUMP, py::return_value_policy::automatic_reference)
     .def("AT", &ExplorerScriptParser::JumpContext::AT, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::JumpContext::IDENTIFIER, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::JumpContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::JumpContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::JumpContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::CallContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::CallContext")
@@ -912,8 +898,6 @@ py::class_<ExplorerScriptParser::CallContext, antlr4::ParserRuleContext>(m, "Exp
     .def("CALL", &ExplorerScriptParser::CallContext::CALL, py::return_value_policy::automatic_reference)
     .def("AT", &ExplorerScriptParser::CallContext::AT, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::CallContext::IDENTIFIER, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::CallContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::CallContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::CallContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Macro_callContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Macro_callContext")
@@ -925,8 +909,6 @@ py::class_<ExplorerScriptParser::Macro_callContext, antlr4::ParserRuleContext>(m
     .def("OPEN_PAREN", &ExplorerScriptParser::Macro_callContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Macro_callContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("arglist", &ExplorerScriptParser::Macro_callContext::arglist, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Macro_callContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Macro_callContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Macro_callContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Ctx_blockContext")
@@ -941,8 +923,6 @@ py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m,
     .def("OPEN_BRACE", &ExplorerScriptParser::Ctx_blockContext::OPEN_BRACE, py::return_value_policy::automatic_reference)
     .def("simple_stmt", &ExplorerScriptParser::Ctx_blockContext::simple_stmt, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACE", &ExplorerScriptParser::Ctx_blockContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Ctx_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Ctx_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Ctx_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_blockContext")
@@ -965,8 +945,6 @@ py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m, 
     .def("elseif_block", py::overload_cast<>(&ExplorerScriptParser::If_blockContext::elseif_block))
     .def("elseif_block", py::overload_cast<size_t>(&ExplorerScriptParser::If_blockContext::elseif_block))
     .def("else_block", &ExplorerScriptParser::If_blockContext::else_block, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Elseif_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Elseif_blockContext")
@@ -986,8 +964,6 @@ py::class_<ExplorerScriptParser::Elseif_blockContext, antlr4::ParserRuleContext>
     .def("OR", py::overload_cast<size_t>(&ExplorerScriptParser::Elseif_blockContext::OR))
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Elseif_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Elseif_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::Elseif_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Elseif_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Elseif_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Else_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Else_blockContext")
@@ -1000,8 +976,6 @@ py::class_<ExplorerScriptParser::Else_blockContext, antlr4::ParserRuleContext>(m
     .def("CLOSE_BRACE", &ExplorerScriptParser::Else_blockContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Else_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Else_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::Else_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Else_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Else_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_headerContext")
@@ -1014,8 +988,6 @@ py::class_<ExplorerScriptParser::If_headerContext, antlr4::ParserRuleContext>(m,
     .def("if_h_negatable", &ExplorerScriptParser::If_headerContext::if_h_negatable, py::return_value_policy::automatic_reference)
     .def("if_h_scn", &ExplorerScriptParser::If_headerContext::if_h_scn, py::return_value_policy::automatic_reference)
     .def("operation", &ExplorerScriptParser::If_headerContext::operation, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_headerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_headerContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_h_negatableContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_negatableContext")
@@ -1027,8 +999,6 @@ py::class_<ExplorerScriptParser::If_h_negatableContext, antlr4::ParserRuleContex
     .def("EDIT", &ExplorerScriptParser::If_h_negatableContext::EDIT, py::return_value_policy::automatic_reference)
     .def("VARIATION", &ExplorerScriptParser::If_h_negatableContext::VARIATION, py::return_value_policy::automatic_reference)
     .def("NOT", &ExplorerScriptParser::If_h_negatableContext::NOT, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_h_negatableContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_h_negatableContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_negatableContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_opContext")
@@ -1040,8 +1010,6 @@ py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m, "
     .def("integer_like", py::overload_cast<size_t>(&ExplorerScriptParser::If_h_opContext::integer_like))
     .def("conditional_operator", &ExplorerScriptParser::If_h_opContext::conditional_operator, py::return_value_policy::automatic_reference)
     .def("value_of", &ExplorerScriptParser::If_h_opContext::value_of, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_h_opContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_h_opContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_opContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_bitContext")
@@ -1054,8 +1022,6 @@ py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m, 
     .def("INTEGER", &ExplorerScriptParser::If_h_bitContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::If_h_bitContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
     .def("NOT", &ExplorerScriptParser::If_h_bitContext::NOT, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_h_bitContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_h_bitContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_bitContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::If_h_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::If_h_scnContext")
@@ -1070,8 +1036,6 @@ py::class_<ExplorerScriptParser::If_h_scnContext, antlr4::ParserRuleContext>(m, 
     .def("INTEGER", py::overload_cast<size_t>(&ExplorerScriptParser::If_h_scnContext::INTEGER))
     .def("COMMA", &ExplorerScriptParser::If_h_scnContext::COMMA, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::If_h_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::If_h_scnContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::If_h_scnContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::If_h_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_blockContext")
@@ -1089,8 +1053,6 @@ py::class_<ExplorerScriptParser::Switch_blockContext, antlr4::ParserRuleContext>
     .def("default_", py::overload_cast<size_t>(&ExplorerScriptParser::Switch_blockContext::default_))
     .def("single_case_block", py::overload_cast<>(&ExplorerScriptParser::Switch_blockContext::single_case_block))
     .def("single_case_block", py::overload_cast<size_t>(&ExplorerScriptParser::Switch_blockContext::single_case_block))
-    .def("enterRule", &ExplorerScriptParser::Switch_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Message_switch_blockContext")
@@ -1109,8 +1071,6 @@ py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRule
     .def("default_", py::overload_cast<size_t>(&ExplorerScriptParser::Message_switch_blockContext::default_))
     .def("single_case_block", py::overload_cast<>(&ExplorerScriptParser::Message_switch_blockContext::single_case_block))
     .def("single_case_block", py::overload_cast<size_t>(&ExplorerScriptParser::Message_switch_blockContext::single_case_block))
-    .def("enterRule", &ExplorerScriptParser::Message_switch_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Message_switch_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Message_switch_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Single_case_blockContext")
@@ -1124,8 +1084,6 @@ py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleCon
     .def("string", &ExplorerScriptParser::Single_case_blockContext::string, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Single_case_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Single_case_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::Single_case_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Single_case_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Single_case_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::DefaultContext")
@@ -1138,8 +1096,6 @@ py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m, "
     .def("string", &ExplorerScriptParser::DefaultContext::string, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::DefaultContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::DefaultContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::DefaultContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::DefaultContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::DefaultContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_headerContext")
@@ -1153,8 +1109,6 @@ py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext
     .def("switch_h_random", &ExplorerScriptParser::Switch_headerContext::switch_h_random, py::return_value_policy::automatic_reference)
     .def("switch_h_dungeon_mode", &ExplorerScriptParser::Switch_headerContext::switch_h_dungeon_mode, py::return_value_policy::automatic_reference)
     .def("switch_h_sector", &ExplorerScriptParser::Switch_headerContext::switch_h_sector, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Switch_headerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_headerContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_h_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_scnContext")
@@ -1166,8 +1120,6 @@ py::class_<ExplorerScriptParser::Switch_h_scnContext, antlr4::ParserRuleContext>
     .def("OPEN_BRACKET", &ExplorerScriptParser::Switch_h_scnContext::OPEN_BRACKET, py::return_value_policy::automatic_reference)
     .def("INTEGER", &ExplorerScriptParser::Switch_h_scnContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Switch_h_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Switch_h_scnContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_h_scnContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_randomContext")
@@ -1179,8 +1131,6 @@ py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleConte
     .def("OPEN_PAREN", &ExplorerScriptParser::Switch_h_randomContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Switch_h_randomContext::integer_like, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_randomContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Switch_h_randomContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_h_randomContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_randomContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_dungeon_modeContext")
@@ -1192,8 +1142,6 @@ py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRul
     .def("OPEN_PAREN", &ExplorerScriptParser::Switch_h_dungeon_modeContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Switch_h_dungeon_modeContext::integer_like, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_dungeon_modeContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Switch_h_dungeon_modeContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_h_dungeon_modeContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_dungeon_modeContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Switch_h_sectorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Switch_h_sectorContext")
@@ -1204,8 +1152,6 @@ py::class_<ExplorerScriptParser::Switch_h_sectorContext, antlr4::ParserRuleConte
     .def("SECTOR", &ExplorerScriptParser::Switch_h_sectorContext::SECTOR, py::return_value_policy::automatic_reference)
     .def("OPEN_PAREN", &ExplorerScriptParser::Switch_h_sectorContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_sectorContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Switch_h_sectorContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Switch_h_sectorContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Switch_h_sectorContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_headerContext")
@@ -1217,8 +1163,6 @@ py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(
     .def("case_h_menu", &ExplorerScriptParser::Case_headerContext::case_h_menu, py::return_value_policy::automatic_reference)
     .def("case_h_menu2", &ExplorerScriptParser::Case_headerContext::case_h_menu2, py::return_value_policy::automatic_reference)
     .def("case_h_op", &ExplorerScriptParser::Case_headerContext::case_h_op, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Case_headerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Case_headerContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_menuContext")
@@ -1230,8 +1174,6 @@ py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(
     .def("OPEN_PAREN", &ExplorerScriptParser::Case_h_menuContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("string", &ExplorerScriptParser::Case_h_menuContext::string, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menuContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Case_h_menuContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Case_h_menuContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_menuContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_menu2Context")
@@ -1243,8 +1185,6 @@ py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>
     .def("OPEN_PAREN", &ExplorerScriptParser::Case_h_menu2Context::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Case_h_menu2Context::integer_like, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menu2Context::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Case_h_menu2Context::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Case_h_menu2Context::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_menu2Context::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Case_h_opContext")
@@ -1255,8 +1195,6 @@ py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m,
     .def("conditional_operator", &ExplorerScriptParser::Case_h_opContext::conditional_operator, py::return_value_policy::automatic_reference)
     .def("value_of", &ExplorerScriptParser::Case_h_opContext::value_of, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Case_h_opContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Case_h_opContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Case_h_opContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Case_h_opContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Forever_blockContext")
@@ -1269,8 +1207,6 @@ py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext
     .def("CLOSE_BRACE", &ExplorerScriptParser::Forever_blockContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Forever_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Forever_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::Forever_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Forever_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Forever_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::For_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_blockContext")
@@ -1288,8 +1224,6 @@ py::class_<ExplorerScriptParser::For_blockContext, antlr4::ParserRuleContext>(m,
     .def("CLOSE_BRACE", &ExplorerScriptParser::For_blockContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::For_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::For_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::For_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::For_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::For_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::While_blockContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::While_blockContext")
@@ -1306,8 +1240,6 @@ py::class_<ExplorerScriptParser::While_blockContext, antlr4::ParserRuleContext>(
     .def("NOT", &ExplorerScriptParser::While_blockContext::NOT, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::While_blockContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::While_blockContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::While_blockContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::While_blockContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::While_blockContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::AssignmentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::AssignmentContext")
@@ -1322,8 +1254,6 @@ py::class_<ExplorerScriptParser::AssignmentContext, antlr4::ParserRuleContext>(m
     .def("assignment_adv_log", &ExplorerScriptParser::AssignmentContext::assignment_adv_log, py::return_value_policy::automatic_reference)
     .def("assignment_dungeon_mode", &ExplorerScriptParser::AssignmentContext::assignment_dungeon_mode, py::return_value_policy::automatic_reference)
     .def("assignment_scn", &ExplorerScriptParser::AssignmentContext::assignment_scn, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::AssignmentContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::AssignmentContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::AssignmentContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_regularContext")
@@ -1338,8 +1268,6 @@ py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleCo
     .def("OPEN_BRACKET", &ExplorerScriptParser::Assignment_regularContext::OPEN_BRACKET, py::return_value_policy::automatic_reference)
     .def("INTEGER", &ExplorerScriptParser::Assignment_regularContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Assignment_regularContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_regularContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_regularContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_regularContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_clearContext")
@@ -1349,8 +1277,6 @@ py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleCont
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_clearContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("CLEAR", &ExplorerScriptParser::Assignment_clearContext::CLEAR, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Assignment_clearContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_clearContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_clearContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_clearContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_initialContext")
@@ -1360,8 +1286,6 @@ py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleCo
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_initialContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("INIT", &ExplorerScriptParser::Assignment_initialContext::INIT, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Assignment_initialContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_initialContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_initialContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_initialContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_resetContext")
@@ -1372,8 +1296,6 @@ py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleCont
     .def("RESET", &ExplorerScriptParser::Assignment_resetContext::RESET, py::return_value_policy::automatic_reference)
     .def("DUNGEON_RESULT", &ExplorerScriptParser::Assignment_resetContext::DUNGEON_RESULT, py::return_value_policy::automatic_reference)
     .def("scn_var", &ExplorerScriptParser::Assignment_resetContext::scn_var, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_resetContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_resetContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_resetContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_adv_logContext")
@@ -1384,8 +1306,6 @@ py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleCo
     .def("ADVENTURE_LOG", &ExplorerScriptParser::Assignment_adv_logContext::ADVENTURE_LOG, py::return_value_policy::automatic_reference)
     .def("ASSIGN", &ExplorerScriptParser::Assignment_adv_logContext::ASSIGN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Assignment_adv_logContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_adv_logContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_adv_logContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_adv_logContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_dungeon_modeContext")
@@ -1399,8 +1319,6 @@ py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserR
     .def("integer_like", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_dungeon_modeContext::integer_like))
     .def("CLOSE_PAREN", &ExplorerScriptParser::Assignment_dungeon_modeContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("ASSIGN", &ExplorerScriptParser::Assignment_dungeon_modeContext::ASSIGN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_dungeon_modeContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_dungeon_modeContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_dungeon_modeContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assignment_scnContext")
@@ -1416,8 +1334,6 @@ py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContex
     .def("INTEGER", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_scnContext::INTEGER))
     .def("COMMA", &ExplorerScriptParser::Assignment_scnContext::COMMA, py::return_value_policy::automatic_reference)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::Assignment_scnContext::CLOSE_BRACKET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assignment_scnContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assignment_scnContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assignment_scnContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Value_ofContext")
@@ -1429,8 +1345,6 @@ py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m, 
     .def("OPEN_PAREN", &ExplorerScriptParser::Value_ofContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Value_ofContext::integer_like, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Value_ofContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Value_ofContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Value_ofContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Value_ofContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Scn_varContext")
@@ -1442,8 +1356,6 @@ py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m, "
     .def("OPEN_PAREN", &ExplorerScriptParser::Scn_varContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Scn_varContext::integer_like, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Scn_varContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Scn_varContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Scn_varContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Scn_varContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Conditional_operatorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Conditional_operatorContext")
@@ -1462,8 +1374,6 @@ py::class_<ExplorerScriptParser::Conditional_operatorContext, antlr4::ParserRule
     .def("OP_AND", &ExplorerScriptParser::Conditional_operatorContext::OP_AND, py::return_value_policy::automatic_reference)
     .def("OP_XOR", &ExplorerScriptParser::Conditional_operatorContext::OP_XOR, py::return_value_policy::automatic_reference)
     .def("OP_BICH", &ExplorerScriptParser::Conditional_operatorContext::OP_BICH, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Conditional_operatorContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Conditional_operatorContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Conditional_operatorContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Assign_operatorContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Assign_operatorContext")
@@ -1476,8 +1386,6 @@ py::class_<ExplorerScriptParser::Assign_operatorContext, antlr4::ParserRuleConte
     .def("OP_MULTIPLY", &ExplorerScriptParser::Assign_operatorContext::OP_MULTIPLY, py::return_value_policy::automatic_reference)
     .def("OP_DIVIDE", &ExplorerScriptParser::Assign_operatorContext::OP_DIVIDE, py::return_value_policy::automatic_reference)
     .def("ASSIGN", &ExplorerScriptParser::Assign_operatorContext::ASSIGN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Assign_operatorContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Assign_operatorContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Assign_operatorContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::FuncdefContext")
@@ -1488,8 +1396,6 @@ py::class_<ExplorerScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "
     .def("coro_def", &ExplorerScriptParser::FuncdefContext::coro_def, py::return_value_policy::automatic_reference)
     .def("simple_def", &ExplorerScriptParser::FuncdefContext::simple_def, py::return_value_policy::automatic_reference)
     .def("for_target_def", &ExplorerScriptParser::FuncdefContext::for_target_def, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::FuncdefContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::FuncdefContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::FuncdefContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Simple_defContext")
@@ -1500,8 +1406,6 @@ py::class_<ExplorerScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m
     .def("DEF", &ExplorerScriptParser::Simple_defContext::DEF, py::return_value_policy::automatic_reference)
     .def("INTEGER", &ExplorerScriptParser::Simple_defContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("func_suite", &ExplorerScriptParser::Simple_defContext::func_suite, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Simple_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Simple_defContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Simple_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Coro_defContext")
@@ -1512,8 +1416,6 @@ py::class_<ExplorerScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, 
     .def("CORO", &ExplorerScriptParser::Coro_defContext::CORO, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::Coro_defContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("func_suite", &ExplorerScriptParser::Coro_defContext::func_suite, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Coro_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Coro_defContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Coro_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_target_defContext")
@@ -1528,8 +1430,6 @@ py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContex
     .def("func_suite", &ExplorerScriptParser::For_target_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("OPEN_PAREN", &ExplorerScriptParser::For_target_defContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &ExplorerScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::For_target_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::For_target_defContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::For_target_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Integer_likeContext")
@@ -1541,8 +1441,6 @@ py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>
     .def("INTEGER", &ExplorerScriptParser::Integer_likeContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::Integer_likeContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("VARIABLE", &ExplorerScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Integer_likeContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Integer_likeContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Integer_likeContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::OperationContext")
@@ -1555,8 +1453,6 @@ py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m,
     .def("CLOSE_PAREN", &ExplorerScriptParser::OperationContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("inline_ctx", &ExplorerScriptParser::OperationContext::inline_ctx, py::return_value_policy::automatic_reference)
     .def("arglist", &ExplorerScriptParser::OperationContext::arglist, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::OperationContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::OperationContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::OperationContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Inline_ctxContext")
@@ -1567,8 +1463,6 @@ py::class_<ExplorerScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m
     .def("OPEN_SHARP", &ExplorerScriptParser::Inline_ctxContext::OPEN_SHARP, py::return_value_policy::automatic_reference)
     .def("ctx_header", &ExplorerScriptParser::Inline_ctxContext::ctx_header, py::return_value_policy::automatic_reference)
     .def("CLOSE_SHARP", &ExplorerScriptParser::Inline_ctxContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Inline_ctxContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Inline_ctxContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Inline_ctxContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Func_suiteContext")
@@ -1581,8 +1475,6 @@ py::class_<ExplorerScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m
     .def("func_alias", &ExplorerScriptParser::Func_suiteContext::func_alias, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Func_suiteContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Func_suiteContext::stmt))
-    .def("enterRule", &ExplorerScriptParser::Func_suiteContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Func_suiteContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Func_suiteContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Func_aliasContext")
@@ -1592,8 +1484,6 @@ py::class_<ExplorerScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m
     .def("getRuleIndex", &ExplorerScriptParser::Func_aliasContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("ALIAS", &ExplorerScriptParser::Func_aliasContext::ALIAS, py::return_value_policy::automatic_reference)
     .def("PREVIOUS", &ExplorerScriptParser::Func_aliasContext::PREVIOUS, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Func_aliasContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Func_aliasContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Func_aliasContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::ArglistContext")
@@ -1605,8 +1495,6 @@ py::class_<ExplorerScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "
     .def("pos_argument", py::overload_cast<size_t>(&ExplorerScriptParser::ArglistContext::pos_argument))
     .def("COMMA", py::overload_cast<>(&ExplorerScriptParser::ArglistContext::COMMA))
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::ArglistContext::COMMA))
-    .def("enterRule", &ExplorerScriptParser::ArglistContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::ArglistContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::ArglistContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Pos_argumentContext")
@@ -1617,8 +1505,6 @@ py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>
     .def("integer_like", &ExplorerScriptParser::Pos_argumentContext::integer_like, py::return_value_policy::automatic_reference)
     .def("string", &ExplorerScriptParser::Pos_argumentContext::string, py::return_value_policy::automatic_reference)
     .def("position_marker", &ExplorerScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Pos_argumentContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Pos_argumentContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Pos_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Position_markerContext")
@@ -1634,8 +1520,6 @@ py::class_<ExplorerScriptParser::Position_markerContext, antlr4::ParserRuleConte
     .def("position_marker_arg", py::overload_cast<>(&ExplorerScriptParser::Position_markerContext::position_marker_arg))
     .def("position_marker_arg", py::overload_cast<size_t>(&ExplorerScriptParser::Position_markerContext::position_marker_arg))
     .def("CLOSE_SHARP", &ExplorerScriptParser::Position_markerContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Position_markerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Position_markerContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Position_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Position_marker_argContext")
@@ -1645,8 +1529,6 @@ py::class_<ExplorerScriptParser::Position_marker_argContext, antlr4::ParserRuleC
     .def("getRuleIndex", &ExplorerScriptParser::Position_marker_argContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("INTEGER", &ExplorerScriptParser::Position_marker_argContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("DECIMAL", &ExplorerScriptParser::Position_marker_argContext::DECIMAL, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Position_marker_argContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Position_marker_argContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Position_marker_argContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::LabelContext")
@@ -1657,8 +1539,6 @@ py::class_<ExplorerScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "Ex
     .def("IDENTIFIER", &ExplorerScriptParser::LabelContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("PARAGRAPH", &ExplorerScriptParser::LabelContext::PARAGRAPH, py::return_value_policy::automatic_reference)
     .def("AT", &ExplorerScriptParser::LabelContext::AT, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::LabelContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::LabelContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::LabelContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::StringContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StringContext")
@@ -1668,8 +1548,6 @@ py::class_<ExplorerScriptParser::StringContext, antlr4::ParserRuleContext>(m, "E
     .def("getRuleIndex", &ExplorerScriptParser::StringContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("string_value", &ExplorerScriptParser::StringContext::string_value, py::return_value_policy::automatic_reference)
     .def("lang_string", &ExplorerScriptParser::StringContext::lang_string, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::StringContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::StringContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::StringContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Lang_stringContext")
@@ -1683,8 +1561,6 @@ py::class_<ExplorerScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(
     .def("CLOSE_BRACE", &ExplorerScriptParser::Lang_stringContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("COMMA", py::overload_cast<>(&ExplorerScriptParser::Lang_stringContext::COMMA))
     .def("COMMA", py::overload_cast<size_t>(&ExplorerScriptParser::Lang_stringContext::COMMA))
-    .def("enterRule", &ExplorerScriptParser::Lang_stringContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Lang_stringContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Lang_stringContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Lang_string_argumentContext")
@@ -1695,8 +1571,6 @@ py::class_<ExplorerScriptParser::Lang_string_argumentContext, antlr4::ParserRule
     .def("IDENTIFIER", &ExplorerScriptParser::Lang_string_argumentContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("ASSIGN", &ExplorerScriptParser::Lang_string_argumentContext::ASSIGN, py::return_value_policy::automatic_reference)
     .def("string_value", &ExplorerScriptParser::Lang_string_argumentContext::string_value, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Lang_string_argumentContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Lang_string_argumentContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Lang_string_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::String_valueContext")
@@ -1706,8 +1580,6 @@ py::class_<ExplorerScriptParser::String_valueContext, antlr4::ParserRuleContext>
     .def("getRuleIndex", &ExplorerScriptParser::String_valueContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("MULTILINE_STRING_LITERAL", &ExplorerScriptParser::String_valueContext::MULTILINE_STRING_LITERAL, py::return_value_policy::automatic_reference)
     .def("STRING_LITERAL", &ExplorerScriptParser::String_valueContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::String_valueContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::String_valueContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::String_valueContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::Ctx_headerContext")
@@ -1717,8 +1589,6 @@ py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m
     .def("getRuleIndex", &ExplorerScriptParser::Ctx_headerContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::Ctx_headerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("integer_like", &ExplorerScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::Ctx_headerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::Ctx_headerContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::Ctx_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::For_target_def_targetContext")
@@ -1729,8 +1599,6 @@ py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRul
     .def("FOR", &ExplorerScriptParser::For_target_def_targetContext::FOR, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &ExplorerScriptParser::For_target_def_targetContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("FOR_TARGET", &ExplorerScriptParser::For_target_def_targetContext::FOR_TARGET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &ExplorerScriptParser::For_target_def_targetContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &ExplorerScriptParser::For_target_def_targetContext::exitRule, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::For_target_def_targetContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<ExplorerScriptVisitor, PyExplorerScriptVisitor>(m, "ExplorerScriptVisitor")
@@ -1816,8 +1684,7 @@ py::class_<ExplorerScriptVisitor, PyExplorerScriptVisitor>(m, "ExplorerScriptVis
     .def("string", &SsbScriptParser::Pos_argumentContext::string, py::return_value_policy::automatic_reference)
     .def("position_marker", &SsbScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::automatic_reference)
     .def("jump_marker", &SsbScriptParser::Pos_argumentContext::jump_marker, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Pos_argumentContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Pos_argumentContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Pos_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Jump_markerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1826,8 +1693,7 @@ py::class_<SsbScriptParser::Jump_markerContext, antlr4::ParserRuleContext>(m, "S
     .def("getRuleIndex", &SsbScriptParser::Jump_markerContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("AT", &SsbScriptParser::Jump_markerContext::AT, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &SsbScriptParser::Jump_markerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Jump_markerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Jump_markerContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Jump_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StartContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1837,8 +1703,7 @@ py::class_<SsbScriptParser::StartContext, antlr4::ParserRuleContext>(m, "SsbScri
     .def("EOF", &SsbScriptParser::StartContext::EOF, py::return_value_policy::automatic_reference)
     .def("funcdef", py::overload_cast<>(&SsbScriptParser::StartContext::funcdef))
     .def("funcdef", py::overload_cast<size_t>(&SsbScriptParser::StartContext::funcdef))
-    .def("enterRule", &SsbScriptParser::StartContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::StartContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::StartContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::FuncdefContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1848,8 +1713,7 @@ py::class_<SsbScriptParser::FuncdefContext, antlr4::ParserRuleContext>(m, "SsbSc
     .def("coro_def", &SsbScriptParser::FuncdefContext::coro_def, py::return_value_policy::automatic_reference)
     .def("simple_def", &SsbScriptParser::FuncdefContext::simple_def, py::return_value_policy::automatic_reference)
     .def("for_target_def", &SsbScriptParser::FuncdefContext::for_target_def, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::FuncdefContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::FuncdefContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::FuncdefContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Simple_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1859,8 +1723,7 @@ py::class_<SsbScriptParser::Simple_defContext, antlr4::ParserRuleContext>(m, "Ss
     .def("DEF", &SsbScriptParser::Simple_defContext::DEF, py::return_value_policy::automatic_reference)
     .def("INTEGER", &SsbScriptParser::Simple_defContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("func_suite", &SsbScriptParser::Simple_defContext::func_suite, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Simple_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Simple_defContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Simple_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Coro_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1870,8 +1733,7 @@ py::class_<SsbScriptParser::Coro_defContext, antlr4::ParserRuleContext>(m, "SsbS
     .def("CORO", &SsbScriptParser::Coro_defContext::CORO, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &SsbScriptParser::Coro_defContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("func_suite", &SsbScriptParser::Coro_defContext::func_suite, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Coro_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Coro_defContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Coro_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_defContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1885,8 +1747,7 @@ py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m,
     .def("func_suite", &SsbScriptParser::For_target_defContext::func_suite, py::return_value_policy::automatic_reference)
     .def("OPEN_PAREN", &SsbScriptParser::For_target_defContext::OPEN_PAREN, py::return_value_policy::automatic_reference)
     .def("CLOSE_PAREN", &SsbScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::For_target_defContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::For_target_defContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::For_target_defContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Integer_likeContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1897,8 +1758,7 @@ py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m, "
     .def("INTEGER", &SsbScriptParser::Integer_likeContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &SsbScriptParser::Integer_likeContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("VARIABLE", &SsbScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Integer_likeContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Integer_likeContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Integer_likeContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1907,8 +1767,7 @@ py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m, "SsbScrip
     .def("getRuleIndex", &SsbScriptParser::StmtContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("operation", &SsbScriptParser::StmtContext::operation, py::return_value_policy::automatic_reference)
     .def("label", &SsbScriptParser::StmtContext::label, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::StmtContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::StmtContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::StmtContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::OperationContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1920,8 +1779,7 @@ py::class_<SsbScriptParser::OperationContext, antlr4::ParserRuleContext>(m, "Ssb
     .def("CLOSE_PAREN", &SsbScriptParser::OperationContext::CLOSE_PAREN, py::return_value_policy::automatic_reference)
     .def("inline_ctx", &SsbScriptParser::OperationContext::inline_ctx, py::return_value_policy::automatic_reference)
     .def("arglist", &SsbScriptParser::OperationContext::arglist, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::OperationContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::OperationContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::OperationContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Inline_ctxContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1931,8 +1789,7 @@ py::class_<SsbScriptParser::Inline_ctxContext, antlr4::ParserRuleContext>(m, "Ss
     .def("OPEN_SHARP", &SsbScriptParser::Inline_ctxContext::OPEN_SHARP, py::return_value_policy::automatic_reference)
     .def("ctx_header", &SsbScriptParser::Inline_ctxContext::ctx_header, py::return_value_policy::automatic_reference)
     .def("CLOSE_SHARP", &SsbScriptParser::Inline_ctxContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Inline_ctxContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Inline_ctxContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Inline_ctxContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_suiteContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1944,8 +1801,7 @@ py::class_<SsbScriptParser::Func_suiteContext, antlr4::ParserRuleContext>(m, "Ss
     .def("func_alias", &SsbScriptParser::Func_suiteContext::func_alias, py::return_value_policy::automatic_reference)
     .def("stmt", py::overload_cast<>(&SsbScriptParser::Func_suiteContext::stmt))
     .def("stmt", py::overload_cast<size_t>(&SsbScriptParser::Func_suiteContext::stmt))
-    .def("enterRule", &SsbScriptParser::Func_suiteContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Func_suiteContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Func_suiteContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Func_aliasContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1954,8 +1810,7 @@ py::class_<SsbScriptParser::Func_aliasContext, antlr4::ParserRuleContext>(m, "Ss
     .def("getRuleIndex", &SsbScriptParser::Func_aliasContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("ALIAS", &SsbScriptParser::Func_aliasContext::ALIAS, py::return_value_policy::automatic_reference)
     .def("PREVIOUS", &SsbScriptParser::Func_aliasContext::PREVIOUS, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Func_aliasContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Func_aliasContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Func_aliasContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::ArglistContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1966,8 +1821,7 @@ py::class_<SsbScriptParser::ArglistContext, antlr4::ParserRuleContext>(m, "SsbSc
     .def("pos_argument", py::overload_cast<size_t>(&SsbScriptParser::ArglistContext::pos_argument))
     .def("COMMA", py::overload_cast<>(&SsbScriptParser::ArglistContext::COMMA))
     .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::ArglistContext::COMMA))
-    .def("enterRule", &SsbScriptParser::ArglistContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::ArglistContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::ArglistContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_markerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1982,8 +1836,7 @@ py::class_<SsbScriptParser::Position_markerContext, antlr4::ParserRuleContext>(m
     .def("position_marker_arg", py::overload_cast<>(&SsbScriptParser::Position_markerContext::position_marker_arg))
     .def("position_marker_arg", py::overload_cast<size_t>(&SsbScriptParser::Position_markerContext::position_marker_arg))
     .def("CLOSE_SHARP", &SsbScriptParser::Position_markerContext::CLOSE_SHARP, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Position_markerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Position_markerContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Position_markerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Position_marker_argContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1992,8 +1845,7 @@ py::class_<SsbScriptParser::Position_marker_argContext, antlr4::ParserRuleContex
     .def("getRuleIndex", &SsbScriptParser::Position_marker_argContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("INTEGER", &SsbScriptParser::Position_marker_argContext::INTEGER, py::return_value_policy::automatic_reference)
     .def("DECIMAL", &SsbScriptParser::Position_marker_argContext::DECIMAL, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Position_marker_argContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Position_marker_argContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Position_marker_argContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::LabelContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2003,8 +1855,7 @@ py::class_<SsbScriptParser::LabelContext, antlr4::ParserRuleContext>(m, "SsbScri
     .def("IDENTIFIER", &SsbScriptParser::LabelContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("PARAGRAPH", &SsbScriptParser::LabelContext::PARAGRAPH, py::return_value_policy::automatic_reference)
     .def("AT", &SsbScriptParser::LabelContext::AT, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::LabelContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::LabelContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::LabelContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::StringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2013,8 +1864,7 @@ py::class_<SsbScriptParser::StringContext, antlr4::ParserRuleContext>(m, "SsbScr
     .def("getRuleIndex", &SsbScriptParser::StringContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("string_value", &SsbScriptParser::StringContext::string_value, py::return_value_policy::automatic_reference)
     .def("lang_string", &SsbScriptParser::StringContext::lang_string, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::StringContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::StringContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::StringContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_stringContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2027,8 +1877,7 @@ py::class_<SsbScriptParser::Lang_stringContext, antlr4::ParserRuleContext>(m, "S
     .def("CLOSE_BRACE", &SsbScriptParser::Lang_stringContext::CLOSE_BRACE, py::return_value_policy::automatic_reference)
     .def("COMMA", py::overload_cast<>(&SsbScriptParser::Lang_stringContext::COMMA))
     .def("COMMA", py::overload_cast<size_t>(&SsbScriptParser::Lang_stringContext::COMMA))
-    .def("enterRule", &SsbScriptParser::Lang_stringContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Lang_stringContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Lang_stringContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Lang_string_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2038,8 +1887,7 @@ py::class_<SsbScriptParser::Lang_string_argumentContext, antlr4::ParserRuleConte
     .def("IDENTIFIER", &SsbScriptParser::Lang_string_argumentContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("ASSIGN", &SsbScriptParser::Lang_string_argumentContext::ASSIGN, py::return_value_policy::automatic_reference)
     .def("string_value", &SsbScriptParser::Lang_string_argumentContext::string_value, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Lang_string_argumentContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Lang_string_argumentContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Lang_string_argumentContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::String_valueContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2048,8 +1896,7 @@ py::class_<SsbScriptParser::String_valueContext, antlr4::ParserRuleContext>(m, "
     .def("getRuleIndex", &SsbScriptParser::String_valueContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("MULTILINE_STRING_LITERAL", &SsbScriptParser::String_valueContext::MULTILINE_STRING_LITERAL, py::return_value_policy::automatic_reference)
     .def("STRING_LITERAL", &SsbScriptParser::String_valueContext::STRING_LITERAL, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::String_valueContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::String_valueContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::String_valueContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Ctx_headerContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2058,8 +1905,7 @@ py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m, "Ss
     .def("getRuleIndex", &SsbScriptParser::Ctx_headerContext::getRuleIndex, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &SsbScriptParser::Ctx_headerContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("integer_like", &SsbScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::Ctx_headerContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::Ctx_headerContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::Ctx_headerContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::For_target_def_targetContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -2069,8 +1915,7 @@ py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleCont
     .def("FOR", &SsbScriptParser::For_target_def_targetContext::FOR, py::return_value_policy::automatic_reference)
     .def("IDENTIFIER", &SsbScriptParser::For_target_def_targetContext::IDENTIFIER, py::return_value_policy::automatic_reference)
     .def("FOR_TARGET", &SsbScriptParser::For_target_def_targetContext::FOR_TARGET, py::return_value_policy::automatic_reference)
-    .def("enterRule", &SsbScriptParser::For_target_def_targetContext::enterRule, py::return_value_policy::automatic_reference)
-    .def("exitRule", &SsbScriptParser::For_target_def_targetContext::exitRule, py::return_value_policy::automatic_reference)
+    .def("accept", &SsbScriptParser::For_target_def_targetContext::accept, py::return_value_policy::automatic_reference)
 ;
 py::class_<SsbScriptVisitor, PySsbScriptVisitor>(m, "SsbScriptVisitor")
     .def(py::init<>())
