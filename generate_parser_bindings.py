@@ -85,17 +85,17 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
 
         bindings.append(";")
 
-    bindings.append(f'py::class_<{target}Visitor, Py{target}Visitor>(m, "{target}Visitor")')
+    bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor>(m, "{target}BaseVisitor")')
     bindings.append("    .def(py::init<>())")
-    bindings.append(f'    .def("visitChildren", []({target}Visitor& self, antlr4::tree::ParseTree* node) {{')
+    bindings.append(f'    .def("visitChildren", []({target}BaseVisitor& self, antlr4::tree::ParseTree* node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
-    bindings.append(f'    .def("defaultResult", []({target}Visitor& self) {{')
+    bindings.append(f'    .def("defaultResult", []({target}BaseVisitor& self) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.defaultResult());")
     bindings.append("    }, py::keep_alive<1, 2>())")
     for method in visitor_methods:
         bindings.append(
-            f'    .def("{method["method_name"]}", &{target}Visitor::{method["method_name"]}, py::return_value_policy::reference_internal)'
+            f'    .def("{method["method_name"]}", &{target}BaseVisitor::{method["method_name"]}, py::return_value_policy::reference_internal)'
         )
     bindings.append(";")
 
@@ -118,19 +118,19 @@ def extract_visitor_methods(header_file_content: str) -> list[MethodDef]:
 def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> str:
     trampoline_class = []
 
-    trampoline_class.append(f"class Py{target}Visitor : public {target}Visitor {{")
+    trampoline_class.append(f"class Py{target}BaseVisitor : public {target}BaseVisitor {{")
     trampoline_class.append("public:")
     trampoline_class.append("    /* Inherit the constructors */")
-    trampoline_class.append(f"    using {target}Visitor::{target}Visitor;")
+    trampoline_class.append(f"    using {target}BaseVisitor::{target}BaseVisitor;")
     trampoline_class.append("")
 
     for method in visitor_methods:
         method_name = method["method_name"]
         params = method["params"]
         trampoline_class.append(f"    std::any {method_name}({params}) override {{")
-        trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
+        trampoline_class.append("        PYBIND11_OVERRIDE(")
         trampoline_class.append("            pybind11::object,")  # Return type
-        trampoline_class.append(f"            {target}Visitor,")  # Parent class
+        trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
         trampoline_class.append(f"            {method_name},")
         trampoline_class.append(f'            {params.split(' ')[1].lstrip('*')}')
         trampoline_class.append("        );")
@@ -139,7 +139,7 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append("    std::any defaultResult() override {{")
     trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
     trampoline_class.append("            pybind11::object,")  # Return type
-    trampoline_class.append(f"            {target}Visitor,")  # Parent class
+    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            defaultResult")
     trampoline_class.append("        );")
     trampoline_class.append("    }}")
@@ -147,7 +147,7 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append("    std::any visitChildren(antlr4::tree::ParseTree *node) override {{")
     trampoline_class.append("        PYBIND11_OVERRIDE(")
     trampoline_class.append("            pybind11::object,")  # Return type
-    trampoline_class.append(f"            {target}Visitor,")  # Parent class
+    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            visitChildren,")
     trampoline_class.append("            node")
     trampoline_class.append("        );")
@@ -184,7 +184,7 @@ def convert_cpp_ty_to_py(target: str, inp: str) -> str:
     if inp == "antlr4::tree::TerminalNode":
         return "Antlr4TreeTerminalNode"
     if inp == "antlr4::tree::ParseTreeVisitor":
-        return f"{target}Visitor"
+        return f"{target}BaseVisitor"
     if inp == "antlr4::tree::ParseTreeListener":
         return "Unknown"
     vec_match = re.match(r"std::vector<(.*?)\s*\*?>", inp)
@@ -232,7 +232,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
                 f"        def {method['method_name']}(self{maybe_comma}{convert_cpp_sig_to_py(target, method['params'])}) -> {convert_cpp_ty_to_py(target, return_type)}: ..."
             )
 
-    bindings.append(f"class {target}Visitor:")
+    bindings.append(f"class {target}BaseVisitor:")
     for method in visitor_methods:
         return_type = method["return_type"] if "return_type" in method else "None"
         maybe_comma = ","
@@ -248,7 +248,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
     bindings.append(f"class {target}ParserWrapper:")
     bindings.append(f"    def __init__(self, string: str) -> {target}ParserWrapper: ...")
     bindings.append(f"    def tree(self) -> {target}Parser.StartContext: ...")
-    bindings.append(f"    def traverse(self, visitor: {target}Visitor) -> Any: ...")
+    bindings.append(f"    def traverse(self, visitor: {target}BaseVisitor) -> Any: ...")
 
     return "\n".join(bindings)
 
@@ -284,10 +284,10 @@ def main() -> None:
 #include "antlr4-runtime.h"
 #include "ExplorerScriptLexer.h"
 #include "ExplorerScriptParser.h"
-#include "ExplorerScriptVisitor.h"
+#include "ExplorerScriptBaseVisitor.h"
 #include "SsbScriptLexer.h"
 #include "SsbScriptParser.h"
-#include "SsbScriptVisitor.h"
+#include "SsbScriptBaseVisitor.h"
 #include "parser_wrapper_exps.h"
 #include "parser_wrapper_ssbs.h"
 

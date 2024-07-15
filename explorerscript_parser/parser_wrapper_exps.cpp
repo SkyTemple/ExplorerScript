@@ -26,7 +26,7 @@ ExplorerScriptParser::StartContext* ExplorerScriptParserWrapper::tree() {
     return this->parser->start();
 }
 
-pybind11::object ExplorerScriptParserWrapper::traverse(ExplorerScriptVisitor& visitor) {
+pybind11::object ExplorerScriptParserWrapper::traverse(ExplorerScriptBaseVisitor& visitor) {
     auto ret = this->tree()->accept(&visitor);
     return std::any_cast<pybind11::object>(ret);
 }

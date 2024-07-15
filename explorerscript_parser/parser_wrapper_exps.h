@@ -3,7 +3,7 @@
 #include "antlr4-runtime.h"
 #include "ExplorerScriptLexer.h"
 #include "ExplorerScriptParser.h"
-#include "ExplorerScriptVisitor.h"
+#include "ExplorerScriptBaseVisitor.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -19,5 +19,5 @@ public:
     ~ExplorerScriptParserWrapper();
 
     ExplorerScriptParser::StartContext* tree();
-    pybind11::object traverse(ExplorerScriptVisitor& visitor);
+    pybind11::object traverse(ExplorerScriptBaseVisitor& visitor);
 };

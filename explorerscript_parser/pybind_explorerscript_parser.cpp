@@ -5,545 +5,545 @@
 #include "antlr4-runtime.h"
 #include "ExplorerScriptLexer.h"
 #include "ExplorerScriptParser.h"
-#include "ExplorerScriptVisitor.h"
+#include "ExplorerScriptBaseVisitor.h"
 #include "SsbScriptLexer.h"
 #include "SsbScriptParser.h"
-#include "SsbScriptVisitor.h"
+#include "SsbScriptBaseVisitor.h"
 #include "parser_wrapper_exps.h"
 #include "parser_wrapper_ssbs.h"
 
 using namespace antlr4;
 namespace py = pybind11;
 
-class PyExplorerScriptVisitor : public ExplorerScriptVisitor {
+class PyExplorerScriptBaseVisitor : public ExplorerScriptBaseVisitor {
 public:
     /* Inherit the constructors */
-    using ExplorerScriptVisitor::ExplorerScriptVisitor;
+    using ExplorerScriptBaseVisitor::ExplorerScriptBaseVisitor;
 
     std::any visitStart(ExplorerScriptParser::StartContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitStart,
             context
         );
     }
     std::any visitImport_stmt(ExplorerScriptParser::Import_stmtContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitImport_stmt,
             context
         );
     }
     std::any visitMacrodef(ExplorerScriptParser::MacrodefContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitMacrodef,
             context
         );
     }
     std::any visitStmt(ExplorerScriptParser::StmtContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitStmt,
             context
         );
     }
     std::any visitSimple_stmt(ExplorerScriptParser::Simple_stmtContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSimple_stmt,
             context
         );
     }
     std::any visitCntrl_stmt(ExplorerScriptParser::Cntrl_stmtContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCntrl_stmt,
             context
         );
     }
     std::any visitJump(ExplorerScriptParser::JumpContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitJump,
             context
         );
     }
     std::any visitCall(ExplorerScriptParser::CallContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCall,
             context
         );
     }
     std::any visitMacro_call(ExplorerScriptParser::Macro_callContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitMacro_call,
             context
         );
     }
     std::any visitCtx_block(ExplorerScriptParser::Ctx_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCtx_block,
             context
         );
     }
     std::any visitIf_block(ExplorerScriptParser::If_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_block,
             context
         );
     }
     std::any visitElseif_block(ExplorerScriptParser::Elseif_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitElseif_block,
             context
         );
     }
     std::any visitElse_block(ExplorerScriptParser::Else_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitElse_block,
             context
         );
     }
     std::any visitIf_header(ExplorerScriptParser::If_headerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_header,
             context
         );
     }
     std::any visitIf_h_negatable(ExplorerScriptParser::If_h_negatableContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_h_negatable,
             context
         );
     }
     std::any visitIf_h_op(ExplorerScriptParser::If_h_opContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_h_op,
             context
         );
     }
     std::any visitIf_h_bit(ExplorerScriptParser::If_h_bitContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_h_bit,
             context
         );
     }
     std::any visitIf_h_scn(ExplorerScriptParser::If_h_scnContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitIf_h_scn,
             context
         );
     }
     std::any visitSwitch_block(ExplorerScriptParser::Switch_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_block,
             context
         );
     }
     std::any visitMessage_switch_block(ExplorerScriptParser::Message_switch_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitMessage_switch_block,
             context
         );
     }
     std::any visitSingle_case_block(ExplorerScriptParser::Single_case_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSingle_case_block,
             context
         );
     }
     std::any visitDefault(ExplorerScriptParser::DefaultContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitDefault,
             context
         );
     }
     std::any visitSwitch_header(ExplorerScriptParser::Switch_headerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_header,
             context
         );
     }
     std::any visitSwitch_h_scn(ExplorerScriptParser::Switch_h_scnContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_h_scn,
             context
         );
     }
     std::any visitSwitch_h_random(ExplorerScriptParser::Switch_h_randomContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_h_random,
             context
         );
     }
     std::any visitSwitch_h_dungeon_mode(ExplorerScriptParser::Switch_h_dungeon_modeContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_h_dungeon_mode,
             context
         );
     }
     std::any visitSwitch_h_sector(ExplorerScriptParser::Switch_h_sectorContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSwitch_h_sector,
             context
         );
     }
     std::any visitCase_header(ExplorerScriptParser::Case_headerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCase_header,
             context
         );
     }
     std::any visitCase_h_menu(ExplorerScriptParser::Case_h_menuContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCase_h_menu,
             context
         );
     }
     std::any visitCase_h_menu2(ExplorerScriptParser::Case_h_menu2Context *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCase_h_menu2,
             context
         );
     }
     std::any visitCase_h_op(ExplorerScriptParser::Case_h_opContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCase_h_op,
             context
         );
     }
     std::any visitForever_block(ExplorerScriptParser::Forever_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitForever_block,
             context
         );
     }
     std::any visitFor_block(ExplorerScriptParser::For_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFor_block,
             context
         );
     }
     std::any visitWhile_block(ExplorerScriptParser::While_blockContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitWhile_block,
             context
         );
     }
     std::any visitAssignment(ExplorerScriptParser::AssignmentContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment,
             context
         );
     }
     std::any visitAssignment_regular(ExplorerScriptParser::Assignment_regularContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_regular,
             context
         );
     }
     std::any visitAssignment_clear(ExplorerScriptParser::Assignment_clearContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_clear,
             context
         );
     }
     std::any visitAssignment_initial(ExplorerScriptParser::Assignment_initialContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_initial,
             context
         );
     }
     std::any visitAssignment_reset(ExplorerScriptParser::Assignment_resetContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_reset,
             context
         );
     }
     std::any visitAssignment_adv_log(ExplorerScriptParser::Assignment_adv_logContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_adv_log,
             context
         );
     }
     std::any visitAssignment_dungeon_mode(ExplorerScriptParser::Assignment_dungeon_modeContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_dungeon_mode,
             context
         );
     }
     std::any visitAssignment_scn(ExplorerScriptParser::Assignment_scnContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssignment_scn,
             context
         );
     }
     std::any visitValue_of(ExplorerScriptParser::Value_ofContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitValue_of,
             context
         );
     }
     std::any visitScn_var(ExplorerScriptParser::Scn_varContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitScn_var,
             context
         );
     }
     std::any visitConditional_operator(ExplorerScriptParser::Conditional_operatorContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitConditional_operator,
             context
         );
     }
     std::any visitAssign_operator(ExplorerScriptParser::Assign_operatorContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitAssign_operator,
             context
         );
     }
     std::any visitFuncdef(ExplorerScriptParser::FuncdefContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFuncdef,
             context
         );
     }
     std::any visitSimple_def(ExplorerScriptParser::Simple_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitSimple_def,
             context
         );
     }
     std::any visitCoro_def(ExplorerScriptParser::Coro_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCoro_def,
             context
         );
     }
     std::any visitFor_target_def(ExplorerScriptParser::For_target_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFor_target_def,
             context
         );
     }
     std::any visitInteger_like(ExplorerScriptParser::Integer_likeContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitInteger_like,
             context
         );
     }
     std::any visitOperation(ExplorerScriptParser::OperationContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitOperation,
             context
         );
     }
     std::any visitInline_ctx(ExplorerScriptParser::Inline_ctxContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitInline_ctx,
             context
         );
     }
     std::any visitFunc_suite(ExplorerScriptParser::Func_suiteContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFunc_suite,
             context
         );
     }
     std::any visitFunc_alias(ExplorerScriptParser::Func_aliasContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFunc_alias,
             context
         );
     }
     std::any visitArglist(ExplorerScriptParser::ArglistContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitArglist,
             context
         );
     }
     std::any visitPos_argument(ExplorerScriptParser::Pos_argumentContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitPos_argument,
             context
         );
     }
     std::any visitPosition_marker(ExplorerScriptParser::Position_markerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitPosition_marker,
             context
         );
     }
     std::any visitPosition_marker_arg(ExplorerScriptParser::Position_marker_argContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitPosition_marker_arg,
             context
         );
     }
     std::any visitLabel(ExplorerScriptParser::LabelContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitLabel,
             context
         );
     }
     std::any visitString(ExplorerScriptParser::StringContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitString,
             context
         );
     }
     std::any visitLang_string(ExplorerScriptParser::Lang_stringContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitLang_string,
             context
         );
     }
     std::any visitLang_string_argument(ExplorerScriptParser::Lang_string_argumentContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitLang_string_argument,
             context
         );
     }
     std::any visitString_value(ExplorerScriptParser::String_valueContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitString_value,
             context
         );
     }
     std::any visitCtx_header(ExplorerScriptParser::Ctx_headerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitCtx_header,
             context
         );
     }
     std::any visitFor_target_def_target(ExplorerScriptParser::For_target_def_targetContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitFor_target_def_target,
             context
         );
@@ -551,203 +551,203 @@ public:
     std::any defaultResult() override {{
         PYBIND11_OVERRIDE_PURE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             defaultResult
         );
     }}
     std::any visitChildren(antlr4::tree::ParseTree *node) override {{
         PYBIND11_OVERRIDE(
             pybind11::object,
-            ExplorerScriptVisitor,
+            ExplorerScriptBaseVisitor,
             visitChildren,
             node
         );
     }}
-};class PySsbScriptVisitor : public SsbScriptVisitor {
+};class PySsbScriptBaseVisitor : public SsbScriptBaseVisitor {
 public:
     /* Inherit the constructors */
-    using SsbScriptVisitor::SsbScriptVisitor;
+    using SsbScriptBaseVisitor::SsbScriptBaseVisitor;
 
     std::any visitPos_argument(SsbScriptParser::Pos_argumentContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitPos_argument,
             context
         );
     }
     std::any visitJump_marker(SsbScriptParser::Jump_markerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitJump_marker,
             context
         );
     }
     std::any visitStart(SsbScriptParser::StartContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitStart,
             context
         );
     }
     std::any visitFuncdef(SsbScriptParser::FuncdefContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitFuncdef,
             context
         );
     }
     std::any visitSimple_def(SsbScriptParser::Simple_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitSimple_def,
             context
         );
     }
     std::any visitCoro_def(SsbScriptParser::Coro_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitCoro_def,
             context
         );
     }
     std::any visitFor_target_def(SsbScriptParser::For_target_defContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitFor_target_def,
             context
         );
     }
     std::any visitInteger_like(SsbScriptParser::Integer_likeContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitInteger_like,
             context
         );
     }
     std::any visitStmt(SsbScriptParser::StmtContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitStmt,
             context
         );
     }
     std::any visitOperation(SsbScriptParser::OperationContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitOperation,
             context
         );
     }
     std::any visitInline_ctx(SsbScriptParser::Inline_ctxContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitInline_ctx,
             context
         );
     }
     std::any visitFunc_suite(SsbScriptParser::Func_suiteContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitFunc_suite,
             context
         );
     }
     std::any visitFunc_alias(SsbScriptParser::Func_aliasContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitFunc_alias,
             context
         );
     }
     std::any visitArglist(SsbScriptParser::ArglistContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitArglist,
             context
         );
     }
     std::any visitPosition_marker(SsbScriptParser::Position_markerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitPosition_marker,
             context
         );
     }
     std::any visitPosition_marker_arg(SsbScriptParser::Position_marker_argContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitPosition_marker_arg,
             context
         );
     }
     std::any visitLabel(SsbScriptParser::LabelContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitLabel,
             context
         );
     }
     std::any visitString(SsbScriptParser::StringContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitString,
             context
         );
     }
     std::any visitLang_string(SsbScriptParser::Lang_stringContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitLang_string,
             context
         );
     }
     std::any visitLang_string_argument(SsbScriptParser::Lang_string_argumentContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitLang_string_argument,
             context
         );
     }
     std::any visitString_value(SsbScriptParser::String_valueContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitString_value,
             context
         );
     }
     std::any visitCtx_header(SsbScriptParser::Ctx_headerContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitCtx_header,
             context
         );
     }
     std::any visitFor_target_def_target(SsbScriptParser::For_target_def_targetContext *context) override {
-        PYBIND11_OVERRIDE_PURE(
+        PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitFor_target_def_target,
             context
         );
@@ -755,14 +755,14 @@ public:
     std::any defaultResult() override {{
         PYBIND11_OVERRIDE_PURE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             defaultResult
         );
     }}
     std::any visitChildren(antlr4::tree::ParseTree *node) override {{
         PYBIND11_OVERRIDE(
             pybind11::object,
-            SsbScriptVisitor,
+            SsbScriptBaseVisitor,
             visitChildren,
             node
         );
@@ -1601,80 +1601,80 @@ py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRul
     .def("FOR_TARGET", &ExplorerScriptParser::For_target_def_targetContext::FOR_TARGET, py::return_value_policy::automatic_reference)
     .def("accept", &ExplorerScriptParser::For_target_def_targetContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<ExplorerScriptVisitor, PyExplorerScriptVisitor>(m, "ExplorerScriptVisitor")
+py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerScriptBaseVisitor")
     .def(py::init<>())
-    .def("visitChildren", [](ExplorerScriptVisitor& self, antlr4::tree::ParseTree* node) {
+    .def("visitChildren", [](ExplorerScriptBaseVisitor& self, antlr4::tree::ParseTree* node) {
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
-    .def("defaultResult", [](ExplorerScriptVisitor& self) {
+    .def("defaultResult", [](ExplorerScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
-    .def("visitStart", &ExplorerScriptVisitor::visitStart, py::return_value_policy::reference_internal)
-    .def("visitImport_stmt", &ExplorerScriptVisitor::visitImport_stmt, py::return_value_policy::reference_internal)
-    .def("visitMacrodef", &ExplorerScriptVisitor::visitMacrodef, py::return_value_policy::reference_internal)
-    .def("visitStmt", &ExplorerScriptVisitor::visitStmt, py::return_value_policy::reference_internal)
-    .def("visitSimple_stmt", &ExplorerScriptVisitor::visitSimple_stmt, py::return_value_policy::reference_internal)
-    .def("visitCntrl_stmt", &ExplorerScriptVisitor::visitCntrl_stmt, py::return_value_policy::reference_internal)
-    .def("visitJump", &ExplorerScriptVisitor::visitJump, py::return_value_policy::reference_internal)
-    .def("visitCall", &ExplorerScriptVisitor::visitCall, py::return_value_policy::reference_internal)
-    .def("visitMacro_call", &ExplorerScriptVisitor::visitMacro_call, py::return_value_policy::reference_internal)
-    .def("visitCtx_block", &ExplorerScriptVisitor::visitCtx_block, py::return_value_policy::reference_internal)
-    .def("visitIf_block", &ExplorerScriptVisitor::visitIf_block, py::return_value_policy::reference_internal)
-    .def("visitElseif_block", &ExplorerScriptVisitor::visitElseif_block, py::return_value_policy::reference_internal)
-    .def("visitElse_block", &ExplorerScriptVisitor::visitElse_block, py::return_value_policy::reference_internal)
-    .def("visitIf_header", &ExplorerScriptVisitor::visitIf_header, py::return_value_policy::reference_internal)
-    .def("visitIf_h_negatable", &ExplorerScriptVisitor::visitIf_h_negatable, py::return_value_policy::reference_internal)
-    .def("visitIf_h_op", &ExplorerScriptVisitor::visitIf_h_op, py::return_value_policy::reference_internal)
-    .def("visitIf_h_bit", &ExplorerScriptVisitor::visitIf_h_bit, py::return_value_policy::reference_internal)
-    .def("visitIf_h_scn", &ExplorerScriptVisitor::visitIf_h_scn, py::return_value_policy::reference_internal)
-    .def("visitSwitch_block", &ExplorerScriptVisitor::visitSwitch_block, py::return_value_policy::reference_internal)
-    .def("visitMessage_switch_block", &ExplorerScriptVisitor::visitMessage_switch_block, py::return_value_policy::reference_internal)
-    .def("visitSingle_case_block", &ExplorerScriptVisitor::visitSingle_case_block, py::return_value_policy::reference_internal)
-    .def("visitDefault", &ExplorerScriptVisitor::visitDefault, py::return_value_policy::reference_internal)
-    .def("visitSwitch_header", &ExplorerScriptVisitor::visitSwitch_header, py::return_value_policy::reference_internal)
-    .def("visitSwitch_h_scn", &ExplorerScriptVisitor::visitSwitch_h_scn, py::return_value_policy::reference_internal)
-    .def("visitSwitch_h_random", &ExplorerScriptVisitor::visitSwitch_h_random, py::return_value_policy::reference_internal)
-    .def("visitSwitch_h_dungeon_mode", &ExplorerScriptVisitor::visitSwitch_h_dungeon_mode, py::return_value_policy::reference_internal)
-    .def("visitSwitch_h_sector", &ExplorerScriptVisitor::visitSwitch_h_sector, py::return_value_policy::reference_internal)
-    .def("visitCase_header", &ExplorerScriptVisitor::visitCase_header, py::return_value_policy::reference_internal)
-    .def("visitCase_h_menu", &ExplorerScriptVisitor::visitCase_h_menu, py::return_value_policy::reference_internal)
-    .def("visitCase_h_menu2", &ExplorerScriptVisitor::visitCase_h_menu2, py::return_value_policy::reference_internal)
-    .def("visitCase_h_op", &ExplorerScriptVisitor::visitCase_h_op, py::return_value_policy::reference_internal)
-    .def("visitForever_block", &ExplorerScriptVisitor::visitForever_block, py::return_value_policy::reference_internal)
-    .def("visitFor_block", &ExplorerScriptVisitor::visitFor_block, py::return_value_policy::reference_internal)
-    .def("visitWhile_block", &ExplorerScriptVisitor::visitWhile_block, py::return_value_policy::reference_internal)
-    .def("visitAssignment", &ExplorerScriptVisitor::visitAssignment, py::return_value_policy::reference_internal)
-    .def("visitAssignment_regular", &ExplorerScriptVisitor::visitAssignment_regular, py::return_value_policy::reference_internal)
-    .def("visitAssignment_clear", &ExplorerScriptVisitor::visitAssignment_clear, py::return_value_policy::reference_internal)
-    .def("visitAssignment_initial", &ExplorerScriptVisitor::visitAssignment_initial, py::return_value_policy::reference_internal)
-    .def("visitAssignment_reset", &ExplorerScriptVisitor::visitAssignment_reset, py::return_value_policy::reference_internal)
-    .def("visitAssignment_adv_log", &ExplorerScriptVisitor::visitAssignment_adv_log, py::return_value_policy::reference_internal)
-    .def("visitAssignment_dungeon_mode", &ExplorerScriptVisitor::visitAssignment_dungeon_mode, py::return_value_policy::reference_internal)
-    .def("visitAssignment_scn", &ExplorerScriptVisitor::visitAssignment_scn, py::return_value_policy::reference_internal)
-    .def("visitValue_of", &ExplorerScriptVisitor::visitValue_of, py::return_value_policy::reference_internal)
-    .def("visitScn_var", &ExplorerScriptVisitor::visitScn_var, py::return_value_policy::reference_internal)
-    .def("visitConditional_operator", &ExplorerScriptVisitor::visitConditional_operator, py::return_value_policy::reference_internal)
-    .def("visitAssign_operator", &ExplorerScriptVisitor::visitAssign_operator, py::return_value_policy::reference_internal)
-    .def("visitFuncdef", &ExplorerScriptVisitor::visitFuncdef, py::return_value_policy::reference_internal)
-    .def("visitSimple_def", &ExplorerScriptVisitor::visitSimple_def, py::return_value_policy::reference_internal)
-    .def("visitCoro_def", &ExplorerScriptVisitor::visitCoro_def, py::return_value_policy::reference_internal)
-    .def("visitFor_target_def", &ExplorerScriptVisitor::visitFor_target_def, py::return_value_policy::reference_internal)
-    .def("visitInteger_like", &ExplorerScriptVisitor::visitInteger_like, py::return_value_policy::reference_internal)
-    .def("visitOperation", &ExplorerScriptVisitor::visitOperation, py::return_value_policy::reference_internal)
-    .def("visitInline_ctx", &ExplorerScriptVisitor::visitInline_ctx, py::return_value_policy::reference_internal)
-    .def("visitFunc_suite", &ExplorerScriptVisitor::visitFunc_suite, py::return_value_policy::reference_internal)
-    .def("visitFunc_alias", &ExplorerScriptVisitor::visitFunc_alias, py::return_value_policy::reference_internal)
-    .def("visitArglist", &ExplorerScriptVisitor::visitArglist, py::return_value_policy::reference_internal)
-    .def("visitPos_argument", &ExplorerScriptVisitor::visitPos_argument, py::return_value_policy::reference_internal)
-    .def("visitPosition_marker", &ExplorerScriptVisitor::visitPosition_marker, py::return_value_policy::reference_internal)
-    .def("visitPosition_marker_arg", &ExplorerScriptVisitor::visitPosition_marker_arg, py::return_value_policy::reference_internal)
-    .def("visitLabel", &ExplorerScriptVisitor::visitLabel, py::return_value_policy::reference_internal)
-    .def("visitString", &ExplorerScriptVisitor::visitString, py::return_value_policy::reference_internal)
-    .def("visitLang_string", &ExplorerScriptVisitor::visitLang_string, py::return_value_policy::reference_internal)
-    .def("visitLang_string_argument", &ExplorerScriptVisitor::visitLang_string_argument, py::return_value_policy::reference_internal)
-    .def("visitString_value", &ExplorerScriptVisitor::visitString_value, py::return_value_policy::reference_internal)
-    .def("visitCtx_header", &ExplorerScriptVisitor::visitCtx_header, py::return_value_policy::reference_internal)
-    .def("visitFor_target_def_target", &ExplorerScriptVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
+    .def("visitStart", &ExplorerScriptBaseVisitor::visitStart, py::return_value_policy::reference_internal)
+    .def("visitImport_stmt", &ExplorerScriptBaseVisitor::visitImport_stmt, py::return_value_policy::reference_internal)
+    .def("visitMacrodef", &ExplorerScriptBaseVisitor::visitMacrodef, py::return_value_policy::reference_internal)
+    .def("visitStmt", &ExplorerScriptBaseVisitor::visitStmt, py::return_value_policy::reference_internal)
+    .def("visitSimple_stmt", &ExplorerScriptBaseVisitor::visitSimple_stmt, py::return_value_policy::reference_internal)
+    .def("visitCntrl_stmt", &ExplorerScriptBaseVisitor::visitCntrl_stmt, py::return_value_policy::reference_internal)
+    .def("visitJump", &ExplorerScriptBaseVisitor::visitJump, py::return_value_policy::reference_internal)
+    .def("visitCall", &ExplorerScriptBaseVisitor::visitCall, py::return_value_policy::reference_internal)
+    .def("visitMacro_call", &ExplorerScriptBaseVisitor::visitMacro_call, py::return_value_policy::reference_internal)
+    .def("visitCtx_block", &ExplorerScriptBaseVisitor::visitCtx_block, py::return_value_policy::reference_internal)
+    .def("visitIf_block", &ExplorerScriptBaseVisitor::visitIf_block, py::return_value_policy::reference_internal)
+    .def("visitElseif_block", &ExplorerScriptBaseVisitor::visitElseif_block, py::return_value_policy::reference_internal)
+    .def("visitElse_block", &ExplorerScriptBaseVisitor::visitElse_block, py::return_value_policy::reference_internal)
+    .def("visitIf_header", &ExplorerScriptBaseVisitor::visitIf_header, py::return_value_policy::reference_internal)
+    .def("visitIf_h_negatable", &ExplorerScriptBaseVisitor::visitIf_h_negatable, py::return_value_policy::reference_internal)
+    .def("visitIf_h_op", &ExplorerScriptBaseVisitor::visitIf_h_op, py::return_value_policy::reference_internal)
+    .def("visitIf_h_bit", &ExplorerScriptBaseVisitor::visitIf_h_bit, py::return_value_policy::reference_internal)
+    .def("visitIf_h_scn", &ExplorerScriptBaseVisitor::visitIf_h_scn, py::return_value_policy::reference_internal)
+    .def("visitSwitch_block", &ExplorerScriptBaseVisitor::visitSwitch_block, py::return_value_policy::reference_internal)
+    .def("visitMessage_switch_block", &ExplorerScriptBaseVisitor::visitMessage_switch_block, py::return_value_policy::reference_internal)
+    .def("visitSingle_case_block", &ExplorerScriptBaseVisitor::visitSingle_case_block, py::return_value_policy::reference_internal)
+    .def("visitDefault", &ExplorerScriptBaseVisitor::visitDefault, py::return_value_policy::reference_internal)
+    .def("visitSwitch_header", &ExplorerScriptBaseVisitor::visitSwitch_header, py::return_value_policy::reference_internal)
+    .def("visitSwitch_h_scn", &ExplorerScriptBaseVisitor::visitSwitch_h_scn, py::return_value_policy::reference_internal)
+    .def("visitSwitch_h_random", &ExplorerScriptBaseVisitor::visitSwitch_h_random, py::return_value_policy::reference_internal)
+    .def("visitSwitch_h_dungeon_mode", &ExplorerScriptBaseVisitor::visitSwitch_h_dungeon_mode, py::return_value_policy::reference_internal)
+    .def("visitSwitch_h_sector", &ExplorerScriptBaseVisitor::visitSwitch_h_sector, py::return_value_policy::reference_internal)
+    .def("visitCase_header", &ExplorerScriptBaseVisitor::visitCase_header, py::return_value_policy::reference_internal)
+    .def("visitCase_h_menu", &ExplorerScriptBaseVisitor::visitCase_h_menu, py::return_value_policy::reference_internal)
+    .def("visitCase_h_menu2", &ExplorerScriptBaseVisitor::visitCase_h_menu2, py::return_value_policy::reference_internal)
+    .def("visitCase_h_op", &ExplorerScriptBaseVisitor::visitCase_h_op, py::return_value_policy::reference_internal)
+    .def("visitForever_block", &ExplorerScriptBaseVisitor::visitForever_block, py::return_value_policy::reference_internal)
+    .def("visitFor_block", &ExplorerScriptBaseVisitor::visitFor_block, py::return_value_policy::reference_internal)
+    .def("visitWhile_block", &ExplorerScriptBaseVisitor::visitWhile_block, py::return_value_policy::reference_internal)
+    .def("visitAssignment", &ExplorerScriptBaseVisitor::visitAssignment, py::return_value_policy::reference_internal)
+    .def("visitAssignment_regular", &ExplorerScriptBaseVisitor::visitAssignment_regular, py::return_value_policy::reference_internal)
+    .def("visitAssignment_clear", &ExplorerScriptBaseVisitor::visitAssignment_clear, py::return_value_policy::reference_internal)
+    .def("visitAssignment_initial", &ExplorerScriptBaseVisitor::visitAssignment_initial, py::return_value_policy::reference_internal)
+    .def("visitAssignment_reset", &ExplorerScriptBaseVisitor::visitAssignment_reset, py::return_value_policy::reference_internal)
+    .def("visitAssignment_adv_log", &ExplorerScriptBaseVisitor::visitAssignment_adv_log, py::return_value_policy::reference_internal)
+    .def("visitAssignment_dungeon_mode", &ExplorerScriptBaseVisitor::visitAssignment_dungeon_mode, py::return_value_policy::reference_internal)
+    .def("visitAssignment_scn", &ExplorerScriptBaseVisitor::visitAssignment_scn, py::return_value_policy::reference_internal)
+    .def("visitValue_of", &ExplorerScriptBaseVisitor::visitValue_of, py::return_value_policy::reference_internal)
+    .def("visitScn_var", &ExplorerScriptBaseVisitor::visitScn_var, py::return_value_policy::reference_internal)
+    .def("visitConditional_operator", &ExplorerScriptBaseVisitor::visitConditional_operator, py::return_value_policy::reference_internal)
+    .def("visitAssign_operator", &ExplorerScriptBaseVisitor::visitAssign_operator, py::return_value_policy::reference_internal)
+    .def("visitFuncdef", &ExplorerScriptBaseVisitor::visitFuncdef, py::return_value_policy::reference_internal)
+    .def("visitSimple_def", &ExplorerScriptBaseVisitor::visitSimple_def, py::return_value_policy::reference_internal)
+    .def("visitCoro_def", &ExplorerScriptBaseVisitor::visitCoro_def, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def", &ExplorerScriptBaseVisitor::visitFor_target_def, py::return_value_policy::reference_internal)
+    .def("visitInteger_like", &ExplorerScriptBaseVisitor::visitInteger_like, py::return_value_policy::reference_internal)
+    .def("visitOperation", &ExplorerScriptBaseVisitor::visitOperation, py::return_value_policy::reference_internal)
+    .def("visitInline_ctx", &ExplorerScriptBaseVisitor::visitInline_ctx, py::return_value_policy::reference_internal)
+    .def("visitFunc_suite", &ExplorerScriptBaseVisitor::visitFunc_suite, py::return_value_policy::reference_internal)
+    .def("visitFunc_alias", &ExplorerScriptBaseVisitor::visitFunc_alias, py::return_value_policy::reference_internal)
+    .def("visitArglist", &ExplorerScriptBaseVisitor::visitArglist, py::return_value_policy::reference_internal)
+    .def("visitPos_argument", &ExplorerScriptBaseVisitor::visitPos_argument, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker", &ExplorerScriptBaseVisitor::visitPosition_marker, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker_arg", &ExplorerScriptBaseVisitor::visitPosition_marker_arg, py::return_value_policy::reference_internal)
+    .def("visitLabel", &ExplorerScriptBaseVisitor::visitLabel, py::return_value_policy::reference_internal)
+    .def("visitString", &ExplorerScriptBaseVisitor::visitString, py::return_value_policy::reference_internal)
+    .def("visitLang_string", &ExplorerScriptBaseVisitor::visitLang_string, py::return_value_policy::reference_internal)
+    .def("visitLang_string_argument", &ExplorerScriptBaseVisitor::visitLang_string_argument, py::return_value_policy::reference_internal)
+    .def("visitString_value", &ExplorerScriptBaseVisitor::visitString_value, py::return_value_policy::reference_internal)
+    .def("visitCtx_header", &ExplorerScriptBaseVisitor::visitCtx_header, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def_target", &ExplorerScriptBaseVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
 ;py::class_<SsbScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m, "SsbScriptParser::Pos_argumentContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Pos_argumentContext::toString))
@@ -1917,35 +1917,35 @@ py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleCont
     .def("FOR_TARGET", &SsbScriptParser::For_target_def_targetContext::FOR_TARGET, py::return_value_policy::automatic_reference)
     .def("accept", &SsbScriptParser::For_target_def_targetContext::accept, py::return_value_policy::automatic_reference)
 ;
-py::class_<SsbScriptVisitor, PySsbScriptVisitor>(m, "SsbScriptVisitor")
+py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor>(m, "SsbScriptBaseVisitor")
     .def(py::init<>())
-    .def("visitChildren", [](SsbScriptVisitor& self, antlr4::tree::ParseTree* node) {
+    .def("visitChildren", [](SsbScriptBaseVisitor& self, antlr4::tree::ParseTree* node) {
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
-    .def("defaultResult", [](SsbScriptVisitor& self) {
+    .def("defaultResult", [](SsbScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
-    .def("visitPos_argument", &SsbScriptVisitor::visitPos_argument, py::return_value_policy::reference_internal)
-    .def("visitJump_marker", &SsbScriptVisitor::visitJump_marker, py::return_value_policy::reference_internal)
-    .def("visitStart", &SsbScriptVisitor::visitStart, py::return_value_policy::reference_internal)
-    .def("visitFuncdef", &SsbScriptVisitor::visitFuncdef, py::return_value_policy::reference_internal)
-    .def("visitSimple_def", &SsbScriptVisitor::visitSimple_def, py::return_value_policy::reference_internal)
-    .def("visitCoro_def", &SsbScriptVisitor::visitCoro_def, py::return_value_policy::reference_internal)
-    .def("visitFor_target_def", &SsbScriptVisitor::visitFor_target_def, py::return_value_policy::reference_internal)
-    .def("visitInteger_like", &SsbScriptVisitor::visitInteger_like, py::return_value_policy::reference_internal)
-    .def("visitStmt", &SsbScriptVisitor::visitStmt, py::return_value_policy::reference_internal)
-    .def("visitOperation", &SsbScriptVisitor::visitOperation, py::return_value_policy::reference_internal)
-    .def("visitInline_ctx", &SsbScriptVisitor::visitInline_ctx, py::return_value_policy::reference_internal)
-    .def("visitFunc_suite", &SsbScriptVisitor::visitFunc_suite, py::return_value_policy::reference_internal)
-    .def("visitFunc_alias", &SsbScriptVisitor::visitFunc_alias, py::return_value_policy::reference_internal)
-    .def("visitArglist", &SsbScriptVisitor::visitArglist, py::return_value_policy::reference_internal)
-    .def("visitPosition_marker", &SsbScriptVisitor::visitPosition_marker, py::return_value_policy::reference_internal)
-    .def("visitPosition_marker_arg", &SsbScriptVisitor::visitPosition_marker_arg, py::return_value_policy::reference_internal)
-    .def("visitLabel", &SsbScriptVisitor::visitLabel, py::return_value_policy::reference_internal)
-    .def("visitString", &SsbScriptVisitor::visitString, py::return_value_policy::reference_internal)
-    .def("visitLang_string", &SsbScriptVisitor::visitLang_string, py::return_value_policy::reference_internal)
-    .def("visitLang_string_argument", &SsbScriptVisitor::visitLang_string_argument, py::return_value_policy::reference_internal)
-    .def("visitString_value", &SsbScriptVisitor::visitString_value, py::return_value_policy::reference_internal)
-    .def("visitCtx_header", &SsbScriptVisitor::visitCtx_header, py::return_value_policy::reference_internal)
-    .def("visitFor_target_def_target", &SsbScriptVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
+    .def("visitPos_argument", &SsbScriptBaseVisitor::visitPos_argument, py::return_value_policy::reference_internal)
+    .def("visitJump_marker", &SsbScriptBaseVisitor::visitJump_marker, py::return_value_policy::reference_internal)
+    .def("visitStart", &SsbScriptBaseVisitor::visitStart, py::return_value_policy::reference_internal)
+    .def("visitFuncdef", &SsbScriptBaseVisitor::visitFuncdef, py::return_value_policy::reference_internal)
+    .def("visitSimple_def", &SsbScriptBaseVisitor::visitSimple_def, py::return_value_policy::reference_internal)
+    .def("visitCoro_def", &SsbScriptBaseVisitor::visitCoro_def, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def", &SsbScriptBaseVisitor::visitFor_target_def, py::return_value_policy::reference_internal)
+    .def("visitInteger_like", &SsbScriptBaseVisitor::visitInteger_like, py::return_value_policy::reference_internal)
+    .def("visitStmt", &SsbScriptBaseVisitor::visitStmt, py::return_value_policy::reference_internal)
+    .def("visitOperation", &SsbScriptBaseVisitor::visitOperation, py::return_value_policy::reference_internal)
+    .def("visitInline_ctx", &SsbScriptBaseVisitor::visitInline_ctx, py::return_value_policy::reference_internal)
+    .def("visitFunc_suite", &SsbScriptBaseVisitor::visitFunc_suite, py::return_value_policy::reference_internal)
+    .def("visitFunc_alias", &SsbScriptBaseVisitor::visitFunc_alias, py::return_value_policy::reference_internal)
+    .def("visitArglist", &SsbScriptBaseVisitor::visitArglist, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker", &SsbScriptBaseVisitor::visitPosition_marker, py::return_value_policy::reference_internal)
+    .def("visitPosition_marker_arg", &SsbScriptBaseVisitor::visitPosition_marker_arg, py::return_value_policy::reference_internal)
+    .def("visitLabel", &SsbScriptBaseVisitor::visitLabel, py::return_value_policy::reference_internal)
+    .def("visitString", &SsbScriptBaseVisitor::visitString, py::return_value_policy::reference_internal)
+    .def("visitLang_string", &SsbScriptBaseVisitor::visitLang_string, py::return_value_policy::reference_internal)
+    .def("visitLang_string_argument", &SsbScriptBaseVisitor::visitLang_string_argument, py::return_value_policy::reference_internal)
+    .def("visitString_value", &SsbScriptBaseVisitor::visitString_value, py::return_value_policy::reference_internal)
+    .def("visitCtx_header", &SsbScriptBaseVisitor::visitCtx_header, py::return_value_policy::reference_internal)
+    .def("visitFor_target_def_target", &SsbScriptBaseVisitor::visitFor_target_def_target, py::return_value_policy::reference_internal)
 ;}

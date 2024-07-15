@@ -7,35 +7,7 @@ with open("_unionall.exps", "r") as f:
 start = time.time()
 parser = explorerscript_parser.ExplorerScriptParserWrapper(text)
 
-
-class BaseExplorerScriptVisitor(explorerscript_parser.ExplorerScriptVisitor):
-    def __init__(self):
-        super().__init__()
-        self._auto_generate_methods()
-
-    def _auto_generate_methods(self):
-        for method_name in dir(self):
-            if (
-                method_name.startswith("visit")
-                and method_name != "visitChildren"
-                and callable(getattr(self, method_name, None))
-            ):
-                setattr(self, method_name, self._create_visit_method())
-
-    def _create_visit_method(self):
-        def visit_method(ctx):
-            return self.visitChildren(ctx)
-
-        return visit_method
-
-    def defaultResult(self):
-        return []
-
-    def aggregrateResult(self, aggregate, nextResult):
-        return aggregate.append(nextResult)
-
-
-class MyVisitor(BaseExplorerScriptVisitor):
+class MyVisitor(explorerscript_parser.ExplorerScriptBaseVisitor):
     def __init__(self):
         super().__init__()
 
@@ -43,6 +15,11 @@ class MyVisitor(BaseExplorerScriptVisitor):
         print(f"Visiting operation: {ctx.IDENTIFIER()}")
         pass
 
+    def defaultResult(self):
+        return []
+
+    def aggregrateResult(self, aggregate, nextResult):
+        return aggregate.append(nextResult)
 
 parser.traverse(MyVisitor())
 

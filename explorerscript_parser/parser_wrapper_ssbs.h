@@ -3,7 +3,7 @@
 #include "antlr4-runtime.h"
 #include "SsbScriptLexer.h"
 #include "SsbScriptParser.h"
-#include "SsbScriptVisitor.h"
+#include "SsbScriptBaseVisitor.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -19,5 +19,5 @@ public:
     ~SsbScriptParserWrapper();
 
     SsbScriptParser::StartContext* tree();
-    pybind11::object traverse(SsbScriptVisitor& visitor);
+    pybind11::object traverse(SsbScriptBaseVisitor& visitor);
 };
