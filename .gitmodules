@@ -1,3 +1,4 @@
 [submodule "antlr4"]
 	path = antlr4
-	url = https://github.com/antlr/antlr4
+	url = https://github.com/SkyTemple/antlr4
+	branch = skytemple-fork
