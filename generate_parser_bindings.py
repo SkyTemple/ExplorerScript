@@ -87,12 +87,20 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
 
     bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor>(m, "{target}BaseVisitor")')
     bindings.append("    .def(py::init<>())")
+    bindings.append(f'    .def("visit", []({target}BaseVisitor& self, antlr4::tree::ParseTree* tree) {{')
+    bindings.append("        return std::any_cast<pybind11::object>(self.visit(tree));")
+    bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append(f'    .def("visitChildren", []({target}BaseVisitor& self, antlr4::tree::ParseTree* node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append(f'    .def("defaultResult", []({target}BaseVisitor& self) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.defaultResult());")
     bindings.append("    }, py::keep_alive<1, 2>())")
+    bindings.append(
+        f'    .def("aggregateResult", []({target}BaseVisitor& self, std::any aggregate, std::any nextResult) {{'
+    )
+    bindings.append("        return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));")
+    bindings.append("    }, py::return_value_policy::automatic_reference)")
     for method in visitor_methods:
         bindings.append(
             f'    .def("{method["method_name"]}", &{target}BaseVisitor::{method["method_name"]}, py::return_value_policy::reference_internal)'
@@ -136,6 +144,15 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
         trampoline_class.append("        );")
         trampoline_class.append("    }")
 
+    trampoline_class.append("    std::any visit(antlr4::tree::ParseTree *tree) override {{")
+    trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
+    trampoline_class.append("            pybind11::object,")  # Return type
+    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
+    trampoline_class.append("            visit,")
+    trampoline_class.append("            tree")
+    trampoline_class.append("        );")
+    trampoline_class.append("    }}")
+
     trampoline_class.append("    std::any defaultResult() override {{")
     trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
     trampoline_class.append("            pybind11::object,")  # Return type
@@ -150,6 +167,15 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            visitChildren,")
     trampoline_class.append("            node")
+    trampoline_class.append("        );")
+    trampoline_class.append("    }}")
+
+    trampoline_class.append("    std::any aggregateResult(std::any aggregate, std::any nextResult) override {{")
+    trampoline_class.append("        PYBIND11_OVERRIDE(")
+    trampoline_class.append("            pybind11::object,")  # Return type
+    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
+    trampoline_class.append("            aggregateResult,")
+    trampoline_class.append("            aggregate, nextResult")
     trampoline_class.append("        );")
     trampoline_class.append("    }}")
 
@@ -220,7 +246,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
 
     bindings.append(f"class {target}Parser:")
     for class_name, methods in classes.items():
-        bindings.append(f"    class {class_name}(Antlr4ParseTree):")
+        bindings.append(f"    class {class_name}(Antlr4ParserRuleContext):")
         for method in methods:
             return_type = method["return_type"] if "return_type" in method else "None"
             maybe_comma = ","
@@ -242,13 +268,16 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
             f"    def {method['method_name']}(self{maybe_comma}{convert_cpp_sig_to_py(target, method['params'])}) -> {convert_cpp_ty_to_py(target, return_type)}: ..."
         )
 
+    bindings.append("    def visit(self, tree: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def visitChildren(self, node: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def defaultResult(self) -> Any: ...")
+    bindings.append("    def aggregateResult(self, aggregate: Any, nextResult: Any) -> Any: ...")
 
     bindings.append(f"class {target}ParserWrapper:")
     bindings.append(f"    def __init__(self, string: str) -> {target}ParserWrapper: ...")
     bindings.append(f"    def tree(self) -> {target}Parser.StartContext: ...")
     bindings.append(f"    def traverse(self, visitor: {target}BaseVisitor) -> Any: ...")
+    bindings.append("    def addErrorListener(self, listener: Antlr4BaseErrorListener) -> None: ...")
 
     return "\n".join(bindings)
 
@@ -294,20 +323,44 @@ def main() -> None:
 using namespace antlr4;
 namespace py = pybind11;
 
+class PyErrorListener : public ANTLRErrorListener {
+public:
+    PyErrorListener();
+    ~PyErrorListener();
+
+    void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine, const std::string &msg, std::exception_ptr e) override {
+        PYBIND11_OVERRIDE_PURE(
+            void,
+            ANTLRErrorListener,
+            syntaxError,
+            recognizer, offendingSymbol, line, charPositionInLine, msg, e
+        );
+    }
+    
+    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override;
+    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override;
+    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override;
+};
 """
             + exps_trampoline_class
             + ssbs_trampoline_class
             + """
 PYBIND11_MODULE(explorerscript_parser, m) {
 
+py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
+    .def(py::init<>())
+    .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
+
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
     .def(py::init<std::string&>())
     .def("tree", &ExplorerScriptParserWrapper::tree, py::keep_alive<1, 2>())
-    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>())
+    .def("addErrorListener", &ExplorerScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
 py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
     .def(py::init<std::string&>())
     .def("tree", &SsbScriptParserWrapper::tree, py::keep_alive<1, 2>())
-    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>())
+    .def("addErrorListener", &SsbScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)
@@ -326,7 +379,8 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
 
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
-py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext");
+py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
+    .def(py::init<>());
 
 
 """
@@ -341,7 +395,12 @@ py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleC
                 [
                     "from typing import Any, TypeAlias, overload",
                     "Unknown: TypeAlias = Any",
+                    "class Antlr4ErrorListener:",
+                    "    def syntaxError(self, recognizer: Any, offendingSymbol: Antlr4Token, line: int, charPositionInLine: int, msg: str, e: Any) -> None: ...",
                     "class Antlr4ParseTree: ...",
+                    "class Antlr4RuleContext(Antlr4ParseTree): ...",
+                    "class Antlr4ParserRuleContext(Antlr4RuleContext): ...",
+                    "class Antlr4ParserRuleContext(Antlr4RuleContext): ...",
                     "class Antlr4Token:",
                     "    def __str__(self) -> str: ...",
                     "    @property",

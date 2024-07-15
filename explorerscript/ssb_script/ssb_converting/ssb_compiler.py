@@ -25,8 +25,8 @@ import logging
 
 from antlr4 import InputStream, CommonTokenStream
 
-from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript_parser.SsbScriptLexer import SsbScriptLexer
+from explorerscript_parser.SsbScriptParser import SsbScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover

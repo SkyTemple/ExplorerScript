@@ -24,10 +24,6 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractCompileHandler,
     HANDL,
@@ -129,9 +125,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.jump import JumpCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.util import _
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor, Antlr4ParserRuleContext
 
 
-class StatementVisitor(ExplorerScriptVisitor):
+class StatementVisitor(ExplorerScriptBaseVisitor):
     """This listener collects a single statements from a routine / macro."""
 
     def __init__(self, root_handler: AnyCompileHandler, compiler_ctx: CompilerCtx) -> None:
@@ -139,7 +136,7 @@ class StatementVisitor(ExplorerScriptVisitor):
         # This stack contains the handlers for the blocks during compilation.
         # The bottom is always the null handler, which raises an assertion error if any method is called.
         self._current_handlers: list[AnyCompileHandler] = [
-            NullCompileHandler(ParserRuleContext(), self.compiler_ctx),
+            NullCompileHandler(Antlr4ParserRuleContext(), self.compiler_ctx),
             root_handler,
         ]
 

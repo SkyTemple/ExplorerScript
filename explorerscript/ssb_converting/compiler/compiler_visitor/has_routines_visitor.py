@@ -24,11 +24,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class HasRoutinesVisitor(ExplorerScriptVisitor):
+class HasRoutinesVisitor(ExplorerScriptBaseVisitor):
     """Visitor that returns whether or not the ExplorerScript tree contains any routines."""
 
     def __init__(self) -> None:

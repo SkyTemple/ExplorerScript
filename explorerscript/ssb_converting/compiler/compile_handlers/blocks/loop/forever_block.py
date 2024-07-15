@@ -24,9 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractStatementCompileHandler,
     AbstractComplexStatementCompileHandler,
@@ -34,6 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AnyLoopBlockCompileHandler,
 )
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParser.Forever_blockContext]):
@@ -44,7 +42,7 @@ class ForeverBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptP
             retval = [self._start_label] + self._process_block(False) + [self.continue_loop(), self._end_label]
         return retval
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext]) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)

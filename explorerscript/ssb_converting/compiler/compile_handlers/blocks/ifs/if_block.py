@@ -30,9 +30,8 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import TypeAlias
 
-from antlr4 import ParserRuleContext
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexBlockCompileHandler,
     AbstractStatementCompileHandler,
@@ -46,7 +45,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
 
 _SupportedHandlers: TypeAlias = Union[
-    AbstractStatementCompileHandler[ParserRuleContext],
+    AbstractStatementCompileHandler[Antlr4ParserRuleContext],
     IfHeaderCompileHandler,
     ElseIfBlockCompileHandler,
     ElseBlockCompileHandler,

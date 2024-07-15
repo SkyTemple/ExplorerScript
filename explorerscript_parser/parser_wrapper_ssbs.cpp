@@ -30,3 +30,7 @@ pybind11::object SsbScriptParserWrapper::traverse(SsbScriptBaseVisitor& visitor)
     auto ret = this->tree()->accept(&visitor);
     return std::any_cast<pybind11::object>(ret);
 }
+
+void SsbScriptParserWrapper::addErrorListener(ANTLRErrorListener &listener) {
+    this->parser->addErrorListener(&listener);
+}

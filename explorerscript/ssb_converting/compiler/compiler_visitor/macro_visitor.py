@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.error import SsbCompilerError
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
@@ -34,9 +32,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.functions.macro_def
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.util import _
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class MacroVisitor(ExplorerScriptVisitor):
+class MacroVisitor(ExplorerScriptBaseVisitor):
     """Collects all macros as Macro models from an ExplorerScript tree."""
 
     # Global compilation context for the handlers

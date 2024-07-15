@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
@@ -33,9 +31,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_mark
 )
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class PositionMarkVisitor(ExplorerScriptVisitor):
+class PositionMarkVisitor(ExplorerScriptBaseVisitor):
     """Returns the list of position marks from an ExplorerScript parsing tree."""
 
     def __init__(self) -> None:

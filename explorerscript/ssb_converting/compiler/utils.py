@@ -30,9 +30,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, MutableSequence, Iterable, Any, TypeVar, Iterator
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
@@ -44,6 +41,7 @@ from explorerscript.ssb_converting.ssb_special_ops import (
     OPS_CTX,
 )
 from explorerscript.util import f, _
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 logger = logging.getLogger(__name__)
 
@@ -189,19 +187,19 @@ class CompilerCtx:
         yield
         self._switch_cases.pop()
 
-    def continue_loop(self, ctx: ParserRuleContext) -> SsbOperation:
+    def continue_loop(self, ctx: Antlr4ParserRuleContext) -> SsbOperation:
         """Handle the continue opcode"""
         if len(self._loops) < 1:
             raise SsbCompilerError(f(_("Unexpected continue; in line {ctx.start.line}")))
         return self._loops[-1].continue_loop()
 
-    def break_loop(self, ctx: ParserRuleContext) -> SsbOperation:
+    def break_loop(self, ctx: Antlr4ParserRuleContext) -> SsbOperation:
         """Handle the break forever opcode"""
         if len(self._loops) < 1:
             raise SsbCompilerError(f(_("Unexpected break_loop; in line {ctx.start.line}")))
         return self._loops[-1].break_loop()
 
-    def break_case(self, ctx: ParserRuleContext) -> SsbOperation:
+    def break_case(self, ctx: Antlr4ParserRuleContext) -> SsbOperation:
         """Handle the break opcode"""
         if len(self._switch_cases) < 1:
             raise SsbCompilerError(f(_("Unexpected break; in line {ctx.start.line}")))
@@ -212,7 +210,7 @@ class SsbLabelJumpBlueprint:
     """A builder for a label jump, to be used when compiling ifs/switches."""
 
     compiler_ctx: CompilerCtx
-    ctx: ParserRuleContext
+    ctx: Antlr4ParserRuleContext
     op_code_name: str
     params: MutableSequence[SsbOpParam]
     number: int | None
@@ -221,7 +219,7 @@ class SsbLabelJumpBlueprint:
     def __init__(
         self,
         compiler_ctx: CompilerCtx,
-        ctx: ParserRuleContext,
+        ctx: Antlr4ParserRuleContext,
         op_code_name: str,
         params: MutableSequence[SsbOpParam],
         jump_is_positive: bool = True,
@@ -255,8 +253,8 @@ class SsbLabelJumpBlueprint:
 def string_literal(string: ExplorerScriptParser.String_valueContext) -> str:
     single_line = string.STRING_LITERAL()
     if single_line:
-        return singleline_string_literal(single_line)
-    return multiline_string_literal(string.MULTILINE_STRING_LITERAL())
+        return singleline_string_literal(str(single_line))
+    return multiline_string_literal(str(string.MULTILINE_STRING_LITERAL()))
 
 
 def singleline_string_literal(string: str) -> str:

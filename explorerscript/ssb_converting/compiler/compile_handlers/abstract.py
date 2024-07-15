@@ -26,12 +26,12 @@ import sys
 from abc import ABC, abstractmethod
 from typing import Any, MutableSequence, TypeVar, Generic, TYPE_CHECKING
 
+from explorerscript_parser import Antlr4ParserRuleContext
+
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
 else:
     from typing_extensions import TypeAlias
-
-from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode
@@ -45,7 +45,7 @@ def handler_is_for_statement(obj: object) -> bool:
     return isinstance(obj, AbstractComplexStatementCompileHandler)
 
 
-CTX = TypeVar("CTX", bound=ParserRuleContext)
+CTX = TypeVar("CTX", bound=Antlr4ParserRuleContext)
 HANDL = TypeVar("HANDL")
 
 
@@ -103,7 +103,7 @@ class AbstractCompileHandler(ABC, Generic[CTX, HANDL]):
         return op
 
 
-AnyCompileHandler: TypeAlias = AbstractCompileHandler[ParserRuleContext, Any]
+AnyCompileHandler: TypeAlias = AbstractCompileHandler[Antlr4ParserRuleContext, Any]
 
 
 class AbstractComplexStatementCompileHandler(AbstractCompileHandler[CTX, HANDL], ABC):
@@ -218,7 +218,7 @@ class AbstractComplexBlockCompileHandler(AbstractComplexStatementCompileHandler[
 
 
 AbstractBlockCompileHandler: TypeAlias = AbstractComplexBlockCompileHandler[
-    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+    CTX, "AbstractStatementCompileHandler[Antlr4ParserRuleContext]"
 ]
 
 
@@ -238,15 +238,17 @@ class AbstractComplexLoopBlockCompileHandler(AbstractComplexBlockCompileHandler[
 
 
 AbstractLoopBlockCompileHandler: TypeAlias = AbstractComplexLoopBlockCompileHandler[
-    CTX, "AbstractStatementCompileHandler[ParserRuleContext]"
+    CTX, "AbstractStatementCompileHandler[Antlr4ParserRuleContext]"
 ]
-AnyLoopBlockCompileHandler: TypeAlias = AbstractLoopBlockCompileHandler[ParserRuleContext]
+AnyLoopBlockCompileHandler: TypeAlias = AbstractLoopBlockCompileHandler[Antlr4ParserRuleContext]
 
 
-class AbstractFuncdefCompileHandler(AbstractCompileHandler[CTX, AbstractCompileHandler[ParserRuleContext, Any]], ABC):
+class AbstractFuncdefCompileHandler(
+    AbstractCompileHandler[CTX, AbstractCompileHandler[Antlr4ParserRuleContext, Any]], ABC
+):
     """An abstract handler for funcdefs."""
 
-    def add(self, obj: AbstractCompileHandler[ParserRuleContext, Any]) -> None:
+    def add(self, obj: AbstractCompileHandler[Antlr4ParserRuleContext, Any]) -> None:
         if handler_is_for_statement(obj):
             self._added_handlers.append(obj)
             return

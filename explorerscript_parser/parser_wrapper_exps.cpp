@@ -30,3 +30,7 @@ pybind11::object ExplorerScriptParserWrapper::traverse(ExplorerScriptBaseVisitor
     auto ret = this->tree()->accept(&visitor);
     return std::any_cast<pybind11::object>(ret);
 }
+
+void ExplorerScriptParserWrapper::addErrorListener(ANTLRErrorListener &listener) {
+    this->parser->addErrorListener(&listener);
+}

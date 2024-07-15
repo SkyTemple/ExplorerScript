@@ -24,9 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexLoopBlockCompileHandler,
     AbstractStatementCompileHandler,
@@ -37,6 +34,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_heade
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class WhileBlockCompileHandler(
@@ -95,7 +93,7 @@ class WhileBlockCompileHandler(
                 )
         return retval
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext] | IfHeaderCompileHandler) -> None:
         if isinstance(obj, IfHeaderCompileHandler):
             self._branch_blueprint = obj.collect()
             return

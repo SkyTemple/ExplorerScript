@@ -15,6 +15,21 @@
 using namespace antlr4;
 namespace py = pybind11;
 
+class PyErrorListener : public ANTLRErrorListener {
+public:
+    void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine, const std::string &msg, std::exception_ptr e) override {
+        PYBIND11_OVERRIDE_PURE(
+            void,
+            ANTLRErrorListener,
+            syntaxError,
+            recognizer, offendingSymbol, line, charPositionInLine, msg, e
+        );
+    }
+    
+    void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, bool exact, const antlrcpp::BitSet &ambigAlts, atn::ATNConfigSet *configs) override;
+    void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, const antlrcpp::BitSet &conflictingAlts, atn::ATNConfigSet *configs) override;
+    void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex, size_t stopIndex, size_t prediction, atn::ATNConfigSet *configs) override;
+};
 class PyExplorerScriptBaseVisitor : public ExplorerScriptBaseVisitor {
 public:
     /* Inherit the constructors */
@@ -548,6 +563,14 @@ public:
             context
         );
     }
+    std::any visit(antlr4::tree::ParseTree *tree) override {{
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            ExplorerScriptBaseVisitor,
+            visit,
+            tree
+        );
+    }}
     std::any defaultResult() override {{
         PYBIND11_OVERRIDE_PURE(
             pybind11::object,
@@ -561,6 +584,14 @@ public:
             ExplorerScriptBaseVisitor,
             visitChildren,
             node
+        );
+    }}
+    std::any aggregateResult(std::any aggregate, std::any nextResult) override {{
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            ExplorerScriptBaseVisitor,
+            aggregateResult,
+            aggregate, nextResult
         );
     }}
 };class PySsbScriptBaseVisitor : public SsbScriptBaseVisitor {
@@ -752,6 +783,14 @@ public:
             context
         );
     }
+    std::any visit(antlr4::tree::ParseTree *tree) override {{
+        PYBIND11_OVERRIDE_PURE(
+            pybind11::object,
+            SsbScriptBaseVisitor,
+            visit,
+            tree
+        );
+    }}
     std::any defaultResult() override {{
         PYBIND11_OVERRIDE_PURE(
             pybind11::object,
@@ -767,17 +806,31 @@ public:
             node
         );
     }}
+    std::any aggregateResult(std::any aggregate, std::any nextResult) override {{
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            SsbScriptBaseVisitor,
+            aggregateResult,
+            aggregate, nextResult
+        );
+    }}
 };
 PYBIND11_MODULE(explorerscript_parser, m) {
+
+py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
+    .def(py::init<>())
+    .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
     .def(py::init<std::string&>())
     .def("tree", &ExplorerScriptParserWrapper::tree, py::keep_alive<1, 2>())
-    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>())
+    .def("addErrorListener", &ExplorerScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
 py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
     .def(py::init<std::string&>())
     .def("tree", &SsbScriptParserWrapper::tree, py::keep_alive<1, 2>())
-    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>())
+    .def("addErrorListener", &SsbScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)
@@ -796,7 +849,8 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
 
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
-py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext");
+py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
+    .def(py::init<>());
 
 
 py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m, "ExplorerScriptParser::StartContext")
@@ -1603,12 +1657,18 @@ py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRul
 ;
 py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerScriptBaseVisitor")
     .def(py::init<>())
+    .def("visit", [](ExplorerScriptBaseVisitor& self, antlr4::tree::ParseTree* tree) {
+        return std::any_cast<pybind11::object>(self.visit(tree));
+    }, py::return_value_policy::automatic_reference)
     .def("visitChildren", [](ExplorerScriptBaseVisitor& self, antlr4::tree::ParseTree* node) {
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](ExplorerScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
+    .def("aggregateResult", [](ExplorerScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
+        return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
+    }, py::return_value_policy::automatic_reference)
     .def("visitStart", &ExplorerScriptBaseVisitor::visitStart, py::return_value_policy::reference_internal)
     .def("visitImport_stmt", &ExplorerScriptBaseVisitor::visitImport_stmt, py::return_value_policy::reference_internal)
     .def("visitMacrodef", &ExplorerScriptBaseVisitor::visitMacrodef, py::return_value_policy::reference_internal)
@@ -1919,12 +1979,18 @@ py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleCont
 ;
 py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor>(m, "SsbScriptBaseVisitor")
     .def(py::init<>())
+    .def("visit", [](SsbScriptBaseVisitor& self, antlr4::tree::ParseTree* tree) {
+        return std::any_cast<pybind11::object>(self.visit(tree));
+    }, py::return_value_policy::automatic_reference)
     .def("visitChildren", [](SsbScriptBaseVisitor& self, antlr4::tree::ParseTree* node) {
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](SsbScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
+    .def("aggregateResult", [](SsbScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
+        return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
+    }, py::return_value_policy::automatic_reference)
     .def("visitPos_argument", &SsbScriptBaseVisitor::visitPos_argument, py::return_value_policy::reference_internal)
     .def("visitJump_marker", &SsbScriptBaseVisitor::visitJump_marker, py::return_value_policy::reference_internal)
     .def("visitStart", &SsbScriptBaseVisitor::visitStart, py::return_value_policy::reference_internal)

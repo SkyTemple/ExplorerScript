@@ -175,7 +175,6 @@ class ExplorerScriptSsbCompiler:
 
         reader = ExplorerScriptReader(explorerscript_src)
         tree = reader.read()
-        parser = reader.get_parser()
 
         # Collect imports
         logger.debug("<%d> Collecting imports...", id(self))
@@ -233,7 +232,7 @@ class ExplorerScriptSsbCompiler:
         # Check if macros_only
         if macros_only:
             # Check if the file contains any routines
-            if HasRoutinesVisitor().visit(parser.start()):
+            if HasRoutinesVisitor().visit(tree):
                 # noinspection PyUnusedLocal
                 fn = os.path.basename(file_name)  # noqa
                 raise SsbCompilerError(f(_("{fn}: Macro scripts must not contain any routines.")))

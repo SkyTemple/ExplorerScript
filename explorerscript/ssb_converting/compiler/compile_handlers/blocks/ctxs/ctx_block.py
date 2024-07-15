@@ -30,7 +30,7 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import TypeAlias
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractAssignmentCompileHandler,

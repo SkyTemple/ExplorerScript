@@ -22,37 +22,29 @@
 #
 from __future__ import annotations
 
-from antlr4 import InputStream, CommonTokenStream
-
-from explorerscript.antlr.ExplorerScriptLexer import ExplorerScriptLexer
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import ParseError
 from explorerscript.syntax_error_listener import SyntaxErrorListener
+from explorerscript_parser import ExplorerScriptParserWrapper, ExplorerScriptParser
 
 
 class ExplorerScriptReader:
     """Constructs a parsing tree out of ExplorerScript source code."""
 
     source_code: str
-    parser: ExplorerScriptParser | None
 
     def __init__(self, source_code: str):
         self.source_code = source_code
-        self.parser = None
 
     def read(self) -> ExplorerScriptParser.StartContext:
         """
         :raises: ParseError
         """
-        input_stream = InputStream(self.source_code)
-        lexer = ExplorerScriptLexer(input_stream)
-        stream = CommonTokenStream(lexer)
-        self.parser = ExplorerScriptParser(stream)
+        parser = ExplorerScriptParserWrapper(self.source_code)
         error_listener = SyntaxErrorListener()
-        self.parser.addErrorListener(error_listener)
+        parser.addErrorListener(error_listener)
 
         # Start Parsing
-        tree = self.parser.start()
+        tree = parser.tree()
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
@@ -61,7 +53,3 @@ class ExplorerScriptReader:
             raise ParseError(error_listener.syntax_errors[0])
 
         return tree
-
-    def get_parser(self) -> ExplorerScriptParser:
-        assert self.parser is not None
-        return self.parser

@@ -20,4 +20,5 @@ public:
 
     SsbScriptParser::StartContext* tree();
     pybind11::object traverse(SsbScriptBaseVisitor& visitor);
+    void addErrorListener(antlr4::ANTLRErrorListener &listener);
 };

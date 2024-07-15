@@ -24,8 +24,8 @@ from __future__ import annotations
 
 from typing import overload, Literal, NoReturn, Any, Mapping
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript_parser import ExplorerScriptParser
+from explorerscript_parser.SsbScriptParser import SsbScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.utils import string_literal
 from explorerscript.ssb_converting.ssb_data_types import (

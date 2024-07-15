@@ -20,4 +20,5 @@ public:
 
     ExplorerScriptParser::StartContext* tree();
     pybind11::object traverse(ExplorerScriptBaseVisitor& visitor);
+    void addErrorListener(antlr4::ANTLRErrorListener &listener);
 };

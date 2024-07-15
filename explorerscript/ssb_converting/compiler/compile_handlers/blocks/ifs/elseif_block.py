@@ -22,9 +22,6 @@
 #
 from __future__ import annotations
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexBlockCompileHandler,
     AbstractStatementCompileHandler,
@@ -33,6 +30,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_header import IfHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class ElseIfBlockCompileHandler(
@@ -62,7 +60,7 @@ class ElseIfBlockCompileHandler(
     def collect_header_handlers(self) -> list[IfHeaderCompileHandler]:
         return self._if_header_handlers
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext] | IfHeaderCompileHandler) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)

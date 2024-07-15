@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractComplexStatementCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.operations.arg_list import ArgListCompileHandler

@@ -24,19 +24,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.ssb_converting.compiler.utils import singleline_string_literal
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class ImportVisitor(ExplorerScriptVisitor):
+class ImportVisitor(ExplorerScriptBaseVisitor):
     """Returns the list of files to import from an ExplorerScript parsing tree."""
 
     def __init__(self) -> None:
         pass
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> str:
-        return singleline_string_literal(ctx.STRING_LITERAL())
+        return singleline_string_literal(str(ctx.STRING_LITERAL()))
 
     def visitFuncdef(self, ctx: ExplorerScriptParser.FuncdefContext) -> None:
         # Are not visited.

@@ -24,8 +24,8 @@ from __future__ import annotations
 
 from enum import Enum, auto
 
-from explorerscript.antlr.SsbScriptListener import SsbScriptListener
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
+from explorerscript_parser.SsbScriptListener import SsbScriptListener
+from explorerscript_parser.SsbScriptParser import SsbScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg, parse_primitive, parse_for_target
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
