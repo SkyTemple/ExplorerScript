@@ -14,11 +14,11 @@ class ExplorerScriptParserWrapper {
     ExplorerScriptLexer* lexer;
     antlr4::CommonTokenStream* tokens;
     ExplorerScriptParser* parser;
+    ExplorerScriptParser::StartContext* tree;
 public:
-    ExplorerScriptParserWrapper(std::string& string);
+    ExplorerScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener &listener);
     ~ExplorerScriptParserWrapper();
 
-    ExplorerScriptParser::StartContext* tree();
+    ExplorerScriptParser::StartContext* getTree();
     pybind11::object traverse(ExplorerScriptBaseVisitor& visitor);
-    void addErrorListener(antlr4::ANTLRErrorListener &listener);
 };

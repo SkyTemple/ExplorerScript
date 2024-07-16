@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from explorerscript.error import ParseError
 from explorerscript.syntax_error_listener import SyntaxErrorListener
-from explorerscript_parser import ExplorerScriptParserWrapper, ExplorerScriptParser
+from explorerscript_parser import ExplorerScriptParserWrapper
 
 
 class ExplorerScriptReader:
@@ -35,16 +35,12 @@ class ExplorerScriptReader:
     def __init__(self, source_code: str):
         self.source_code = source_code
 
-    def read(self) -> ExplorerScriptParser.StartContext:
+    def read(self) -> ExplorerScriptParserWrapper:
         """
         :raises: ParseError
         """
-        parser = ExplorerScriptParserWrapper(self.source_code)
         error_listener = SyntaxErrorListener()
-        parser.addErrorListener(error_listener)
-
-        # Start Parsing
-        tree = parser.tree()
+        parser = ExplorerScriptParserWrapper(self.source_code, error_listener)
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
@@ -52,4 +48,4 @@ class ExplorerScriptReader:
             # the first screws everything over.
             raise ParseError(error_listener.syntax_errors[0])
 
-        return tree
+        return parser

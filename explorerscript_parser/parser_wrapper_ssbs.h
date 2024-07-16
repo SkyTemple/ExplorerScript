@@ -14,11 +14,11 @@ class SsbScriptParserWrapper {
     SsbScriptLexer* lexer;
     antlr4::CommonTokenStream* tokens;
     SsbScriptParser* parser;
+    SsbScriptParser::StartContext* tree;
 public:
-    SsbScriptParserWrapper(std::string& string);
+    SsbScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener &listener);
     ~SsbScriptParserWrapper();
 
-    SsbScriptParser::StartContext* tree();
+    SsbScriptParser::StartContext* getTree();
     pybind11::object traverse(SsbScriptBaseVisitor& visitor);
-    void addErrorListener(antlr4::ANTLRErrorListener &listener);
 };

@@ -79,20 +79,17 @@ class SsbScriptSsbCompiler:
         self.routine_ops = None
         self.named_coroutines = None
 
-        parser = SsbScriptParserWrapper(ssb_script_src)
         error_listener = SyntaxErrorListener()
-        parser.addErrorListener(error_listener)
+        parser = SsbScriptParserWrapper(ssb_script_src, error_listener)
         compiler_visitor = SsbScriptCompilerVisitor()
-
-        # Start Parsing
-        tree = parser.tree()
-        compiler_visitor.visit(tree)
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
             # We only return the first error, the rest is probably not relevant, since
             # the first screws everything over.
             raise ParseError(error_listener.syntax_errors[0])
+
+        parser.traverse(compiler_visitor)
 
         # Copy from listener / remove labels and label jumps
         self.routine_ops = OpsLabelJumpToRemover(compiler_visitor.routine_ops, compiler_visitor.label_offsets).routines

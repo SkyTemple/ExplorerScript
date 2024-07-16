@@ -3,29 +3,28 @@
 using namespace std;
 using namespace antlr4;
 
-ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string) {
+ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string, ANTLRErrorListener &listener) {
     this->input = new ANTLRInputStream(string);
     this->lexer = new ExplorerScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new ExplorerScriptParser(tokens);
+    this->parser->addErrorListener(&listener);
+    this->tree = this->parser->start();
 }
 
 ExplorerScriptParserWrapper::~ExplorerScriptParserWrapper() {
+    delete this->tree;
     delete this->parser;
     delete this->tokens;
     delete this->lexer;
     delete this->input;
 }
 
-ExplorerScriptParser::StartContext* ExplorerScriptParserWrapper::tree() {
-    return this->parser->start();
+ExplorerScriptParser::StartContext* ExplorerScriptParserWrapper::getTree() {
+    return this->tree;
 }
 
 pybind11::object ExplorerScriptParserWrapper::traverse(ExplorerScriptBaseVisitor& visitor) {
-    auto ret = this->tree()->accept(&visitor);
+    auto ret = this->tree->accept(&visitor);
     return std::any_cast<pybind11::object>(ret);
-}
-
-void ExplorerScriptParserWrapper::addErrorListener(ANTLRErrorListener &listener) {
-    this->parser->addErrorListener(&listener);
 }

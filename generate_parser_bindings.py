@@ -91,9 +91,6 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
 
     bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor>(m, "{target}BaseVisitor")')
     bindings.append("    .def(py::init<>())")
-    bindings.append(f'    .def("visit", []({target}BaseVisitor& self, antlr4::tree::ParseTree* tree) {{')
-    bindings.append("        return std::any_cast<pybind11::object>(self.visit(tree));")
-    bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append(f'    .def("visitChildren", []({target}BaseVisitor& self, antlr4::tree::ParseTree* node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
@@ -150,15 +147,6 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
         trampoline_class.append(f'            {params.split(' ')[1].lstrip('*')}')
         trampoline_class.append("        );")
         trampoline_class.append("    }")
-
-    trampoline_class.append("    std::any visit(antlr4::tree::ParseTree *tree) override {{")
-    trampoline_class.append("        PYBIND11_OVERRIDE(")
-    trampoline_class.append("            pybind11::object,")  # Return type
-    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
-    trampoline_class.append("            visit,")
-    trampoline_class.append("            tree")
-    trampoline_class.append("        );")
-    trampoline_class.append("    }}")
 
     trampoline_class.append("    std::any defaultResult() override {{")
     trampoline_class.append("        PYBIND11_OVERRIDE(")
@@ -286,17 +274,16 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
             f"    def {method['method_name']}(self{maybe_comma}{convert_cpp_sig_to_py(target, method['params'])}) -> {convert_cpp_ty_to_py(target, return_type)}: ..."
         )
 
-    bindings.append("    def visit(self, tree: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def visitChildren(self, node: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def defaultResult(self) -> Any: ...")
     bindings.append("    def aggregateResult(self, aggregate: Any, nextResult: Any) -> Any: ...")
     bindings.append("    def visitTerminal(self, node: Antlr4ParseTree) -> Any: ...")
 
     bindings.append(f"class {target}ParserWrapper:")
-    bindings.append("    def __init__(self, string: str) -> None: ...")
+    bindings.append("    def __init__(self, string: str, error_listener: Antlr4ErrorListener) -> None: ...")
+    bindings.append("    @property")
     bindings.append(f"    def tree(self) -> {target}Parser.StartContext: ...")
     bindings.append(f"    def traverse(self, visitor: {target}BaseVisitor) -> Any: ...")
-    bindings.append("    def addErrorListener(self, listener: Antlr4ErrorListener) -> None: ...")
 
     return "\n".join(bindings)
 
@@ -371,15 +358,13 @@ py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
     .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
-    .def(py::init<std::string&>())
-    .def("tree", &ExplorerScriptParserWrapper::tree, py::return_value_policy::reference_internal)
-    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>())
-    .def("addErrorListener", &ExplorerScriptParserWrapper::addErrorListener);
+    .def(py::init<std::string&, ANTLRErrorListener&>())
+    .def_property_readonly("tree", &ExplorerScriptParserWrapper::getTree)
+    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>());
 py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
-    .def(py::init<std::string&>())
-    .def("tree", &SsbScriptParserWrapper::tree, py::return_value_policy::reference_internal)
-    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>())
-    .def("addErrorListener", &SsbScriptParserWrapper::addErrorListener);
+    .def(py::init<std::string&, ANTLRErrorListener&>())
+    .def_property_readonly("tree", &SsbScriptParserWrapper::getTree)
+    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>());
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)
