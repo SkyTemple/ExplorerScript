@@ -13,7 +13,6 @@ ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string, AN
 }
 
 ExplorerScriptParserWrapper::~ExplorerScriptParserWrapper() {
-    delete this->tree;
     delete this->parser;
     delete this->tokens;
     delete this->lexer;

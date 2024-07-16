@@ -13,7 +13,6 @@ SsbScriptParserWrapper::SsbScriptParserWrapper(std::string& string, ANTLRErrorLi
 }
 
 SsbScriptParserWrapper::~SsbScriptParserWrapper() {
-    delete this->tree;
     delete this->parser;
     delete this->tokens;
     delete this->lexer;
