@@ -324,6 +324,3 @@ class SsbScriptCompilerVisitor(SsbScriptBaseVisitor):
                 self.routine_infos.append(None)  # type: ignore
                 self.routine_ops.append([])
                 self.named_coroutines.append([])  # type: ignore
-
-    def defaultResult(self) -> list[None]:
-        return []  # needs to not be None

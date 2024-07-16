@@ -594,7 +594,7 @@ public:
             pybind11::object,
             ExplorerScriptBaseVisitor,
             aggregateResult,
-            aggregate, nextResult
+            std::any_cast<pybind11::object>(aggregate), std::any_cast<pybind11::object>(nextResult)
         );
     }}
     std::any visitTerminal(antlr4::tree::TerminalNode * node) override {{
@@ -822,7 +822,7 @@ public:
             pybind11::object,
             SsbScriptBaseVisitor,
             aggregateResult,
-            aggregate, nextResult
+            std::any_cast<pybind11::object>(aggregate), std::any_cast<pybind11::object>(nextResult)
         );
     }}
     std::any visitTerminal(antlr4::tree::TerminalNode * node) override {{
@@ -1686,12 +1686,16 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerS
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](ExplorerScriptBaseVisitor& self) {
-        return std::any_cast<pybind11::object>(self.defaultResult());
+        auto returnValue = self.defaultResult();
+        if (!returnValue.has_value()) {
+            return (py::object) py::none();
+        }
+        return std::any_cast<pybind11::object>(returnValue);
     }, py::keep_alive<1, 2>())
     .def("visitTerminal", [](ExplorerScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
         return std::any_cast<pybind11::object>(self.visitTerminal(node));
     }, py::return_value_policy::automatic_reference)
-    .def("aggregateResult", [](ExplorerScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
+    .def("aggregateResult", [](ExplorerScriptBaseVisitor& self, pybind11::object aggregate, pybind11::object nextResult) {
         return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
     }, py::return_value_policy::automatic_reference)
     .def("visitStart", &ExplorerScriptBaseVisitor::visitStart, py::return_value_policy::reference_internal)
@@ -2012,12 +2016,16 @@ py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor>(m, "SsbScriptBaseVisito
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](SsbScriptBaseVisitor& self) {
-        return std::any_cast<pybind11::object>(self.defaultResult());
+        auto returnValue = self.defaultResult();
+        if (!returnValue.has_value()) {
+            return (py::object) py::none();
+        }
+        return std::any_cast<pybind11::object>(returnValue);
     }, py::keep_alive<1, 2>())
     .def("visitTerminal", [](SsbScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
         return std::any_cast<pybind11::object>(self.visitTerminal(node));
     }, py::return_value_policy::automatic_reference)
-    .def("aggregateResult", [](SsbScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
+    .def("aggregateResult", [](SsbScriptBaseVisitor& self, pybind11::object aggregate, pybind11::object nextResult) {
         return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
     }, py::return_value_policy::automatic_reference)
     .def("visitPos_argument", &SsbScriptBaseVisitor::visitPos_argument, py::return_value_policy::reference_internal)

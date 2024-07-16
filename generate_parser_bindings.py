@@ -98,13 +98,17 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append(f'    .def("defaultResult", []({target}BaseVisitor& self) {{')
-    bindings.append("        return std::any_cast<pybind11::object>(self.defaultResult());")
+    bindings.append("        auto returnValue = self.defaultResult();")
+    bindings.append("        if (!returnValue.has_value()) {")
+    bindings.append("            return (py::object) py::none();")
+    bindings.append("        }")
+    bindings.append("        return std::any_cast<pybind11::object>(returnValue);")
     bindings.append("    }, py::keep_alive<1, 2>())")
     bindings.append(f'    .def("visitTerminal", []({target}BaseVisitor& self, antlr4::tree::TerminalNode * node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitTerminal(node));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
     bindings.append(
-        f'    .def("aggregateResult", []({target}BaseVisitor& self, std::any aggregate, std::any nextResult) {{'
+        f'    .def("aggregateResult", []({target}BaseVisitor& self, pybind11::object aggregate, pybind11::object nextResult) {{'
     )
     bindings.append("        return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));")
     bindings.append("    }, py::return_value_policy::automatic_reference)")
@@ -182,7 +186,9 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append("            pybind11::object,")  # Return type
     trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            aggregateResult,")
-    trampoline_class.append("            aggregate, nextResult")
+    trampoline_class.append(
+        "            std::any_cast<pybind11::object>(aggregate), std::any_cast<pybind11::object>(nextResult)"
+    )
     trampoline_class.append("        );")
     trampoline_class.append("    }}")
 
