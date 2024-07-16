@@ -597,6 +597,14 @@ public:
             aggregate, nextResult
         );
     }}
+    std::any visitTerminal(antlr4::tree::TerminalNode * node) override {{
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            ExplorerScriptBaseVisitor,
+            visitTerminal,
+            node
+        );
+    }}
 };class PySsbScriptBaseVisitor : public SsbScriptBaseVisitor {
 public:
     /* Inherit the constructors */
@@ -815,6 +823,14 @@ public:
             SsbScriptBaseVisitor,
             aggregateResult,
             aggregate, nextResult
+        );
+    }}
+    std::any visitTerminal(antlr4::tree::TerminalNode * node) override {{
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            SsbScriptBaseVisitor,
+            visitTerminal,
+            node
         );
     }}
 };
@@ -1672,6 +1688,9 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerS
     .def("defaultResult", [](ExplorerScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
+    .def("visitTerminal", [](ExplorerScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
+        return std::any_cast<pybind11::object>(self.visitTerminal(node));
+    }, py::return_value_policy::automatic_reference)
     .def("aggregateResult", [](ExplorerScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
         return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
     }, py::return_value_policy::automatic_reference)
@@ -1995,6 +2014,9 @@ py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor>(m, "SsbScriptBaseVisito
     .def("defaultResult", [](SsbScriptBaseVisitor& self) {
         return std::any_cast<pybind11::object>(self.defaultResult());
     }, py::keep_alive<1, 2>())
+    .def("visitTerminal", [](SsbScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
+        return std::any_cast<pybind11::object>(self.visitTerminal(node));
+    }, py::return_value_policy::automatic_reference)
     .def("aggregateResult", [](SsbScriptBaseVisitor& self, std::any aggregate, std::any nextResult) {
         return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));
     }, py::return_value_policy::automatic_reference)
