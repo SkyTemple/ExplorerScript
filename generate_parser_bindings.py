@@ -80,7 +80,9 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
                             f'    .def("{method_name}", py::overload_cast<{method["params"].split(' ')[0]}>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)'
                         )
                     else:
-                        bindings.append(f'    .def("{method_name}", py::overload_cast<>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)')
+                        bindings.append(
+                            f'    .def("{method_name}", py::overload_cast<>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)'
+                        )
             else:
                 method = overloads[0]
                 bindings.append(
@@ -89,7 +91,9 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
 
         bindings.append(";")
 
-    bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor, antlr4::tree::ParseTreeVisitor>(m, "{target}BaseVisitor")')
+    bindings.append(
+        f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor, antlr4::tree::ParseTreeVisitor>(m, "{target}BaseVisitor")'
+    )
     bindings.append("    .def(py::init<>())")
     bindings.append(f'    .def("visitChildren", []({target}BaseVisitor& self, antlr4::tree::ParseTree* node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
@@ -287,6 +291,7 @@ def generate_stubs(target: str, classes: Classes, visitor_methods: list[MethodDe
             f"    def {method['method_name']}(self{maybe_comma}{convert_cpp_sig_to_py(target, method['params'])}) -> {convert_cpp_ty_to_py(target, return_type)}: ..."
         )
 
+    bindings.append("    def visit(self, tree: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def visitChildren(self, node: Antlr4ParseTree) -> Any: ...")
     bindings.append("    def defaultResult(self) -> Any: ...")
     bindings.append("    def aggregateResult(self, aggregate: Any, nextResult: Any) -> Any: ...")

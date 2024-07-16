@@ -54,7 +54,7 @@ namespaces = false
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-    "explorerscript/antlr/*"
+    "antlr4/*"
 ]
 
 [tools.ruff.lint]
