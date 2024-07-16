@@ -48,6 +48,7 @@ class SyntaxErrorListener(Antlr4ErrorListener):
 
     def __init__(self):  # type: ignore
         self._syntax_errors = []
+        super().__init__()
 
     @property
     def syntax_errors(self) -> Sequence[AntlrSyntaxError]:

@@ -21,6 +21,6 @@ explorerscript_parser/pybind_explorerscript_parser.cpp explorerscript_parser/__i
 	ruff format explorerscript_parser/__init__.pyi
 
 explorerscript-installed: explorerscript_parser/pybind_explorerscript_parser.cpp ExternalAntlr4Cpp.cmake CMakeLists.txt pyproject.toml setup.py
-	pip install .
+	pip install . -v
 
 all: exps ssbscript explorerscript_parser/pybind_explorerscript_parser.cpp explorerscript_parser/__init__.pyi explorerscript-installed

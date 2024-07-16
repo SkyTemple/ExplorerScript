@@ -46,6 +46,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptBaseVisitor):
         for name in self._in_macros.keys():
             self._create_vertex(name)
         self._active_macro_name = None
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[str]:
         self.visitChildren(ctx)

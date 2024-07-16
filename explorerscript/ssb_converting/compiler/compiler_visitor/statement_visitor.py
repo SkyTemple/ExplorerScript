@@ -139,6 +139,7 @@ class StatementVisitor(ExplorerScriptBaseVisitor):
             NullCompileHandler(Antlr4ParserRuleContext(), self.compiler_ctx),
             root_handler,
         ]
+        super().__init__()
 
     def visitCntrl_stmt(self, ctx: ExplorerScriptParser.Cntrl_stmtContext) -> Any:
         return self._push_handler_and_add(ctx, ControlStatementCompileHandler)
@@ -321,3 +322,6 @@ class StatementVisitor(ExplorerScriptBaseVisitor):
         assert id(h.ctx) == id(ctx), _("Fatal compilation error: Unexpected compilation handler on stack.")
         assert not isinstance(h, NullCompileHandler), _("Fatal compilation error: Stack error.")
         return retval, h
+
+    def defaultResult(self) -> list[None]:
+        return []  # needs to not be None

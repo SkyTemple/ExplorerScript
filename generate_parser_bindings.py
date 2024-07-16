@@ -149,7 +149,7 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
         trampoline_class.append("    }")
 
     trampoline_class.append("    std::any visit(antlr4::tree::ParseTree *tree) override {{")
-    trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
+    trampoline_class.append("        PYBIND11_OVERRIDE(")
     trampoline_class.append("            pybind11::object,")  # Return type
     trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            visit,")
@@ -158,7 +158,7 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append("    }}")
 
     trampoline_class.append("    std::any defaultResult() override {{")
-    trampoline_class.append("        PYBIND11_OVERRIDE_PURE(")
+    trampoline_class.append("        PYBIND11_OVERRIDE(")
     trampoline_class.append("            pybind11::object,")  # Return type
     trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            defaultResult")
@@ -310,7 +310,8 @@ def main() -> None:
 
     with open(os.path.join(out_path, "pybind_explorerscript_parser.cpp"), "w") as f:
         f.write(
-            """#include <pybind11/pybind11.h>
+            """#define PYBIND11_DETAILED_ERROR_MESSAGES
+#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
@@ -329,6 +330,8 @@ namespace py = pybind11;
 
 class PyErrorListener : public ANTLRErrorListener {
 public:
+    PyErrorListener() {}
+
     void syntaxError(Recognizer *recognizer, Token * offendingSymbol, size_t line, size_t charPositionInLine, const std::string &msg, std::exception_ptr e) override {
         PYBIND11_OVERRIDE_PURE(
             void,
@@ -349,18 +352,19 @@ public:
 PYBIND11_MODULE(explorerscript_parser, m) {
 
 py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
+    .def(py::init<>())
     .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
     .def(py::init<std::string&>())
-    .def("tree", &ExplorerScriptParserWrapper::tree, py::keep_alive<1, 2>())
+    .def("tree", &ExplorerScriptParserWrapper::tree, py::return_value_policy::reference_internal)
     .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>())
-    .def("addErrorListener", &ExplorerScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
+    .def("addErrorListener", &ExplorerScriptParserWrapper::addErrorListener);
 py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
     .def(py::init<std::string&>())
-    .def("tree", &SsbScriptParserWrapper::tree, py::keep_alive<1, 2>())
+    .def("tree", &SsbScriptParserWrapper::tree, py::return_value_policy::reference_internal)
     .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>())
-    .def("addErrorListener", &SsbScriptParserWrapper::addErrorListener, py::keep_alive<1, 2>());
+    .def("addErrorListener", &SsbScriptParserWrapper::addErrorListener);
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)

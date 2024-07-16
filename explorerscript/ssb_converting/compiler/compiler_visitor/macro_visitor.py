@@ -65,6 +65,7 @@ class MacroVisitor(ExplorerScriptBaseVisitor):
         self.macro_resolution_order = macro_resolution_order
 
         self._root_handler = None
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}

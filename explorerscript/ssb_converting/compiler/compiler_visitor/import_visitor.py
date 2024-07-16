@@ -32,7 +32,7 @@ class ImportVisitor(ExplorerScriptBaseVisitor):
     """Returns the list of files to import from an ExplorerScript parsing tree."""
 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> str:
         return singleline_string_literal(str(ctx.STRING_LITERAL()))

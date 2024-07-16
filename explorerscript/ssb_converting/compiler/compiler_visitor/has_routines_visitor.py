@@ -31,7 +31,7 @@ class HasRoutinesVisitor(ExplorerScriptBaseVisitor):
     """Visitor that returns whether or not the ExplorerScript tree contains any routines."""
 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> bool:
         # Are not visited.
