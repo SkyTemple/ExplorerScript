@@ -1686,12 +1686,8 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor>(m, "ExplorerS
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](ExplorerScriptBaseVisitor& self) {
-        auto returnValue = self.defaultResult();
-        if (!returnValue.has_value()) {
-            return (py::object) py::none();
-        }
-        return std::any_cast<pybind11::object>(returnValue);
-    }, py::keep_alive<1, 2>())
+        return std::any_cast<pybind11::object>(self.defaultResult());
+    }, py::return_value_policy::automatic_reference)
     .def("visitTerminal", [](ExplorerScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
         return std::any_cast<pybind11::object>(self.visitTerminal(node));
     }, py::return_value_policy::automatic_reference)
@@ -2016,12 +2012,8 @@ py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor>(m, "SsbScriptBaseVisito
         return std::any_cast<pybind11::object>(self.visitChildren(node));
     }, py::return_value_policy::automatic_reference)
     .def("defaultResult", [](SsbScriptBaseVisitor& self) {
-        auto returnValue = self.defaultResult();
-        if (!returnValue.has_value()) {
-            return (py::object) py::none();
-        }
-        return std::any_cast<pybind11::object>(returnValue);
-    }, py::keep_alive<1, 2>())
+        return std::any_cast<pybind11::object>(self.defaultResult());
+    }, py::return_value_policy::automatic_reference)
     .def("visitTerminal", [](SsbScriptBaseVisitor& self, antlr4::tree::TerminalNode * node) {
         return std::any_cast<pybind11::object>(self.visitTerminal(node));
     }, py::return_value_policy::automatic_reference)
