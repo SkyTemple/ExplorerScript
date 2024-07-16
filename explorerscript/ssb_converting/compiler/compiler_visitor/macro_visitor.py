@@ -69,7 +69,7 @@ class MacroVisitor(ExplorerScriptBaseVisitor):
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}
-        handlers = [child.accept(self) for child in ctx.macrodef()]
+        handlers = [self.visit(child) for child in ctx.macrodef()]
         for handler in sorted(handlers, key=lambda h: self.macro_resolution_order.index(h.get_name())):
             m: ExplorerScriptMacro = self.visitMacrodef_children(handler)
             self.compiler_ctx.macros[m.name] = m
@@ -97,7 +97,7 @@ class MacroVisitor(ExplorerScriptBaseVisitor):
     def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
         assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
+            StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)
 
     def defaultResult(self) -> None:
         return None

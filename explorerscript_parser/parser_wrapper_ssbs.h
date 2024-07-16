@@ -16,7 +16,7 @@ class SsbScriptParserWrapper {
     SsbScriptParser* parser;
     SsbScriptParser::StartContext* tree;
 public:
-    SsbScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener &listener);
+    SsbScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener* listener);
     ~SsbScriptParserWrapper();
 
     SsbScriptParser::StartContext* getTree();

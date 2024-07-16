@@ -77,37 +77,41 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
                 for method in overloads:
                     if method["params"]:
                         bindings.append(
-                            f'    .def("{method_name}", py::overload_cast<{method["params"].split(' ')[0]}>(&{class_name}::{method_name}))'
+                            f'    .def("{method_name}", py::overload_cast<{method["params"].split(' ')[0]}>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)'
                         )
                     else:
-                        bindings.append(f'    .def("{method_name}", py::overload_cast<>(&{class_name}::{method_name}))')
+                        bindings.append(f'    .def("{method_name}", py::overload_cast<>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)')
             else:
                 method = overloads[0]
                 bindings.append(
-                    f'    .def("{method_name}", &{class_name}::{method_name}, py::return_value_policy::automatic_reference)'
+                    f'    .def("{method_name}", &{class_name}::{method_name}, py::return_value_policy::reference_internal)'
                 )
 
         bindings.append(";")
 
-    bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor>(m, "{target}BaseVisitor")')
+    bindings.append(f'py::class_<{target}BaseVisitor, Py{target}BaseVisitor, antlr4::tree::ParseTreeVisitor>(m, "{target}BaseVisitor")')
     bindings.append("    .def(py::init<>())")
     bindings.append(f'    .def("visitChildren", []({target}BaseVisitor& self, antlr4::tree::ParseTree* node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitChildren(node));")
-    bindings.append("    }, py::return_value_policy::automatic_reference)")
+    bindings.append("    }, py::return_value_policy::reference_internal, py::keep_alive<1, 2>())")
+
     bindings.append(f'    .def("defaultResult", []({target}BaseVisitor& self) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.defaultResult());")
     bindings.append("    }, py::keep_alive<1, 2>())")
     bindings.append(f'    .def("visitTerminal", []({target}BaseVisitor& self, antlr4::tree::TerminalNode * node) {{')
     bindings.append("        return std::any_cast<pybind11::object>(self.visitTerminal(node));")
-    bindings.append("    }, py::return_value_policy::automatic_reference)")
+    bindings.append("    }, py::return_value_policy::reference_internal, py::keep_alive<1, 2>())")
     bindings.append(
         f'    .def("aggregateResult", []({target}BaseVisitor& self, pybind11::object aggregate, pybind11::object nextResult) {{'
     )
     bindings.append("        return std::any_cast<pybind11::object>(self.aggregateResult(aggregate, nextResult));")
-    bindings.append("    }, py::return_value_policy::automatic_reference)")
+    bindings.append("    }, py::return_value_policy::reference_internal)")
+    bindings.append(f'    .def("visit", []({target}BaseVisitor& self, antlr4::tree::ParseTree* tree) {{')
+    bindings.append("        return std::any_cast<pybind11::object>(self.visit(tree));")
+    bindings.append("    }, py::return_value_policy::reference_internal, py::keep_alive<1, 2>())")
     for method in visitor_methods:
         bindings.append(
-            f'    .def("{method["method_name"]}", &{target}BaseVisitor::{method["method_name"]}, py::return_value_policy::reference_internal)'
+            f'    .def("{method["method_name"]}", &{target}BaseVisitor::{method["method_name"]}, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)'
         )
     bindings.append(";")
 
@@ -182,6 +186,15 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
     trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
     trampoline_class.append("            visitTerminal,")
     trampoline_class.append("            node")
+    trampoline_class.append("        );")
+    trampoline_class.append("    }}")
+
+    trampoline_class.append("    std::any visit(antlr4::tree::ParseTree *tree) override {{")
+    trampoline_class.append("        PYBIND11_OVERRIDE(")
+    trampoline_class.append("            pybind11::object,")  # Return type
+    trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
+    trampoline_class.append("            visit,")
+    trampoline_class.append("            tree")
     trampoline_class.append("        );")
     trampoline_class.append("    }}")
 
@@ -353,22 +366,24 @@ public:
             + """
 PYBIND11_MODULE(explorerscript_parser, m) {
 
+py::class_<antlr4::tree::ParseTreeVisitor>(m, "Antlr4TreeParseTreeVisitor");
+
 py::class_<ANTLRErrorListener, PyErrorListener>(m, "Antlr4ErrorListener")
     .def(py::init<>())
     .def("syntaxError", &ANTLRErrorListener::syntaxError, py::return_value_policy::reference_internal);
 
 py::class_<ExplorerScriptParserWrapper>(m, "ExplorerScriptParserWrapper")
-    .def(py::init<std::string&, ANTLRErrorListener&>())
-    .def_property_readonly("tree", &ExplorerScriptParserWrapper::getTree)
-    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def(py::init<std::string&, ANTLRErrorListener*>(), py::keep_alive<1, 3>())
+    .def_property_readonly("tree", &ExplorerScriptParserWrapper::getTree, py::return_value_policy::reference_internal)
+    .def("traverse", &ExplorerScriptParserWrapper::traverse, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal);
 py::class_<SsbScriptParserWrapper>(m, "SsbScriptParserWrapper")
-    .def(py::init<std::string&, ANTLRErrorListener&>())
-    .def_property_readonly("tree", &SsbScriptParserWrapper::getTree)
-    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>());
+    .def(py::init<std::string&, ANTLRErrorListener*>(), py::keep_alive<1, 3>())
+    .def_property_readonly("tree", &SsbScriptParserWrapper::getTree, py::return_value_policy::reference_internal)
+    .def("traverse", &SsbScriptParserWrapper::traverse, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal);
 
 py::class_<antlr4::tree::TerminalNode>(m, "Antlr4TreeTerminalNode")
     .def("__str__", &antlr4::tree::TerminalNode::toString)
-    .def_property_readonly("symbol", &antlr4::tree::TerminalNode::getSymbol);
+    .def_property_readonly("symbol", &antlr4::tree::TerminalNode::getSymbol, py::return_value_policy::reference_internal);
 
 py::class_<antlr4::Token>(m, "Antlr4Token")
     .def("__str__", &antlr4::Token::toString)
@@ -385,8 +400,8 @@ py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
     .def(py::init<>())
-    .def_property_readonly("start", &antlr4::ParserRuleContext::getStart)
-    .def_property_readonly("stop", &antlr4::ParserRuleContext::getStop);
+    .def_property_readonly("start", &antlr4::ParserRuleContext::getStart, py::return_value_policy::reference_internal)
+    .def_property_readonly("stop", &antlr4::ParserRuleContext::getStop, py::return_value_policy::reference_internal);
 
 
 """

@@ -3,12 +3,12 @@
 using namespace std;
 using namespace antlr4;
 
-SsbScriptParserWrapper::SsbScriptParserWrapper(std::string& string, ANTLRErrorListener &listener) {
+SsbScriptParserWrapper::SsbScriptParserWrapper(std::string& string, ANTLRErrorListener* listener) {
     this->input = new ANTLRInputStream(string);
     this->lexer = new SsbScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new SsbScriptParser(tokens);
-    this->parser->addErrorListener(&listener);
+    this->parser->addErrorListener(listener);
     this->tree = this->parser->start();
 }
 

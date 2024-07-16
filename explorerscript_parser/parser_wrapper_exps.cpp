@@ -3,12 +3,12 @@
 using namespace std;
 using namespace antlr4;
 
-ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string, ANTLRErrorListener &listener) {
+ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string, ANTLRErrorListener* listener) {
     this->input = new ANTLRInputStream(string);
     this->lexer = new ExplorerScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new ExplorerScriptParser(tokens);
-    this->parser->addErrorListener(&listener);
+    this->parser->addErrorListener(listener);
     this->tree = this->parser->start();
 }
 

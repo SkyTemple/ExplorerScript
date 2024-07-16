@@ -16,7 +16,7 @@ class ExplorerScriptParserWrapper {
     ExplorerScriptParser* parser;
     ExplorerScriptParser::StartContext* tree;
 public:
-    ExplorerScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener &listener);
+    ExplorerScriptParserWrapper(std::string& string, antlr4::ANTLRErrorListener* listener);
     ~ExplorerScriptParserWrapper();
 
     ExplorerScriptParser::StartContext* getTree();

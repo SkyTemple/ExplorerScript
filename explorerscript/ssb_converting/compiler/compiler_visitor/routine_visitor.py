@@ -130,7 +130,7 @@ class RoutineVisitor(ExplorerScriptBaseVisitor):
     def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
         assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
+            StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)
 
     def visitPrimitive(self, ctx: ExplorerScriptParser.PrimitiveContext) -> None:
         assert isinstance(self._root_handler, ForTargetDefCompileHandler)
