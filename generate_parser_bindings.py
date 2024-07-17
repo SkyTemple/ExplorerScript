@@ -330,8 +330,7 @@ def main() -> None:
 
     with open(os.path.join(out_path, "pybind_explorerscript_parser.cpp"), "w") as f:
         f.write(
-            """#define PYBIND11_DETAILED_ERROR_MESSAGES
-#include <pybind11/pybind11.h>
+            """#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
