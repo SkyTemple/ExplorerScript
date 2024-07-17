@@ -1,4 +1,3 @@
-#define PYBIND11_DETAILED_ERROR_MESSAGES
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
@@ -866,6 +865,8 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
     .def_property_readonly("stopIndex", &antlr4::Token::getStopIndex)
     .def_property_readonly("text", &antlr4::Token::getText);
 
+py::class_<std::exception_ptr>(m, "CppExceptionPtr");
+py::class_<antlr4::Recognizer>(m, "Antlr4Recognizer");
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")

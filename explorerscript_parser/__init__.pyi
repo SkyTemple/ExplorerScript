@@ -2,11 +2,20 @@ from typing import Any, TypeAlias, overload
 
 Unknown: TypeAlias = Any
 
+class CppExceptionPtr: ...
+
 class Antlr4ErrorListener:
     def syntaxError(
-        self, recognizer: Any, offendingSymbol: Antlr4Token, line: int, charPositionInLine: int, msg: str, e: Any
+        self,
+        recognizer: Antlr4Recognizer,
+        offendingSymbol: Antlr4Token,
+        line: int,
+        charPositionInLine: int,
+        msg: str,
+        e: CppExceptionPtr,
     ) -> None: ...
 
+class Antlr4Recognizer: ...
 class Antlr4ParseTree: ...
 class Antlr4RuleContext(Antlr4ParseTree): ...
 

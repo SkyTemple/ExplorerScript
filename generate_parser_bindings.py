@@ -400,6 +400,8 @@ py::class_<antlr4::Token>(m, "Antlr4Token")
     .def_property_readonly("stopIndex", &antlr4::Token::getStopIndex)
     .def_property_readonly("text", &antlr4::Token::getText);
 
+py::class_<std::exception_ptr>(m, "CppExceptionPtr");
+py::class_<antlr4::Recognizer>(m, "Antlr4Recognizer");
 py::class_<antlr4::tree::ParseTree>(m, "Antlr4ParseTree");
 py::class_<antlr4::RuleContext, antlr4::tree::ParseTree>(m, "Antlr4RuleContext");
 py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleContext")
@@ -420,8 +422,10 @@ py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleC
                 [
                     "from typing import Any, TypeAlias, overload",
                     "Unknown: TypeAlias = Any",
+                    "class CppExceptionPtr: ...",
                     "class Antlr4ErrorListener:",
-                    "    def syntaxError(self, recognizer: Any, offendingSymbol: Antlr4Token, line: int, charPositionInLine: int, msg: str, e: Any) -> None: ...",
+                    "    def syntaxError(self, recognizer: Antlr4Recognizer, offendingSymbol: Antlr4Token, line: int, charPositionInLine: int, msg: str, e: CppExceptionPtr) -> None: ...",
+                    "class Antlr4Recognizer: ...",
                     "class Antlr4ParseTree: ...",
                     "class Antlr4RuleContext(Antlr4ParseTree): ...",
                     "class Antlr4ParserRuleContext(Antlr4RuleContext):",
