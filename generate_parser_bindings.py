@@ -461,6 +461,24 @@ py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleC
         f.write("\n")
         f.write(generate_stubs("SsbScript", ssbs_classes, ssbs_visitor_methods))
 
+    # Add the `defaultResult` method to the visitor if it's not present yet
+    with open(os.path.join(out_path, "ExplorerScriptBaseVisitor.h"), "r") as f:
+        visitor_contents = f.read()
+
+    if not 'virtual std::any defaultResult() override' in visitor_contents:
+        # Remove the "};" at the end of the file
+        visitor_contents = visitor_contents.strip().strip('};')
+        visitor_contents += """
+  virtual std::any defaultResult() override {
+    return static_cast<pybind11::object>(pybind11::none());
+  }
+};"""
+
+        if not '#include <pybind11/pybind11.h>' in visitor_contents:
+            visitor_contents = visitor_contents.replace('#include "antlr4-runtime.h"', '#include <pybind11/pybind11.h>\n#include "antlr4-runtime.h"')
+
+        with open(os.path.join(out_path, "ExplorerScriptBaseVisitor.h"), "w") as f:
+            f.write(visitor_contents)
 
 if __name__ == "__main__":
     main()

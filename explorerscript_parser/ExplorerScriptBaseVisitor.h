@@ -1,9 +1,9 @@
-
 // Generated from ExplorerScript.g4 by ANTLR 4.13.0
 
 #pragma once
 
 
+#include <pybind11/pybind11.h>
 #include "antlr4-runtime.h"
 #include "ExplorerScriptVisitor.h"
 
@@ -280,5 +280,8 @@ public:
   }
 
 
-};
 
+  virtual std::any defaultResult() override {
+    return static_cast<pybind11::object>(pybind11::none());
+  }
+};

@@ -108,5 +108,4 @@ class MacroResolutionOrderVisitor(ExplorerScriptBaseVisitor):
         # TODO: can be done more efficiently
         return len(b.graph.get_all_simple_paths(a, b)) > 0
 
-    def defaultResult(self) -> None:
-        return None
+

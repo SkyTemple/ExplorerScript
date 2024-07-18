@@ -99,5 +99,4 @@ class MacroVisitor(ExplorerScriptBaseVisitor):
         for stmt_ctx in ctx.stmt():
             StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)
 
-    def defaultResult(self) -> None:
-        return None
+

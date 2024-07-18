@@ -323,5 +323,3 @@ class StatementVisitor(ExplorerScriptBaseVisitor):
         assert not isinstance(h, NullCompileHandler), _("Fatal compilation error: Stack error.")
         return retval, h
 
-    def defaultResult(self) -> None:
-        return None
