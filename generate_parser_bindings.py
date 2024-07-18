@@ -420,7 +420,12 @@ py::class_<antlr4::ParserRuleContext, antlr4::RuleContext>(m, "Antlr4ParserRuleC
         f.write(
             "\n".join(
                 [
-                    "from typing import Any, TypeAlias, overload",
+                    "import sys",
+                    "from typing import Any, overload",
+                    "if sys.version_info >= (3, 10):",
+                    "    from typing import TypeAlias",
+                    "else:",
+                    "    from typing_extensions import TypeAlias",
                     "Unknown: TypeAlias = Any",
                     "class CppExceptionPtr: ...",
                     "class Antlr4ErrorListener:",

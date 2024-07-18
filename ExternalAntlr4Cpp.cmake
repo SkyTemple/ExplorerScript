@@ -1,4 +1,5 @@
 # Forked from antlr4/runtime/Cpp/cmake/ExternalAntlr4Cpp.cmake to use local submodule instead of re-fetching sources.
+# Also enabled PIC
 
 cmake_minimum_required(VERSION 3.7)
 
@@ -96,6 +97,7 @@ ExternalProject_Add(
     SOURCE_DIR ${ANTLR4_ROOT}
     SOURCE_SUBDIR runtime/Cpp
     CMAKE_CACHE_ARGS
+        -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
         -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}
         -DDISABLE_WARNINGS:BOOL=ON

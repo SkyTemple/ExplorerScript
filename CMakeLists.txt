@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15...3.29)
 project(explorerscript LANGUAGES CXX)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
+
 if(APPLE)
     execute_process(
         COMMAND brew --prefix llvm
@@ -18,6 +20,10 @@ if(APPLE)
     endif()
 endif()
 
+if(MSVC)
+    set(CMAKE_SUPPORT_WINDOWS_EXPORT_ALL_SYMBOLS 1)
+endif()
+
 file(GLOB plugin_src
     "./explorerscript_parser/*.cpp"
 )
@@ -26,6 +32,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
+add_definitions(-DANTLR4CPP_STATIC)
+set(ANTLR4_WITH_STATIC_CRT OFF)
 include(./ExternalAntlr4Cpp.cmake)
 include_directories(${ANTLR4_INCLUDE_DIRS})
 pybind11_add_module(explorerscript_parser ${plugin_src})

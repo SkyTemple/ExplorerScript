@@ -5,4 +5,5 @@ recursive-include explorerscript_parser *.cpp
 recursive-include explorerscript_parser *.h
 recursive-include explorerscript_parser *.g4
 include CMakeLists.txt
+include ExternalAntlr4Cpp.cmake
 graft antlr4
