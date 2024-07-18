@@ -195,7 +195,10 @@ jobs:
 
   deploy:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs:
+      - build
+      - test
+      - typechecks
     runs-on: ubuntu-latest
     name: Deploy wheels to PyPI
     steps:
