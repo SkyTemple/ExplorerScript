@@ -45,9 +45,8 @@ jump: JUMP AT IDENTIFIER;
 call: CALL AT IDENTIFIER;
 macro_call: MACRO_CALL OPEN_PAREN arglist? CLOSE_PAREN ';';
 
-// a ctx block needs exactly one simple statement, we enforce this on parser level.
 // warning: the parser also accepts labels, which isn't valid!
-ctx_block: WITH OPEN_PAREN ctx_header CLOSE_PAREN OPEN_BRACE simple_stmt CLOSE_BRACE;
+ctx_block: WITH OPEN_PAREN ctx_header CLOSE_PAREN OPEN_BRACE simple_stmt* CLOSE_BRACE;
 
 if_block: IF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE elseif_block* else_block?;
 elseif_block: ELSEIF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;

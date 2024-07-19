@@ -75,50 +75,58 @@ _SupportedHandlers: TypeAlias = Union[
 class CtxBlockCompileHandler(
     AbstractComplexStatementCompileHandler[ExplorerScriptParser.Ctx_blockContext, _SupportedHandlers]
 ):
-    """Collects the lives/object/actor opcodes and the opcode after that"""
+    """
+    Compiles a `with` block.
+    The compiled code contains pairs of an lives/object/performer opcode and an opcode that reference the given actor/object/performer.
+    """
 
     def __init__(self, ctx: ExplorerScriptParser.Ctx_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._for_id: SsbOpParam | None = None
-        self._sub_stmt: _SupportedHandlers | None = None
+        self._sub_stmts: list[_SupportedHandlers] = []
 
     def collect(self) -> list[SsbOperation]:
         ops = []
         if self._for_id is None:
             raise SsbCompilerError(_("No target ID set for with(){} block."))
-        if self._sub_stmt is None:
-            raise SsbCompilerError(_("A with(){} block needs exactly one statement."))
+
+        if len(self._sub_stmts) == 0:
+            raise SsbCompilerError(_("A with(){} block needs at least one statement."))
+
         for_type = str(self.ctx.ctx_header().IDENTIFIER())
 
-        if for_type == "actor":
-            ops.append(self._generate_operation(OPS_CTX_LIVES, [self._for_id]))
-        elif for_type == "object":
-            ops.append(self._generate_operation(OPS_CTX_OBJECT, [self._for_id]))
-        elif for_type == "performer":
-            ops.append(self._generate_operation(OPS_CTX_PERFORMER, [self._for_id]))
-        else:
-            raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
+        for sub_stmt in self._sub_stmts:
+            if for_type == "actor":
+                ops.append(self._generate_operation(OPS_CTX_LIVES, [self._for_id]))
+            elif for_type == "object":
+                ops.append(self._generate_operation(OPS_CTX_OBJECT, [self._for_id]))
+            elif for_type == "performer":
+                ops.append(self._generate_operation(OPS_CTX_PERFORMER, [self._for_id]))
+            else:
+                raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
 
-        assert not isinstance(self._sub_stmt, IntegerLikeCompileHandler)
+            assert not isinstance(sub_stmt, IntegerLikeCompileHandler)
+            sub_ops = sub_stmt.collect()
+            if len(sub_ops) != 1:
+                if isinstance(sub_stmt, OperationCompileHandler):
+                    if sub_stmt.ctx.inline_ctx() is not None:
+                        # Provide a more specific error when an inline context is used in the operation.
+                        raise SsbCompilerError(
+                            _(
+                                "Operations inside with(){} blocks cannot contain an inline `actor`, `object` or `performer` context."
+                            )
+                        )
 
-        sub_ops = self._sub_stmt.collect()
-        if len(sub_ops) != 1:
-            if isinstance(self._sub_stmt, OperationCompileHandler):
-                if self._sub_stmt.ctx.inline_ctx() is not None:
-                    # Provide a more specific error when an inline context is used in the operation.
+                assert not isinstance(sub_stmt, IntegerLikeCompileHandler)
+                sub_ops = sub_stmt.collect()
+                if len(sub_ops) != 1:
                     raise SsbCompilerError(
                         _(
-                            "Operations inside with(){} blocks cannot contain an inline `actor`, `object` or `performer` context."
+                            "Each statement inside a with(){} block needs to contain exactly one binary operation. "
+                            "The handler for it generated multiple operations."
                         )
                     )
-
-            raise SsbCompilerError(
-                _(
-                    "A with(){} block needs exactly one binary operation. "
-                    "The handler for it generated multiple operations."
-                )
-            )
-        ops += sub_ops
+                ops += sub_ops
 
         return ops
 
@@ -132,8 +140,7 @@ class CtxBlockCompileHandler(
             or isinstance(obj, CallCompileHandler)
             or isinstance(obj, AbstractAssignmentCompileHandler)
         ):
-            self._check_sub_stmt()
-            self._sub_stmt = obj
+            self._sub_stmts.append(obj)
             return
         if isinstance(obj, LabelCompileHandler):
             raise SsbCompilerError(_("A with(){} block can not contain labels."))
@@ -144,7 +151,3 @@ class CtxBlockCompileHandler(
             return
 
         self._raise_add_error(obj)
-
-    def _check_sub_stmt(self) -> None:
-        if self._sub_stmt is not None:
-            raise SsbCompilerError(_("A with(){} block needs exactly one statement."))
