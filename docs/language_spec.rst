@@ -949,7 +949,7 @@ performer) to run the operation in.
 
 Macro call
 ~~~~~~~~~~
-A macro call calls a macro (duh!). See the documentation on macros
+A macro call calls a macro. See the documentation on macros
 (below) for more information. Macro calls start with ``~``.
 
 .. code:: ExplorerScript
