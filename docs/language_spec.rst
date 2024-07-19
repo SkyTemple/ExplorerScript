@@ -27,9 +27,6 @@ The lexer and parser specifications can be found in the
 
 .. _`SkyTemple`: https://github.com/SkyTemple
 
-..  contents:: Index
-    :depth: 3
-
 Routines
 --------
 Every script file contains a collection of routines (and/or macros).

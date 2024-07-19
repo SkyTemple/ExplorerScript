@@ -1,2 +1,2 @@
-sphinx_rtd_theme
+furo
 . # rtd reads this from one directory down, so "." is the project itself

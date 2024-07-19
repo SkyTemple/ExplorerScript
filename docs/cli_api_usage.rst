@@ -15,9 +15,6 @@ This document mostly focuses on the CLI interface.
 
 .. _skytemple-files: https://github.com/SkyTemple/skytemple-files/blob/master/skytemple_files/script/ssb
 
-..  contents:: Index
-    :depth: 3
-
 SSB Data Structure
 ------------------
 The compiler and decompiler work with a JSON-encoded structure to represent
