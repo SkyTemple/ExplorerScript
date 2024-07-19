@@ -8,6 +8,7 @@ SsbScriptParserWrapper::SsbScriptParserWrapper(std::string& string, ANTLRErrorLi
     this->lexer = new SsbScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new SsbScriptParser(tokens);
+    this->parser->getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     this->parser->removeErrorListeners();
     this->parser->addErrorListener(listener);
     this->tree = this->parser->start();
