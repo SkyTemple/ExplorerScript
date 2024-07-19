@@ -799,8 +799,8 @@ constants).
 
     .. code:: ExplorerScript
 
-        macro example($var) {
-            $var = 3; // $SCENARIO_MAIN is now 3.
+        macro example(%var) {
+            %var = 3; // $SCENARIO_MAIN is now 3.
         }
 
         def 0 {
@@ -1040,7 +1040,7 @@ Macros are small functions that can be specified by the user.
 They have a name and can take a list of arguments.
 When called these arguments get filled with the values
 of the parameters specified in the call and turn into
-macro variables. Macro variables have the prefix ``$``.
+macro variables. Macro variables have the prefix ``%``.
 
 When compiled, the entire content of a macro is copied to where
 the call was in the source code, the actual compiled code does not
@@ -1053,13 +1053,13 @@ Using imports you can share macros across multiple source files.
 
 .. code:: ExplorerScript
 
-    macro another_example($anotherVariable) {
-        another_print($anotherVariable);
+    macro another_example(%anotherVariable) {
+        another_print(%anotherVariable);
     }
 
-    macro example($variable1, $variable2) {
-        print($variable1, $variable2);
-        ~another_example($variable1);
+    macro example(%variable1, %variable2) {
+        print(%variable1, %variable2);
+        ~another_example(%variable1);
     }
 
     def 0 {
@@ -1082,8 +1082,7 @@ This example is equivalent to:
 
 .. admonition:: SkyTemple
 
-   SkyTemple uses the ``$`` prefix for both macro variables
-   and game variables. Please note that these two are, as explained,
+   Game variables and macro variables are not the same, they are
    not interchangeable. Game variables are actually constants for
    integers that refer to the variables and macro variables
    can have game variable constants as values!
@@ -1091,5 +1090,11 @@ This example is equivalent to:
    See the warning at the "Assignment" section for more info
    on this behaviour.
 
-   To avoid confusing game variables and macro variables,
-   you should use lowercase or camel case names for macro variables.
+.. note::
+
+   Macro variables can also use the prefix ``$`` for backwards-compatibility
+   with old ExplorerScript releases. This prefix should not be used anymore,
+   it is deprecated and support for it may be removed in future versions.
+
+   Macro variables with the same name refer to the same variable regardless of
+   prefix (``$foo`` or ``%foo`` would both refer to the variable named 'foo').

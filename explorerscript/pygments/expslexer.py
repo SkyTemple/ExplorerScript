@@ -98,9 +98,8 @@ class ExplorerScriptLexer(RegexLexer):
         "root": [
             (words(KEYWORDS, suffix=r"\b"), Name.Builtin),
             include("comments"),
-            (r"\$[a-zA-Z_][0-9a-zA-Z_]*", Name.Variable),
-            (r"§[a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
-            (r"@[a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
+            (r"[$%][a-zA-Z_][0-9a-zA-Z_]*", Name.Variable),
+            (r"[§@][a-zA-Z_][0-9a-zA-Z_]*", Name.Label),
             (r"[a-zA-Z_][0-9a-zA-Z_]*", Name),
             include("numbers"),
             ('"""', String, "mdq_string"),
