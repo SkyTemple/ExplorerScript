@@ -126,7 +126,7 @@ class CtxBlockCompileHandler(
                             "The handler for it generated multiple operations."
                         )
                     )
-                ops += sub_ops
+            ops += sub_ops
 
         return ops
 
