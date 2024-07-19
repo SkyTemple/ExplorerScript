@@ -8,6 +8,7 @@ ExplorerScriptParserWrapper::ExplorerScriptParserWrapper(std::string& string, AN
     this->lexer = new ExplorerScriptLexer(input);
     this->tokens = new CommonTokenStream(lexer);
     this->parser = new ExplorerScriptParser(tokens);
+    this->parser->removeErrorListeners();
     this->parser->addErrorListener(listener);
     this->tree = this->parser->start();
 }
