@@ -22,10 +22,126 @@
 #
 from __future__ import annotations
 
+from typing import overload, Literal, NoReturn, Any
+
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.error import SsbCompilerError
+from explorerscript.ssb_converting.compiler.utils import string_literal
+from explorerscript.ssb_converting.ssb_data_types import (
+    SsbOpParam,
+    SsbOpParamFixedPoint,
+    SsbOpParamConstant,
+    SsbOpParamConstString,
+    SsbOpParamLanguageString,
+)
 from explorerscript.util import exps_int, _
+
+
+@overload
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: Literal[True] = True,
+    allow_string: Literal[True] = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+@overload
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: Literal[True] = ...,
+    allow_string: Literal[False],
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant: ...
+
+
+@overload
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: Literal[False],
+    allow_string: Literal[True],
+) -> SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+@overload
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: Literal[False],
+    allow_string: Literal[False],
+) -> NoReturn: ...
+
+
+@overload  # https://github.com/python/mypy/issues/14764
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: bool = True,
+    allow_string: bool = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+def parse_primitive(
+    primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
+    *,
+    allow_integer_like: bool = True,
+    allow_string: bool = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString:
+    if primitive.INTEGER():
+        if not allow_integer_like:
+            raise SsbCompilerError(_("Integer not allowed at this position."))
+        return exps_int(str(primitive.INTEGER()))
+    if primitive.DECIMAL():
+        if not allow_integer_like:
+            raise SsbCompilerError(_("Decimal not allowed at this position."))
+        return SsbOpParamFixedPoint.from_str(str(primitive.DECIMAL()))
+    if primitive.IDENTIFIER():
+        if not allow_integer_like:
+            raise SsbCompilerError(_("Constant not allowed at this position."))
+        return SsbOpParamConstant(str(primitive.IDENTIFIER()))
+    if primitive.VARIABLE():
+        if not allow_integer_like:
+            raise SsbCompilerError(_("Variable or constant not allowed at this position."))
+        return SsbOpParamConstant(str(primitive.VARIABLE()))
+    if primitive.string():
+        if not allow_string:
+            raise SsbCompilerError(_("String not allowed at this position."))
+        return _parse_string(primitive.string())
+    raise SsbCompilerError("Unknown primitive.")
+
+
+def is_primitive_string(v: Any) -> bool:
+    return isinstance(v, SsbOpParamLanguageString) or isinstance(v, SsbOpParamConstString)
+
+
+def _parse_string(
+    value: ExplorerScriptParser.StringContext | SsbScriptParser.StringContext,
+) -> SsbOpParamConstString | SsbOpParamLanguageString:
+    if value.lang_string():
+        return _parse_lang_string(value.lang_string())
+    elif value.string_value():
+        return SsbOpParamConstString(string_literal(value.string_value()))
+    raise SsbCompilerError("Invalid string, neither literal nor language string")
+
+
+def _parse_lang_string(
+    value: ExplorerScriptParser.Lang_stringContext | SsbScriptParser.Lang_stringContext,
+) -> SsbOpParamLanguageString:
+    language_dict = {}
+    for argument in value.lang_string_argument():
+        language_dict[str(argument.IDENTIFIER())] = string_literal(argument.string_value())
+    return SsbOpParamLanguageString(language_dict)
+
+
+def parse_for_target(value: SsbOpParam) -> tuple[int, str | None]:
+    if isinstance(value, int):
+        return exps_int(value), None
+    elif isinstance(value, SsbOpParamConstant):
+        return -1, str(value)
+    else:
+        raise SsbCompilerError(_("Invalid target for routine."))
 
 
 def parse_position_marker_arg(

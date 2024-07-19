@@ -36,16 +36,14 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
     ConditionalOperatorCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperator, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OP_BRANCH_VARIABLE, OP_BRANCH, OP_BRANCH_VALUE
 from explorerscript.util import _
 
-_SupportedHandler: TypeAlias = Union[
-    IntegerLikeCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler
-]
+_SupportedHandler: TypeAlias = Union[PrimitiveCompileHandler, ConditionalOperatorCompileHandler, ValueOfCompileHandler]
 
 
 class IfHeaderOperatorCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h_opContext, _SupportedHandler]):
@@ -78,14 +76,14 @@ class IfHeaderOperatorCompileHandler(AbstractCompileHandler[ExplorerScriptParser
         )
 
     def add(self, obj: _SupportedHandler) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             if self.var_target is None:
                 # integer_like[0] -> variable
-                self.var_target = obj.collect()
+                self.var_target = obj.collect(allow_string=False)
                 return
             if self.value is None:
                 # (integer_like[1] | value_of) -> var to set to
-                self.value = obj.collect()
+                self.value = obj.collect(allow_string=False)
                 self.value_is_a_variable = False
                 return
             raise SsbCompilerError("Assignment: unexpected INTEGER_LIKE.")

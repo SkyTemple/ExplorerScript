@@ -25,7 +25,7 @@ from __future__ import annotations
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractIntegerAssignmentCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import OPS_FLAG__CLEAR
@@ -45,9 +45,9 @@ class AssignmentClearCompileHandler(
 
         return [self._generate_operation(OPS_FLAG__CLEAR, [self.var_target])]
 
-    def add(self, obj: IntegerLikeCompileHandler) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self.var_target = obj.collect()
+    def add(self, obj: PrimitiveCompileHandler) -> None:
+        if isinstance(obj, PrimitiveCompileHandler):
+            self.var_target = obj.collect(allow_string=False)
             return
 
         self._raise_add_error(obj)

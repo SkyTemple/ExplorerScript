@@ -28,7 +28,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import Abs
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_operator import (
     AssignOperatorCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbCalcOperator
@@ -45,7 +45,7 @@ from explorerscript.util import exps_int, f, _
 class AssignmentRegularCompileHandler(
     AbstractAssignmentCompileHandler[
         ExplorerScriptParser.Assignment_regularContext,
-        "IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler",
+        "PrimitiveCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler",
     ]
 ):
     def __init__(self, ctx: ExplorerScriptParser.Assignment_regularContext, compiler_ctx: CompilerCtx):
@@ -83,16 +83,16 @@ class AssignmentRegularCompileHandler(
             return [self._generate_operation(OPS_FLAG__SET, [self.var_target, self.value])]
         return [self._generate_operation(OPS_FLAG__CALC_VALUE, [self.var_target, self.operator.value, self.value])]
 
-    def add(self, obj: IntegerLikeCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler) -> None:
+    def add(self, obj: PrimitiveCompileHandler | AssignOperatorCompileHandler | ValueOfCompileHandler) -> None:
         # assign_operator -> operator
-        if isinstance(obj, IntegerLikeCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             if self.var_target is None:
                 # integer_like[0] -> variable
-                self.var_target = obj.collect()
+                self.var_target = obj.collect(allow_string=False)
                 return
             if self.value is None:
                 # (integer_like[1] | value_of) -> var to set to
-                self.value = obj.collect()
+                self.value = obj.collect(allow_string=False)
                 self.value_is_a_variable = False
                 return
             raise SsbCompilerError("Assignment: unexpected INTEGER_LIKE.")

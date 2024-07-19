@@ -27,13 +27,12 @@ from typing import Union
 from antlr4 import ParserRuleContext
 
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 
-_SupportedHandlers = Union[IntegerLikeCompileHandler, StringCompileHandler, PositionMarkerCompileHandler]
+_SupportedHandlers = Union[PrimitiveCompileHandler, PositionMarkerCompileHandler]
 
 
 class ArgCompileHandler(AbstractCompileHandler[ParserRuleContext, _SupportedHandlers]):
@@ -46,11 +45,7 @@ class ArgCompileHandler(AbstractCompileHandler[ParserRuleContext, _SupportedHand
         return self.arg_handler.collect()
 
     def add(self, obj: _SupportedHandlers) -> None:
-        if (
-            isinstance(obj, IntegerLikeCompileHandler)
-            or isinstance(obj, StringCompileHandler)
-            or isinstance(obj, PositionMarkerCompileHandler)
-        ):
+        if isinstance(obj, PrimitiveCompileHandler) or isinstance(obj, PositionMarkerCompileHandler):
             self.arg_handler = obj
             return
         self._raise_add_error(obj)

@@ -38,7 +38,7 @@ from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpPara
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump, OP_JUMP
 
 if TYPE_CHECKING:
-    from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+    from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 
 
 def handler_is_for_statement(obj: object) -> bool:
@@ -122,7 +122,7 @@ class AbstractAssignmentCompileHandler(AbstractComplexStatementCompileHandler[CT
     pass
 
 
-AbstractIntegerAssignmentCompileHandler: TypeAlias = AbstractAssignmentCompileHandler[CTX, "IntegerLikeCompileHandler"]
+AbstractIntegerAssignmentCompileHandler: TypeAlias = AbstractAssignmentCompileHandler[CTX, "PrimitiveCompileHandler"]
 
 
 class AbstractComplexBlockCompileHandler(AbstractComplexStatementCompileHandler[CTX, HANDL], ABC):

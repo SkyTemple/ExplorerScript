@@ -61,18 +61,13 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.assignment_op
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.conditional_operator import (
     ConditionalOperatorCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import LabelCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string import LangStringCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.lang_string_arg import (
-    LangStringArgumentCompileHandler,
-)
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
     PositionMarkerArgCompileHandler,
 )
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.scn_var import ScnVarCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.value_of import ValueOfCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ctxs.ctx_block import CtxBlockCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.else_block import ElseBlockCompileHandler
@@ -268,8 +263,8 @@ class StatementVisitor(ExplorerScriptVisitor):
     def visitAssign_operator(self, ctx: ExplorerScriptParser.Assign_operatorContext) -> Any:
         return self._push_handler_and_add(ctx, AssignOperatorCompileHandler)
 
-    def visitInteger_like(self, ctx: ExplorerScriptParser.Integer_likeContext) -> Any:
-        return self._push_handler_and_add(ctx, IntegerLikeCompileHandler)
+    def visitPrimitive(self, ctx: ExplorerScriptParser.PrimitiveContext) -> Any:
+        return self._push_handler_and_add(ctx, PrimitiveCompileHandler)
 
     def visitOperation(self, ctx: ExplorerScriptParser.OperationContext) -> Any:
         return self._push_handler_and_add(ctx, OperationCompileHandler)
@@ -290,13 +285,13 @@ class StatementVisitor(ExplorerScriptVisitor):
         return self._push_handler_and_add(ctx, LabelCompileHandler)
 
     def visitString(self, ctx: ExplorerScriptParser.StringContext) -> Any:
-        return self._push_handler_and_add(ctx, StringCompileHandler)
+        pass  # Strings are handled by the PrimitiveCompileHandler directly.
 
     def visitLang_string(self, ctx: ExplorerScriptParser.Lang_stringContext) -> Any:
-        return self._push_handler_and_add(ctx, LangStringCompileHandler)
+        pass  # Strings are handled by the PrimitiveCompileHandler directly.
 
     def visitLang_string_argument(self, ctx: ExplorerScriptParser.Lang_string_argumentContext) -> Any:
-        return self._push_handler_and_add(ctx, LangStringArgumentCompileHandler)
+        pass  # Strings are handled by the PrimitiveCompileHandler directly.
 
     def visitMacro_call(self, ctx: ExplorerScriptParser.Macro_callContext) -> Any:
         return self._push_handler_and_add(ctx, MacroCallCompileHandler)

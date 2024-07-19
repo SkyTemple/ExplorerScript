@@ -31,7 +31,7 @@ import SsbCommon;
  * parser rules
  */
 
-pos_argument: integer_like | string | position_marker | jump_marker;
+pos_argument: primitive | position_marker | jump_marker;
 
 jump_marker: AT IDENTIFIER;
 

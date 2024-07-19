@@ -26,7 +26,7 @@ from enum import Enum, auto
 
 from explorerscript.antlr.SsbScriptListener import SsbScriptListener
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
-from explorerscript.common_syntax import parse_position_marker_arg
+from explorerscript.common_syntax import parse_position_marker_arg, parse_primitive, parse_for_target
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.utils import singleline_string_literal, string_literal
@@ -109,13 +109,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
     def exitFor_target_def(self, ctx: SsbScriptParser.For_target_defContext) -> None:
         self._active_routine_id = exps_int(str(ctx.INTEGER()))
         self._enlarge_routine_info()
-        linked_to = -1
-        linked_to_name = None
-        integer_like = str(ctx.integer_like().children[0])
-        try:
-            linked_to = exps_int(integer_like)
-        except ValueError:
-            linked_to_name = integer_like
+        linked_to, linked_to_name = parse_for_target(parse_primitive(ctx.primitive(), allow_string=False))
 
         target: SsbScriptParser.For_target_def_targetContext = ctx.for_target_def_target()
         legacy_deprecated_target = target.FOR_TARGET()
@@ -255,7 +249,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
                 self._collected_pos_marker.y_offset = offset
                 self._collected_pos_marker.y_relative = relative
 
-    def exitInteger_like(self, ctx: SsbScriptParser.Integer_likeContext) -> None:
+    def exitPrimitive(self, ctx: SsbScriptParser.PrimitiveContext) -> None:
         if self._is_processing_argument:
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
@@ -269,6 +263,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
             elif ctx.VARIABLE():
                 self._argument_type = ListenerArgType.VARIABLE
                 self._argument_value = str(ctx.VARIABLE())
+            # Strings are processed in exitString/exitLang_string
 
     def exitJump_marker(self, ctx: SsbScriptParser.Jump_markerContext) -> None:
         if self._is_processing_argument:

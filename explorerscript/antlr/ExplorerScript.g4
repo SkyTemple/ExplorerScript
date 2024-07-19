@@ -53,42 +53,42 @@ elseif_block: ELSEIF NOT? OPEN_PAREN if_header (OR if_header)* CLOSE_PAREN OPEN_
 else_block: ELSE OPEN_BRACE stmt* CLOSE_BRACE;
 if_header: (if_h_op | if_h_bit | if_h_negatable | if_h_scn | operation);
 if_h_negatable: NOT? (DEBUG | EDIT | VARIATION);
-if_h_op: integer_like conditional_operator ( value_of | integer_like );
-if_h_bit: NOT? integer_like OPEN_BRACKET INTEGER CLOSE_BRACKET;
+if_h_op: primitive conditional_operator ( value_of | primitive );
+if_h_bit: NOT? primitive OPEN_BRACKET INTEGER CLOSE_BRACKET;
 if_h_scn: scn_var conditional_operator OPEN_BRACKET INTEGER COMMA INTEGER CLOSE_BRACKET;
 
 switch_block: SWITCH OPEN_PAREN switch_header CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
-message_switch_block: (MESSAGE_SWITCH_TALK | MESSAGE_SWITCH_MONOLOGUE) OPEN_PAREN integer_like CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
+message_switch_block: (MESSAGE_SWITCH_TALK | MESSAGE_SWITCH_MONOLOGUE) OPEN_PAREN primitive CLOSE_PAREN OPEN_BRACE (default | single_case_block)* CLOSE_BRACE;
 // Either a list of statements (regular switch+case/default) or just one string (message_Switch* + case/default)
-single_case_block: CASE case_header COLON (stmt* | string);
-default: DEFAULT COLON (stmt* | string);
+single_case_block: CASE case_header COLON (stmt* | primitive);
+default: DEFAULT COLON (stmt* | primitive);
 
-switch_header: integer_like | operation | switch_h_scn | switch_h_random | switch_h_dungeon_mode | switch_h_sector;
+switch_header: primitive | operation | switch_h_scn | switch_h_random | switch_h_dungeon_mode | switch_h_sector;
 switch_h_scn: scn_var OPEN_BRACKET INTEGER CLOSE_BRACKET;
-switch_h_random: RANDOM OPEN_PAREN integer_like CLOSE_PAREN;
-switch_h_dungeon_mode: DUNGEON_MODE OPEN_PAREN integer_like CLOSE_PAREN;
+switch_h_random: RANDOM OPEN_PAREN primitive CLOSE_PAREN;
+switch_h_dungeon_mode: DUNGEON_MODE OPEN_PAREN primitive CLOSE_PAREN;
 switch_h_sector: SECTOR OPEN_PAREN CLOSE_PAREN;
 
-case_header: integer_like | case_h_menu | case_h_menu2 | case_h_op;
-case_h_menu: MENU OPEN_PAREN string CLOSE_PAREN;
-case_h_menu2: MENU2 OPEN_PAREN integer_like CLOSE_PAREN;
-case_h_op: conditional_operator ( value_of | integer_like );
+case_header: primitive | case_h_menu | case_h_menu2 | case_h_op;
+case_h_menu: MENU OPEN_PAREN primitive CLOSE_PAREN;
+case_h_menu2: MENU2 OPEN_PAREN primitive CLOSE_PAREN;
+case_h_op: conditional_operator ( value_of | primitive );
 
 forever_block: FOREVER OPEN_BRACE stmt* CLOSE_BRACE;
 for_block: FOR OPEN_PAREN simple_stmt if_header ';' simple_stmt CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
 while_block: WHILE NOT? OPEN_PAREN if_header CLOSE_PAREN OPEN_BRACE stmt* CLOSE_BRACE;
 
 assignment: assignment_regular | assignment_clear | assignment_initial | assignment_reset | assignment_adv_log | assignment_dungeon_mode | assignment_scn;
-assignment_regular: integer_like (OPEN_BRACKET INTEGER CLOSE_BRACKET)? assign_operator (integer_like | value_of);
-assignment_clear: CLEAR integer_like;
-assignment_initial: INIT integer_like;
+assignment_regular: primitive (OPEN_BRACKET INTEGER CLOSE_BRACKET)? assign_operator (primitive | value_of);
+assignment_clear: CLEAR primitive;
+assignment_initial: INIT primitive;
 assignment_reset: RESET (DUNGEON_RESULT | scn_var);
-assignment_adv_log: ADVENTURE_LOG ASSIGN integer_like;
-assignment_dungeon_mode: DUNGEON_MODE OPEN_PAREN integer_like CLOSE_PAREN ASSIGN integer_like;
-assignment_scn: integer_like ASSIGN SCN OPEN_BRACKET INTEGER COMMA INTEGER CLOSE_BRACKET;
+assignment_adv_log: ADVENTURE_LOG ASSIGN primitive;
+assignment_dungeon_mode: DUNGEON_MODE OPEN_PAREN primitive CLOSE_PAREN ASSIGN primitive;
+assignment_scn: primitive ASSIGN SCN OPEN_BRACKET INTEGER COMMA INTEGER CLOSE_BRACKET;
 
-value_of: VALUE OPEN_PAREN integer_like CLOSE_PAREN;
-scn_var: SCN OPEN_PAREN integer_like CLOSE_PAREN;
+value_of: VALUE OPEN_PAREN primitive CLOSE_PAREN;
+scn_var: SCN OPEN_PAREN primitive CLOSE_PAREN;
 
 conditional_operator
  : OP_FALSE
@@ -140,6 +140,7 @@ JUMP: 'jump';
 CALL: 'call';
 
 IMPORT: 'import';
+CONST: 'const';
 MACRO: 'macro';
 IF: 'if';
 ELSEIF: 'elseif';

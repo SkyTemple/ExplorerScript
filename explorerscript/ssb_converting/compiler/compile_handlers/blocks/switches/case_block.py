@@ -31,7 +31,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexStatementCompileHandler,
     AbstractStatementCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.string import StringCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.blocks.switches.case_header import CaseHeaderCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
@@ -42,7 +42,7 @@ from explorerscript.util import _
 class CaseBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
         ExplorerScriptParser.Single_case_blockContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | StringCompileHandler",
+        "AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler",
     ]
 ):
     """Handles a switch case block for a switch."""
@@ -50,7 +50,7 @@ class CaseBlockCompileHandler(
     def __init__(self, ctx: ExplorerScriptParser.Single_case_blockContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self._case_header_handler: CaseHeaderCompileHandler | None = None
-        self._added_string_handler: StringCompileHandler | None = None
+        self._added_string_handler: PrimitiveCompileHandler | None = None
         self.is_message_case = False
         # The end of the switch
         self._end_label: SsbLabel | None = None
@@ -83,14 +83,15 @@ class CaseBlockCompileHandler(
         assert self._added_string_handler is not None
         if not self.is_message_case:
             raise SsbCompilerError(_("Invalid message switch case call."))
-        return self._added_string_handler.collect()
+        return self._added_string_handler.collect(allow_integer_like=False)
 
     def collect_header_handler(self) -> CaseHeaderCompileHandler:
         assert self._case_header_handler is not None
         return self._case_header_handler
 
     def add(
-        self, obj: AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | StringCompileHandler
+        self,
+        obj: AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler,
     ) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
@@ -100,7 +101,7 @@ class CaseBlockCompileHandler(
         if isinstance(obj, CaseHeaderCompileHandler):
             self._case_header_handler = obj
             return
-        if isinstance(obj, StringCompileHandler):
+        if isinstance(obj, PrimitiveCompileHandler):
             # This is a case for a message switch.
             self.is_message_case = True
             self._added_string_handler = obj

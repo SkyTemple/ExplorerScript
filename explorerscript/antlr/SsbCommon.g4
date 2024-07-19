@@ -36,13 +36,13 @@ start: funcdef* EOF;
 funcdef: coro_def | simple_def | for_target_def;
 simple_def: DEF INTEGER func_suite;
 coro_def: CORO IDENTIFIER func_suite;
-for_target_def: DEF INTEGER for_target_def_target OPEN_PAREN? integer_like CLOSE_PAREN? func_suite;
+for_target_def: DEF INTEGER for_target_def_target OPEN_PAREN? primitive CLOSE_PAREN? func_suite;
 
 // In SSBScript identifiers and variables are not distinguished.
 // For ExplorerScript:
 //   Variables and identifier are treated the same in funcdefs but may or may not be different things
 //   in macros, depending on if they are defined in the header or not.
-integer_like: DECIMAL | INTEGER | IDENTIFIER | VARIABLE;
+primitive: DECIMAL | INTEGER | IDENTIFIER | VARIABLE | string;
 
 stmt: (operation | label) ';';
 operation: IDENTIFIER inline_ctx? OPEN_PAREN arglist? CLOSE_PAREN;
@@ -52,7 +52,7 @@ func_suite: OPEN_BRACE (stmt+ | func_alias) CLOSE_BRACE;
 func_alias: ALIAS PREVIOUS ';';
 
 arglist: pos_argument (',' pos_argument)*  (',')?;
-pos_argument: integer_like | string | position_marker;
+pos_argument: primitive | position_marker;
 
 position_marker: POSITION OPEN_SHARP STRING_LITERAL ',' position_marker_arg ',' position_marker_arg CLOSE_SHARP;
 position_marker_arg: INTEGER | DECIMAL;
@@ -64,7 +64,7 @@ lang_string: OPEN_BRACE lang_string_argument (',' lang_string_argument)* (',')? 
 lang_string_argument: IDENTIFIER ASSIGN string_value;
 string_value: MULTILINE_STRING_LITERAL | STRING_LITERAL;
 
-ctx_header: IDENTIFIER integer_like;
+ctx_header: IDENTIFIER primitive;
 
 for_target_def_target
   : (FOR IDENTIFIER)

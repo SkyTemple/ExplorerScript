@@ -29,7 +29,7 @@ from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyCompileHandler
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.coro_def import CoroDefCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.for_target_def import ForTargetDefCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.functions.simple_def import SimpleDefCompileHandler
@@ -53,7 +53,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
 
     _active_routine_id: int
     _root_handler: (
-        ForTargetDefCompileHandler | CoroDefCompileHandler | SimpleDefCompileHandler | IntegerLikeCompileHandler | None
+        ForTargetDefCompileHandler | CoroDefCompileHandler | SimpleDefCompileHandler | PrimitiveCompileHandler | None
     )
 
     def __init__(self, performance_progress_list_var_name: str, macros: dict[str, ExplorerScriptMacro]):
@@ -117,9 +117,9 @@ class RoutineVisitor(ExplorerScriptVisitor):
         for stmt_ctx in ctx.stmt():
             stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
 
-    def visitInteger_like(self, ctx: ExplorerScriptParser.Integer_likeContext) -> None:
+    def visitPrimitive(self, ctx: ExplorerScriptParser.PrimitiveContext) -> None:
         assert isinstance(self._root_handler, ForTargetDefCompileHandler)
-        self._root_handler.add(IntegerLikeCompileHandler(ctx, self.compiler_ctx))
+        self._root_handler.add(PrimitiveCompileHandler(ctx, self.compiler_ctx))
 
     def _enlarge_routine_info(self) -> None:
         if len(self.routine_infos) - 1 < self._active_routine_id:

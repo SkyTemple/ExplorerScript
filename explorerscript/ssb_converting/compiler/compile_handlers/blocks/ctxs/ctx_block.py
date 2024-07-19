@@ -36,18 +36,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractAssignmentCompileHandler,
     AbstractComplexStatementCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import (
-    IntegerLikeCompileHandler,
-)
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import (
-    LabelCompileHandler,
-)
-from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import (
-    OperationCompileHandler,
-)
-from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import (
-    CallCompileHandler,
-)
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.label import LabelCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.operations.operation import OperationCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.statements.call import CallCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.statements.control_statement import (
     ControlStatementCompileHandler,
 )
@@ -68,7 +60,7 @@ _SupportedHandlers: TypeAlias = Union[
     ControlStatementCompileHandler,
     JumpCompileHandler,
     CallCompileHandler,
-    IntegerLikeCompileHandler,
+    PrimitiveCompileHandler,
 ]
 
 
@@ -105,7 +97,7 @@ class CtxBlockCompileHandler(
             else:
                 raise SsbCompilerError(f(_("Invalid with(){{}} target type '{for_type}'.")))
 
-            assert not isinstance(sub_stmt, IntegerLikeCompileHandler)
+            assert not isinstance(sub_stmt, PrimitiveCompileHandler)
             sub_ops = sub_stmt.collect()
             if len(sub_ops) != 1:
                 if isinstance(sub_stmt, OperationCompileHandler):
@@ -117,7 +109,7 @@ class CtxBlockCompileHandler(
                             )
                         )
 
-                assert not isinstance(sub_stmt, IntegerLikeCompileHandler)
+                assert not isinstance(sub_stmt, PrimitiveCompileHandler)
                 sub_ops = sub_stmt.collect()
                 if len(sub_ops) != 1:
                     raise SsbCompilerError(
@@ -146,8 +138,8 @@ class CtxBlockCompileHandler(
             raise SsbCompilerError(_("A with(){} block can not contain labels."))
 
         # integer_like (for for_id)
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self._for_id = obj.collect()
+        if isinstance(obj, PrimitiveCompileHandler):
+            self._for_id = obj.collect(allow_string=False)
             return
 
         self._raise_add_error(obj)

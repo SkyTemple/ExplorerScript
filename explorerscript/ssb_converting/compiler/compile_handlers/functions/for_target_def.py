@@ -27,12 +27,13 @@ from typing import Any
 from antlr4 import ParserRuleContext
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript.common_syntax import parse_for_target
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractFuncdefCompileHandler,
     AbstractCompileHandler,
 )
-from explorerscript.ssb_converting.compiler.compile_handlers.atoms.integer_like import IntegerLikeCompileHandler
+from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbRoutineType, SsbOpParam
 from explorerscript.util import exps_int
@@ -47,13 +48,8 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptPar
 
     def collect(self) -> Any:
         """Collects routine info and operations."""
-        linked_to = -1
-        linked_to_name = None
-        integer_like = self._linked_to_target
-        try:
-            linked_to = exps_int(integer_like)  # type: ignore
-        except ValueError:
-            linked_to_name = integer_like.name  # type: ignore
+        assert self._linked_to_target is not None
+        linked_to, linked_to_name = parse_for_target(self._linked_to_target)
 
         target: ExplorerScriptParser.For_target_def_targetContext = self.ctx.for_target_def_target()
         legacy_deprecated_target = target.FOR_TARGET()
@@ -72,8 +68,11 @@ class ForTargetDefCompileHandler(AbstractFuncdefCompileHandler[ExplorerScriptPar
     def get_new_routine_id(self, old_id: int) -> int:
         return exps_int(str(self.ctx.INTEGER()))
 
-    def add(self, obj: IntegerLikeCompileHandler | AbstractCompileHandler[ParserRuleContext, Any]) -> None:
-        if isinstance(obj, IntegerLikeCompileHandler):
-            self._linked_to_target = obj.collect()
+    def add(self, obj: PrimitiveCompileHandler | AbstractCompileHandler[ParserRuleContext, Any]) -> None:
+        if isinstance(obj, PrimitiveCompileHandler):
+            try:
+                self._linked_to_target = obj.collect(allow_string=False)
+            except SsbCompilerError:
+                raise SsbCompilerError("Invalid target for routine.")
             return
         super().add(obj)
