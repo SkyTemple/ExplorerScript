@@ -15,42 +15,42 @@ public:
     T__0 = 1, OP_FALSE = 2, OP_TRUE = 3, ASSIGN = 4, OPEN_SHARP = 5, CLOSE_SHARP = 6, 
     OP_EQ = 7, OP_LE = 8, OP_GE = 9, OP_NEQ = 10, OP_AND = 11, OP_XOR = 12, 
     OP_BICH = 13, OP_MINUS = 14, OP_PLUS = 15, OP_MULTIPLY = 16, OP_DIVIDE = 17, 
-    OR = 18, NOT = 19, JUMP = 20, CALL = 21, IMPORT = 22, MACRO = 23, IF = 24, 
-    ELSEIF = 25, ELSE = 26, FOREVER = 27, WITH = 28, SWITCH = 29, RETURN = 30, 
-    END = 31, HOLD = 32, CONTINUE = 33, BREAK = 34, BREAK_LOOP = 35, VALUE = 36, 
-    DEBUG = 37, EDIT = 38, VARIATION = 39, RANDOM = 40, SECTOR = 41, DUNGEON_MODE = 42, 
-    MENU2 = 43, MENU = 44, CASE = 45, DEFAULT = 46, CLEAR = 47, RESET = 48, 
-    INIT = 49, SCN = 50, DUNGEON_RESULT = 51, ADVENTURE_LOG = 52, MESSAGE_SWITCH_TALK = 53, 
-    MESSAGE_SWITCH_MONOLOGUE = 54, WHILE = 55, OPEN_BRACKET = 56, CLOSE_BRACKET = 57, 
-    STRING_LITERAL = 58, MULTILINE_STRING_LITERAL = 59, FOR_TARGET = 60, 
-    CORO = 61, DEF = 62, FOR_ACTOR = 63, FOR_OBJECT = 64, FOR_PERFORMER = 65, 
-    ALIAS = 66, FOR = 67, PREVIOUS = 68, POSITION = 69, IDENTIFIER = 70, 
-    VARIABLE = 71, MACRO_CALL = 72, INTEGER = 73, DECIMAL_INTEGER = 74, 
-    OCT_INTEGER = 75, HEX_INTEGER = 76, BIN_INTEGER = 77, OPEN_PAREN = 78, 
-    CLOSE_PAREN = 79, COMMA = 80, COLON = 81, PLUS = 82, AT = 83, PARAGRAPH = 84, 
-    OPEN_BRACE = 85, CLOSE_BRACE = 86, DECIMAL = 87, SKIP_ = 88, UNKNOWN_CHAR = 89
+    OR = 18, NOT = 19, JUMP = 20, CALL = 21, IMPORT = 22, CONST = 23, MACRO = 24, 
+    IF = 25, ELSEIF = 26, ELSE = 27, FOREVER = 28, WITH = 29, SWITCH = 30, 
+    RETURN = 31, END = 32, HOLD = 33, CONTINUE = 34, BREAK = 35, BREAK_LOOP = 36, 
+    VALUE = 37, DEBUG = 38, EDIT = 39, VARIATION = 40, RANDOM = 41, SECTOR = 42, 
+    DUNGEON_MODE = 43, MENU2 = 44, MENU = 45, CASE = 46, DEFAULT = 47, CLEAR = 48, 
+    RESET = 49, INIT = 50, SCN = 51, DUNGEON_RESULT = 52, ADVENTURE_LOG = 53, 
+    MESSAGE_SWITCH_TALK = 54, MESSAGE_SWITCH_MONOLOGUE = 55, WHILE = 56, 
+    OPEN_BRACKET = 57, CLOSE_BRACKET = 58, STRING_LITERAL = 59, MULTILINE_STRING_LITERAL = 60, 
+    FOR_TARGET = 61, CORO = 62, DEF = 63, FOR_ACTOR = 64, FOR_OBJECT = 65, 
+    FOR_PERFORMER = 66, ALIAS = 67, FOR = 68, PREVIOUS = 69, POSITION = 70, 
+    IDENTIFIER = 71, VARIABLE = 72, MACRO_CALL = 73, INTEGER = 74, DECIMAL_INTEGER = 75, 
+    OCT_INTEGER = 76, HEX_INTEGER = 77, BIN_INTEGER = 78, OPEN_PAREN = 79, 
+    CLOSE_PAREN = 80, COMMA = 81, COLON = 82, PLUS = 83, AT = 84, PARAGRAPH = 85, 
+    OPEN_BRACE = 86, CLOSE_BRACE = 87, DECIMAL = 88, SKIP_ = 89, UNKNOWN_CHAR = 90
   };
 
   enum {
-    RuleStart = 0, RuleImport_stmt = 1, RuleMacrodef = 2, RuleStmt = 3, 
-    RuleSimple_stmt = 4, RuleCntrl_stmt = 5, RuleJump = 6, RuleCall = 7, 
-    RuleMacro_call = 8, RuleCtx_block = 9, RuleIf_block = 10, RuleElseif_block = 11, 
-    RuleElse_block = 12, RuleIf_header = 13, RuleIf_h_negatable = 14, RuleIf_h_op = 15, 
-    RuleIf_h_bit = 16, RuleIf_h_scn = 17, RuleSwitch_block = 18, RuleMessage_switch_block = 19, 
-    RuleSingle_case_block = 20, RuleDefault = 21, RuleSwitch_header = 22, 
-    RuleSwitch_h_scn = 23, RuleSwitch_h_random = 24, RuleSwitch_h_dungeon_mode = 25, 
-    RuleSwitch_h_sector = 26, RuleCase_header = 27, RuleCase_h_menu = 28, 
-    RuleCase_h_menu2 = 29, RuleCase_h_op = 30, RuleForever_block = 31, RuleFor_block = 32, 
-    RuleWhile_block = 33, RuleAssignment = 34, RuleAssignment_regular = 35, 
-    RuleAssignment_clear = 36, RuleAssignment_initial = 37, RuleAssignment_reset = 38, 
-    RuleAssignment_adv_log = 39, RuleAssignment_dungeon_mode = 40, RuleAssignment_scn = 41, 
-    RuleValue_of = 42, RuleScn_var = 43, RuleConditional_operator = 44, 
-    RuleAssign_operator = 45, RuleFuncdef = 46, RuleSimple_def = 47, RuleCoro_def = 48, 
-    RuleFor_target_def = 49, RuleInteger_like = 50, RuleOperation = 51, 
-    RuleInline_ctx = 52, RuleFunc_suite = 53, RuleFunc_alias = 54, RuleArglist = 55, 
-    RulePos_argument = 56, RulePosition_marker = 57, RulePosition_marker_arg = 58, 
-    RuleLabel = 59, RuleString = 60, RuleLang_string = 61, RuleLang_string_argument = 62, 
-    RuleString_value = 63, RuleCtx_header = 64, RuleFor_target_def_target = 65
+    RuleStart = 0, RuleImport_stmt = 1, RuleConstant_assign = 2, RuleMacrodef = 3, 
+    RuleStmt = 4, RuleSimple_stmt = 5, RuleCntrl_stmt = 6, RuleJump = 7, 
+    RuleCall = 8, RuleMacro_call = 9, RuleCtx_block = 10, RuleIf_block = 11, 
+    RuleElseif_block = 12, RuleElse_block = 13, RuleIf_header = 14, RuleIf_h_negatable = 15, 
+    RuleIf_h_op = 16, RuleIf_h_bit = 17, RuleIf_h_scn = 18, RuleSwitch_block = 19, 
+    RuleMessage_switch_block = 20, RuleSingle_case_block = 21, RuleDefault = 22, 
+    RuleSwitch_header = 23, RuleSwitch_h_scn = 24, RuleSwitch_h_random = 25, 
+    RuleSwitch_h_dungeon_mode = 26, RuleSwitch_h_sector = 27, RuleCase_header = 28, 
+    RuleCase_h_menu = 29, RuleCase_h_menu2 = 30, RuleCase_h_op = 31, RuleForever_block = 32, 
+    RuleFor_block = 33, RuleWhile_block = 34, RuleAssignment = 35, RuleAssignment_regular = 36, 
+    RuleAssignment_clear = 37, RuleAssignment_initial = 38, RuleAssignment_reset = 39, 
+    RuleAssignment_adv_log = 40, RuleAssignment_dungeon_mode = 41, RuleAssignment_scn = 42, 
+    RuleValue_of = 43, RuleScn_var = 44, RuleConditional_operator = 45, 
+    RuleAssign_operator = 46, RuleFuncdef = 47, RuleSimple_def = 48, RuleCoro_def = 49, 
+    RuleFor_target_def = 50, RulePrimitive = 51, RuleOperation = 52, RuleInline_ctx = 53, 
+    RuleFunc_suite = 54, RuleFunc_alias = 55, RuleArglist = 56, RulePos_argument = 57, 
+    RulePosition_marker = 58, RulePosition_marker_arg = 59, RuleLabel = 60, 
+    RuleString = 61, RuleLang_string = 62, RuleLang_string_argument = 63, 
+    RuleString_value = 64, RuleCtx_header = 65, RuleFor_target_def_target = 66
   };
 
   explicit ExplorerScriptParser(antlr4::TokenStream *input);
@@ -72,6 +72,7 @@ public:
 
   class StartContext;
   class Import_stmtContext;
+  class Constant_assignContext;
   class MacrodefContext;
   class StmtContext;
   class Simple_stmtContext;
@@ -120,7 +121,7 @@ public:
   class Simple_defContext;
   class Coro_defContext;
   class For_target_defContext;
-  class Integer_likeContext;
+  class PrimitiveContext;
   class OperationContext;
   class Inline_ctxContext;
   class Func_suiteContext;
@@ -148,6 +149,8 @@ public:
     MacrodefContext* macrodef(size_t i);
     std::vector<FuncdefContext *> funcdef();
     FuncdefContext* funcdef(size_t i);
+    std::vector<Constant_assignContext *> constant_assign();
+    Constant_assignContext* constant_assign(size_t i);
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -169,6 +172,22 @@ public:
   };
 
   Import_stmtContext* import_stmt();
+
+  class  Constant_assignContext : public antlr4::ParserRuleContext {
+  public:
+    Constant_assignContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *CONST();
+    antlr4::tree::TerminalNode *IDENTIFIER();
+    antlr4::tree::TerminalNode *ASSIGN();
+    PrimitiveContext *primitive();
+
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Constant_assignContext* constant_assign();
 
   class  MacrodefContext : public antlr4::ParserRuleContext {
   public:
@@ -195,6 +214,7 @@ public:
   public:
     StmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    Constant_assignContext *constant_assign();
     Simple_stmtContext *simple_stmt();
     Ctx_blockContext *ctx_block();
     If_blockContext *if_block();
@@ -303,8 +323,9 @@ public:
     Ctx_headerContext *ctx_header();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
     antlr4::tree::TerminalNode *OPEN_BRACE();
-    Simple_stmtContext *simple_stmt();
     antlr4::tree::TerminalNode *CLOSE_BRACE();
+    std::vector<Simple_stmtContext *> simple_stmt();
+    Simple_stmtContext* simple_stmt(size_t i);
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -418,8 +439,8 @@ public:
   public:
     If_h_opContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<Integer_likeContext *> integer_like();
-    Integer_likeContext* integer_like(size_t i);
+    std::vector<PrimitiveContext *> primitive();
+    PrimitiveContext* primitive(size_t i);
     Conditional_operatorContext *conditional_operator();
     Value_ofContext *value_of();
 
@@ -434,7 +455,7 @@ public:
   public:
     If_h_bitContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *OPEN_BRACKET();
     antlr4::tree::TerminalNode *INTEGER();
     antlr4::tree::TerminalNode *CLOSE_BRACKET();
@@ -493,7 +514,7 @@ public:
     Message_switch_blockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
     antlr4::tree::TerminalNode *OPEN_BRACE();
     antlr4::tree::TerminalNode *CLOSE_BRACE();
@@ -518,7 +539,7 @@ public:
     antlr4::tree::TerminalNode *CASE();
     Case_headerContext *case_header();
     antlr4::tree::TerminalNode *COLON();
-    StringContext *string();
+    PrimitiveContext *primitive();
     std::vector<StmtContext *> stmt();
     StmtContext* stmt(size_t i);
 
@@ -535,7 +556,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DEFAULT();
     antlr4::tree::TerminalNode *COLON();
-    StringContext *string();
+    PrimitiveContext *primitive();
     std::vector<StmtContext *> stmt();
     StmtContext* stmt(size_t i);
 
@@ -550,7 +571,7 @@ public:
   public:
     Switch_headerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     OperationContext *operation();
     Switch_h_scnContext *switch_h_scn();
     Switch_h_randomContext *switch_h_random();
@@ -586,7 +607,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *RANDOM();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -602,7 +623,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DUNGEON_MODE();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -631,7 +652,7 @@ public:
   public:
     Case_headerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     Case_h_menuContext *case_h_menu();
     Case_h_menu2Context *case_h_menu2();
     Case_h_opContext *case_h_op();
@@ -649,7 +670,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *MENU();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    StringContext *string();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -665,7 +686,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *MENU2();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -681,7 +702,7 @@ public:
     virtual size_t getRuleIndex() const override;
     Conditional_operatorContext *conditional_operator();
     Value_ofContext *value_of();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -773,8 +794,8 @@ public:
   public:
     Assignment_regularContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<Integer_likeContext *> integer_like();
-    Integer_likeContext* integer_like(size_t i);
+    std::vector<PrimitiveContext *> primitive();
+    PrimitiveContext* primitive(size_t i);
     Assign_operatorContext *assign_operator();
     Value_ofContext *value_of();
     antlr4::tree::TerminalNode *OPEN_BRACKET();
@@ -793,7 +814,7 @@ public:
     Assignment_clearContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *CLEAR();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -807,7 +828,7 @@ public:
     Assignment_initialContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *INIT();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -837,7 +858,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ADVENTURE_LOG();
     antlr4::tree::TerminalNode *ASSIGN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -852,8 +873,8 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DUNGEON_MODE();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    std::vector<Integer_likeContext *> integer_like();
-    Integer_likeContext* integer_like(size_t i);
+    std::vector<PrimitiveContext *> primitive();
+    PrimitiveContext* primitive(size_t i);
     antlr4::tree::TerminalNode *CLOSE_PAREN();
     antlr4::tree::TerminalNode *ASSIGN();
 
@@ -868,7 +889,7 @@ public:
   public:
     Assignment_scnContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *ASSIGN();
     antlr4::tree::TerminalNode *SCN();
     antlr4::tree::TerminalNode *OPEN_BRACKET();
@@ -890,7 +911,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *VALUE();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -906,7 +927,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *SCN();
     antlr4::tree::TerminalNode *OPEN_PAREN();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
 
 
@@ -1008,7 +1029,7 @@ public:
     antlr4::tree::TerminalNode *DEF();
     antlr4::tree::TerminalNode *INTEGER();
     For_target_def_targetContext *for_target_def_target();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     Func_suiteContext *func_suite();
     antlr4::tree::TerminalNode *OPEN_PAREN();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
@@ -1020,21 +1041,22 @@ public:
 
   For_target_defContext* for_target_def();
 
-  class  Integer_likeContext : public antlr4::ParserRuleContext {
+  class  PrimitiveContext : public antlr4::ParserRuleContext {
   public:
-    Integer_likeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    PrimitiveContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DECIMAL();
     antlr4::tree::TerminalNode *INTEGER();
     antlr4::tree::TerminalNode *IDENTIFIER();
     antlr4::tree::TerminalNode *VARIABLE();
+    StringContext *string();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
   };
 
-  Integer_likeContext* integer_like();
+  PrimitiveContext* primitive();
 
   class  OperationContext : public antlr4::ParserRuleContext {
   public:
@@ -1119,8 +1141,7 @@ public:
   public:
     Pos_argumentContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
-    StringContext *string();
+    PrimitiveContext *primitive();
     Position_markerContext *position_marker();
 
 
@@ -1245,7 +1266,7 @@ public:
     Ctx_headerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *IDENTIFIER();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;

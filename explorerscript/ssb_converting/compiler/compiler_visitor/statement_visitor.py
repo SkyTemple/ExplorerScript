@@ -322,4 +322,3 @@ class StatementVisitor(ExplorerScriptBaseVisitor):
         assert id(h.ctx) == id(ctx), _("Fatal compilation error: Unexpected compilation handler on stack.")
         assert not isinstance(h, NullCompileHandler), _("Fatal compilation error: Stack error.")
         return retval, h
-

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from explorerscript.common_syntax import parse_for_target
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractFuncdefCompileHandler,

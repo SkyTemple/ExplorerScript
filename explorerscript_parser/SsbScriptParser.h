@@ -24,7 +24,7 @@ public:
 
   enum {
     RulePos_argument = 0, RuleJump_marker = 1, RuleStart = 2, RuleFuncdef = 3, 
-    RuleSimple_def = 4, RuleCoro_def = 5, RuleFor_target_def = 6, RuleInteger_like = 7, 
+    RuleSimple_def = 4, RuleCoro_def = 5, RuleFor_target_def = 6, RulePrimitive = 7, 
     RuleStmt = 8, RuleOperation = 9, RuleInline_ctx = 10, RuleFunc_suite = 11, 
     RuleFunc_alias = 12, RuleArglist = 13, RulePosition_marker = 14, RulePosition_marker_arg = 15, 
     RuleLabel = 16, RuleString = 17, RuleLang_string = 18, RuleLang_string_argument = 19, 
@@ -55,7 +55,7 @@ public:
   class Simple_defContext;
   class Coro_defContext;
   class For_target_defContext;
-  class Integer_likeContext;
+  class PrimitiveContext;
   class StmtContext;
   class OperationContext;
   class Inline_ctxContext;
@@ -76,8 +76,7 @@ public:
   public:
     Pos_argumentContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Integer_likeContext *integer_like();
-    StringContext *string();
+    PrimitiveContext *primitive();
     Position_markerContext *position_marker();
     Jump_markerContext *jump_marker();
 
@@ -169,7 +168,7 @@ public:
     antlr4::tree::TerminalNode *DEF();
     antlr4::tree::TerminalNode *INTEGER();
     For_target_def_targetContext *for_target_def_target();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
     Func_suiteContext *func_suite();
     antlr4::tree::TerminalNode *OPEN_PAREN();
     antlr4::tree::TerminalNode *CLOSE_PAREN();
@@ -181,21 +180,22 @@ public:
 
   For_target_defContext* for_target_def();
 
-  class  Integer_likeContext : public antlr4::ParserRuleContext {
+  class  PrimitiveContext : public antlr4::ParserRuleContext {
   public:
-    Integer_likeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    PrimitiveContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DECIMAL();
     antlr4::tree::TerminalNode *INTEGER();
     antlr4::tree::TerminalNode *IDENTIFIER();
     antlr4::tree::TerminalNode *VARIABLE();
+    StringContext *string();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
   };
 
-  Integer_likeContext* integer_like();
+  PrimitiveContext* primitive();
 
   class  StmtContext : public antlr4::ParserRuleContext {
   public:
@@ -405,7 +405,7 @@ public:
     Ctx_headerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *IDENTIFIER();
-    Integer_likeContext *integer_like();
+    PrimitiveContext *primitive();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;

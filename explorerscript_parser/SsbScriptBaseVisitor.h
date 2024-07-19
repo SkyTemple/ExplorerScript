@@ -43,7 +43,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitInteger_like(SsbScriptParser::Integer_likeContext *ctx) override {
+  virtual std::any visitPrimitive(SsbScriptParser::PrimitiveContext *ctx) override {
     return visitChildren(ctx);
   }
 

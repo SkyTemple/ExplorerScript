@@ -53,6 +53,14 @@ public:
             context
         );
     }
+    std::any visitConstant_assign(ExplorerScriptParser::Constant_assignContext *context) override {
+        PYBIND11_OVERRIDE(
+            pybind11::object,
+            ExplorerScriptBaseVisitor,
+            visitConstant_assign,
+            context
+        );
+    }
     std::any visitMacrodef(ExplorerScriptParser::MacrodefContext *context) override {
         PYBIND11_OVERRIDE(
             pybind11::object,
@@ -437,11 +445,11 @@ public:
             context
         );
     }
-    std::any visitInteger_like(ExplorerScriptParser::Integer_likeContext *context) override {
+    std::any visitPrimitive(ExplorerScriptParser::PrimitiveContext *context) override {
         PYBIND11_OVERRIDE(
             pybind11::object,
             ExplorerScriptBaseVisitor,
-            visitInteger_like,
+            visitPrimitive,
             context
         );
     }
@@ -665,11 +673,11 @@ public:
             context
         );
     }
-    std::any visitInteger_like(SsbScriptParser::Integer_likeContext *context) override {
+    std::any visitPrimitive(SsbScriptParser::PrimitiveContext *context) override {
         PYBIND11_OVERRIDE(
             pybind11::object,
             SsbScriptBaseVisitor,
-            visitInteger_like,
+            visitPrimitive,
             context
         );
     }
@@ -888,6 +896,8 @@ py::class_<ExplorerScriptParser::StartContext, antlr4::ParserRuleContext>(m_pars
     .def("macrodef", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::macrodef), py::return_value_policy::reference_internal)
     .def("funcdef", py::overload_cast<>(&ExplorerScriptParser::StartContext::funcdef), py::return_value_policy::reference_internal)
     .def("funcdef", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::funcdef), py::return_value_policy::reference_internal)
+    .def("constant_assign", py::overload_cast<>(&ExplorerScriptParser::StartContext::constant_assign), py::return_value_policy::reference_internal)
+    .def("constant_assign", py::overload_cast<size_t>(&ExplorerScriptParser::StartContext::constant_assign), py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::StartContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Import_stmtContext")
@@ -898,6 +908,17 @@ py::class_<ExplorerScriptParser::Import_stmtContext, antlr4::ParserRuleContext>(
     .def("IMPORT", &ExplorerScriptParser::Import_stmtContext::IMPORT, py::return_value_policy::reference_internal)
     .def("STRING_LITERAL", &ExplorerScriptParser::Import_stmtContext::STRING_LITERAL, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Import_stmtContext::accept, py::return_value_policy::reference_internal)
+;
+py::class_<ExplorerScriptParser::Constant_assignContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Constant_assignContext")
+    .def(py::init<antlr4::ParserRuleContext*, size_t>())
+    .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Constant_assignContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Constant_assignContext::toStringTree))
+    .def("getRuleIndex", &ExplorerScriptParser::Constant_assignContext::getRuleIndex, py::return_value_policy::reference_internal)
+    .def("CONST", &ExplorerScriptParser::Constant_assignContext::CONST, py::return_value_policy::reference_internal)
+    .def("IDENTIFIER", &ExplorerScriptParser::Constant_assignContext::IDENTIFIER, py::return_value_policy::reference_internal)
+    .def("ASSIGN", &ExplorerScriptParser::Constant_assignContext::ASSIGN, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Constant_assignContext::primitive, py::return_value_policy::reference_internal)
+    .def("accept", &ExplorerScriptParser::Constant_assignContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::MacrodefContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "MacrodefContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -920,6 +941,7 @@ py::class_<ExplorerScriptParser::StmtContext, antlr4::ParserRuleContext>(m_parse
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::StmtContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::StmtContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::StmtContext::getRuleIndex, py::return_value_policy::reference_internal)
+    .def("constant_assign", &ExplorerScriptParser::StmtContext::constant_assign, py::return_value_policy::reference_internal)
     .def("simple_stmt", &ExplorerScriptParser::StmtContext::simple_stmt, py::return_value_policy::reference_internal)
     .def("ctx_block", &ExplorerScriptParser::StmtContext::ctx_block, py::return_value_policy::reference_internal)
     .def("if_block", &ExplorerScriptParser::StmtContext::if_block, py::return_value_policy::reference_internal)
@@ -998,8 +1020,9 @@ py::class_<ExplorerScriptParser::Ctx_blockContext, antlr4::ParserRuleContext>(m_
     .def("ctx_header", &ExplorerScriptParser::Ctx_blockContext::ctx_header, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Ctx_blockContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("OPEN_BRACE", &ExplorerScriptParser::Ctx_blockContext::OPEN_BRACE, py::return_value_policy::reference_internal)
-    .def("simple_stmt", &ExplorerScriptParser::Ctx_blockContext::simple_stmt, py::return_value_policy::reference_internal)
     .def("CLOSE_BRACE", &ExplorerScriptParser::Ctx_blockContext::CLOSE_BRACE, py::return_value_policy::reference_internal)
+    .def("simple_stmt", py::overload_cast<>(&ExplorerScriptParser::Ctx_blockContext::simple_stmt), py::return_value_policy::reference_internal)
+    .def("simple_stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Ctx_blockContext::simple_stmt), py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Ctx_blockContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::If_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "If_blockContext")
@@ -1083,8 +1106,8 @@ py::class_<ExplorerScriptParser::If_h_opContext, antlr4::ParserRuleContext>(m_pa
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_opContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_opContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::If_h_opContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<>(&ExplorerScriptParser::If_h_opContext::integer_like), py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<size_t>(&ExplorerScriptParser::If_h_opContext::integer_like), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<>(&ExplorerScriptParser::If_h_opContext::primitive), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<size_t>(&ExplorerScriptParser::If_h_opContext::primitive), py::return_value_policy::reference_internal)
     .def("conditional_operator", &ExplorerScriptParser::If_h_opContext::conditional_operator, py::return_value_policy::reference_internal)
     .def("value_of", &ExplorerScriptParser::If_h_opContext::value_of, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::If_h_opContext::accept, py::return_value_policy::reference_internal)
@@ -1094,7 +1117,7 @@ py::class_<ExplorerScriptParser::If_h_bitContext, antlr4::ParserRuleContext>(m_p
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::If_h_bitContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::If_h_bitContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::If_h_bitContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::If_h_bitContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::If_h_bitContext::primitive, py::return_value_policy::reference_internal)
     .def("OPEN_BRACKET", &ExplorerScriptParser::If_h_bitContext::OPEN_BRACKET, py::return_value_policy::reference_internal)
     .def("INTEGER", &ExplorerScriptParser::If_h_bitContext::INTEGER, py::return_value_policy::reference_internal)
     .def("CLOSE_BRACKET", &ExplorerScriptParser::If_h_bitContext::CLOSE_BRACKET, py::return_value_policy::reference_internal)
@@ -1138,7 +1161,7 @@ py::class_<ExplorerScriptParser::Message_switch_blockContext, antlr4::ParserRule
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Message_switch_blockContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Message_switch_blockContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Message_switch_blockContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Message_switch_blockContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Message_switch_blockContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Message_switch_blockContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("OPEN_BRACE", &ExplorerScriptParser::Message_switch_blockContext::OPEN_BRACE, py::return_value_policy::reference_internal)
     .def("CLOSE_BRACE", &ExplorerScriptParser::Message_switch_blockContext::CLOSE_BRACE, py::return_value_policy::reference_internal)
@@ -1158,7 +1181,7 @@ py::class_<ExplorerScriptParser::Single_case_blockContext, antlr4::ParserRuleCon
     .def("CASE", &ExplorerScriptParser::Single_case_blockContext::CASE, py::return_value_policy::reference_internal)
     .def("case_header", &ExplorerScriptParser::Single_case_blockContext::case_header, py::return_value_policy::reference_internal)
     .def("COLON", &ExplorerScriptParser::Single_case_blockContext::COLON, py::return_value_policy::reference_internal)
-    .def("string", &ExplorerScriptParser::Single_case_blockContext::string, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Single_case_blockContext::primitive, py::return_value_policy::reference_internal)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::Single_case_blockContext::stmt), py::return_value_policy::reference_internal)
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::Single_case_blockContext::stmt), py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Single_case_blockContext::accept, py::return_value_policy::reference_internal)
@@ -1170,7 +1193,7 @@ py::class_<ExplorerScriptParser::DefaultContext, antlr4::ParserRuleContext>(m_pa
     .def("getRuleIndex", &ExplorerScriptParser::DefaultContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("DEFAULT", &ExplorerScriptParser::DefaultContext::DEFAULT, py::return_value_policy::reference_internal)
     .def("COLON", &ExplorerScriptParser::DefaultContext::COLON, py::return_value_policy::reference_internal)
-    .def("string", &ExplorerScriptParser::DefaultContext::string, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::DefaultContext::primitive, py::return_value_policy::reference_internal)
     .def("stmt", py::overload_cast<>(&ExplorerScriptParser::DefaultContext::stmt), py::return_value_policy::reference_internal)
     .def("stmt", py::overload_cast<size_t>(&ExplorerScriptParser::DefaultContext::stmt), py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::DefaultContext::accept, py::return_value_policy::reference_internal)
@@ -1180,7 +1203,7 @@ py::class_<ExplorerScriptParser::Switch_headerContext, antlr4::ParserRuleContext
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Switch_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Switch_headerContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Switch_headerContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Switch_headerContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Switch_headerContext::primitive, py::return_value_policy::reference_internal)
     .def("operation", &ExplorerScriptParser::Switch_headerContext::operation, py::return_value_policy::reference_internal)
     .def("switch_h_scn", &ExplorerScriptParser::Switch_headerContext::switch_h_scn, py::return_value_policy::reference_internal)
     .def("switch_h_random", &ExplorerScriptParser::Switch_headerContext::switch_h_random, py::return_value_policy::reference_internal)
@@ -1206,7 +1229,7 @@ py::class_<ExplorerScriptParser::Switch_h_randomContext, antlr4::ParserRuleConte
     .def("getRuleIndex", &ExplorerScriptParser::Switch_h_randomContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("RANDOM", &ExplorerScriptParser::Switch_h_randomContext::RANDOM, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Switch_h_randomContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Switch_h_randomContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Switch_h_randomContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_randomContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Switch_h_randomContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1217,7 +1240,7 @@ py::class_<ExplorerScriptParser::Switch_h_dungeon_modeContext, antlr4::ParserRul
     .def("getRuleIndex", &ExplorerScriptParser::Switch_h_dungeon_modeContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("DUNGEON_MODE", &ExplorerScriptParser::Switch_h_dungeon_modeContext::DUNGEON_MODE, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Switch_h_dungeon_modeContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Switch_h_dungeon_modeContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Switch_h_dungeon_modeContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Switch_h_dungeon_modeContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Switch_h_dungeon_modeContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1236,7 +1259,7 @@ py::class_<ExplorerScriptParser::Case_headerContext, antlr4::ParserRuleContext>(
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Case_headerContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Case_headerContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Case_headerContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Case_headerContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Case_headerContext::primitive, py::return_value_policy::reference_internal)
     .def("case_h_menu", &ExplorerScriptParser::Case_headerContext::case_h_menu, py::return_value_policy::reference_internal)
     .def("case_h_menu2", &ExplorerScriptParser::Case_headerContext::case_h_menu2, py::return_value_policy::reference_internal)
     .def("case_h_op", &ExplorerScriptParser::Case_headerContext::case_h_op, py::return_value_policy::reference_internal)
@@ -1249,7 +1272,7 @@ py::class_<ExplorerScriptParser::Case_h_menuContext, antlr4::ParserRuleContext>(
     .def("getRuleIndex", &ExplorerScriptParser::Case_h_menuContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("MENU", &ExplorerScriptParser::Case_h_menuContext::MENU, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Case_h_menuContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("string", &ExplorerScriptParser::Case_h_menuContext::string, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Case_h_menuContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menuContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Case_h_menuContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1260,7 +1283,7 @@ py::class_<ExplorerScriptParser::Case_h_menu2Context, antlr4::ParserRuleContext>
     .def("getRuleIndex", &ExplorerScriptParser::Case_h_menu2Context::getRuleIndex, py::return_value_policy::reference_internal)
     .def("MENU2", &ExplorerScriptParser::Case_h_menu2Context::MENU2, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Case_h_menu2Context::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Case_h_menu2Context::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Case_h_menu2Context::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Case_h_menu2Context::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Case_h_menu2Context::accept, py::return_value_policy::reference_internal)
 ;
@@ -1271,7 +1294,7 @@ py::class_<ExplorerScriptParser::Case_h_opContext, antlr4::ParserRuleContext>(m_
     .def("getRuleIndex", &ExplorerScriptParser::Case_h_opContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("conditional_operator", &ExplorerScriptParser::Case_h_opContext::conditional_operator, py::return_value_policy::reference_internal)
     .def("value_of", &ExplorerScriptParser::Case_h_opContext::value_of, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Case_h_opContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Case_h_opContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Case_h_opContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::Forever_blockContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Forever_blockContext")
@@ -1338,8 +1361,8 @@ py::class_<ExplorerScriptParser::Assignment_regularContext, antlr4::ParserRuleCo
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_regularContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_regularContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_regularContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<>(&ExplorerScriptParser::Assignment_regularContext::integer_like), py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_regularContext::integer_like), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<>(&ExplorerScriptParser::Assignment_regularContext::primitive), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_regularContext::primitive), py::return_value_policy::reference_internal)
     .def("assign_operator", &ExplorerScriptParser::Assignment_regularContext::assign_operator, py::return_value_policy::reference_internal)
     .def("value_of", &ExplorerScriptParser::Assignment_regularContext::value_of, py::return_value_policy::reference_internal)
     .def("OPEN_BRACKET", &ExplorerScriptParser::Assignment_regularContext::OPEN_BRACKET, py::return_value_policy::reference_internal)
@@ -1353,7 +1376,7 @@ py::class_<ExplorerScriptParser::Assignment_clearContext, antlr4::ParserRuleCont
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_clearContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_clearContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("CLEAR", &ExplorerScriptParser::Assignment_clearContext::CLEAR, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Assignment_clearContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Assignment_clearContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Assignment_clearContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_initialContext")
@@ -1362,7 +1385,7 @@ py::class_<ExplorerScriptParser::Assignment_initialContext, antlr4::ParserRuleCo
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_initialContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_initialContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("INIT", &ExplorerScriptParser::Assignment_initialContext::INIT, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Assignment_initialContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Assignment_initialContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Assignment_initialContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::Assignment_resetContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_resetContext")
@@ -1382,7 +1405,7 @@ py::class_<ExplorerScriptParser::Assignment_adv_logContext, antlr4::ParserRuleCo
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_adv_logContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("ADVENTURE_LOG", &ExplorerScriptParser::Assignment_adv_logContext::ADVENTURE_LOG, py::return_value_policy::reference_internal)
     .def("ASSIGN", &ExplorerScriptParser::Assignment_adv_logContext::ASSIGN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Assignment_adv_logContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Assignment_adv_logContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Assignment_adv_logContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Assignment_dungeon_modeContext")
@@ -1392,8 +1415,8 @@ py::class_<ExplorerScriptParser::Assignment_dungeon_modeContext, antlr4::ParserR
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_dungeon_modeContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("DUNGEON_MODE", &ExplorerScriptParser::Assignment_dungeon_modeContext::DUNGEON_MODE, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Assignment_dungeon_modeContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<>(&ExplorerScriptParser::Assignment_dungeon_modeContext::integer_like), py::return_value_policy::reference_internal)
-    .def("integer_like", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_dungeon_modeContext::integer_like), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<>(&ExplorerScriptParser::Assignment_dungeon_modeContext::primitive), py::return_value_policy::reference_internal)
+    .def("primitive", py::overload_cast<size_t>(&ExplorerScriptParser::Assignment_dungeon_modeContext::primitive), py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Assignment_dungeon_modeContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("ASSIGN", &ExplorerScriptParser::Assignment_dungeon_modeContext::ASSIGN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Assignment_dungeon_modeContext::accept, py::return_value_policy::reference_internal)
@@ -1403,7 +1426,7 @@ py::class_<ExplorerScriptParser::Assignment_scnContext, antlr4::ParserRuleContex
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Assignment_scnContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Assignment_scnContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Assignment_scnContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Assignment_scnContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Assignment_scnContext::primitive, py::return_value_policy::reference_internal)
     .def("ASSIGN", &ExplorerScriptParser::Assignment_scnContext::ASSIGN, py::return_value_policy::reference_internal)
     .def("SCN", &ExplorerScriptParser::Assignment_scnContext::SCN, py::return_value_policy::reference_internal)
     .def("OPEN_BRACKET", &ExplorerScriptParser::Assignment_scnContext::OPEN_BRACKET, py::return_value_policy::reference_internal)
@@ -1420,7 +1443,7 @@ py::class_<ExplorerScriptParser::Value_ofContext, antlr4::ParserRuleContext>(m_p
     .def("getRuleIndex", &ExplorerScriptParser::Value_ofContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("VALUE", &ExplorerScriptParser::Value_ofContext::VALUE, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Value_ofContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Value_ofContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Value_ofContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Value_ofContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Value_ofContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1431,7 +1454,7 @@ py::class_<ExplorerScriptParser::Scn_varContext, antlr4::ParserRuleContext>(m_pa
     .def("getRuleIndex", &ExplorerScriptParser::Scn_varContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("SCN", &ExplorerScriptParser::Scn_varContext::SCN, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::Scn_varContext::OPEN_PAREN, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Scn_varContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Scn_varContext::primitive, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::Scn_varContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Scn_varContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1503,22 +1526,23 @@ py::class_<ExplorerScriptParser::For_target_defContext, antlr4::ParserRuleContex
     .def("DEF", &ExplorerScriptParser::For_target_defContext::DEF, py::return_value_policy::reference_internal)
     .def("INTEGER", &ExplorerScriptParser::For_target_defContext::INTEGER, py::return_value_policy::reference_internal)
     .def("for_target_def_target", &ExplorerScriptParser::For_target_defContext::for_target_def_target, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::For_target_defContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::For_target_defContext::primitive, py::return_value_policy::reference_internal)
     .def("func_suite", &ExplorerScriptParser::For_target_defContext::func_suite, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &ExplorerScriptParser::For_target_defContext::OPEN_PAREN, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &ExplorerScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::For_target_defContext::accept, py::return_value_policy::reference_internal)
 ;
-py::class_<ExplorerScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "Integer_likeContext")
+py::class_<ExplorerScriptParser::PrimitiveContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "PrimitiveContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
-    .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Integer_likeContext::toString))
-    .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Integer_likeContext::toStringTree))
-    .def("getRuleIndex", &ExplorerScriptParser::Integer_likeContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("DECIMAL", &ExplorerScriptParser::Integer_likeContext::DECIMAL, py::return_value_policy::reference_internal)
-    .def("INTEGER", &ExplorerScriptParser::Integer_likeContext::INTEGER, py::return_value_policy::reference_internal)
-    .def("IDENTIFIER", &ExplorerScriptParser::Integer_likeContext::IDENTIFIER, py::return_value_policy::reference_internal)
-    .def("VARIABLE", &ExplorerScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::reference_internal)
-    .def("accept", &ExplorerScriptParser::Integer_likeContext::accept, py::return_value_policy::reference_internal)
+    .def("__str__", py::overload_cast<>(&ExplorerScriptParser::PrimitiveContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::PrimitiveContext::toStringTree))
+    .def("getRuleIndex", &ExplorerScriptParser::PrimitiveContext::getRuleIndex, py::return_value_policy::reference_internal)
+    .def("DECIMAL", &ExplorerScriptParser::PrimitiveContext::DECIMAL, py::return_value_policy::reference_internal)
+    .def("INTEGER", &ExplorerScriptParser::PrimitiveContext::INTEGER, py::return_value_policy::reference_internal)
+    .def("IDENTIFIER", &ExplorerScriptParser::PrimitiveContext::IDENTIFIER, py::return_value_policy::reference_internal)
+    .def("VARIABLE", &ExplorerScriptParser::PrimitiveContext::VARIABLE, py::return_value_policy::reference_internal)
+    .def("string", &ExplorerScriptParser::PrimitiveContext::string, py::return_value_policy::reference_internal)
+    .def("accept", &ExplorerScriptParser::PrimitiveContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::OperationContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "OperationContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1579,8 +1603,7 @@ py::class_<ExplorerScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>
     .def("__str__", py::overload_cast<>(&ExplorerScriptParser::Pos_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Pos_argumentContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Pos_argumentContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Pos_argumentContext::integer_like, py::return_value_policy::reference_internal)
-    .def("string", &ExplorerScriptParser::Pos_argumentContext::string, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Pos_argumentContext::primitive, py::return_value_policy::reference_internal)
     .def("position_marker", &ExplorerScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Pos_argumentContext::accept, py::return_value_policy::reference_internal)
 ;
@@ -1665,7 +1688,7 @@ py::class_<ExplorerScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m
     .def("to_string_tree", py::overload_cast<bool>(&ExplorerScriptParser::Ctx_headerContext::toStringTree))
     .def("getRuleIndex", &ExplorerScriptParser::Ctx_headerContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("IDENTIFIER", &ExplorerScriptParser::Ctx_headerContext::IDENTIFIER, py::return_value_policy::reference_internal)
-    .def("integer_like", &ExplorerScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &ExplorerScriptParser::Ctx_headerContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &ExplorerScriptParser::Ctx_headerContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<ExplorerScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m_parser_sub_ExplorerScript, "For_target_def_targetContext")
@@ -1697,6 +1720,7 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor, antlr4::tree:
     }, py::return_value_policy::reference_internal, py::keep_alive<1, 2>())
     .def("visitStart", &ExplorerScriptBaseVisitor::visitStart, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitImport_stmt", &ExplorerScriptBaseVisitor::visitImport_stmt, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
+    .def("visitConstant_assign", &ExplorerScriptBaseVisitor::visitConstant_assign, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitMacrodef", &ExplorerScriptBaseVisitor::visitMacrodef, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitStmt", &ExplorerScriptBaseVisitor::visitStmt, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitSimple_stmt", &ExplorerScriptBaseVisitor::visitSimple_stmt, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
@@ -1745,7 +1769,7 @@ py::class_<ExplorerScriptBaseVisitor, PyExplorerScriptBaseVisitor, antlr4::tree:
     .def("visitSimple_def", &ExplorerScriptBaseVisitor::visitSimple_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitCoro_def", &ExplorerScriptBaseVisitor::visitCoro_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitFor_target_def", &ExplorerScriptBaseVisitor::visitFor_target_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
-    .def("visitInteger_like", &ExplorerScriptBaseVisitor::visitInteger_like, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
+    .def("visitPrimitive", &ExplorerScriptBaseVisitor::visitPrimitive, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitOperation", &ExplorerScriptBaseVisitor::visitOperation, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitInline_ctx", &ExplorerScriptBaseVisitor::visitInline_ctx, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitFunc_suite", &ExplorerScriptBaseVisitor::visitFunc_suite, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
@@ -1767,8 +1791,7 @@ py::class_<SsbScriptParser::Pos_argumentContext, antlr4::ParserRuleContext>(m_pa
     .def("__str__", py::overload_cast<>(&SsbScriptParser::Pos_argumentContext::toString))
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Pos_argumentContext::toStringTree))
     .def("getRuleIndex", &SsbScriptParser::Pos_argumentContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("integer_like", &SsbScriptParser::Pos_argumentContext::integer_like, py::return_value_policy::reference_internal)
-    .def("string", &SsbScriptParser::Pos_argumentContext::string, py::return_value_policy::reference_internal)
+    .def("primitive", &SsbScriptParser::Pos_argumentContext::primitive, py::return_value_policy::reference_internal)
     .def("position_marker", &SsbScriptParser::Pos_argumentContext::position_marker, py::return_value_policy::reference_internal)
     .def("jump_marker", &SsbScriptParser::Pos_argumentContext::jump_marker, py::return_value_policy::reference_internal)
     .def("accept", &SsbScriptParser::Pos_argumentContext::accept, py::return_value_policy::reference_internal)
@@ -1830,22 +1853,23 @@ py::class_<SsbScriptParser::For_target_defContext, antlr4::ParserRuleContext>(m_
     .def("DEF", &SsbScriptParser::For_target_defContext::DEF, py::return_value_policy::reference_internal)
     .def("INTEGER", &SsbScriptParser::For_target_defContext::INTEGER, py::return_value_policy::reference_internal)
     .def("for_target_def_target", &SsbScriptParser::For_target_defContext::for_target_def_target, py::return_value_policy::reference_internal)
-    .def("integer_like", &SsbScriptParser::For_target_defContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &SsbScriptParser::For_target_defContext::primitive, py::return_value_policy::reference_internal)
     .def("func_suite", &SsbScriptParser::For_target_defContext::func_suite, py::return_value_policy::reference_internal)
     .def("OPEN_PAREN", &SsbScriptParser::For_target_defContext::OPEN_PAREN, py::return_value_policy::reference_internal)
     .def("CLOSE_PAREN", &SsbScriptParser::For_target_defContext::CLOSE_PAREN, py::return_value_policy::reference_internal)
     .def("accept", &SsbScriptParser::For_target_defContext::accept, py::return_value_policy::reference_internal)
 ;
-py::class_<SsbScriptParser::Integer_likeContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "Integer_likeContext")
+py::class_<SsbScriptParser::PrimitiveContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "PrimitiveContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
-    .def("__str__", py::overload_cast<>(&SsbScriptParser::Integer_likeContext::toString))
-    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Integer_likeContext::toStringTree))
-    .def("getRuleIndex", &SsbScriptParser::Integer_likeContext::getRuleIndex, py::return_value_policy::reference_internal)
-    .def("DECIMAL", &SsbScriptParser::Integer_likeContext::DECIMAL, py::return_value_policy::reference_internal)
-    .def("INTEGER", &SsbScriptParser::Integer_likeContext::INTEGER, py::return_value_policy::reference_internal)
-    .def("IDENTIFIER", &SsbScriptParser::Integer_likeContext::IDENTIFIER, py::return_value_policy::reference_internal)
-    .def("VARIABLE", &SsbScriptParser::Integer_likeContext::VARIABLE, py::return_value_policy::reference_internal)
-    .def("accept", &SsbScriptParser::Integer_likeContext::accept, py::return_value_policy::reference_internal)
+    .def("__str__", py::overload_cast<>(&SsbScriptParser::PrimitiveContext::toString))
+    .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::PrimitiveContext::toStringTree))
+    .def("getRuleIndex", &SsbScriptParser::PrimitiveContext::getRuleIndex, py::return_value_policy::reference_internal)
+    .def("DECIMAL", &SsbScriptParser::PrimitiveContext::DECIMAL, py::return_value_policy::reference_internal)
+    .def("INTEGER", &SsbScriptParser::PrimitiveContext::INTEGER, py::return_value_policy::reference_internal)
+    .def("IDENTIFIER", &SsbScriptParser::PrimitiveContext::IDENTIFIER, py::return_value_policy::reference_internal)
+    .def("VARIABLE", &SsbScriptParser::PrimitiveContext::VARIABLE, py::return_value_policy::reference_internal)
+    .def("string", &SsbScriptParser::PrimitiveContext::string, py::return_value_policy::reference_internal)
+    .def("accept", &SsbScriptParser::PrimitiveContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<SsbScriptParser::StmtContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "StmtContext")
     .def(py::init<antlr4::ParserRuleContext*, size_t>())
@@ -1991,7 +2015,7 @@ py::class_<SsbScriptParser::Ctx_headerContext, antlr4::ParserRuleContext>(m_pars
     .def("to_string_tree", py::overload_cast<bool>(&SsbScriptParser::Ctx_headerContext::toStringTree))
     .def("getRuleIndex", &SsbScriptParser::Ctx_headerContext::getRuleIndex, py::return_value_policy::reference_internal)
     .def("IDENTIFIER", &SsbScriptParser::Ctx_headerContext::IDENTIFIER, py::return_value_policy::reference_internal)
-    .def("integer_like", &SsbScriptParser::Ctx_headerContext::integer_like, py::return_value_policy::reference_internal)
+    .def("primitive", &SsbScriptParser::Ctx_headerContext::primitive, py::return_value_policy::reference_internal)
     .def("accept", &SsbScriptParser::Ctx_headerContext::accept, py::return_value_policy::reference_internal)
 ;
 py::class_<SsbScriptParser::For_target_def_targetContext, antlr4::ParserRuleContext>(m_parser_sub_SsbScript, "For_target_def_targetContext")
@@ -2028,7 +2052,7 @@ py::class_<SsbScriptBaseVisitor, PySsbScriptBaseVisitor, antlr4::tree::ParseTree
     .def("visitSimple_def", &SsbScriptBaseVisitor::visitSimple_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitCoro_def", &SsbScriptBaseVisitor::visitCoro_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitFor_target_def", &SsbScriptBaseVisitor::visitFor_target_def, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
-    .def("visitInteger_like", &SsbScriptBaseVisitor::visitInteger_like, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
+    .def("visitPrimitive", &SsbScriptBaseVisitor::visitPrimitive, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitStmt", &SsbScriptBaseVisitor::visitStmt, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitOperation", &SsbScriptBaseVisitor::visitOperation, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)
     .def("visitInline_ctx", &SsbScriptBaseVisitor::visitInline_ctx, py::keep_alive<1, 2>(), py::return_value_policy::reference_internal)

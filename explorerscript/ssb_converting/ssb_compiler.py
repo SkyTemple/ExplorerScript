@@ -211,7 +211,7 @@ class ExplorerScriptSsbCompiler:
         self.macro_resolution_order = parser.traverse(MacroResolutionOrderVisitor(self.macros))
 
         logger.debug("<%d> Collecting constants...", id(self))
-        self.user_constants = UserConstantsVisitor(self.user_constants).visit(tree)
+        self.user_constants = parser.traverse(UserConstantsVisitor(self.user_constants))
 
         # Loads and compiles modules in base file
         # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).

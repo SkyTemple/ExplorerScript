@@ -23,6 +23,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitConstant_assign(ExplorerScriptParser::Constant_assignContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitMacrodef(ExplorerScriptParser::MacrodefContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -215,7 +219,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitInteger_like(ExplorerScriptParser::Integer_likeContext *ctx) override {
+  virtual std::any visitPrimitive(ExplorerScriptParser::PrimitiveContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -281,7 +285,7 @@ public:
 
 
 
-  virtual std::any defaultResult() override {
-    return static_cast<pybind11::object>(pybind11::none());
-  }
-};
+      virtual std::any defaultResult() override {
+        return static_cast<pybind11::object>(pybind11::none());
+      }
+    };

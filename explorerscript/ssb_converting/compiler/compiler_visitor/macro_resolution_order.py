@@ -107,5 +107,3 @@ class MacroResolutionOrderVisitor(ExplorerScriptBaseVisitor):
     def _has_path(self, a: Vertex | int, b: Vertex) -> bool:
         # TODO: can be done more efficiently
         return len(b.graph.get_all_simple_paths(a, b)) > 0
-
-

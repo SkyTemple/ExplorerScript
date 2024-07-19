@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from typing import Literal, overload, NoReturn
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.common_syntax import parse_primitive
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.ssb_data_types import (
@@ -33,6 +32,7 @@ from explorerscript.ssb_converting.ssb_data_types import (
     SsbOpParamLanguageString,
     SsbOpParamConstString,
 )
+from explorerscript_parser import ExplorerScriptParser
 
 
 # noinspection PyMethodOverriding

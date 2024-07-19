@@ -33,7 +33,7 @@ public:
 
     virtual std::any visitFor_target_def(SsbScriptParser::For_target_defContext *context) = 0;
 
-    virtual std::any visitInteger_like(SsbScriptParser::Integer_likeContext *context) = 0;
+    virtual std::any visitPrimitive(SsbScriptParser::PrimitiveContext *context) = 0;
 
     virtual std::any visitStmt(SsbScriptParser::StmtContext *context) = 0;
 

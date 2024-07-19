@@ -23,6 +23,8 @@ public:
 
     virtual std::any visitImport_stmt(ExplorerScriptParser::Import_stmtContext *context) = 0;
 
+    virtual std::any visitConstant_assign(ExplorerScriptParser::Constant_assignContext *context) = 0;
+
     virtual std::any visitMacrodef(ExplorerScriptParser::MacrodefContext *context) = 0;
 
     virtual std::any visitStmt(ExplorerScriptParser::StmtContext *context) = 0;
@@ -119,7 +121,7 @@ public:
 
     virtual std::any visitFor_target_def(ExplorerScriptParser::For_target_defContext *context) = 0;
 
-    virtual std::any visitInteger_like(ExplorerScriptParser::Integer_likeContext *context) = 0;
+    virtual std::any visitPrimitive(ExplorerScriptParser::PrimitiveContext *context) = 0;
 
     virtual std::any visitOperation(ExplorerScriptParser::OperationContext *context) = 0;
 

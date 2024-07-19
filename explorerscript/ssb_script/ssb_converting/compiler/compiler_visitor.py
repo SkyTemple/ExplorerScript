@@ -253,7 +253,7 @@ class SsbScriptCompilerVisitor(SsbScriptBaseVisitor):
                 self._collected_pos_marker.y_offset = offset
                 self._collected_pos_marker.y_relative = relative
 
-    def exitPrimitive(self, ctx: SsbScriptParser.PrimitiveContext) -> None:
+    def visitPrimitive(self, ctx: SsbScriptParser.PrimitiveContext) -> None:
         self.visitChildren(ctx)
         if self._is_processing_argument:
             if ctx.INTEGER():

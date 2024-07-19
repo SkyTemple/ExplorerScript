@@ -53,7 +53,7 @@ void ssbscriptParserInitialize() {
   auto staticData = std::make_unique<SsbScriptParserStaticData>(
     std::vector<std::string>{
       "pos_argument", "jump_marker", "start", "funcdef", "simple_def", "coro_def", 
-      "for_target_def", "integer_like", "stmt", "operation", "inline_ctx", 
+      "for_target_def", "primitive", "stmt", "operation", "inline_ctx", 
       "func_suite", "func_alias", "arglist", "position_marker", "position_marker_arg", 
       "label", "string", "lang_string", "lang_string_argument", "string_value", 
       "ctx_header", "for_target_def_target"
@@ -75,62 +75,63 @@ void ssbscriptParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,36,183,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,36,187,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
-  	21,2,22,7,22,1,0,1,0,1,0,1,0,3,0,51,8,0,1,1,1,1,1,1,1,2,5,2,57,8,2,10,
-  	2,12,2,60,9,2,1,2,1,2,1,3,1,3,1,3,3,3,67,8,3,1,4,1,4,1,4,1,4,1,5,1,5,
-  	1,5,1,5,1,6,1,6,1,6,1,6,3,6,81,8,6,1,6,1,6,3,6,85,8,6,1,6,1,6,1,7,1,7,
-  	1,8,1,8,3,8,93,8,8,1,8,1,8,1,9,1,9,3,9,99,8,9,1,9,1,9,3,9,103,8,9,1,9,
-  	1,9,1,10,1,10,1,10,1,10,1,11,1,11,4,11,113,8,11,11,11,12,11,114,1,11,
-  	3,11,118,8,11,1,11,1,11,1,12,1,12,1,12,1,12,1,13,1,13,1,13,5,13,129,8,
-  	13,10,13,12,13,132,9,13,1,13,3,13,135,8,13,1,14,1,14,1,14,1,14,1,14,1,
-  	14,1,14,1,14,1,14,1,15,1,15,1,16,1,16,1,16,1,17,1,17,3,17,153,8,17,1,
-  	18,1,18,1,18,1,18,5,18,159,8,18,10,18,12,18,162,9,18,1,18,3,18,165,8,
-  	18,1,18,1,18,1,19,1,19,1,19,1,19,1,20,1,20,1,21,1,21,1,21,1,22,1,22,1,
-  	22,3,22,181,8,22,1,22,0,0,23,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,
-  	30,32,34,36,38,40,42,44,0,4,3,0,14,15,17,17,34,34,2,0,17,17,34,34,1,0,
-  	28,29,1,0,2,3,178,0,50,1,0,0,0,2,52,1,0,0,0,4,58,1,0,0,0,6,66,1,0,0,0,
-  	8,68,1,0,0,0,10,72,1,0,0,0,12,76,1,0,0,0,14,88,1,0,0,0,16,92,1,0,0,0,
-  	18,96,1,0,0,0,20,106,1,0,0,0,22,110,1,0,0,0,24,121,1,0,0,0,26,125,1,0,
-  	0,0,28,136,1,0,0,0,30,145,1,0,0,0,32,147,1,0,0,0,34,152,1,0,0,0,36,154,
-  	1,0,0,0,38,168,1,0,0,0,40,172,1,0,0,0,42,174,1,0,0,0,44,180,1,0,0,0,46,
-  	51,3,14,7,0,47,51,3,34,17,0,48,51,3,28,14,0,49,51,3,2,1,0,50,46,1,0,0,
-  	0,50,47,1,0,0,0,50,48,1,0,0,0,50,49,1,0,0,0,51,1,1,0,0,0,52,53,5,28,0,
-  	0,53,54,5,14,0,0,54,3,1,0,0,0,55,57,3,6,3,0,56,55,1,0,0,0,57,60,1,0,0,
-  	0,58,56,1,0,0,0,58,59,1,0,0,0,59,61,1,0,0,0,60,58,1,0,0,0,61,62,5,0,0,
-  	1,62,5,1,0,0,0,63,67,3,10,5,0,64,67,3,8,4,0,65,67,3,12,6,0,66,63,1,0,
-  	0,0,66,64,1,0,0,0,66,65,1,0,0,0,67,7,1,0,0,0,68,69,5,6,0,0,69,70,5,17,
-  	0,0,70,71,3,22,11,0,71,9,1,0,0,0,72,73,5,5,0,0,73,74,5,14,0,0,74,75,3,
-  	22,11,0,75,11,1,0,0,0,76,77,5,6,0,0,77,78,5,17,0,0,78,80,3,44,22,0,79,
-  	81,5,22,0,0,80,79,1,0,0,0,80,81,1,0,0,0,81,82,1,0,0,0,82,84,3,14,7,0,
-  	83,85,5,23,0,0,84,83,1,0,0,0,84,85,1,0,0,0,85,86,1,0,0,0,86,87,3,22,11,
-  	0,87,13,1,0,0,0,88,89,7,0,0,0,89,15,1,0,0,0,90,93,3,18,9,0,91,93,3,32,
-  	16,0,92,90,1,0,0,0,92,91,1,0,0,0,93,94,1,0,0,0,94,95,5,1,0,0,95,17,1,
-  	0,0,0,96,98,5,14,0,0,97,99,3,20,10,0,98,97,1,0,0,0,98,99,1,0,0,0,99,100,
-  	1,0,0,0,100,102,5,22,0,0,101,103,3,26,13,0,102,101,1,0,0,0,102,103,1,
-  	0,0,0,103,104,1,0,0,0,104,105,5,23,0,0,105,19,1,0,0,0,106,107,5,32,0,
-  	0,107,108,3,42,21,0,108,109,5,33,0,0,109,21,1,0,0,0,110,117,5,30,0,0,
-  	111,113,3,16,8,0,112,111,1,0,0,0,113,114,1,0,0,0,114,112,1,0,0,0,114,
-  	115,1,0,0,0,115,118,1,0,0,0,116,118,3,24,12,0,117,112,1,0,0,0,117,116,
-  	1,0,0,0,118,119,1,0,0,0,119,120,5,31,0,0,120,23,1,0,0,0,121,122,5,10,
-  	0,0,122,123,5,12,0,0,123,124,5,1,0,0,124,25,1,0,0,0,125,130,3,0,0,0,126,
-  	127,5,24,0,0,127,129,3,0,0,0,128,126,1,0,0,0,129,132,1,0,0,0,130,128,
-  	1,0,0,0,130,131,1,0,0,0,131,134,1,0,0,0,132,130,1,0,0,0,133,135,5,24,
-  	0,0,134,133,1,0,0,0,134,135,1,0,0,0,135,27,1,0,0,0,136,137,5,13,0,0,137,
-  	138,5,32,0,0,138,139,5,2,0,0,139,140,5,24,0,0,140,141,3,30,15,0,141,142,
-  	5,24,0,0,142,143,3,30,15,0,143,144,5,33,0,0,144,29,1,0,0,0,145,146,7,
-  	1,0,0,146,31,1,0,0,0,147,148,7,2,0,0,148,149,5,14,0,0,149,33,1,0,0,0,
-  	150,153,3,40,20,0,151,153,3,36,18,0,152,150,1,0,0,0,152,151,1,0,0,0,153,
-  	35,1,0,0,0,154,155,5,30,0,0,155,160,3,38,19,0,156,157,5,24,0,0,157,159,
-  	3,38,19,0,158,156,1,0,0,0,159,162,1,0,0,0,160,158,1,0,0,0,160,161,1,0,
-  	0,0,161,164,1,0,0,0,162,160,1,0,0,0,163,165,5,24,0,0,164,163,1,0,0,0,
-  	164,165,1,0,0,0,165,166,1,0,0,0,166,167,5,31,0,0,167,37,1,0,0,0,168,169,
-  	5,14,0,0,169,170,5,26,0,0,170,171,3,40,20,0,171,39,1,0,0,0,172,173,7,
-  	3,0,0,173,41,1,0,0,0,174,175,5,14,0,0,175,176,3,14,7,0,176,43,1,0,0,0,
-  	177,178,5,11,0,0,178,181,5,14,0,0,179,181,5,4,0,0,180,177,1,0,0,0,180,
-  	179,1,0,0,0,181,45,1,0,0,0,16,50,58,66,80,84,92,98,102,114,117,130,134,
-  	152,160,164,180
+  	21,2,22,7,22,1,0,1,0,1,0,3,0,50,8,0,1,1,1,1,1,1,1,2,5,2,56,8,2,10,2,12,
+  	2,59,9,2,1,2,1,2,1,3,1,3,1,3,3,3,66,8,3,1,4,1,4,1,4,1,4,1,5,1,5,1,5,1,
+  	5,1,6,1,6,1,6,1,6,3,6,80,8,6,1,6,1,6,3,6,84,8,6,1,6,1,6,1,7,1,7,1,7,1,
+  	7,1,7,3,7,93,8,7,1,8,1,8,3,8,97,8,8,1,8,1,8,1,9,1,9,3,9,103,8,9,1,9,1,
+  	9,3,9,107,8,9,1,9,1,9,1,10,1,10,1,10,1,10,1,11,1,11,4,11,117,8,11,11,
+  	11,12,11,118,1,11,3,11,122,8,11,1,11,1,11,1,12,1,12,1,12,1,12,1,13,1,
+  	13,1,13,5,13,133,8,13,10,13,12,13,136,9,13,1,13,3,13,139,8,13,1,14,1,
+  	14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,15,1,15,1,16,1,16,1,16,1,17,1,
+  	17,3,17,157,8,17,1,18,1,18,1,18,1,18,5,18,163,8,18,10,18,12,18,166,9,
+  	18,1,18,3,18,169,8,18,1,18,1,18,1,19,1,19,1,19,1,19,1,20,1,20,1,21,1,
+  	21,1,21,1,22,1,22,1,22,3,22,185,8,22,1,22,0,0,23,0,2,4,6,8,10,12,14,16,
+  	18,20,22,24,26,28,30,32,34,36,38,40,42,44,0,3,2,0,17,17,34,34,1,0,28,
+  	29,1,0,2,3,185,0,49,1,0,0,0,2,51,1,0,0,0,4,57,1,0,0,0,6,65,1,0,0,0,8,
+  	67,1,0,0,0,10,71,1,0,0,0,12,75,1,0,0,0,14,92,1,0,0,0,16,96,1,0,0,0,18,
+  	100,1,0,0,0,20,110,1,0,0,0,22,114,1,0,0,0,24,125,1,0,0,0,26,129,1,0,0,
+  	0,28,140,1,0,0,0,30,149,1,0,0,0,32,151,1,0,0,0,34,156,1,0,0,0,36,158,
+  	1,0,0,0,38,172,1,0,0,0,40,176,1,0,0,0,42,178,1,0,0,0,44,184,1,0,0,0,46,
+  	50,3,14,7,0,47,50,3,28,14,0,48,50,3,2,1,0,49,46,1,0,0,0,49,47,1,0,0,0,
+  	49,48,1,0,0,0,50,1,1,0,0,0,51,52,5,28,0,0,52,53,5,14,0,0,53,3,1,0,0,0,
+  	54,56,3,6,3,0,55,54,1,0,0,0,56,59,1,0,0,0,57,55,1,0,0,0,57,58,1,0,0,0,
+  	58,60,1,0,0,0,59,57,1,0,0,0,60,61,5,0,0,1,61,5,1,0,0,0,62,66,3,10,5,0,
+  	63,66,3,8,4,0,64,66,3,12,6,0,65,62,1,0,0,0,65,63,1,0,0,0,65,64,1,0,0,
+  	0,66,7,1,0,0,0,67,68,5,6,0,0,68,69,5,17,0,0,69,70,3,22,11,0,70,9,1,0,
+  	0,0,71,72,5,5,0,0,72,73,5,14,0,0,73,74,3,22,11,0,74,11,1,0,0,0,75,76,
+  	5,6,0,0,76,77,5,17,0,0,77,79,3,44,22,0,78,80,5,22,0,0,79,78,1,0,0,0,79,
+  	80,1,0,0,0,80,81,1,0,0,0,81,83,3,14,7,0,82,84,5,23,0,0,83,82,1,0,0,0,
+  	83,84,1,0,0,0,84,85,1,0,0,0,85,86,3,22,11,0,86,13,1,0,0,0,87,93,5,34,
+  	0,0,88,93,5,17,0,0,89,93,5,14,0,0,90,93,5,15,0,0,91,93,3,34,17,0,92,87,
+  	1,0,0,0,92,88,1,0,0,0,92,89,1,0,0,0,92,90,1,0,0,0,92,91,1,0,0,0,93,15,
+  	1,0,0,0,94,97,3,18,9,0,95,97,3,32,16,0,96,94,1,0,0,0,96,95,1,0,0,0,97,
+  	98,1,0,0,0,98,99,5,1,0,0,99,17,1,0,0,0,100,102,5,14,0,0,101,103,3,20,
+  	10,0,102,101,1,0,0,0,102,103,1,0,0,0,103,104,1,0,0,0,104,106,5,22,0,0,
+  	105,107,3,26,13,0,106,105,1,0,0,0,106,107,1,0,0,0,107,108,1,0,0,0,108,
+  	109,5,23,0,0,109,19,1,0,0,0,110,111,5,32,0,0,111,112,3,42,21,0,112,113,
+  	5,33,0,0,113,21,1,0,0,0,114,121,5,30,0,0,115,117,3,16,8,0,116,115,1,0,
+  	0,0,117,118,1,0,0,0,118,116,1,0,0,0,118,119,1,0,0,0,119,122,1,0,0,0,120,
+  	122,3,24,12,0,121,116,1,0,0,0,121,120,1,0,0,0,122,123,1,0,0,0,123,124,
+  	5,31,0,0,124,23,1,0,0,0,125,126,5,10,0,0,126,127,5,12,0,0,127,128,5,1,
+  	0,0,128,25,1,0,0,0,129,134,3,0,0,0,130,131,5,24,0,0,131,133,3,0,0,0,132,
+  	130,1,0,0,0,133,136,1,0,0,0,134,132,1,0,0,0,134,135,1,0,0,0,135,138,1,
+  	0,0,0,136,134,1,0,0,0,137,139,5,24,0,0,138,137,1,0,0,0,138,139,1,0,0,
+  	0,139,27,1,0,0,0,140,141,5,13,0,0,141,142,5,32,0,0,142,143,5,2,0,0,143,
+  	144,5,24,0,0,144,145,3,30,15,0,145,146,5,24,0,0,146,147,3,30,15,0,147,
+  	148,5,33,0,0,148,29,1,0,0,0,149,150,7,0,0,0,150,31,1,0,0,0,151,152,7,
+  	1,0,0,152,153,5,14,0,0,153,33,1,0,0,0,154,157,3,40,20,0,155,157,3,36,
+  	18,0,156,154,1,0,0,0,156,155,1,0,0,0,157,35,1,0,0,0,158,159,5,30,0,0,
+  	159,164,3,38,19,0,160,161,5,24,0,0,161,163,3,38,19,0,162,160,1,0,0,0,
+  	163,166,1,0,0,0,164,162,1,0,0,0,164,165,1,0,0,0,165,168,1,0,0,0,166,164,
+  	1,0,0,0,167,169,5,24,0,0,168,167,1,0,0,0,168,169,1,0,0,0,169,170,1,0,
+  	0,0,170,171,5,31,0,0,171,37,1,0,0,0,172,173,5,14,0,0,173,174,5,26,0,0,
+  	174,175,3,40,20,0,175,39,1,0,0,0,176,177,7,2,0,0,177,41,1,0,0,0,178,179,
+  	5,14,0,0,179,180,3,14,7,0,180,43,1,0,0,0,181,182,5,11,0,0,182,185,5,14,
+  	0,0,183,185,5,4,0,0,184,181,1,0,0,0,184,183,1,0,0,0,185,45,1,0,0,0,17,
+  	49,57,65,79,83,92,96,102,106,118,121,134,138,156,164,168,184
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -185,12 +186,8 @@ SsbScriptParser::Pos_argumentContext::Pos_argumentContext(ParserRuleContext *par
   : ParserRuleContext(parent, invokingState) {
 }
 
-SsbScriptParser::Integer_likeContext* SsbScriptParser::Pos_argumentContext::integer_like() {
-  return getRuleContext<SsbScriptParser::Integer_likeContext>(0);
-}
-
-SsbScriptParser::StringContext* SsbScriptParser::Pos_argumentContext::string() {
-  return getRuleContext<SsbScriptParser::StringContext>(0);
+SsbScriptParser::PrimitiveContext* SsbScriptParser::Pos_argumentContext::primitive() {
+  return getRuleContext<SsbScriptParser::PrimitiveContext>(0);
 }
 
 SsbScriptParser::Position_markerContext* SsbScriptParser::Pos_argumentContext::position_marker() {
@@ -226,38 +223,32 @@ SsbScriptParser::Pos_argumentContext* SsbScriptParser::pos_argument() {
     exitRule();
   });
   try {
-    setState(50);
+    setState(49);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
+      case SsbScriptParser::STRING_LITERAL:
+      case SsbScriptParser::MULTILINE_STRING_LITERAL:
       case SsbScriptParser::IDENTIFIER:
       case SsbScriptParser::VARIABLE:
       case SsbScriptParser::INTEGER:
+      case SsbScriptParser::OPEN_BRACE:
       case SsbScriptParser::DECIMAL: {
         enterOuterAlt(_localctx, 1);
         setState(46);
-        integer_like();
-        break;
-      }
-
-      case SsbScriptParser::STRING_LITERAL:
-      case SsbScriptParser::MULTILINE_STRING_LITERAL:
-      case SsbScriptParser::OPEN_BRACE: {
-        enterOuterAlt(_localctx, 2);
-        setState(47);
-        string();
+        primitive();
         break;
       }
 
       case SsbScriptParser::POSITION: {
-        enterOuterAlt(_localctx, 3);
-        setState(48);
+        enterOuterAlt(_localctx, 2);
+        setState(47);
         position_marker();
         break;
       }
 
       case SsbScriptParser::AT: {
-        enterOuterAlt(_localctx, 4);
-        setState(49);
+        enterOuterAlt(_localctx, 3);
+        setState(48);
         jump_marker();
         break;
       }
@@ -316,9 +307,9 @@ SsbScriptParser::Jump_markerContext* SsbScriptParser::jump_marker() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(52);
+    setState(51);
     match(SsbScriptParser::AT);
-    setState(53);
+    setState(52);
     match(SsbScriptParser::IDENTIFIER);
    
   }
@@ -376,19 +367,19 @@ SsbScriptParser::StartContext* SsbScriptParser::start() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(58);
+    setState(57);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == SsbScriptParser::CORO
 
     || _la == SsbScriptParser::DEF) {
-      setState(55);
+      setState(54);
       funcdef();
-      setState(60);
+      setState(59);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(61);
+    setState(60);
     match(SsbScriptParser::EOF);
    
   }
@@ -444,26 +435,26 @@ SsbScriptParser::FuncdefContext* SsbScriptParser::funcdef() {
     exitRule();
   });
   try {
-    setState(66);
+    setState(65);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(63);
+      setState(62);
       coro_def();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(64);
+      setState(63);
       simple_def();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(65);
+      setState(64);
       for_target_def();
       break;
     }
@@ -526,11 +517,11 @@ SsbScriptParser::Simple_defContext* SsbScriptParser::simple_def() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(68);
+    setState(67);
     match(SsbScriptParser::DEF);
-    setState(69);
+    setState(68);
     match(SsbScriptParser::INTEGER);
-    setState(70);
+    setState(69);
     func_suite();
    
   }
@@ -587,11 +578,11 @@ SsbScriptParser::Coro_defContext* SsbScriptParser::coro_def() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(72);
+    setState(71);
     match(SsbScriptParser::CORO);
-    setState(73);
+    setState(72);
     match(SsbScriptParser::IDENTIFIER);
-    setState(74);
+    setState(73);
     func_suite();
    
   }
@@ -622,8 +613,8 @@ SsbScriptParser::For_target_def_targetContext* SsbScriptParser::For_target_defCo
   return getRuleContext<SsbScriptParser::For_target_def_targetContext>(0);
 }
 
-SsbScriptParser::Integer_likeContext* SsbScriptParser::For_target_defContext::integer_like() {
-  return getRuleContext<SsbScriptParser::Integer_likeContext>(0);
+SsbScriptParser::PrimitiveContext* SsbScriptParser::For_target_defContext::primitive() {
+  return getRuleContext<SsbScriptParser::PrimitiveContext>(0);
 }
 
 SsbScriptParser::Func_suiteContext* SsbScriptParser::For_target_defContext::func_suite() {
@@ -665,31 +656,31 @@ SsbScriptParser::For_target_defContext* SsbScriptParser::for_target_def() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(76);
+    setState(75);
     match(SsbScriptParser::DEF);
-    setState(77);
+    setState(76);
     match(SsbScriptParser::INTEGER);
-    setState(78);
+    setState(77);
     for_target_def_target();
-    setState(80);
+    setState(79);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == SsbScriptParser::OPEN_PAREN) {
-      setState(79);
+      setState(78);
       match(SsbScriptParser::OPEN_PAREN);
     }
-    setState(82);
-    integer_like();
-    setState(84);
+    setState(81);
+    primitive();
+    setState(83);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == SsbScriptParser::CLOSE_PAREN) {
-      setState(83);
+      setState(82);
       match(SsbScriptParser::CLOSE_PAREN);
     }
-    setState(86);
+    setState(85);
     func_suite();
    
   }
@@ -702,45 +693,48 @@ SsbScriptParser::For_target_defContext* SsbScriptParser::for_target_def() {
   return _localctx;
 }
 
-//----------------- Integer_likeContext ------------------------------------------------------------------
+//----------------- PrimitiveContext ------------------------------------------------------------------
 
-SsbScriptParser::Integer_likeContext::Integer_likeContext(ParserRuleContext *parent, size_t invokingState)
+SsbScriptParser::PrimitiveContext::PrimitiveContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* SsbScriptParser::Integer_likeContext::DECIMAL() {
+tree::TerminalNode* SsbScriptParser::PrimitiveContext::DECIMAL() {
   return getToken(SsbScriptParser::DECIMAL, 0);
 }
 
-tree::TerminalNode* SsbScriptParser::Integer_likeContext::INTEGER() {
+tree::TerminalNode* SsbScriptParser::PrimitiveContext::INTEGER() {
   return getToken(SsbScriptParser::INTEGER, 0);
 }
 
-tree::TerminalNode* SsbScriptParser::Integer_likeContext::IDENTIFIER() {
+tree::TerminalNode* SsbScriptParser::PrimitiveContext::IDENTIFIER() {
   return getToken(SsbScriptParser::IDENTIFIER, 0);
 }
 
-tree::TerminalNode* SsbScriptParser::Integer_likeContext::VARIABLE() {
+tree::TerminalNode* SsbScriptParser::PrimitiveContext::VARIABLE() {
   return getToken(SsbScriptParser::VARIABLE, 0);
 }
 
-
-size_t SsbScriptParser::Integer_likeContext::getRuleIndex() const {
-  return SsbScriptParser::RuleInteger_like;
+SsbScriptParser::StringContext* SsbScriptParser::PrimitiveContext::string() {
+  return getRuleContext<SsbScriptParser::StringContext>(0);
 }
 
 
-std::any SsbScriptParser::Integer_likeContext::accept(tree::ParseTreeVisitor *visitor) {
+size_t SsbScriptParser::PrimitiveContext::getRuleIndex() const {
+  return SsbScriptParser::RulePrimitive;
+}
+
+
+std::any SsbScriptParser::PrimitiveContext::accept(tree::ParseTreeVisitor *visitor) {
   if (auto parserVisitor = dynamic_cast<SsbScriptVisitor*>(visitor))
-    return parserVisitor->visitInteger_like(this);
+    return parserVisitor->visitPrimitive(this);
   else
     return visitor->visitChildren(this);
 }
 
-SsbScriptParser::Integer_likeContext* SsbScriptParser::integer_like() {
-  Integer_likeContext *_localctx = _tracker.createInstance<Integer_likeContext>(_ctx, getState());
-  enterRule(_localctx, 14, SsbScriptParser::RuleInteger_like);
-  size_t _la = 0;
+SsbScriptParser::PrimitiveContext* SsbScriptParser::primitive() {
+  PrimitiveContext *_localctx = _tracker.createInstance<PrimitiveContext>(_ctx, getState());
+  enterRule(_localctx, 14, SsbScriptParser::RulePrimitive);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -750,16 +744,48 @@ SsbScriptParser::Integer_likeContext* SsbScriptParser::integer_like() {
     exitRule();
   });
   try {
-    enterOuterAlt(_localctx, 1);
-    setState(88);
-    _la = _input->LA(1);
-    if (!((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & 17180049408) != 0))) {
-    _errHandler->recoverInline(this);
-    }
-    else {
-      _errHandler->reportMatch(this);
-      consume();
+    setState(92);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case SsbScriptParser::DECIMAL: {
+        enterOuterAlt(_localctx, 1);
+        setState(87);
+        match(SsbScriptParser::DECIMAL);
+        break;
+      }
+
+      case SsbScriptParser::INTEGER: {
+        enterOuterAlt(_localctx, 2);
+        setState(88);
+        match(SsbScriptParser::INTEGER);
+        break;
+      }
+
+      case SsbScriptParser::IDENTIFIER: {
+        enterOuterAlt(_localctx, 3);
+        setState(89);
+        match(SsbScriptParser::IDENTIFIER);
+        break;
+      }
+
+      case SsbScriptParser::VARIABLE: {
+        enterOuterAlt(_localctx, 4);
+        setState(90);
+        match(SsbScriptParser::VARIABLE);
+        break;
+      }
+
+      case SsbScriptParser::STRING_LITERAL:
+      case SsbScriptParser::MULTILINE_STRING_LITERAL:
+      case SsbScriptParser::OPEN_BRACE: {
+        enterOuterAlt(_localctx, 5);
+        setState(91);
+        string();
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
     }
    
   }
@@ -812,18 +838,18 @@ SsbScriptParser::StmtContext* SsbScriptParser::stmt() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(92);
+    setState(96);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case SsbScriptParser::IDENTIFIER: {
-        setState(90);
+        setState(94);
         operation();
         break;
       }
 
       case SsbScriptParser::AT:
       case SsbScriptParser::PARAGRAPH: {
-        setState(91);
+        setState(95);
         label();
         break;
       }
@@ -831,7 +857,7 @@ SsbScriptParser::StmtContext* SsbScriptParser::stmt() {
     default:
       throw NoViableAltException(this);
     }
-    setState(94);
+    setState(98);
     match(SsbScriptParser::T__0);
    
   }
@@ -897,28 +923,28 @@ SsbScriptParser::OperationContext* SsbScriptParser::operation() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(96);
+    setState(100);
     match(SsbScriptParser::IDENTIFIER);
-    setState(98);
+    setState(102);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == SsbScriptParser::OPEN_SHARP) {
-      setState(97);
+      setState(101);
       inline_ctx();
     }
-    setState(100);
+    setState(104);
     match(SsbScriptParser::OPEN_PAREN);
-    setState(102);
+    setState(106);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 18522234892) != 0)) {
-      setState(101);
+      setState(105);
       arglist();
     }
-    setState(104);
+    setState(108);
     match(SsbScriptParser::CLOSE_PAREN);
    
   }
@@ -975,11 +1001,11 @@ SsbScriptParser::Inline_ctxContext* SsbScriptParser::inline_ctx() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(106);
+    setState(110);
     match(SsbScriptParser::OPEN_SHARP);
-    setState(107);
+    setState(111);
     ctx_header();
-    setState(108);
+    setState(112);
     match(SsbScriptParser::CLOSE_SHARP);
    
   }
@@ -1045,21 +1071,21 @@ SsbScriptParser::Func_suiteContext* SsbScriptParser::func_suite() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(110);
+    setState(114);
     match(SsbScriptParser::OPEN_BRACE);
-    setState(117);
+    setState(121);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case SsbScriptParser::IDENTIFIER:
       case SsbScriptParser::AT:
       case SsbScriptParser::PARAGRAPH: {
-        setState(112); 
+        setState(116); 
         _errHandler->sync(this);
         _la = _input->LA(1);
         do {
-          setState(111);
+          setState(115);
           stmt();
-          setState(114); 
+          setState(118); 
           _errHandler->sync(this);
           _la = _input->LA(1);
         } while ((((_la & ~ 0x3fULL) == 0) &&
@@ -1068,7 +1094,7 @@ SsbScriptParser::Func_suiteContext* SsbScriptParser::func_suite() {
       }
 
       case SsbScriptParser::ALIAS: {
-        setState(116);
+        setState(120);
         func_alias();
         break;
       }
@@ -1076,7 +1102,7 @@ SsbScriptParser::Func_suiteContext* SsbScriptParser::func_suite() {
     default:
       throw NoViableAltException(this);
     }
-    setState(119);
+    setState(123);
     match(SsbScriptParser::CLOSE_BRACE);
    
   }
@@ -1129,11 +1155,11 @@ SsbScriptParser::Func_aliasContext* SsbScriptParser::func_alias() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(121);
+    setState(125);
     match(SsbScriptParser::ALIAS);
-    setState(122);
+    setState(126);
     match(SsbScriptParser::PREVIOUS);
-    setState(123);
+    setState(127);
     match(SsbScriptParser::T__0);
    
   }
@@ -1196,28 +1222,28 @@ SsbScriptParser::ArglistContext* SsbScriptParser::arglist() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(125);
+    setState(129);
     pos_argument();
-    setState(130);
+    setState(134);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(126);
+        setState(130);
         match(SsbScriptParser::COMMA);
-        setState(127);
+        setState(131);
         pos_argument(); 
       }
-      setState(132);
+      setState(136);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 10, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
     }
-    setState(134);
+    setState(138);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == SsbScriptParser::COMMA) {
-      setState(133);
+      setState(137);
       match(SsbScriptParser::COMMA);
     }
    
@@ -1295,21 +1321,21 @@ SsbScriptParser::Position_markerContext* SsbScriptParser::position_marker() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(136);
-    match(SsbScriptParser::POSITION);
-    setState(137);
-    match(SsbScriptParser::OPEN_SHARP);
-    setState(138);
-    match(SsbScriptParser::STRING_LITERAL);
-    setState(139);
-    match(SsbScriptParser::COMMA);
     setState(140);
-    position_marker_arg();
+    match(SsbScriptParser::POSITION);
     setState(141);
-    match(SsbScriptParser::COMMA);
+    match(SsbScriptParser::OPEN_SHARP);
     setState(142);
-    position_marker_arg();
+    match(SsbScriptParser::STRING_LITERAL);
     setState(143);
+    match(SsbScriptParser::COMMA);
+    setState(144);
+    position_marker_arg();
+    setState(145);
+    match(SsbScriptParser::COMMA);
+    setState(146);
+    position_marker_arg();
+    setState(147);
     match(SsbScriptParser::CLOSE_SHARP);
    
   }
@@ -1363,7 +1389,7 @@ SsbScriptParser::Position_marker_argContext* SsbScriptParser::position_marker_ar
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(145);
+    setState(149);
     _la = _input->LA(1);
     if (!(_la == SsbScriptParser::INTEGER
 
@@ -1430,7 +1456,7 @@ SsbScriptParser::LabelContext* SsbScriptParser::label() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(147);
+    setState(151);
     _la = _input->LA(1);
     if (!(_la == SsbScriptParser::AT
 
@@ -1441,7 +1467,7 @@ SsbScriptParser::LabelContext* SsbScriptParser::label() {
       _errHandler->reportMatch(this);
       consume();
     }
-    setState(148);
+    setState(152);
     match(SsbScriptParser::IDENTIFIER);
    
   }
@@ -1493,20 +1519,20 @@ SsbScriptParser::StringContext* SsbScriptParser::string() {
     exitRule();
   });
   try {
-    setState(152);
+    setState(156);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case SsbScriptParser::STRING_LITERAL:
       case SsbScriptParser::MULTILINE_STRING_LITERAL: {
         enterOuterAlt(_localctx, 1);
-        setState(150);
+        setState(154);
         string_value();
         break;
       }
 
       case SsbScriptParser::OPEN_BRACE: {
         enterOuterAlt(_localctx, 2);
-        setState(151);
+        setState(155);
         lang_string();
         break;
       }
@@ -1583,33 +1609,33 @@ SsbScriptParser::Lang_stringContext* SsbScriptParser::lang_string() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(154);
+    setState(158);
     match(SsbScriptParser::OPEN_BRACE);
-    setState(155);
+    setState(159);
     lang_string_argument();
-    setState(160);
+    setState(164);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 14, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(156);
+        setState(160);
         match(SsbScriptParser::COMMA);
-        setState(157);
+        setState(161);
         lang_string_argument(); 
       }
-      setState(162);
+      setState(166);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 14, _ctx);
     }
-    setState(164);
+    setState(168);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == SsbScriptParser::COMMA) {
-      setState(163);
+      setState(167);
       match(SsbScriptParser::COMMA);
     }
-    setState(166);
+    setState(170);
     match(SsbScriptParser::CLOSE_BRACE);
    
   }
@@ -1666,11 +1692,11 @@ SsbScriptParser::Lang_string_argumentContext* SsbScriptParser::lang_string_argum
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(168);
+    setState(172);
     match(SsbScriptParser::IDENTIFIER);
-    setState(169);
+    setState(173);
     match(SsbScriptParser::ASSIGN);
-    setState(170);
+    setState(174);
     string_value();
    
   }
@@ -1724,7 +1750,7 @@ SsbScriptParser::String_valueContext* SsbScriptParser::string_value() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(172);
+    setState(176);
     _la = _input->LA(1);
     if (!(_la == SsbScriptParser::STRING_LITERAL
 
@@ -1756,8 +1782,8 @@ tree::TerminalNode* SsbScriptParser::Ctx_headerContext::IDENTIFIER() {
   return getToken(SsbScriptParser::IDENTIFIER, 0);
 }
 
-SsbScriptParser::Integer_likeContext* SsbScriptParser::Ctx_headerContext::integer_like() {
-  return getRuleContext<SsbScriptParser::Integer_likeContext>(0);
+SsbScriptParser::PrimitiveContext* SsbScriptParser::Ctx_headerContext::primitive() {
+  return getRuleContext<SsbScriptParser::PrimitiveContext>(0);
 }
 
 
@@ -1786,10 +1812,10 @@ SsbScriptParser::Ctx_headerContext* SsbScriptParser::ctx_header() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(174);
+    setState(178);
     match(SsbScriptParser::IDENTIFIER);
-    setState(175);
-    integer_like();
+    setState(179);
+    primitive();
    
   }
   catch (RecognitionException &e) {
@@ -1844,21 +1870,21 @@ SsbScriptParser::For_target_def_targetContext* SsbScriptParser::for_target_def_t
     exitRule();
   });
   try {
-    setState(180);
+    setState(184);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case SsbScriptParser::FOR: {
         enterOuterAlt(_localctx, 1);
-        setState(177);
+        setState(181);
         match(SsbScriptParser::FOR);
-        setState(178);
+        setState(182);
         match(SsbScriptParser::IDENTIFIER);
         break;
       }
 
       case SsbScriptParser::FOR_TARGET: {
         enterOuterAlt(_localctx, 2);
-        setState(179);
+        setState(183);
         match(SsbScriptParser::FOR_TARGET);
         break;
       }

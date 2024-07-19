@@ -98,5 +98,3 @@ class MacroVisitor(ExplorerScriptBaseVisitor):
         assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
             StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)
-
-
