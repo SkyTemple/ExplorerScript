@@ -368,15 +368,19 @@ with-Blocks
 ~~~~~~~~~~~
 Runs a statement in the context of an actor, an object or
 a performer. Only simple statements are allowed, no blocks
-or labels. The blocks can only contain exactly one statement.
+or labels.
 The keywords ``actor``, ``object`` or ``performer`` can be used
 to specify the type. As identifiers for their IDs integers and
 constants can be used.
+``with`` blocks can contain multiple operations for convenience,
+but unlike code in targeted routines, operations in the block are
+not executed concurrently.
 
 .. code:: ExplorerScript
 
     with (actor ACTOR_HELLO_WORLD) {
-        operation();
+        operation1();
+        operation2();
     }
 
 if-Blocks
