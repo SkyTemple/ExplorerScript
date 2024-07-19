@@ -83,7 +83,12 @@ class PrimitiveCompileHandler(AbstractCompileHandler[ExplorerScriptParser.Primit
         allow_integer_like: bool = True,
         allow_string: bool = True,
     ) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString:
-        return parse_primitive(self.ctx, allow_integer_like=allow_integer_like, allow_string=allow_string)
+        return parse_primitive(
+            self.ctx,
+            user_constants=self.compiler_ctx.user_constants.in_scope(self.compiler_ctx.current_user_constants_scope),
+            allow_integer_like=allow_integer_like,
+            allow_string=allow_string,
+        )
 
     def add(self, obj: None) -> None:
         self._raise_add_error(obj)

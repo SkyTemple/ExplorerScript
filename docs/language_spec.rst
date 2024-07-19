@@ -142,15 +142,15 @@ compiled values. The compiler may error if a value can not be represented.
    Valid value ranges are ~-64.0 - 63.996. Decimal values are rounded to the nearest 1/256 increment.
    This means the lowest values for decimal places is 0, the highest is ~.996 and precision for increments is ~.0039.
 
-Constants
-~~~~~~~~~
-A constant is a stand-in for an integer. Their names
-are usually in uppercase.
+System Constants
+~~~~~~~~~~~~~~~~
+A system constant is a stand-in for an integer.
+Their names are usually in uppercase.
 
 .. admonition:: SkyTemple
 
     Variables that are used by the debugger are also actually
-    constants that represent a number! For example ``$SCENARIO_MAIN``
+    system constants that represent a number! For example ``$SCENARIO_MAIN``
     is actually just a constant containing the number of a variable.
     This is because the conditional and assigment statements don't
     actually work with variables, they require the ID of variables
@@ -999,6 +999,48 @@ Assigment operators
 +----------+--------------------------------------------------------------------------------------------------+
 | /=       | Changes the left side's value to be divided by the right side's value. Warning: No floats exist! |
 +----------+--------------------------------------------------------------------------------------------------+
+
+User Constants
+--------------
+In addition to system constants, you may also specify your own (user) constants in your source code.
+
+These constants can take on the value of any data type (including system constants).
+
+If they are defined outside of routines, they are scoped to the entire file. If the file is the main script, it is also
+scoped to all of the included files (see `Imports / Includes`_). If defined inside of a function or macro, they are
+visible only within the function or macro they are defined in. User constants defined in functions or macros
+take precedence over user constants in the global scope. All visible user constants take precedence over system
+constants.
+
+.. code:: ExplorerScript
+
+    const MY_CONSTANT = 12;
+
+    def 0 {
+        const MY_INNER_CONSTANT = "Hello!";
+
+        foobar(MY_CONSTANT); // = foobar(12);
+        foobar(MY_INNER_CONSTANT); // = foobar("Hello!");
+
+        // Constants can be used before they are defined.
+        foobar(COPIED_CONSTANT); // = foobar(12);
+        const COPIED_CONSTANT = MY_CONSTANT;
+
+        foobar(ANOTHER_CONSTANT); // = foobar(A_SYSTEM_CONSTANT);
+    }
+
+    def 1 {
+        const MY_INNER_CONSTANT = "Goodbye!";
+
+        foobar(MY_INNER_CONSTANT); // = foobar("Goodbye!");
+
+        // COPIED_CONSTANT is not a user constant in this scope, so a system constant
+        // of that name is used instead.
+        // If there is no system constant COPIED_CONSTANT, compilation will fail.
+        foobar(COPIED_CONSTANT); // = foobar(COPIED_CONSTANT);
+    }
+
+    const ANOTHER_CONSTANT = A_SYSTEM_CONSTANT;
 
 Imports / Includes
 ------------------

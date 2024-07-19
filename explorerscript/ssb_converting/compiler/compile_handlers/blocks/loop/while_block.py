@@ -72,28 +72,27 @@ class WhileBlockCompileHandler(
         self._branch_blueprint: SsbLabelJumpBlueprint | None = None
 
     def collect(self) -> list[SsbOperation]:
-        self.compiler_ctx.add_loop(cast(AnyLoopBlockCompileHandler, self))
-        is_positive = self.ctx.NOT() is None
-        assert self._branch_blueprint is not None
+        with self.compiler_ctx.in_loop(cast(AnyLoopBlockCompileHandler, self)):
+            is_positive = self.ctx.NOT() is None
+            assert self._branch_blueprint is not None
 
-        if is_positive:
-            check_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} check label")
-            block_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block label")
-            retval = (
-                [self._start_label, self._generate_jump_operation(OP_JUMP, [], check_label), block_label]
-                + self._process_block(False)
-                + [check_label, self._branch_blueprint.build_for(block_label), self._end_label]
-            )
-        else:
-            retval = (
-                [
-                    self._start_label,
-                    self._branch_blueprint.build_for(self._end_label),
-                ]
-                + self._process_block(False)
-                + [self._generate_jump_operation(OP_JUMP, [], self._start_label), self._end_label]
-            )
-        self.compiler_ctx.remove_loop()
+            if is_positive:
+                check_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} check label")
+                block_label = SsbLabel(self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} block label")
+                retval = (
+                    [self._start_label, self._generate_jump_operation(OP_JUMP, [], check_label), block_label]
+                    + self._process_block(False)
+                    + [check_label, self._branch_blueprint.build_for(block_label), self._end_label]
+                )
+            else:
+                retval = (
+                    [
+                        self._start_label,
+                        self._branch_blueprint.build_for(self._end_label),
+                    ]
+                    + self._process_block(False)
+                    + [self._generate_jump_operation(OP_JUMP, [], self._start_label), self._end_label]
+                )
         return retval
 
     def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | IfHeaderCompileHandler) -> None:

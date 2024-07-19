@@ -25,7 +25,10 @@ from __future__ import annotations
 import itertools
 import logging
 from collections import deque
-from typing import TYPE_CHECKING, MutableSequence, Iterable, Any
+from collections.abc import Mapping
+from contextlib import contextmanager
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, MutableSequence, Iterable, Any, TypeVar, Iterator
 
 from antlr4 import ParserRuleContext
 
@@ -53,6 +56,47 @@ if TYPE_CHECKING:
         DefaultCaseBlockCompileHandler,
     )
     from explorerscript.macro import ExplorerScriptMacro
+
+_KT = TypeVar("_KT")  # Key type.
+_VT_co = TypeVar("_VT_co", covariant=True)  # Value type covariant containers.
+
+
+class MultiScopeDict(Mapping[_KT, _VT_co]):
+    """A mapping backend by multiple dicts, which are looked up in descending order."""
+
+    def __init__(self, *args: dict[_KT, _VT_co]) -> None:
+        self.dicts = args
+
+    def __getitem__(self, key: _KT) -> _VT_co:
+        for a_dict in reversed(self.dicts):
+            if key in a_dict:
+                return a_dict[key]
+        raise KeyError(key)
+
+    def __contains__(self, key: Any) -> bool:
+        for a_dict in reversed(self.dicts):
+            if key in a_dict:
+                return True
+        return False
+
+    def __len__(self) -> Any:
+        raise NotImplementedError("MultiScopeDict can not be queried for length.")
+
+    def __iter__(self) -> Any:
+        raise NotImplementedError("MultiScopeDict can not be iterated.")
+
+
+@dataclass
+class UserDefinedConstants:
+    """All known user defined constants"""
+
+    global_constants: dict[str, SsbOpParam]
+    funcdef_constants: dict[int | str, dict[str, SsbOpParam]]
+    macrodefdef_constants: dict[str, dict[str, SsbOpParam]]
+
+    def in_scope(self, scope_vars: dict[str, SsbOpParam]) -> Mapping[str, SsbOpParam]:
+        """Returns the user defined constants available in the given scope"""
+        return MultiScopeDict(self.global_constants, scope_vars)
 
 
 class Counter:
@@ -90,6 +134,9 @@ class CompilerCtx:
 
     performance_progress_list_var_name: str
 
+    user_constants: UserDefinedConstants
+    current_user_constants_scope: dict[str, SsbOpParam]
+
     # Current handlers for structures that have ending opcodes collected by child handlers
     _loops: list[AnyLoopBlockCompileHandler]
     _switch_cases: list[DefaultCaseBlockCompileHandler | CaseBlockCompileHandler]
@@ -102,6 +149,7 @@ class CompilerCtx:
         counter_labels: Counter,
         performance_progress_list_var_name: str,
         macros: dict[str, ExplorerScriptMacro],
+        user_constants: UserDefinedConstants,
     ):
         self.counter_ops = counter_ops
         self.source_map_builder = source_map_builder
@@ -111,19 +159,34 @@ class CompilerCtx:
 
         self.performance_progress_list_var_name = performance_progress_list_var_name
 
+        self.user_constants = user_constants
+        self.current_user_constants_scope = {}
+
         self._loops = []
         self._switch_cases = []
 
-    def add_loop(self, h: AnyLoopBlockCompileHandler) -> None:
-        self._loops.append(h)
+    @contextmanager
+    def in_funcdef(self, idx: str | int) -> Iterator[None]:
+        self.current_user_constants_scope = self.user_constants.funcdef_constants.get(idx, {})
+        yield
+        self.current_user_constants_scope = {}
 
-    def remove_loop(self) -> None:
+    @contextmanager
+    def in_macrodef(self, idx: str) -> Iterator[None]:
+        self.current_user_constants_scope = self.user_constants.macrodefdef_constants.get(idx, {})
+        yield
+        self.current_user_constants_scope = {}
+
+    @contextmanager
+    def in_loop(self, h: AnyLoopBlockCompileHandler) -> Iterator[None]:
+        self._loops.append(h)
+        yield
         self._loops.pop()
 
-    def add_switch_case(self, h: DefaultCaseBlockCompileHandler | CaseBlockCompileHandler) -> None:
+    @contextmanager
+    def in_switch_case(self, h: DefaultCaseBlockCompileHandler | CaseBlockCompileHandler) -> Iterator[None]:
         self._switch_cases.append(h)
-
-    def remove_switch_case(self) -> None:
+        yield
         self._switch_cases.pop()
 
     def continue_loop(self, ctx: ParserRuleContext) -> SsbOperation:

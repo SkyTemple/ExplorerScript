@@ -76,6 +76,10 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         # Are not visited.
         return None
 
+    def visitConstant_assign(self, ctx: ExplorerScriptParser.Constant_assignContext) -> None:
+        # Are not visited.
+        return None
+
     def visitMacro_call(self, ctx: ExplorerScriptParser.Macro_callContext) -> None:
         name = str(ctx.MACRO_CALL())[1:]
         assert self._active_macro_name is not None

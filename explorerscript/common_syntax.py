@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-from typing import overload, Literal, NoReturn, Any
+from typing import overload, Literal, NoReturn, Any, Mapping
 
 from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.antlr.SsbScriptParser import SsbScriptParser
@@ -42,6 +42,7 @@ from explorerscript.util import exps_int, _
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
     allow_integer_like: Literal[True] = True,
     allow_string: Literal[True] = True,
 ) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
@@ -51,7 +52,8 @@ def parse_primitive(
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
-    allow_integer_like: Literal[True] = ...,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
+    allow_integer_like: Literal[True],
     allow_string: Literal[False],
 ) -> int | SsbOpParamFixedPoint | SsbOpParamConstant: ...
 
@@ -60,6 +62,7 @@ def parse_primitive(
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
     allow_integer_like: Literal[False],
     allow_string: Literal[True],
 ) -> SsbOpParamConstString | SsbOpParamLanguageString: ...
@@ -69,6 +72,7 @@ def parse_primitive(
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
     allow_integer_like: Literal[False],
     allow_string: Literal[False],
 ) -> NoReturn: ...
@@ -78,6 +82,7 @@ def parse_primitive(
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
     allow_integer_like: bool = True,
     allow_string: bool = True,
 ) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
@@ -86,6 +91,7 @@ def parse_primitive(
 def parse_primitive(
     primitive: ExplorerScriptParser.PrimitiveContext | SsbScriptParser.PrimitiveContext,
     *,
+    user_constants: Mapping[str, SsbOpParam] | None = None,
     allow_integer_like: bool = True,
     allow_string: bool = True,
 ) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString:
@@ -98,18 +104,96 @@ def parse_primitive(
             raise SsbCompilerError(_("Decimal not allowed at this position."))
         return SsbOpParamFixedPoint.from_str(str(primitive.DECIMAL()))
     if primitive.IDENTIFIER():
+        ident = str(primitive.IDENTIFIER())
+        if user_constants is not None and ident in user_constants:
+            return parse_resolved_primitive(
+                user_constants[ident],
+                allow_integer_like=allow_integer_like,
+                allow_string=allow_string,
+            )
         if not allow_integer_like:
             raise SsbCompilerError(_("Constant not allowed at this position."))
-        return SsbOpParamConstant(str(primitive.IDENTIFIER()))
+        return SsbOpParamConstant(ident)
     if primitive.VARIABLE():
+        ident = str(primitive.VARIABLE())
+        if user_constants is not None and ident in user_constants:
+            return parse_resolved_primitive(
+                user_constants[ident],
+                allow_integer_like=allow_integer_like,
+                allow_string=allow_string,
+            )
         if not allow_integer_like:
             raise SsbCompilerError(_("Variable or constant not allowed at this position."))
-        return SsbOpParamConstant(str(primitive.VARIABLE()))
+        return SsbOpParamConstant(ident)
     if primitive.string():
         if not allow_string:
             raise SsbCompilerError(_("String not allowed at this position."))
         return _parse_string(primitive.string())
     raise SsbCompilerError("Unknown primitive.")
+
+
+@overload
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: Literal[True] = True,
+    allow_string: Literal[True] = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+@overload
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: Literal[True],
+    allow_string: Literal[False],
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant: ...
+
+
+@overload
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: Literal[False],
+    allow_string: Literal[True],
+) -> SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+@overload
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: Literal[False],
+    allow_string: Literal[False],
+) -> NoReturn: ...
+
+
+@overload  # https://github.com/python/mypy/issues/14764
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: bool = True,
+    allow_string: bool = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString: ...
+
+
+def parse_resolved_primitive(
+    primitive: SsbOpParam,
+    *,
+    allow_integer_like: bool = True,
+    allow_string: bool = True,
+) -> int | SsbOpParamFixedPoint | SsbOpParamConstant | SsbOpParamConstString | SsbOpParamLanguageString:
+    if not allow_integer_like:
+        if isinstance(primitive, int):
+            raise SsbCompilerError(_("Integer not allowed at this position."))
+        if isinstance(primitive, SsbOpParamFixedPoint):
+            raise SsbCompilerError(_("Decimal not allowed at this position."))
+        if isinstance(primitive, SsbOpParamConstant):
+            raise SsbCompilerError(_("Variable or constant not allowed at this position."))
+    if not allow_string:
+        if isinstance(primitive, SsbOpParamConstString) or isinstance(primitive, SsbOpParamLanguageString):
+            raise SsbCompilerError(_("String not allowed at this position."))
+    return primitive  # type: ignore
 
 
 def is_primitive_string(v: Any) -> bool:
