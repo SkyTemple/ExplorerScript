@@ -115,49 +115,100 @@ jobs:
           path: ${{ github.event_path }}
 
   build:
-    needs:
-      - test
-      - typechecks
-    runs-on: ubuntu-latest
-    name: Build the Python wheel
+    runs-on: ${{ matrix.os }}
+    name: Build Wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: x86_64
+          # very slow:
+          #- os: ubuntu-latest
+          #  arch: arm64
+          - os: macos-13
+            arch: x86_64
+          - os: macos-13
+            arch: arm64
+          - os: windows-2019
+            arch: x86
+          - os: windows-2019
+            arch: AMD64
     steps:
-      # For tags we assume the version in pyproject.toml is correct!
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
       - name: Rewrite version for dev if not tag
         if: "!startsWith(github.ref, 'refs/tags/')"
+        shell: bash
         run: |
           perl -i -pe "s/version\s*=\s*\"(.*?)(\.rc.*|\.a.*|\.post.*)?\"/version=\"\1.dev0+${GITHUB_SHA::8}\"/" pyproject.toml
       - name: Note version
+        if: matrix.os != 'windows-2019'
+        shell: bash
         run: |
+          python3 -m venv .yq-venv
+          . .yq-venv/bin/activate
+          pip install yq
           echo "PACKAGE_VERSION=$(tomlq '.project.version' pyproject.toml -r)" >> $GITHUB_ENV
-      - name: Build Python wheels
-        uses: RalfG/python-wheels-manylinux-build@v0.5.0-manylinux2014_x86_64
+      - name: Note version (Windows)
+        if: matrix.os == 'windows-2019'
+        run: |
+          pipx install yq
+          $env:PACKAGE_VERSION = tomlq.exe '.project.version' pyproject.toml -r
+          echo "PACKAGE_VERSION=$env:PACKAGE_VERSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
         with:
-          python-versions: 'cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312'
+          platforms: all
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download GNU Tar
+        uses: suisei-cn/actions-download-file@v1.6.0
+        if: "matrix.os == 'windows-2019'"
+        with:
+          url: https://skytemple.org/build_deps/tar.exe
+          target: "C:\\tarout"
+      - name: Prepend GNU Tar to Path
+        if: "matrix.os == 'windows-2019'"
+        shell: powershell
+        run:
+          echo "C:\tarout" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_ARCHS: ${{ matrix.arch }}
+          MACOSX_DEPLOYMENT_TARGET: "10.13"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/*.whl
 
   deploy:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs:
+      - build
+      - test
+      - typechecks
     runs-on: ubuntu-latest
     name: Deploy wheels to PyPI
     steps:
       - name: Download wheels
         uses: actions/download-artifact@v4
-        with:
-          name: wheels
-      - name: Set up Python 3.11
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Upgrade pip and install Twine
+          python-version: 3.12
+      - name: Upgrade pip
         run: |
           python -m pip install --upgrade pip
           pip install twine
@@ -166,4 +217,4 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          twine upload *.whl
+          twine upload wheels*/*.whl

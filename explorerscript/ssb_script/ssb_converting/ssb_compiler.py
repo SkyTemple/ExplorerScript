@@ -21,18 +21,16 @@
 #  SOFTWARE.
 #
 from __future__ import annotations
+
 import logging
 
-from antlr4 import InputStream, CommonTokenStream
-
-from explorerscript.antlr.SsbScriptLexer import SsbScriptLexer
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.error import ParseError
 from explorerscript.source_map import SourceMap
 from explorerscript.ssb_converting.compiler.label_jump_to_remover import OpsLabelJumpToRemover
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbRoutineInfo
-from explorerscript.ssb_script.ssb_converting.compiler.compiler_listener import SsbScriptCompilerListener
+from explorerscript.ssb_script.ssb_converting.compiler.compiler_visitor import SsbScriptCompilerVisitor
 from explorerscript.syntax_error_listener import SyntaxErrorListener
+from explorerscript_parser import SsbScriptParserWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -81,17 +79,9 @@ class SsbScriptSsbCompiler:
         self.routine_ops = None
         self.named_coroutines = None
 
-        input_stream = InputStream(ssb_script_src)
-        lexer = SsbScriptLexer(input_stream)
-        stream = CommonTokenStream(lexer)
-        parser = SsbScriptParser(stream)
         error_listener = SyntaxErrorListener()
-        parser.addErrorListener(error_listener)
-        compiler_listener = SsbScriptCompilerListener()
-        parser.addParseListener(compiler_listener)
-
-        # Start Parsing
-        parser.start()
+        parser = SsbScriptParserWrapper(ssb_script_src, error_listener)
+        compiler_visitor = SsbScriptCompilerVisitor()
 
         # Look for errors
         if len(error_listener.syntax_errors) > 0:
@@ -99,12 +89,12 @@ class SsbScriptSsbCompiler:
             # the first screws everything over.
             raise ParseError(error_listener.syntax_errors[0])
 
+        parser.traverse(compiler_visitor)
+
         # Copy from listener / remove labels and label jumps
-        self.routine_ops = OpsLabelJumpToRemover(
-            compiler_listener.routine_ops, compiler_listener.label_offsets
-        ).routines
-        self.routine_infos = compiler_listener.routine_infos
-        self.named_coroutines = compiler_listener.named_coroutines
-        self.source_map = compiler_listener.source_map_builder.build()
+        self.routine_ops = OpsLabelJumpToRemover(compiler_visitor.routine_ops, compiler_visitor.label_offsets).routines
+        self.routine_infos = compiler_visitor.routine_infos
+        self.named_coroutines = compiler_visitor.named_coroutines
+        self.source_map = compiler_visitor.source_map_builder.build()
 
         # Done!

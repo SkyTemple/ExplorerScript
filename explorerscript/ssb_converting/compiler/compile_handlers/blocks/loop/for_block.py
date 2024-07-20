@@ -24,9 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractStatementCompileHandler,
     AbstractComplexStatementCompileHandler,
@@ -37,6 +34,7 @@ from explorerscript.ssb_converting.compiler.compile_handlers.blocks.ifs.if_heade
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import OP_JUMP, SsbLabel
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParser.For_blockContext]):
@@ -75,8 +73,8 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParse
             self.compiler_ctx.counter_labels(), -1, f"{self.__class__.__name__} initial label"
         )
         self._branch_blueprint: SsbLabelJumpBlueprint | None = None
-        self._init_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
-        self._end_statement_handler: AbstractStatementCompileHandler[ParserRuleContext] | None = None
+        self._init_statement_handler: AbstractStatementCompileHandler[Antlr4ParserRuleContext] | None = None
+        self._end_statement_handler: AbstractStatementCompileHandler[Antlr4ParserRuleContext] | None = None
 
     def collect(self) -> list[SsbOperation]:
         with self.compiler_ctx.in_loop(cast(AnyLoopBlockCompileHandler, self)):
@@ -96,7 +94,7 @@ class ForBlockCompileHandler(AbstractLoopBlockCompileHandler[ExplorerScriptParse
             )
         return retval
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext]) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             if self._init_statement_handler is None:
                 self._init_statement_handler = obj

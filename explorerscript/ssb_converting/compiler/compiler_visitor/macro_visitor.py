@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.error import SsbCompilerError
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
@@ -34,9 +32,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.functions.macro_def
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.util import _
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class MacroVisitor(ExplorerScriptVisitor):
+class MacroVisitor(ExplorerScriptBaseVisitor):
     """Collects all macros as Macro models from an ExplorerScript tree."""
 
     # Global compilation context for the handlers
@@ -66,10 +65,11 @@ class MacroVisitor(ExplorerScriptVisitor):
         self.macro_resolution_order = macro_resolution_order
 
         self._root_handler = None
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> dict[str, ExplorerScriptMacro]:
         macros = {}
-        handlers = [child.accept(self) for child in ctx.macrodef()]
+        handlers = [self.visit(child) for child in ctx.macrodef()]
         for handler in sorted(handlers, key=lambda h: self.macro_resolution_order.index(h.get_name())):
             m: ExplorerScriptMacro = self.visitMacrodef_children(handler)
             self.compiler_ctx.macros[m.name] = m
@@ -97,4 +97,4 @@ class MacroVisitor(ExplorerScriptVisitor):
     def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
         assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
+            StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)

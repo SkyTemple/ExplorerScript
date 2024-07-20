@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker_arg import (
@@ -33,15 +31,17 @@ from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_mark
 )
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParamPositionMarker
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class PositionMarkVisitor(ExplorerScriptVisitor):
+class PositionMarkVisitor(ExplorerScriptBaseVisitor):
     """Returns the list of position marks from an ExplorerScript parsing tree."""
 
     def __init__(self) -> None:
         self.compiler_ctx = CompilerCtx(
             Counter(), SourceMapBuilder(), {}, Counter(), "n/a", {}, UserDefinedConstants({}, {}, {})
         )
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[SourceMapPositionMark]:
         return self.visitChildren(ctx)
@@ -53,9 +53,9 @@ class PositionMarkVisitor(ExplorerScriptVisitor):
         pos_mark_param: SsbOpParamPositionMarker = mark_handler.collect()
         return SourceMapPositionMark(
             ctx.start.line - 1,
-            ctx.start.column,
+            ctx.start.charPositionInLine,
             ctx.stop.line - 1,
-            ctx.stop.column,
+            ctx.stop.charPositionInLine,
             pos_mark_param.name,
             pos_mark_param.x_offset,
             pos_mark_param.y_offset,

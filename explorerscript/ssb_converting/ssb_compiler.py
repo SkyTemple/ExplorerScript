@@ -174,12 +174,11 @@ class ExplorerScriptSsbCompiler:
                 return self
 
         reader = ExplorerScriptReader(explorerscript_src)
-        tree = reader.read()
-        parser = reader.get_parser()
+        parser = reader.read()
 
         # Collect imports
         logger.debug("<%d> Collecting imports...", id(self))
-        self.imports = ImportVisitor().visit(tree)
+        self.imports = parser.traverse(ImportVisitor())
 
         # Resolve imports and load macros in the imported files
         for subfile_path in self._resolve_imported_file(os.path.dirname(file_name)):
@@ -209,22 +208,24 @@ class ExplorerScriptSsbCompiler:
 
         # Sort the list of macros by how they are used
         logger.debug("<%d> Building macro resolution order...", id(self))
-        self.macro_resolution_order = MacroResolutionOrderVisitor(self.macros).visit(tree)
+        self.macro_resolution_order = parser.traverse(MacroResolutionOrderVisitor(self.macros))
 
         logger.debug("<%d> Collecting constants...", id(self))
-        self.user_constants = UserConstantsVisitor(self.user_constants).visit(tree)
+        self.user_constants = parser.traverse(UserConstantsVisitor(self.user_constants))
 
         # Loads and compiles modules in base file
         # (we write our absolute path there only for now, if this is an inclusion, the outer compiler will update it).
         logger.debug("<%d> Compiling macros...", id(self))
         self.macros.update(
             self._macros_add_filenames(
-                MacroVisitor(
-                    self.performance_progress_list_var_name,
-                    self.macros,
-                    self.macro_resolution_order,
-                    self.user_constants,
-                ).visit(tree),
+                parser.traverse(
+                    MacroVisitor(
+                        self.performance_progress_list_var_name,
+                        self.macros,
+                        self.macro_resolution_order,
+                        self.user_constants,
+                    )
+                ),
                 None,
                 file_name,
             )
@@ -233,7 +234,7 @@ class ExplorerScriptSsbCompiler:
         # Check if macros_only
         if macros_only:
             # Check if the file contains any routines
-            if HasRoutinesVisitor().visit(parser.start()):
+            if parser.traverse(HasRoutinesVisitor()):
                 # noinspection PyUnusedLocal
                 fn = os.path.basename(file_name)  # noqa
                 raise SsbCompilerError(f(_("{fn}: Macro scripts must not contain any routines.")))
@@ -246,7 +247,7 @@ class ExplorerScriptSsbCompiler:
                 compiler_visitor = RoutineVisitor(
                     self.performance_progress_list_var_name, self.macros, self.user_constants
                 )
-                compiler_visitor.visit(tree)
+                parser.traverse(compiler_visitor)
             except Exception as ex:
                 # due to the stack nature of the decompile visitor, we get many stack exceptions after raising
                 # the first. Raise the last exception in the context chain.

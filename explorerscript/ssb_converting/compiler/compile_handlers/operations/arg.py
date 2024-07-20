@@ -24,19 +24,18 @@ from __future__ import annotations
 
 from typing import Union
 
-from antlr4 import ParserRuleContext
-
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.position_marker import PositionMarkerCompileHandler
 from explorerscript.ssb_converting.compiler.compile_handlers.atoms.primitive import PrimitiveCompileHandler
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
+from explorerscript_parser import Antlr4ParserRuleContext
 
 _SupportedHandlers = Union[PrimitiveCompileHandler, PositionMarkerCompileHandler]
 
 
-class ArgCompileHandler(AbstractCompileHandler[ParserRuleContext, _SupportedHandlers]):
-    def __init__(self, ctx: ParserRuleContext, compiler_ctx: CompilerCtx):
+class ArgCompileHandler(AbstractCompileHandler[Antlr4ParserRuleContext, _SupportedHandlers]):
+    def __init__(self, ctx: Antlr4ParserRuleContext, compiler_ctx: CompilerCtx):
         super().__init__(ctx, compiler_ctx)
         self.arg_handler: _SupportedHandlers | None = None
 

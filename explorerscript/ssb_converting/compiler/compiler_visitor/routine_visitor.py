@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from typing import cast
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.source_map import SourceMapBuilder
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AnyCompileHandler
@@ -36,9 +34,10 @@ from explorerscript.ssb_converting.compiler.compile_handlers.functions.simple_de
 from explorerscript.ssb_converting.compiler.compiler_visitor.statement_visitor import StatementVisitor
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, Counter, UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbRoutineInfo, SsbOperation
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class RoutineVisitor(ExplorerScriptVisitor):
+class RoutineVisitor(ExplorerScriptBaseVisitor):
     """Builds the SSB data structures while visiting the parsing tree."""
 
     # The information about routines stored in the ssb.
@@ -79,6 +78,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
 
         self._active_routine_id = -1
         self._root_handler = None
+        super().__init__()
 
     def visitImport_stmt(self, ctx: ExplorerScriptParser.Import_stmtContext) -> None:
         # Are not visited.
@@ -130,7 +130,7 @@ class RoutineVisitor(ExplorerScriptVisitor):
     def visitFunc_suite(self, ctx: ExplorerScriptParser.Func_suiteContext) -> None:
         assert self._root_handler is not None
         for stmt_ctx in ctx.stmt():
-            stmt_ctx.accept(StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx))
+            StatementVisitor(cast(AnyCompileHandler, self._root_handler), self.compiler_ctx).visit(stmt_ctx)
 
     def visitPrimitive(self, ctx: ExplorerScriptParser.PrimitiveContext) -> None:
         assert isinstance(self._root_handler, ForTargetDefCompileHandler)

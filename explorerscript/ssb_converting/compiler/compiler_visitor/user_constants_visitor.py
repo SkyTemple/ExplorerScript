@@ -22,15 +22,14 @@
 #
 from __future__ import annotations
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.common_syntax import parse_primitive
 from explorerscript.ssb_converting.compiler.utils import UserDefinedConstants
 from explorerscript.ssb_converting.ssb_data_types import SsbOpParam
 from explorerscript.util import exps_int
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class UserConstantsVisitor(ExplorerScriptVisitor):
+class UserConstantsVisitor(ExplorerScriptBaseVisitor):
     """Collects all constants in all scopes of an ExplorerScript source file."""
 
     collected_constants: UserDefinedConstants
@@ -41,6 +40,7 @@ class UserConstantsVisitor(ExplorerScriptVisitor):
             self.collected_constants = UserDefinedConstants({}, {}, {})
         else:
             self.collected_constants = start_constants
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> UserDefinedConstants:
         self._current_constant_context = self.collected_constants.global_constants

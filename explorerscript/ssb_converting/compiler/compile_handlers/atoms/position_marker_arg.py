@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
+from explorerscript_parser import ExplorerScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import AbstractCompileHandler
 

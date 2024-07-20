@@ -22,9 +22,6 @@
 #
 from __future__ import annotations
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractComplexBlockCompileHandler,
@@ -37,12 +34,13 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJu
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP, SsbLabelJump
 from explorerscript.util import _
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class CaseBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
         ExplorerScriptParser.Single_case_blockContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler",
+        "AbstractStatementCompileHandler[Antlr4ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler",
     ]
 ):
     """Handles a switch case block for a switch."""
@@ -90,7 +88,9 @@ class CaseBlockCompileHandler(
 
     def add(
         self,
-        obj: AbstractStatementCompileHandler[ParserRuleContext] | CaseHeaderCompileHandler | PrimitiveCompileHandler,
+        obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext]
+        | CaseHeaderCompileHandler
+        | PrimitiveCompileHandler,
     ) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block

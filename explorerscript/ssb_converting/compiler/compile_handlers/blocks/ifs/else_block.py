@@ -22,15 +22,13 @@
 #
 from __future__ import annotations
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractStatementCompileHandler,
     AbstractComplexStatementCompileHandler,
     AbstractBlockCompileHandler,
 )
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class ElseBlockCompileHandler(AbstractBlockCompileHandler[ExplorerScriptParser.Else_blockContext]):
@@ -39,7 +37,7 @@ class ElseBlockCompileHandler(AbstractBlockCompileHandler[ExplorerScriptParser.E
     def collect(self) -> list[SsbOperation]:
         return self._process_block()
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext]) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext]) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             self._added_handlers.append(obj)

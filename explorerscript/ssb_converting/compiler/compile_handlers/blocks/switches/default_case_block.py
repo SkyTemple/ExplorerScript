@@ -22,9 +22,6 @@
 #
 from __future__ import annotations
 
-from antlr4 import ParserRuleContext
-
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.compile_handlers.abstract import (
     AbstractStatementCompileHandler,
@@ -36,12 +33,13 @@ from explorerscript.ssb_converting.compiler.utils import CompilerCtx
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, OP_JUMP, SsbLabelJump
 from explorerscript.util import _
+from explorerscript_parser import ExplorerScriptParser, Antlr4ParserRuleContext
 
 
 class DefaultCaseBlockCompileHandler(
     AbstractComplexBlockCompileHandler[
         ExplorerScriptParser.DefaultContext,
-        "AbstractStatementCompileHandler[ParserRuleContext] | PrimitiveCompileHandler",
+        "AbstractStatementCompileHandler[Antlr4ParserRuleContext] | PrimitiveCompileHandler",
     ]
 ):
     """Handles a default block."""
@@ -75,7 +73,7 @@ class DefaultCaseBlockCompileHandler(
             raise SsbCompilerError(_("Invalid message switch case call."))
         return self._added_string_handler.collect(allow_integer_like=False)
 
-    def add(self, obj: AbstractStatementCompileHandler[ParserRuleContext] | PrimitiveCompileHandler) -> None:
+    def add(self, obj: AbstractStatementCompileHandler[Antlr4ParserRuleContext] | PrimitiveCompileHandler) -> None:
         if isinstance(obj, AbstractComplexStatementCompileHandler):
             # Sub statement for the block
             # WARNING: Might not have any operations. In this case, it's part of the following cases!

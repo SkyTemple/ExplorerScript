@@ -24,9 +24,8 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from antlr4.error.ErrorListener import ErrorListener
-
 from explorerscript.util import f, _
+from explorerscript_parser import Antlr4ErrorListener
 
 
 class AntlrSyntaxError:
@@ -42,13 +41,14 @@ class AntlrSyntaxError:
         return f(_("line {self.line}:{self.column}: {self.msg}"))
 
 
-class SyntaxErrorListener(ErrorListener):
+class SyntaxErrorListener(Antlr4ErrorListener):
     """General purpose error listener for Antlr"""
 
     _syntax_errors: list[AntlrSyntaxError]
 
     def __init__(self):  # type: ignore
         self._syntax_errors = []
+        super().__init__()
 
     @property
     def syntax_errors(self) -> Sequence[AntlrSyntaxError]:

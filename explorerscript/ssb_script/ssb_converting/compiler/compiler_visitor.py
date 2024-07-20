@@ -24,8 +24,6 @@ from __future__ import annotations
 
 from enum import Enum, auto
 
-from explorerscript.antlr.SsbScriptListener import SsbScriptListener
-from explorerscript.antlr.SsbScriptParser import SsbScriptParser
 from explorerscript.common_syntax import parse_position_marker_arg, parse_primitive, parse_for_target
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark
@@ -44,6 +42,8 @@ from explorerscript.ssb_converting.ssb_data_types import (
 )
 from explorerscript.ssb_converting.ssb_special_ops import SsbLabel, SsbLabelJump
 from explorerscript.util import exps_int, _
+from explorerscript_parser import SsbScriptBaseVisitor
+from explorerscript_parser import SsbScriptParser
 
 
 class ListenerArgType(Enum):
@@ -58,7 +58,7 @@ class ListenerArgType(Enum):
     POSITION_MARKER = auto()
 
 
-class SsbScriptCompilerListener(SsbScriptListener):
+class SsbScriptCompilerVisitor(SsbScriptBaseVisitor):
     """Builds the SSB data structures while listening for parsing events."""
 
     def __init__(self) -> None:
@@ -90,15 +90,18 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self._collected_ops: list[SsbOperation] = []
         self._active_routine_id = -1
         self._collected_params: list[SsbOpParam] = []
+        super().__init__()
 
-    def exitSimple_def(self, ctx: SsbScriptParser.Simple_defContext) -> None:
+    def visitSimple_def(self, ctx: SsbScriptParser.Simple_defContext) -> None:
+        self.visitChildren(ctx)
         self._active_routine_id = exps_int(str(ctx.INTEGER()))
         self._enlarge_routine_info()
         self.routine_infos[self._active_routine_id] = SsbRoutineInfo(SsbRoutineType.GENERIC, 0)
         self.routine_ops[self._active_routine_id] = self._collected_ops
         self._collected_ops = []
 
-    def exitCoro_def(self, ctx: SsbScriptParser.Coro_defContext) -> None:
+    def visitCoro_def(self, ctx: SsbScriptParser.Coro_defContext) -> None:
+        self.visitChildren(ctx)
         self._active_routine_id += 1
         self._enlarge_routine_info()
         self.named_coroutines[self._active_routine_id] = str(ctx.IDENTIFIER())
@@ -106,7 +109,8 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self.routine_ops[self._active_routine_id] = self._collected_ops
         self._collected_ops = []
 
-    def exitFor_target_def(self, ctx: SsbScriptParser.For_target_defContext) -> None:
+    def visitFor_target_def(self, ctx: SsbScriptParser.For_target_defContext) -> None:
+        self.visitChildren(ctx)
         self._active_routine_id = exps_int(str(ctx.INTEGER()))
         self._enlarge_routine_info()
         linked_to, linked_to_name = parse_for_target(parse_primitive(ctx.primitive(), allow_string=False))
@@ -131,7 +135,8 @@ class SsbScriptCompilerListener(SsbScriptListener):
         self.routine_ops[self._active_routine_id] = self._collected_ops
         self._collected_ops = []
 
-    def exitOperation(self, ctx: SsbScriptParser.OperationContext) -> None:
+    def visitOperation(self, ctx: SsbScriptParser.OperationContext) -> None:
+        self.visitChildren(ctx)
         op_code_name = str(ctx.IDENTIFIER())
 
         collected_params = self._collected_params
@@ -159,7 +164,7 @@ class SsbScriptCompilerListener(SsbScriptListener):
             # Antlr line ids are 1-indexed.
             self._total_number_collected_ops,
             ctx.start.line - 1,
-            ctx.start.column,
+            ctx.start.charPositionInLine,
         )
 
         # Add position marker to source map
@@ -174,9 +179,9 @@ class SsbScriptCompilerListener(SsbScriptListener):
                     SourceMapPositionMark(
                         # Antlr line ids are 1-indexed.
                         ctx.start.line - 1,
-                        ctx.start.column,
+                        ctx.start.charPositionInLine,
                         ctx.stop.line - 1,
-                        ctx.stop.column,
+                        ctx.stop.charPositionInLine,
                         arg.name,
                         arg.x_offset,
                         arg.y_offset,
@@ -185,10 +190,9 @@ class SsbScriptCompilerListener(SsbScriptListener):
                     )
                 )
 
-    def enterPos_argument(self, ctx: SsbScriptParser.Pos_argumentContext) -> None:
+    def visitPos_argument(self, ctx: SsbScriptParser.Pos_argumentContext) -> None:
         self._is_processing_argument = True
-
-    def exitPos_argument(self, ctx: SsbScriptParser.Pos_argumentContext) -> None:
+        self.visitChildren(ctx)
         self._is_processing_argument = False
         self._turn_next_op_into_label_jump_for = None
         if self._argument_type == ListenerArgType.JUMP:
@@ -226,16 +230,16 @@ class SsbScriptCompilerListener(SsbScriptListener):
             assert self._collected_pos_marker is not None
             self._collected_params.append(self._collected_pos_marker)
 
-    def enterPosition_marker(self, ctx: SsbScriptParser.Position_markerContext) -> None:
+    def visitPosition_marker(self, ctx: SsbScriptParser.Position_markerContext) -> None:
         if self._is_processing_argument:
             self._collected_pos_marker = SsbOpParamPositionMarker("NOT SET", -1, -1, -1, -1)
-
-    def exitPosition_marker(self, ctx: SsbScriptParser.Position_markerContext) -> None:
+        self.visitChildren(ctx)
         if self._is_processing_argument:
             assert self._collected_pos_marker is not None
-            self._collected_pos_marker.name = singleline_string_literal(ctx.STRING_LITERAL())
+            self._collected_pos_marker.name = singleline_string_literal(str(ctx.STRING_LITERAL()))
 
-    def exitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext) -> None:
+    def visitPosition_marker_arg(self, ctx: SsbScriptParser.Position_marker_argContext) -> None:
+        self.visitChildren(ctx)
         if self._is_processing_argument:
             assert self._collected_pos_marker is not None
             self._argument_type = ListenerArgType.POSITION_MARKER
@@ -249,7 +253,8 @@ class SsbScriptCompilerListener(SsbScriptListener):
                 self._collected_pos_marker.y_offset = offset
                 self._collected_pos_marker.y_relative = relative
 
-    def exitPrimitive(self, ctx: SsbScriptParser.PrimitiveContext) -> None:
+    def visitPrimitive(self, ctx: SsbScriptParser.PrimitiveContext) -> None:
+        self.visitChildren(ctx)
         if self._is_processing_argument:
             if ctx.INTEGER():
                 self._argument_type = ListenerArgType.INTEGER
@@ -265,12 +270,14 @@ class SsbScriptCompilerListener(SsbScriptListener):
                 self._argument_value = str(ctx.VARIABLE())
             # Strings are processed in exitString/exitLang_string
 
-    def exitJump_marker(self, ctx: SsbScriptParser.Jump_markerContext) -> None:
+    def visitJump_marker(self, ctx: SsbScriptParser.Jump_markerContext) -> None:
+        self.visitChildren(ctx)
         if self._is_processing_argument:
             self._argument_type = ListenerArgType.JUMP
             self._argument_value = str(ctx.IDENTIFIER())
 
-    def exitString(self, ctx: SsbScriptParser.StringContext) -> None:
+    def visitString(self, ctx: SsbScriptParser.StringContext) -> None:
+        self.visitChildren(ctx)
         if self._is_processing_argument:
             string_value = ctx.string_value()
             if string_value:
@@ -281,13 +288,16 @@ class SsbScriptCompilerListener(SsbScriptListener):
                 self._argument_type = ListenerArgType.LANGUAGE_STRING
                 self._argument_value = self._collected_lang_string
 
-    def enterLang_string(self, ctx: SsbScriptParser.Lang_stringContext) -> None:
+    def visitLang_string(self, ctx: SsbScriptParser.Lang_stringContext) -> None:
         self._collected_lang_string = {}
+        self.visitChildren(ctx)
 
-    def exitLang_string_argument(self, ctx: SsbScriptParser.Lang_string_argumentContext) -> None:
+    def visitLang_string_argument(self, ctx: SsbScriptParser.Lang_string_argumentContext) -> None:
+        self.visitChildren(ctx)
         self._collected_lang_string[str(ctx.IDENTIFIER())] = string_literal(ctx.string_value())
 
-    def exitLabel(self, ctx: SsbScriptParser.LabelContext) -> None:
+    def visitLabel(self, ctx: SsbScriptParser.LabelContext) -> None:
+        self.visitChildren(ctx)
         label_name = str(ctx.IDENTIFIER())
 
         if label_name in self._collected_labels:

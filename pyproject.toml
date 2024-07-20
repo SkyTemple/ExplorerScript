@@ -1,6 +1,10 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools",
+    "scikit-build-core<=0.9.8",
+    "pybind11>=2.10.0"
+]
+build-backend = "scikit_build_core.setuptools.build_meta"
 
 [project]
 name = "explorerscript"
@@ -25,8 +29,7 @@ classifiers = [
 ]
 dependencies = [
     'igraph == 0.11.6',
-    'antlr4-python3-runtime == 4.13.1',
-    'typing_extensions >= 4.0; python_version < "3.11"'
+    'typing_extensions >= 4.0; python_version < "3.10"'
 ]
 
 [project.urls]
@@ -43,10 +46,15 @@ pygments = ["pygments>=2.6.1"]
 [project.entry-points."pygments.lexers"]
 expslexer = "explorerscript.pygments.expslexer:ExplorerScriptLexer"
 
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["explorerscript*"]
+namespaces = false
+
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-    "explorerscript/antlr/*"
+    "antlr4/*"
 ]
 
 [tools.ruff.lint]

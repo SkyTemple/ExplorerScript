@@ -24,14 +24,13 @@ from __future__ import annotations
 
 from igraph import Graph, Vertex
 
-from explorerscript.antlr.ExplorerScriptParser import ExplorerScriptParser
-from explorerscript.antlr.ExplorerScriptVisitor import ExplorerScriptVisitor
 from explorerscript.error import SsbCompilerError
 from explorerscript.macro import ExplorerScriptMacro
 from explorerscript.util import _, f
+from explorerscript_parser import ExplorerScriptParser, ExplorerScriptBaseVisitor
 
 
-class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
+class MacroResolutionOrderVisitor(ExplorerScriptBaseVisitor):
     """Sorts a dict of Macros by how macros depend on them, returns a list of macro names"""
 
     _in_macros: dict[str, ExplorerScriptMacro]
@@ -47,6 +46,7 @@ class MacroResolutionOrderVisitor(ExplorerScriptVisitor):
         for name in self._in_macros.keys():
             self._create_vertex(name)
         self._active_macro_name = None
+        super().__init__()
 
     def visitStart(self, ctx: ExplorerScriptParser.StartContext) -> list[str]:
         self.visitChildren(ctx)
