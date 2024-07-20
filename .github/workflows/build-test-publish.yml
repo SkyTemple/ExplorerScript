@@ -114,6 +114,18 @@ jobs:
           name: Event File
           path: ${{ github.event_path }}
 
+  build-sdist:
+    name: Build SDist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build SDist
+        run: pipx run build --sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-sdist
+          path: dist/*.tar.gz
+
   build:
     runs-on: ${{ matrix.os }}
     name: Build Wheels
@@ -197,6 +209,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs:
       - build
+      - build-sdist
       - test
       - typechecks
     runs-on: ubuntu-latest
@@ -217,4 +230,4 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          twine upload wheels*/*.whl
+          twine upload wheels*/*.whl wheels*/*.tar.gz
