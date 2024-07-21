@@ -18,10 +18,6 @@ if(APPLE)
     else()
         message(WARNING "Homebrew LLVM not found. Using system default, this might or might not work.")
     endif()
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static")
 endif()
 
 if(MSVC)
