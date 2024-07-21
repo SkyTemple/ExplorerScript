@@ -198,7 +198,7 @@ jobs:
         run: python -m cibuildwheel --output-dir dist
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
-          MACOSX_DEPLOYMENT_TARGET: "12.00"  # we statically link libsystem, so minimum version is same as runner version
+          MACOSX_DEPLOYMENT_TARGET: "10.13"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
