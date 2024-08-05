@@ -1,4 +1,4 @@
-scikit-build-core==0.9.8
+scikit-build-core==0.9.10
 igraph==0.11.6
 pygments>=2.6.1
 types-Pygments
