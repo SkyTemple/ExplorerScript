@@ -24,7 +24,8 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
+from collections.abc import Sequence
 
 from igraph import IN, Edge, OUT, Vertex, Graph
 

@@ -28,7 +28,8 @@ import logging
 import operator
 from collections import Counter
 from threading import Lock
-from typing import Callable, Generator, cast, Sequence
+from typing import cast
+from collections.abc import Callable, Generator, Sequence
 
 from igraph import Edge, OUT, Vertex, Graph
 
@@ -371,7 +372,7 @@ def find_first_label_vertex_with_marker_that_matches_condition(
     return None, None
 
 
-def iterate_switch_edges(v: Vertex) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool], None, None]:
+def iterate_switch_edges(v: Vertex) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool]]:
     """See iterate_switch_edges_using_edges_and_op."""
     return iterate_switch_edges_using_edges_and_op(v.out_edges(), v["op"])
 
@@ -379,7 +380,7 @@ def iterate_switch_edges(v: Vertex) -> Generator[tuple[Edge, Sequence[SwitchCase
 # TODO: in_op isn't used. This is either wrong or the documentation should be updated.
 def iterate_switch_edges_using_edges_and_op(
     case_edges: list[Edge], in_op: SsbLabelJump
-) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool], None, None]:
+) -> Generator[tuple[Edge, Sequence[SwitchCaseOperation], bool]]:
     """
     Iterate out edges of a vertex with a SsbLabelJump op that has a SsbSwitchStart marker (a switch).
 

@@ -28,7 +28,8 @@ from collections import deque
 from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, MutableSequence, Iterable, Any, TypeVar, Iterator
+from typing import TYPE_CHECKING, Any, TypeVar
+from collections.abc import MutableSequence, Iterable, Iterator
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.source_map import SourceMapBuilder

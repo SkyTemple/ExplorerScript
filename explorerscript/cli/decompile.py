@@ -26,7 +26,8 @@ import argparse
 import json
 import os
 import sys
-from typing import TypedDict, Any, MutableSequence
+from typing import TypedDict, Any
+from collections.abc import MutableSequence
 
 if sys.version_info >= (3, 11):
     from typing import NotRequired

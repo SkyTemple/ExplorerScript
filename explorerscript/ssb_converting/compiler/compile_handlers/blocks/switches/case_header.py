@@ -22,13 +22,9 @@
 #
 from __future__ import annotations
 
-import sys
-from typing import Union, Type
+from typing import Union
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError
@@ -73,7 +69,7 @@ class CaseHeaderCompileHandler(
 
         raise SsbCompilerError(_("Unknown case operation."))
 
-    def get_header_handler_type(self) -> Type[_SupportedHandlers]:
+    def get_header_handler_type(self) -> type[_SupportedHandlers]:
         assert self._header_cmplx_handler is not None
         return type(self._header_cmplx_handler)
 

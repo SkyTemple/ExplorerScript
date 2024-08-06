@@ -22,16 +22,13 @@
 #
 from __future__ import annotations
 
-import sys
 from abc import ABC, abstractmethod
-from typing import Any, MutableSequence, TypeVar, Generic, TYPE_CHECKING
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
+from collections.abc import MutableSequence
 
 from explorerscript_parser import Antlr4ParserRuleContext
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 from explorerscript.ssb_converting.compiler.utils import CompilerCtx, SsbLabelJumpBlueprint, does_op_end_control_flow
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation, SsbOpParam, SsbOpCode

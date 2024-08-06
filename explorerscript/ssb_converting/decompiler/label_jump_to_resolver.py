@@ -28,7 +28,7 @@ and inserts labels at the appropriate locations.
 from __future__ import annotations
 
 import logging
-from typing import Generator, MutableSequence, Sequence
+from collections.abc import Generator, MutableSequence, Sequence
 
 from explorerscript.ssb_converting.ssb_data_types import SsbOperation
 from explorerscript.ssb_converting.ssb_special_ops import process_op_for_jump, SsbLabel
@@ -52,7 +52,7 @@ class OpsLabelJumpToResolver:
             for op in rtn:
                 new_rtn_ops.append(process_op_for_jump(op, self.labels, routine_id, routine_end_offsets))
 
-    def __iter__(self) -> Generator[list[SsbOperation], None, None]:
+    def __iter__(self) -> Generator[list[SsbOperation]]:
         rtn_iterator = iter(self.routines)
         try:
             while True:
@@ -61,7 +61,7 @@ class OpsLabelJumpToResolver:
         except StopIteration:
             return
 
-    def _iter_routine(self, rtn: Sequence[SsbOperation]) -> Generator[SsbOperation, None, None]:
+    def _iter_routine(self, rtn: Sequence[SsbOperation]) -> Generator[SsbOperation]:
         op_iterator = iter(rtn)
         try:
             while True:

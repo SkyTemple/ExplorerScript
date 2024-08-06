@@ -23,15 +23,12 @@
 from __future__ import annotations
 
 import logging
-import sys
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from collections.abc import Callable
 
 from explorerscript.ssb_converting.decompiler.write_handler_manager import WriteHandlerManager
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 from igraph import Vertex
 

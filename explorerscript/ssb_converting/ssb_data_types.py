@@ -26,7 +26,8 @@ from __future__ import annotations
 
 import string
 from enum import Enum
-from typing import Union, MutableSequence
+from typing import Union
+from collections.abc import MutableSequence
 
 
 def escape_quotes(string: str, which_quotes: str | None = None) -> str:
@@ -63,7 +64,7 @@ def repr_string(string: str, indent: int = 0, prefer_single_qoute: bool = False)
 def _repr_multiline_string(string: str, indent: int, delimiter: str) -> str:
     lines = string.split("\n")
     indentprefix = " " * (NUMBER_OF_SPACES_PER_INDENT * indent)
-    output = "\n".join((indentprefix + (" " * NUMBER_OF_SPACES_PER_INDENT) + o for o in lines))
+    output = "\n".join(indentprefix + (" " * NUMBER_OF_SPACES_PER_INDENT) + o for o in lines)
     return f"{delimiter}\n{output}\n{indentprefix}{delimiter}"
 
 
