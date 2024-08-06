@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 import warnings
-from typing import MutableSequence, Sequence
+from collections.abc import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMap, SourceMapPositionMark
 from explorerscript.ssb_converting.decompiler.label_jump_to_resolver import OpsLabelJumpToResolver

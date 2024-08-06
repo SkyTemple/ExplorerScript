@@ -24,7 +24,7 @@
 #
 from __future__ import annotations
 
-from typing import MutableSequence
+from collections.abc import MutableSequence
 
 from explorerscript.source_map import SourceMap, SourceMapBuilder
 from explorerscript.ssb_converting.compiler.utils import Counter

@@ -80,7 +80,7 @@ class OperationCompileHandler(
         ops.append(self._generate_operation(name, args))
         return ops
 
-    def add(self, obj: Union[ArgListCompileHandler, PrimitiveCompileHandler]) -> None:
+    def add(self, obj: ArgListCompileHandler | PrimitiveCompileHandler) -> None:
         if isinstance(obj, ArgListCompileHandler):
             self.arg_list_handler = obj
             return

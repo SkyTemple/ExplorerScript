@@ -22,7 +22,8 @@
 #
 from __future__ import annotations
 
-from typing import overload, Mapping, Literal, Any, NoReturn
+from typing import overload, Literal, Any, NoReturn
+from collections.abc import Mapping
 
 from explorerscript.error import SsbCompilerError
 from explorerscript.ssb_converting.compiler.utils import string_literal
