@@ -22,7 +22,7 @@
 #
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from explorerscript.util import f, _
 from explorerscript_parser import Antlr4ErrorListener

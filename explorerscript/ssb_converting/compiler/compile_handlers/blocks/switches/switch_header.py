@@ -22,13 +22,9 @@
 #
 from __future__ import annotations
 
-import sys
 from typing import Union
 
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    from typing_extensions import TypeAlias
+from typing import TypeAlias
 
 from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError

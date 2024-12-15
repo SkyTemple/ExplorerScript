@@ -22,14 +22,8 @@
 #
 from __future__ import annotations
 
-import sys
 
 from explorerscript.common_syntax import is_primitive_string
-
-if sys.version_info >= (3, 10):
-    pass
-else:
-    pass
 
 from explorerscript_parser import ExplorerScriptParser
 from explorerscript.error import SsbCompilerError

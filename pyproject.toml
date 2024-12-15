@@ -1,34 +1,34 @@
 [build-system]
 requires = [
     "setuptools",
-    "scikit-build-core<=0.9.8",
-    "pybind11>=2.10.0"
+    "scikit-build-core>=0.10.7, < 0.11",
+    "pybind11>=2.13.6, < 2.14"
 ]
 build-backend = "scikit_build_core.setuptools.build_meta"
 
 [project]
 name = "explorerscript"
-version = "0.2.1.post2"
+version = "0.2.2"
 authors = [
     { name = 'Marco "Capypara" Köpcke', email = "hello@capypara.de" },
     # see GitHub contributors list for additional people.
 ]
 description = "ExplorerScript and SSBScript: Script languages for decompiled SSB (Pokémon Mystery Dungeon Explorers of Sky)"
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["rom-hacking", "game-modding", "skytemple"]
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 4 - Beta",
     'Programming Language :: Python',
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
 ]
 dependencies = [
-    'igraph == 0.11.6',
+    'igraph == 0.11.8',
     'typing_extensions >= 4.0; python_version < "3.10"'
 ]
 

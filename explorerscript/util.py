@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 from inspect import currentframe
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from typing import SupportsInt, SupportsIndex
@@ -53,13 +53,15 @@ def exps_int(to_convert: str | SupportsInt | SupportsIndex) -> int:
         raise ValueError("Invalid value for conversion to ExplorerScript integer") from e
 
 
-def f(s: str) -> str:  # type: ignore
+def f(s: str, additional_locals: Any | None = None) -> str:
     """f-strings as a function, for use with translatable strings: f'{techticks}' == f('{techticks}')"""
+    if additional_locals is None:
+        additional_locals = {}
     frame = currentframe().f_back  # type: ignore
     s1 = s.replace("'", "\\'").replace("\n", "\\n")
+    additional_locals.update(frame.f_locals)  # type: ignore
     try:
-        return eval(f"f'{s1}'", frame.f_locals, frame.f_globals)  # type: ignore
-    except SyntaxError as e:
-        if "f-string expression part cannot include a backslash" in str(e):
-            s1 = s.replace('"', '\\"').replace("\n", "\\n")
-            return eval(f'f"{s1}"', frame.f_locals, frame.f_globals)  # type: ignore
+        return eval(f"f'{s1}'", additional_locals, frame.f_globals)  # type: ignore
+    except SyntaxError:
+        s1 = s.replace('"', '\\"').replace("\n", "\\n")
+        return eval(f'f"{s1}"', additional_locals, frame.f_globals)  # type: ignore

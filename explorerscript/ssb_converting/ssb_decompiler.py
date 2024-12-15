@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 from copy import deepcopy
-from typing import MutableSequence, Sequence
+from collections.abc import MutableSequence, Sequence
 
 from explorerscript.source_map import SourceMapBuilder, SourceMapPositionMark, SourceMap
 from explorerscript.ssb_converting.decompiler.graph_building.graph_minimizer import SsbGraphMinimizer

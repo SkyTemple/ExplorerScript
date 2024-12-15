@@ -57,7 +57,8 @@ class ForeignLabelWriteHandler(AbstractWriteHandler):
         exits = self.start_vertex.out_edges()
         assert len(exits) == 0
         # See note in LabelWriteHandler.
+        # TODO: Fix typing
         previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None  # type: ignore
         # We definitely need to print that
-        self.decompiler.write_label_jump(op.label.id, previous_vertex_op)
+        self.decompiler.write_label_jump(op.label.id, previous_vertex_op)  # type: ignore
         return None
