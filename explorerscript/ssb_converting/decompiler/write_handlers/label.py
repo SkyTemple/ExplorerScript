@@ -119,8 +119,7 @@ class LabelWriteHandler(AbstractWriteHandler):
             # If we aren't the first vertex in this block, then the operation before this was a simple
             # one, we can set previous_vertex to None then and just print a jump statement.
             previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None  # type: ignore
-            if previous_vertex_op is not None:
-                self.decompiler.write_label_jump(op.id, previous_vertex_op)
+            self.decompiler.write_label_jump(op.id, previous_vertex_op)
             self.ended_on_jump = True
             logger.debug("Wrote the label!")
             return None

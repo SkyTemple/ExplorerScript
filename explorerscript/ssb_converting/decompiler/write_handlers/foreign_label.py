@@ -59,6 +59,5 @@ class ForeignLabelWriteHandler(AbstractWriteHandler):
         # See note in LabelWriteHandler.
         previous_vertex_op = self.vertex_that_started_block["op"] if self.is_first_vertex_of_block else None  # type: ignore
         # We definitely need to print that
-        if previous_vertex_op is not None:
-            self.decompiler.write_label_jump(op.label.id, previous_vertex_op)
+        self.decompiler.write_label_jump(op.label.id, previous_vertex_op)
         return None
