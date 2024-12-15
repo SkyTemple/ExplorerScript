@@ -1,5 +1,5 @@
 scikit-build-core==0.10.7
-igraph==0.11.6
+igraph==0.11.8
 pygments>=2.6.1
 types-Pygments
 skytemple-3rdparty-typestubs==1.1.1
