@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2025 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -171,7 +171,7 @@ class SwitchWriteHandler(AbstractWriteHandler):
             "message_Menu",
             "ProcessSpecial",
         ]:
-            return f'{op.op_code.name}({", ".join([str(x) for x in op.params])})'
+            return f"{op.op_code.name}({', '.join([str(x) for x in op.params])})"
         if op.op_code.name == OP_SWITCH_DUNGEON_MODE:
             return f"dungeon_mode({op.params[0]})"
         if op.op_code.name == "SwitchRandom":

@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2025 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -148,7 +148,7 @@ class IfWriteHandler(AbstractWriteHandler):
             else:
                 return "not edit"
         if op.op_code.name == "BranchExecuteSub":
-            return f'BranchExecuteSub({", ".join([str(x) for x in op.params])})'
+            return f"BranchExecuteSub({', '.join([str(x) for x in op.params])})"
         if op.op_code.name == "BranchPerformance":
             n = "not " if op.params[1] < 1 else ""  # type: ignore
             return f"{n}{self.decompiler.performance_progress_list_var_name}[{op.params[0]}]"
@@ -163,7 +163,7 @@ class IfWriteHandler(AbstractWriteHandler):
         if op.op_code.name == "BranchScenarioBefore":
             return f"scn({op.params[0]}) < [{op.params[1]}, {op.params[2]}]"
         if op.op_code.name == "BranchSum":
-            return f'BranchSum({", ".join([str(x) for x in op.params])})'
+            return f"BranchSum({', '.join([str(x) for x in op.params])})"
         if op.op_code.name == "BranchValue":
             return f"{op.params[0]} {SsbOperator(op.params[1]).notation} {op.params[2]}"  # type: ignore
         if op.op_code.name == "BranchVariable":

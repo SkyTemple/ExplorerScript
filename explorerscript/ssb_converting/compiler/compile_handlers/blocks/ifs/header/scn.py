@@ -1,6 +1,6 @@
 #  MIT License
 #
-#  Copyright (c) 2020-2024 Capypara and the SkyTemple Contributors
+#  Copyright (c) 2020-2025 Capypara and the SkyTemple Contributors
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to deal
@@ -59,12 +59,7 @@ class IfHeaderScnCompileHandler(AbstractCompileHandler[ExplorerScriptParser.If_h
             raise SsbCompilerError(_("No variable for assignment."))
         if self.operator not in [SsbOperator.EQ, SsbOperator.LE, SsbOperator.LT, SsbOperator.GE, SsbOperator.GT]:
             raise SsbCompilerError(
-                f(
-                    _(
-                        "The only supported operators for scn if "
-                        "conditions are ==,<,<=,>,>= (line {self.ctx.start.line})"
-                    )
-                )
+                f(_("The only supported operators for scn if conditions are ==,<,<=,>,>= (line {self.ctx.start.line})"))
             )
 
         scn_value = exps_int(str(self.ctx.INTEGER(0)))
