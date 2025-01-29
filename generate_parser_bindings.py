@@ -77,7 +77,7 @@ def generate_bindings(target: str, classes: Classes, visitor_methods: list[Metho
                 for method in overloads:
                     if method["params"]:
                         bindings.append(
-                            f'    .def("{method_name}", py::overload_cast<{method["params"].split(' ')[0]}>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)'
+                            f'    .def("{method_name}", py::overload_cast<{method["params"].split(" ")[0]}>(&{class_name}::{method_name}), py::return_value_policy::reference_internal)'
                         )
                     else:
                         bindings.append(
@@ -152,7 +152,7 @@ def generate_trampoline_class(target: str, visitor_methods: list[MethodDef]) -> 
         trampoline_class.append("            pybind11::object,")  # Return type
         trampoline_class.append(f"            {target}BaseVisitor,")  # Parent class
         trampoline_class.append(f"            {method_name},")
-        trampoline_class.append(f'            {params.split(' ')[1].lstrip('*')}')
+        trampoline_class.append(f"            {params.split(' ')[1].lstrip('*')}")
         trampoline_class.append("        );")
         trampoline_class.append("    }")
 
