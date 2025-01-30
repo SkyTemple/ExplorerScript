@@ -22,7 +22,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "ExplorerScript"
-copyright = "2024, Capypara"
+copyright = "2025, Capypara"
 author = "Capypara"
 
 # The short X.Y version
