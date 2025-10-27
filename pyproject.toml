@@ -28,7 +28,7 @@ classifiers = [
     'Programming Language :: Python :: 3.13',
 ]
 dependencies = [
-    'igraph == 0.11.8',
+    'igraph == 1.0.0',
     'typing_extensions >= 4.0; python_version < "3.10"'
 ]
 
