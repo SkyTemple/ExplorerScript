@@ -73,7 +73,7 @@ jobs:
           mypy --config-file mypy.ini --junit-xml mypy-${{ matrix.python-version }}.xml explorerscript
       - name: Upload Unit Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: MyPy Test Results (Python ${{ matrix.python-version }})
           path: mypy-${{ matrix.python-version }}.xml
@@ -103,7 +103,7 @@ jobs:
       - run: mv pytest.xml pytest-${{ matrix.python-version }}.xml
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: "Pytest Test Results (Python ${{ matrix.python-version }})"
           path: pytest-${{ matrix.python-version }}.xml
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Event File
           path: ${{ github.event_path }}
@@ -127,7 +127,7 @@ jobs:
           submodules: 'recursive'
       - name: Build SDist
         run: pipx run build --sdist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: wheels-sdist
           path: dist/*.tar.gz
@@ -206,7 +206,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           MACOSX_DEPLOYMENT_TARGET: "10.13"
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/*.whl
