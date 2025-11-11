@@ -188,7 +188,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Download GNU Tar
-        uses: suisei-cn/actions-download-file@v1.6.0
+        uses: suisei-cn/actions-download-file@v1.6.1
         if: ${{ startsWith(matrix.os, 'windows-') }}
         with:
           url: https://skytemple.org/build_deps/tar.exe
