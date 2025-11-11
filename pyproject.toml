@@ -2,7 +2,7 @@
 requires = [
     "setuptools",
     "scikit-build-core>=0.10.7, < 0.11",
-    "pybind11>=2.13.6, < 2.14"
+    "pybind11>= 2.13.6, < 3.1"
 ]
 build-backend = "scikit_build_core.setuptools.build_meta"
 
